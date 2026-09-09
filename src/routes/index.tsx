@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Settings } from "lucide-react";
 import { GableMark } from "@/components/gable-mark";
+import { RoofusMark } from "@/components/roofus-mark";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export const Route = createFileRoute("/")({
@@ -22,6 +23,12 @@ const PILLARS = [
     body: "The walk, then one shot and a question. What’s this called. Hail or lichen. Coach only — CompanyCam is the report.",
   },
   {
+    to: "/house" as const,
+    kicker: "Before the door",
+    title: "This House",
+    body: "Look up the pin. Year built and public facts if they exist. Then ask Roofus. No tape.",
+  },
+  {
     to: "/coach/mindset" as const,
     kicker: "How you stand",
     title: "Mindset",
@@ -31,17 +38,18 @@ const PILLARS = [
     to: "/coach/reference" as const,
     kicker: "The library",
     title: "Reference",
-    body: "All 145 InterNACHI Mastering Roof Inspections articles. Search, open a chapter. Roofus has the same list.",
+    body: "All 145 InterNACHI Mastering Roof Inspections articles. Search, open a chapter.",
   },
 ];
 
 function Home() {
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-16 pt-4">
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-16 pt-4">
+      <RoofusMark />
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-muted">
           <GableMark className="size-4" />
-          RoofUs
+          Roofus
         </div>
         <div className="flex items-center">
           <ThemeToggle />
@@ -57,7 +65,7 @@ function Home() {
 
       <h1 className="mt-10 font-display text-4xl leading-tight tracking-tight">Porch Dawg.</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">
-        Three rooms and a library. Coach, walk, how you stand, then Shepard.
+        Coach in the truck. Walk on the roof. Look up the house before you knock.
       </p>
 
       <nav className="mt-8 flex flex-col gap-3">

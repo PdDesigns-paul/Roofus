@@ -3,7 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "RoofUs";
+const APP_NAME = "Roofus";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -12,7 +12,7 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: APP_NAME },
       { name: "theme-color", content: "#0c0c0d" },
-      { name: "description", content: "Roofus in the truck. Inspect on the roof. Mindset at the door." },
+      { name: "description", content: "Roofus in the truck. Inspect on the roof. This House before the door." },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },

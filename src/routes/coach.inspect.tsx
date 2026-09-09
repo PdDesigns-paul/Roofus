@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Camera, Check, ImagePlus } from "lucide-react";
 import { useRef, useState } from "react";
 import { GableMark } from "@/components/gable-mark";
+import { RoofusMark } from "@/components/roofus-mark";
 import { compressImage } from "@/lib/compress-image";
 import { askInspect } from "@/lib/inspect-ask";
 import { ASK_STARTERS, WALK_SLOTS, type WalkSlotId } from "@/lib/inspect-walk";
@@ -55,7 +56,8 @@ function InspectPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-16 pt-4">
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-16 pt-4">
+      <RoofusMark />
       <header className="flex items-center justify-between">
         <Link
           to="/"
@@ -226,12 +228,12 @@ function InspectPage() {
         <Link to="/coach" className="hover:text-fg">
           Roofus
         </Link>
+        <Link to="/house" className="hover:text-fg">
+          House
+        </Link>
         <span className="text-fg">Inspect</span>
         <Link to="/coach/reference" className="hover:text-fg">
           Reference
-        </Link>
-        <Link to="/coach/mindset" className="hover:text-fg">
-          Mindset
         </Link>
       </nav>
     </main>

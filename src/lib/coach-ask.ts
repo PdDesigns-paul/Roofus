@@ -28,7 +28,7 @@ export const askCoach = createServerFn({ method: "POST" })
           `\n\n${hat.brief}`,
           KNOWLEDGE,
           data.ticketBlurb
-            ? `Current ticket (use these numbers, do not invent):\n${data.ticketBlurb}`
+            ? `This House (public record — use these facts, do not invent year or squares):\n${data.ticketBlurb}`
             : "",
         ]
           .filter(Boolean)

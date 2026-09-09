@@ -2,11 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { GableMark } from "@/components/gable-mark";
+import { RoofusMark } from "@/components/roofus-mark";
 import { askCoach, type ChatTurn } from "@/lib/coach-ask";
 import { useCoach } from "@/lib/coach-store";
+import { formatHouseBlurb } from "@/lib/house-lookup";
+import { useHouses } from "@/lib/houses-store";
 import { hatById, RUFUS_HATS, type RufusHatId } from "@/lib/rufus-hats";
-import { useJobs } from "@/lib/jobs-store";
-import { formatRange } from "@/lib/utils";
 
 export function RufusChat() {
   const messages = useCoach((s) => s.messages);
@@ -16,27 +17,22 @@ export function RufusChat() {
   const setHat = useCoach((s) => s.setHat);
   const ticketId = useCoach((s) => s.ticketId);
   const setTicketId = useCoach((s) => s.setTicketId);
-  const jobs = useJobs((s) => s.jobs);
-  const order = useJobs((s) => s.order);
+  const houses = useHouses((s) => s.houses);
+  const order = useHouses((s) => s.order);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const bottom = useRef<HTMLDivElement>(null);
   const hat = hatById(hatId);
-  const ticket = ticketId ? jobs[ticketId] : order[0] ? jobs[order[0]] : undefined;
+  const house = ticketId ? houses[ticketId] : order[0] ? houses[order[0]] : undefined;
 
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "end" });
   }, [messages.length, busy]);
 
-  function ticketBlurb() {
-    if (!ticket?.quote) return undefined;
-    return [
-      ticket.address,
-      `range ${formatRange(ticket.quote.rangeLow, ticket.quote.rangeHigh)}`,
-      `order ${ticket.quote.orderSquares.toFixed(2)} sq`,
-      `pitch ${ticket.pitchOverride ?? ticket.analysis?.pitchPreset}`,
-    ].join(" · ");
+  function houseBlurb() {
+    if (!house) return undefined;
+    return formatHouseBlurb(house);
   }
 
   function pickHat(id: RufusHatId) {
@@ -59,7 +55,7 @@ export function RufusChat() {
       const res = await askCoach({
         data: {
           messages: history,
-          ticketBlurb: ticketBlurb(),
+          ticketBlurb: houseBlurb(),
           hat: useCoach.getState().hat,
         },
       });
@@ -77,7 +73,8 @@ export function RufusChat() {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-paper">
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-paper">
+      <RoofusMark />
       <header className="sticky top-0 z-10 border-b border-border/70 bg-paper/95 px-4 pt-3 backdrop-blur">
         <div className="flex items-center justify-between">
           <Link
@@ -121,7 +118,7 @@ export function RufusChat() {
         </div>
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
         {messages.length === 0 ? (
           <div className="mt-4">
             <p className="text-xs font-medium uppercase tracking-wide text-faint">{hat.hint}</p>
@@ -160,20 +157,22 @@ export function RufusChat() {
           </p>
         ) : null}
         {error ? <p className="text-sm text-danger">{error}</p> : null}
-        {ticket?.quote ? (
+        {house ? (
           <button
             type="button"
             className="truncate text-left text-xs text-faint"
-            onClick={() => setTicketId(ticket.id === ticketId ? null : ticket.id)}
+            onClick={() => setTicketId(house.id === ticketId ? null : house.id)}
           >
-            {ticketId === ticket.id ? "Using tape" : "Use tape"} · {ticket.address.split(",")[0]}
+            {ticketId === house.id ? "Using this house" : "Use this house"} ·{" "}
+            {house.address.split(",")[0]}
+            {house.yearBuilt ? ` · ${house.yearBuilt}` : ""}
           </button>
         ) : null}
         <div ref={bottom} />
       </div>
 
       <form
-        className="sticky bottom-0 border-t border-border/70 bg-paper px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2"
+        className="sticky bottom-0 z-10 border-t border-border/70 bg-paper px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2"
         onSubmit={(e) => {
           e.preventDefault();
           void send();
@@ -200,11 +199,11 @@ export function RufusChat() {
             Home
           </Link>
           <span className="text-fg">Roofus</span>
+          <Link to="/house" className="hover:text-fg">
+            House
+          </Link>
           <Link to="/coach/inspect" className="hover:text-fg">
             Inspect
-          </Link>
-          <Link to="/coach/reference" className="hover:text-fg">
-            Reference
           </Link>
           <Link to="/coach/mindset" className="hover:text-fg">
             Mindset

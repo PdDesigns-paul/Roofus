@@ -10,28 +10,28 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as HouseRouteImport } from './routes/house'
 import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as TapeRouteImport } from './routes/tape'
 import { Route as CoachIndexRouteImport } from './routes/coach.index'
 import { Route as CoachInspectRouteImport } from './routes/coach.inspect'
 import { Route as CoachMindsetRouteImport } from './routes/coach.mindset'
 import { Route as CoachReferenceRouteImport } from './routes/coach.reference'
-import { Route as JobJobIdRouteImport } from './routes/job.$jobId'
-import { Route as ShowJobIdRouteImport } from './routes/show.$jobId'
+import { Route as HouseIndexRouteImport } from './routes/house.index'
+import { Route as HouseHouseIdRouteImport } from './routes/house.$houseId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HouseRoute = HouseRouteImport.update({
+  id: '/house',
+  path: '/house',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TapeRoute = TapeRouteImport.update({
-  id: '/tape',
-  path: '/tape',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoachIndexRoute = CoachIndexRouteImport.update({
@@ -54,96 +54,92 @@ const CoachReferenceRoute = CoachReferenceRouteImport.update({
   path: '/coach/reference',
   getParentRoute: () => rootRouteImport,
 } as any)
-const JobJobIdRoute = JobJobIdRouteImport.update({
-  id: '/job/$jobId',
-  path: '/job/$jobId',
-  getParentRoute: () => rootRouteImport,
+const HouseIndexRoute = HouseIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => HouseRoute,
 } as any)
-const ShowJobIdRoute = ShowJobIdRouteImport.update({
-  id: '/show/$jobId',
-  path: '/show/$jobId',
-  getParentRoute: () => rootRouteImport,
+const HouseHouseIdRoute = HouseHouseIdRouteImport.update({
+  id: '/$houseId',
+  path: '/$houseId',
+  getParentRoute: () => HouseRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/house': typeof HouseRouteWithChildren
   '/settings': typeof SettingsRoute
-  '/tape': typeof TapeRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
-  '/job/$jobId': typeof JobJobIdRoute
-  '/show/$jobId': typeof ShowJobIdRoute
+  '/house/$houseId': typeof HouseHouseIdRoute
   '/coach/': typeof CoachIndexRoute
+  '/house/': typeof HouseIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings': typeof SettingsRoute
-  '/tape': typeof TapeRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
-  '/job/$jobId': typeof JobJobIdRoute
-  '/show/$jobId': typeof ShowJobIdRoute
+  '/house/$houseId': typeof HouseHouseIdRoute
   '/coach': typeof CoachIndexRoute
+  '/house': typeof HouseIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/house': typeof HouseRouteWithChildren
   '/settings': typeof SettingsRoute
-  '/tape': typeof TapeRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
-  '/job/$jobId': typeof JobJobIdRoute
-  '/show/$jobId': typeof ShowJobIdRoute
+  '/house/$houseId': typeof HouseHouseIdRoute
   '/coach/': typeof CoachIndexRoute
+  '/house/': typeof HouseIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/house'
     | '/settings'
-    | '/tape'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
-    | '/job/$jobId'
-    | '/show/$jobId'
+    | '/house/$houseId'
     | '/coach/'
+    | '/house/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/settings'
-    | '/tape'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
-    | '/job/$jobId'
-    | '/show/$jobId'
+    | '/house/$houseId'
     | '/coach'
+    | '/house'
   id:
     | '__root__'
     | '/'
+    | '/house'
     | '/settings'
-    | '/tape'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
-    | '/job/$jobId'
-    | '/show/$jobId'
+    | '/house/$houseId'
     | '/coach/'
+    | '/house/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HouseRoute: typeof HouseRouteWithChildren
   SettingsRoute: typeof SettingsRoute
-  TapeRoute: typeof TapeRoute
   CoachInspectRoute: typeof CoachInspectRoute
   CoachMindsetRoute: typeof CoachMindsetRoute
   CoachReferenceRoute: typeof CoachReferenceRoute
-  JobJobIdRoute: typeof JobJobIdRoute
-  ShowJobIdRoute: typeof ShowJobIdRoute
   CoachIndexRoute: typeof CoachIndexRoute
 }
 
@@ -156,18 +152,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/house': {
+      id: '/house'
+      path: '/house'
+      fullPath: '/house'
+      preLoaderRoute: typeof HouseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tape': {
-      id: '/tape'
-      path: '/tape'
-      fullPath: '/tape'
-      preLoaderRoute: typeof TapeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/coach/': {
@@ -198,32 +194,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoachReferenceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/job/$jobId': {
-      id: '/job/$jobId'
-      path: '/job/$jobId'
-      fullPath: '/job/$jobId'
-      preLoaderRoute: typeof JobJobIdRouteImport
-      parentRoute: typeof rootRouteImport
+    '/house/': {
+      id: '/house/'
+      path: '/'
+      fullPath: '/house/'
+      preLoaderRoute: typeof HouseIndexRouteImport
+      parentRoute: typeof HouseRoute
     }
-    '/show/$jobId': {
-      id: '/show/$jobId'
-      path: '/show/$jobId'
-      fullPath: '/show/$jobId'
-      preLoaderRoute: typeof ShowJobIdRouteImport
-      parentRoute: typeof rootRouteImport
+    '/house/$houseId': {
+      id: '/house/$houseId'
+      path: '/$houseId'
+      fullPath: '/house/$houseId'
+      preLoaderRoute: typeof HouseHouseIdRouteImport
+      parentRoute: typeof HouseRoute
     }
   }
 }
 
+interface HouseRouteChildren {
+  HouseHouseIdRoute: typeof HouseHouseIdRoute
+  HouseIndexRoute: typeof HouseIndexRoute
+}
+
+const HouseRouteChildren: HouseRouteChildren = {
+  HouseHouseIdRoute: HouseHouseIdRoute,
+  HouseIndexRoute: HouseIndexRoute,
+}
+
+const HouseRouteWithChildren = HouseRoute._addFileChildren(HouseRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HouseRoute: HouseRouteWithChildren,
   SettingsRoute: SettingsRoute,
-  TapeRoute: TapeRoute,
   CoachInspectRoute: CoachInspectRoute,
   CoachMindsetRoute: CoachMindsetRoute,
   CoachReferenceRoute: CoachReferenceRoute,
-  JobJobIdRoute: JobJobIdRoute,
-  ShowJobIdRoute: ShowJobIdRoute,
   CoachIndexRoute: CoachIndexRoute,
 }
 export const routeTree = rootRouteImport

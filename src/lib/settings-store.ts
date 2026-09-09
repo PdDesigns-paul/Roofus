@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { DEFAULT_BOOK, type PriceBook } from "@/lib/roofing";
 
 export type ThemeMode = "light" | "dark";
 
@@ -10,16 +9,11 @@ type SettingsState = {
   companyName: string;
   warrantyLine: string;
   googleMapsKey: string;
-  instantRooferKey: string;
-  book: PriceBook;
-  bookTouched: boolean;
   setTheme: (theme: ThemeMode) => void;
   toggleTheme: () => void;
   setCompanyName: (v: string) => void;
   setWarrantyLine: (v: string) => void;
   setGoogleMapsKey: (v: string) => void;
-  setInstantRooferKey: (v: string) => void;
-  patchBook: (patch: Partial<PriceBook>) => void;
 };
 
 export function applyTheme(theme: ThemeMode) {
@@ -34,12 +28,9 @@ export const useSettings = create<SettingsState>()(
     (set, get) => ({
       hydrated: false,
       theme: "dark",
-      companyName: "RoofUs",
+      companyName: "Roofus",
       warrantyLine: "See the actual Owens Corning warranty.",
       googleMapsKey: "",
-      instantRooferKey: "",
-      book: DEFAULT_BOOK,
-      bookTouched: false,
       setTheme: (theme) => {
         applyTheme(theme);
         set({ theme });
@@ -52,9 +43,6 @@ export const useSettings = create<SettingsState>()(
       setCompanyName: (companyName) => set({ companyName }),
       setWarrantyLine: (warrantyLine) => set({ warrantyLine }),
       setGoogleMapsKey: (googleMapsKey) => set({ googleMapsKey }),
-      setInstantRooferKey: (instantRooferKey) => set({ instantRooferKey }),
-      patchBook: (patch) =>
-        set((s) => ({ book: { ...s.book, ...patch }, bookTouched: true })),
     }),
     {
       name: "roofus-settings",
@@ -63,9 +51,6 @@ export const useSettings = create<SettingsState>()(
         companyName: s.companyName,
         warrantyLine: s.warrantyLine,
         googleMapsKey: s.googleMapsKey,
-        instantRooferKey: s.instantRooferKey,
-        book: s.book,
-        bookTouched: s.bookTouched,
       }),
       onRehydrateStorage: () => (state) => {
         if (typeof window !== "undefined" && !localStorage.getItem("roofus-dark-v2")) {
