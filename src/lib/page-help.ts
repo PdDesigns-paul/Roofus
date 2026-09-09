@@ -1,15 +1,7 @@
 export const HELP_PAGES = {
   home: {
     question:
-      "I'm new here. I'm on the Home screen. Explain Roofus, This House, Inspect, Mindset, and Reference — what I tap, and in what order before a street. Don't start a door script.",
-  },
-  house: {
-    question:
-      "I'm on This House. Explain the GPS button, typing an address, the demo address, and what happens after I look one up. Don't start a door script.",
-  },
-  houseBrief: {
-    question:
-      "I'm looking at one house. Explain the year, dragging the pin, Zillow, and Ask Roofus about this house. Don't start a door script.",
+      "I'm new here. I'm on the Home screen. Explain Roofus, Inspect, Mindset, and Reference — what I tap, and in what order before a street. Don't start a door script.",
   },
   inspect: {
     question:
@@ -29,7 +21,7 @@ export const HELP_PAGES = {
   },
   coach: {
     question:
-      "I'm in your chat. Explain the hats — Door, Inspect, Pushback, Set, Roleplay, Score — and when to pin a house. Don't start a door script unless I paste a knock.",
+      "I'm in your chat. Explain the hats — Door, Inspect, Pushback, Set, Roleplay, Score. Don't start a door script unless I paste a knock.",
   },
 } as const;
 
@@ -38,7 +30,3 @@ export type HelpPageId = keyof typeof HELP_PAGES;
 export function helpQuestion(page: HelpPageId) {
   return HELP_PAGES[page].question;
 }
-
-export const HOUSE_WALKUP =
-  "I just looked up this house. Brief me for the walk-up. Use the pin facts. If a year is missing, say so. Next line I can say, then the next physical step. Don't invent a storm.";
-

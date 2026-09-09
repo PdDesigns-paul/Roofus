@@ -23,7 +23,7 @@ export function RoofusHero() {
       <div className="relative z-10 max-w-[62%] pb-6 pt-8">
         <h1 className="font-display text-4xl leading-[0.95] tracking-tight">Porch Dawg.</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted">
-          Coach in the truck. Walk on the roof. Look up the house before you knock.
+          Coach in the truck. Walk on the roof. Ask him the next line.
         </p>
       </div>
     </div>

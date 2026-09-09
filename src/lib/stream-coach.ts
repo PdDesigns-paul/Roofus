@@ -3,8 +3,6 @@ export type ChatTurn = { role: "user" | "assistant"; content: string };
 export type StreamCoachInput = {
   messages: ChatTurn[];
   hat?: string;
-  houseBlurb?: string;
-  ticketBlurb?: string;
   companyName?: string;
   warrantyLine?: string;
   imageDataUrl?: string;
@@ -18,10 +16,7 @@ export async function streamCoach(
   const res = await fetch("/api/coach", {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
-    body: JSON.stringify({
-      ...input,
-      ticketBlurb: input.houseBlurb ?? input.ticketBlurb,
-    }),
+    body: JSON.stringify(input),
     signal,
   });
   if (!res.ok) {

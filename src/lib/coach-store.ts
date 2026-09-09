@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { helpQuestion, HOUSE_WALKUP, type HelpPageId } from "@/lib/page-help";
+import { helpQuestion, type HelpPageId } from "@/lib/page-help";
 import type { RufusHatId } from "@/lib/rufus-hats";
 import type { ChatTurn } from "@/lib/stream-coach";
 
@@ -36,11 +36,9 @@ type CoachState = {
   messages: ChatTurn[];
   setHistoryOpen: (open: boolean) => void;
   setHat: (hat: RufusHatId) => void;
-  setHouseId: (houseId: string | null) => void;
   resume: () => void;
   startNew: () => void;
   startHelp: (page: HelpPageId) => void;
-  startHouseAsk: (houseId: string, address?: string) => void;
   ensureInspect: () => void;
   openThread: (id: string) => void;
   dropThread: (id: string) => void;
@@ -188,11 +186,6 @@ export const useCoach = create<CoachState>()(
           hat,
           ...patchActive(s, (t) => ({ ...t, hat, updatedAt: Date.now() })),
         })),
-      setHouseId: (houseId) =>
-        set((s) => ({
-          houseId,
-          ...patchActive(s, (t) => ({ ...t, houseId, updatedAt: Date.now() })),
-        })),
       resume: () =>
         set((s) => {
           if (s.activeId && s.threads[s.activeId]) {
@@ -230,34 +223,6 @@ export const useCoach = create<CoachState>()(
           return {
             ...activate(s, thread),
             pendingPrompt: helpQuestion(page),
-            pendingAt: Date.now(),
-            streaming: "",
-            busy: false,
-            historyOpen: false,
-          };
-        }),
-      startHouseAsk: (houseId, address) =>
-        set((s) => {
-          const existing = s.order
-            .map((id) => s.threads[id])
-            .find((t) => t?.origin === "house" && t.houseId === houseId);
-          if (existing) {
-            return {
-              ...activate(s, existing),
-              pendingPrompt: existing.messages.length ? null : HOUSE_WALKUP,
-              pendingAt: existing.messages.length ? 0 : Date.now(),
-              streaming: "",
-              busy: false,
-              historyOpen: false,
-            };
-          }
-          const thread = makeThread("house", {
-            houseId,
-            title: titleFor("house", undefined, address),
-          });
-          return {
-            ...activate(s, thread),
-            pendingPrompt: HOUSE_WALKUP,
             pendingAt: Date.now(),
             streaming: "",
             busy: false,

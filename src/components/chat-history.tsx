@@ -11,7 +11,6 @@ function ago(at: number) {
 
 function originLabel(origin: ThreadOrigin) {
   if (origin === "help") return "Help";
-  if (origin === "house") return "This House";
   if (origin === "inspect") return "Inspect";
   return "Porch";
 }

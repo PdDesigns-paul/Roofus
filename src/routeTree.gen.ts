@@ -11,15 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoachRouteImport } from './routes/coach'
-import { Route as HouseRouteImport } from './routes/house'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
 import { Route as CoachIndexRouteImport } from './routes/coach.index'
 import { Route as CoachInspectRouteImport } from './routes/coach.inspect'
 import { Route as CoachMindsetRouteImport } from './routes/coach.mindset'
 import { Route as CoachReferenceRouteImport } from './routes/coach.reference'
-import { Route as HouseIndexRouteImport } from './routes/house.index'
-import { Route as HouseHouseIdRouteImport } from './routes/house.$houseId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,11 +26,6 @@ const IndexRoute = IndexRouteImport.update({
 const CoachRoute = CoachRouteImport.update({
   id: '/coach',
   path: '/coach',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HouseRoute = HouseRouteImport.update({
-  id: '/house',
-  path: '/house',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -66,29 +58,16 @@ const CoachReferenceRoute = CoachReferenceRouteImport.update({
   path: '/reference',
   getParentRoute: () => CoachRoute,
 } as any)
-const HouseIndexRoute = HouseIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => HouseRoute,
-} as any)
-const HouseHouseIdRoute = HouseHouseIdRouteImport.update({
-  id: '/$houseId',
-  path: '/$houseId',
-  getParentRoute: () => HouseRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/coach': typeof CoachRouteWithChildren
-  '/house': typeof HouseRouteWithChildren
   '/settings': typeof SettingsRoute
   '/api/coach': typeof ApiCoachRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
-  '/house/$houseId': typeof HouseHouseIdRoute
   '/coach/': typeof CoachIndexRoute
-  '/house/': typeof HouseIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -97,38 +76,30 @@ export interface FileRoutesByTo {
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
-  '/house/$houseId': typeof HouseHouseIdRoute
   '/coach': typeof CoachIndexRoute
-  '/house': typeof HouseIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/coach': typeof CoachRouteWithChildren
-  '/house': typeof HouseRouteWithChildren
   '/settings': typeof SettingsRoute
   '/api/coach': typeof ApiCoachRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
-  '/house/$houseId': typeof HouseHouseIdRoute
   '/coach/': typeof CoachIndexRoute
-  '/house/': typeof HouseIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/coach'
-    | '/house'
     | '/settings'
     | '/api/coach'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
-    | '/house/$houseId'
     | '/coach/'
-    | '/house/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -137,28 +108,22 @@ export interface FileRouteTypes {
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
-    | '/house/$houseId'
     | '/coach'
-    | '/house'
   id:
     | '__root__'
     | '/'
     | '/coach'
-    | '/house'
     | '/settings'
     | '/api/coach'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
-    | '/house/$houseId'
     | '/coach/'
-    | '/house/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CoachRoute: typeof CoachRouteWithChildren
-  HouseRoute: typeof HouseRouteWithChildren
   SettingsRoute: typeof SettingsRoute
   ApiCoachRoute: typeof ApiCoachRoute
 }
@@ -177,13 +142,6 @@ declare module '@tanstack/react-router' {
       path: '/coach'
       fullPath: '/coach'
       preLoaderRoute: typeof CoachRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/house': {
-      id: '/house'
-      path: '/house'
-      fullPath: '/house'
-      preLoaderRoute: typeof HouseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -228,20 +186,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoachReferenceRouteImport
       parentRoute: typeof CoachRoute
     }
-    '/house/': {
-      id: '/house/'
-      path: '/'
-      fullPath: '/house/'
-      preLoaderRoute: typeof HouseIndexRouteImport
-      parentRoute: typeof HouseRoute
-    }
-    '/house/$houseId': {
-      id: '/house/$houseId'
-      path: '/$houseId'
-      fullPath: '/house/$houseId'
-      preLoaderRoute: typeof HouseHouseIdRouteImport
-      parentRoute: typeof HouseRoute
-    }
   }
 }
 
@@ -261,22 +205,9 @@ const CoachRouteChildren: CoachRouteChildren = {
 
 const CoachRouteWithChildren = CoachRoute._addFileChildren(CoachRouteChildren)
 
-interface HouseRouteChildren {
-  HouseHouseIdRoute: typeof HouseHouseIdRoute
-  HouseIndexRoute: typeof HouseIndexRoute
-}
-
-const HouseRouteChildren: HouseRouteChildren = {
-  HouseHouseIdRoute: HouseHouseIdRoute,
-  HouseIndexRoute: HouseIndexRoute,
-}
-
-const HouseRouteWithChildren = HouseRoute._addFileChildren(HouseRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CoachRoute: CoachRouteWithChildren,
-  HouseRoute: HouseRouteWithChildren,
   SettingsRoute: SettingsRoute,
   ApiCoachRoute: ApiCoachRoute,
 }

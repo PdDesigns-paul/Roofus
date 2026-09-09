@@ -6,28 +6,23 @@ import { HelpButton } from "@/components/help-button";
 import { Tip } from "@/components/ui/tooltip";
 import { abortTalk, sendRoofus, stopRoofus } from "@/lib/roofus-talk";
 import { useCoach } from "@/lib/coach-store";
-import { useHouses } from "@/lib/houses-store";
 import { hatById, RUFUS_HATS, type RufusHatId } from "@/lib/rufus-hats";
 
 export function RufusChat() {
   const messages = useCoach((s) => s.messages);
   const hatId = useCoach((s) => s.hat);
   const setHat = useCoach((s) => s.setHat);
-  const houseId = useCoach((s) => s.houseId);
-  const setHouseId = useCoach((s) => s.setHouseId);
   const pendingPrompt = useCoach((s) => s.pendingPrompt);
   const pendingAt = useCoach((s) => s.pendingAt);
   const streaming = useCoach((s) => s.streaming);
   const busy = useCoach((s) => s.busy);
   const startNew = useCoach((s) => s.startNew);
   const setHistoryOpen = useCoach((s) => s.setHistoryOpen);
-  const houses = useHouses((s) => s.houses);
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const bottom = useRef<HTMLDivElement>(null);
   const sentAt = useRef(0);
   const hat = hatById(hatId);
-  const house = houseId ? houses[houseId] : undefined;
 
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "end" });
@@ -158,20 +153,6 @@ export function RufusChat() {
           ))
         )}
         {error ? <p className="text-sm text-danger">{error}</p> : null}
-        {house ? (
-          <p className="truncate text-left text-xs text-faint">
-            This house · {house.address.split(",")[0]}
-            {house.yearBuilt ? ` · ${house.yearBuilt}` : ""}
-          </p>
-        ) : houseId ? (
-          <button
-            type="button"
-            className="text-left text-xs text-faint"
-            onClick={() => setHouseId(null)}
-          >
-            House pin is gone from this phone.
-          </button>
-        ) : null}
         <div ref={bottom} />
       </div>
 
@@ -213,9 +194,6 @@ export function RufusChat() {
             Home
           </Link>
           <span className="text-fg">Roofus</span>
-          <Link to="/house" className="hover:text-fg">
-            House
-          </Link>
           <Link to="/coach/inspect" className="hover:text-fg">
             Inspect
           </Link>

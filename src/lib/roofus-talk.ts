@@ -1,6 +1,4 @@
 import { useCoach } from "@/lib/coach-store";
-import { formatHouseBlurb } from "@/lib/house-lookup";
-import { useHouses } from "@/lib/houses-store";
 import { useSettings } from "@/lib/settings-store";
 import { streamCoach } from "@/lib/stream-coach";
 
@@ -27,8 +25,6 @@ export async function sendRoofus(text: string, opts?: { imageDataUrl?: string })
   latest = "";
   const ac = new AbortController();
   liveAbort = ac;
-  const houseId = useCoach.getState().houseId;
-  const house = houseId ? useHouses.getState().houses[houseId] : undefined;
   const settings = useSettings.getState();
   try {
     const messages = useCoach
@@ -39,7 +35,6 @@ export async function sendRoofus(text: string, opts?: { imageDataUrl?: string })
       {
         messages,
         hat: useCoach.getState().hat,
-        houseBlurb: house ? formatHouseBlurb(house) : undefined,
         companyName: settings.companyName,
         warrantyLine: settings.warrantyLine,
         imageDataUrl: opts?.imageDataUrl,

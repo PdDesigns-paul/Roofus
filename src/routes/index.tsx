@@ -22,7 +22,7 @@ function Home() {
         <div className="flex items-center">
           <HelpButton page="home" />
           <ThemeToggle />
-          <Tip label="Company name and Maps">
+          <Tip label="Company name and warranty">
             <Link
               to="/settings"
               className="inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg"
@@ -46,15 +46,6 @@ function Home() {
           <p className="mt-2 max-w-[22rem] text-sm leading-relaxed text-paper/70">
             Pin a hat. Tell him what just happened. He hands you the next line.
           </p>
-        </Link>
-
-        <Link
-          to="/house"
-          className="col-span-2 flex min-h-24 flex-col justify-end rounded-2xl border border-border bg-surface px-5 py-4 hover:bg-surface-2"
-        >
-          <p className="text-[11px] font-medium uppercase tracking-wide text-faint">Before the door</p>
-          <h2 className="mt-0.5 font-display text-2xl tracking-tight">This House</h2>
-          <p className="mt-1 text-sm text-muted">Look up the house. Then ask him.</p>
         </Link>
 
         <Link

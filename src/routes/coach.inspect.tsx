@@ -246,10 +246,10 @@ function InspectPage() {
         <Link to="/coach" className="hover:text-fg">
           Roofus
         </Link>
-        <Link to="/house" className="hover:text-fg">
-          House
-        </Link>
         <span className="text-fg">Inspect</span>
+        <Link to="/coach/mindset" className="hover:text-fg">
+          Mindset
+        </Link>
         <Link to="/coach/reference" className="hover:text-fg">
           Reference
         </Link>

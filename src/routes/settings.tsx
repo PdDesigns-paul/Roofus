@@ -32,7 +32,7 @@ function SettingsPage() {
       </header>
 
       <p className="mt-6 text-sm leading-relaxed text-muted">
-        Company name and warranty go to Roofus. Maps lives on the server.
+        Company name and warranty go to Roofus.
       </p>
 
       <section className="mt-8 flex flex-col gap-4">

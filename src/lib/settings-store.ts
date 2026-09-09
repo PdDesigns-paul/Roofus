@@ -8,12 +8,10 @@ type SettingsState = {
   theme: ThemeMode;
   companyName: string;
   warrantyLine: string;
-  googleMapsKey: string;
   setTheme: (theme: ThemeMode) => void;
   toggleTheme: () => void;
   setCompanyName: (v: string) => void;
   setWarrantyLine: (v: string) => void;
-  setGoogleMapsKey: (v: string) => void;
 };
 
 export function applyTheme(theme: ThemeMode) {
@@ -30,7 +28,6 @@ export const useSettings = create<SettingsState>()(
       theme: "dark",
       companyName: "Roofus",
       warrantyLine: "See the actual Owens Corning warranty.",
-      googleMapsKey: "",
       setTheme: (theme) => {
         applyTheme(theme);
         set({ theme });
@@ -42,7 +39,6 @@ export const useSettings = create<SettingsState>()(
       },
       setCompanyName: (companyName) => set({ companyName }),
       setWarrantyLine: (warrantyLine) => set({ warrantyLine }),
-      setGoogleMapsKey: (googleMapsKey) => set({ googleMapsKey }),
     }),
     {
       name: "roofus-settings",

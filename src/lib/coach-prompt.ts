@@ -18,8 +18,6 @@ const INSPECT_KNOWLEDGE = `# Reference knowledge base\n${inspectKnowledge()}`;
 export type CoachRequest = {
   messages: ChatTurn[];
   hat?: string;
-  ticketBlurb?: string;
-  houseBlurb?: string;
   companyName?: string;
   warrantyLine?: string;
   imageDataUrl?: string;
@@ -63,11 +61,9 @@ export function buildXaiPayload(req: CoachRequest): {
   }
 
   const hat = hatById(req.hat);
-  const blurb = req.houseBlurb || req.ticketBlurb;
   const extra = [
     `\n\n${hat.brief}`,
     KNOWLEDGE,
-    blurb ? `This House (facts for this pin — if a year is missing, say so):\n${blurb}` : "",
     req.companyName?.trim() ? `Company name from Presets: ${req.companyName.trim()}` : "",
     req.warrantyLine?.trim()
       ? `Warranty line from Presets (this wins over the default): ${req.warrantyLine.trim()}`
