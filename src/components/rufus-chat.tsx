@@ -12,8 +12,6 @@ export function RufusChat() {
   const messages = useCoach((s) => s.messages);
   const hatId = useCoach((s) => s.hat);
   const setHat = useCoach((s) => s.setHat);
-  const pendingPrompt = useCoach((s) => s.pendingPrompt);
-  const pendingAt = useCoach((s) => s.pendingAt);
   const streaming = useCoach((s) => s.streaming);
   const busy = useCoach((s) => s.busy);
   const startNew = useCoach((s) => s.startNew);
@@ -21,23 +19,11 @@ export function RufusChat() {
   const [draft, setDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const bottom = useRef<HTMLDivElement>(null);
-  const sentAt = useRef(0);
   const hat = hatById(hatId);
 
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "end" });
   }, [messages.length, streaming, busy]);
-
-  useEffect(() => {
-    if (!pendingAt || sentAt.current === pendingAt) return;
-    const q = pendingPrompt ?? useCoach.getState().pendingPrompt;
-    if (!q) return;
-    sentAt.current = pendingAt;
-    useCoach.getState().clearPending();
-    void onSend(q);
-    // one-shot help / house walk-up
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pendingAt]);
 
   function pickHat(id: RufusHatId) {
     setHat(id);

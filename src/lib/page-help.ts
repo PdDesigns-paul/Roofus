@@ -1,32 +1,49 @@
-export const HELP_PAGES = {
+export const PAGE_HELP = {
   home: {
-    question:
-      "I'm new here. I'm on the Home screen. Explain Roofus, Inspect, Mindset, and Reference — what I tap, and in what order before a street. Don't start a door script.",
+    title: "Home",
+    body: [
+      "Four tiles. The big one is Roofus — pin a hat, tell him what just happened, he hands you the next line.",
+      "Mindset is how you stand at the door. Inspect is the camera walk. Reference is 145 InterNACHI articles.",
+      "? on any page is this box. The round button: tap resumes chat, hold is history.",
+    ],
   },
   inspect: {
-    question:
-      "I'm on Inspect. This is the camera walk — checklist (Street, Four slopes, Close-up, Witnesses, Attic), then Camera or Photos, then I ask you about the frame. Explain those buttons. There is no notes app. Don't start a door script.",
+    title: "Inspect",
+    body: [
+      "Walk first. Check Street, Four slopes, Close-up, Witnesses, Attic.",
+      "Then Camera or Photos. Then ask about that frame. He names what it looks like and the next shot. CompanyCam is the report.",
+      "The Inspect hat in chat is talk on the roof. This page is the camera.",
+    ],
   },
   mindset: {
-    question:
-      "I'm on Mindset. How do I use this before I knock, and how do you use it when I chat with you? Don't start a door script.",
+    title: "Mindset",
+    body: [
+      "Four cards: the door, after photos, three honest options, honesty first.",
+      "Read them before the street. He already has the same playbook when you chat.",
+    ],
   },
   reference: {
-    question:
-      "I'm on Reference. How do I find an article, and when should I ask you instead of reading? Don't start a door script.",
+    title: "Reference",
+    body: [
+      "Search. Open a chapter. Tap a card to open the InterNACHI article.",
+      "Ask him in chat if you want the card title without reading. He will not paste the article.",
+    ],
   },
   settings: {
-    question:
-      "I'm on Settings. What should I fill in, and what can I leave as Paul's Default Option? Don't start a door script.",
+    title: "Presets",
+    body: [
+      "Company name and warranty line. He uses those when he talks product.",
+      "Leave a field as it is for Paul’s defaults.",
+    ],
   },
   coach: {
-    question:
-      "I'm in your chat. Explain the hats — Door, Inspect, Pushback, Set, Roleplay, Score. Don't start a door script unless I paste a knock.",
+    title: "Roofus",
+    body: [
+      "Hats: Door, Inspect, Pushback, Set, Roleplay, Score. Pin one. Tell him what just happened.",
+      "Inspect hat is on-roof talk. Camera lives on the Inspect page.",
+      "New starts a blank thread. Past chats is history. Stop while he is talking.",
+    ],
   },
 } as const;
 
-export type HelpPageId = keyof typeof HELP_PAGES;
-
-export function helpQuestion(page: HelpPageId) {
-  return HELP_PAGES[page].question;
-}
+export type HelpPageId = keyof typeof PAGE_HELP;

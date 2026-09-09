@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { helpQuestion, type HelpPageId } from "@/lib/page-help";
 import type { RufusHatId } from "@/lib/rufus-hats";
 import type { ChatTurn } from "@/lib/stream-coach";
 
@@ -26,8 +25,6 @@ type CoachState = {
   threads: Record<string, CoachThread>;
   order: string[];
   activeId: string | null;
-  pendingPrompt: string | null;
-  pendingAt: number;
   streaming: string;
   busy: boolean;
   historyOpen: boolean;
@@ -38,7 +35,6 @@ type CoachState = {
   setHat: (hat: RufusHatId) => void;
   resume: () => void;
   startNew: () => void;
-  startHelp: (page: HelpPageId) => void;
   ensureInspect: () => void;
   openThread: (id: string) => void;
   dropThread: (id: string) => void;
@@ -47,7 +43,6 @@ type CoachState = {
   setBusy: (busy: boolean) => void;
   finishAssistant: (content: string) => void;
   clearStreaming: () => void;
-  clearPending: () => void;
 };
 
 function newId() {
@@ -172,8 +167,6 @@ export const useCoach = create<CoachState>()(
       threads: {},
       order: [],
       activeId: null,
-      pendingPrompt: null,
-      pendingAt: 0,
       streaming: "",
       busy: false,
       historyOpen: false,
@@ -203,27 +196,13 @@ export const useCoach = create<CoachState>()(
             };
           }
           const thread = makeThread("porch");
-          return { ...activate(s, thread), pendingPrompt: null, historyOpen: false };
+          return { ...activate(s, thread), historyOpen: false };
         }),
       startNew: () =>
         set((s) => {
           const thread = makeThread("porch");
           return {
             ...activate(s, thread),
-            pendingPrompt: null,
-            pendingAt: 0,
-            streaming: "",
-            busy: false,
-            historyOpen: false,
-          };
-        }),
-      startHelp: (page) =>
-        set((s) => {
-          const thread = makeThread("help");
-          return {
-            ...activate(s, thread),
-            pendingPrompt: helpQuestion(page),
-            pendingAt: Date.now(),
             streaming: "",
             busy: false,
             historyOpen: false,
@@ -237,12 +216,11 @@ export const useCoach = create<CoachState>()(
           }
           const last = s.order.map((id) => s.threads[id]).find((t) => t?.origin === "inspect");
           if (last) {
-            return { ...activate(s, last), pendingPrompt: null };
+            return { ...activate(s, last) };
           }
           const thread = makeThread("inspect");
           return {
             ...activate(s, thread),
-            pendingPrompt: null,
             streaming: "",
             busy: false,
           };
@@ -253,7 +231,6 @@ export const useCoach = create<CoachState>()(
           if (!t) return {};
           return {
             ...activate(s, t),
-            pendingPrompt: null,
             streaming: "",
             busy: false,
             historyOpen: false,
@@ -296,7 +273,6 @@ export const useCoach = create<CoachState>()(
           })),
         })),
       clearStreaming: () => set({ streaming: "", busy: false }),
-      clearPending: () => set({ pendingPrompt: null, pendingAt: 0 }),
     }),
     {
       name: "roofus-threads-v1",
