@@ -1,24 +1,25 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { ChatBubble } from "@/components/chat-bubble";
 import { HelpButton } from "@/components/help-button";
 import { Tip } from "@/components/ui/tooltip";
-import { askCoach, type ChatTurn } from "@/lib/coach-ask";
 import { useCoach } from "@/lib/coach-store";
 import { formatHouseBlurb } from "@/lib/house-lookup";
 import { useHouses } from "@/lib/houses-store";
-import { helpQuestion } from "@/lib/page-help";
 import { hatById, RUFUS_HATS, type RufusHatId } from "@/lib/rufus-hats";
+import { streamCoach } from "@/lib/stream-coach";
 
 export function RufusChat() {
   const messages = useCoach((s) => s.messages);
   const push = useCoach((s) => s.push);
+  const patchLast = useCoach((s) => s.patchLast);
   const reset = useCoach((s) => s.reset);
   const hatId = useCoach((s) => s.hat);
   const setHat = useCoach((s) => s.setHat);
   const ticketId = useCoach((s) => s.ticketId);
   const setTicketId = useCoach((s) => s.setTicketId);
-  const pendingHelp = useCoach((s) => s.pendingHelp);
+  const pendingPrompt = useCoach((s) => s.pendingPrompt);
   const helpAt = useCoach((s) => s.helpAt);
   const houses = useHouses((s) => s.houses);
   const order = useHouses((s) => s.order);
@@ -26,24 +27,24 @@ export function RufusChat() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const bottom = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const helpSent = useRef(0);
+  const flushAt = useRef(0);
   const hat = hatById(hatId);
   const house = ticketId ? houses[ticketId] : order[0] ? houses[order[0]] : undefined;
 
-  const helpSent = useRef(0);
-
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "end" });
-  }, [messages.length, busy]);
+  }, [messages.length, messages[messages.length - 1]?.content, busy]);
 
   useEffect(() => {
     if (!helpAt || helpSent.current === helpAt) return;
-    const page = pendingHelp ?? useCoach.getState().pendingHelp;
-    if (!page) return;
+    const q = pendingPrompt ?? useCoach.getState().pendingPrompt;
+    if (!q) return;
     helpSent.current = helpAt;
-    const q = helpQuestion(page);
-    useCoach.getState().clearPendingHelp();
+    useCoach.getState().clearPending();
     void send(q);
-    // one-shot: send the page-help prompt
+    // one-shot from Help / This House / FAB
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [helpAt]);
 
@@ -57,35 +58,55 @@ export function RufusChat() {
     setError(null);
   }
 
+  function stop() {
+    abortRef.current?.abort();
+    abortRef.current = null;
+  }
+
   async function send(text?: string) {
     const content = (text ?? draft).trim();
-    if (!content || busy) return;
+    if (!content) return;
+    stop();
     setDraft("");
     setError(null);
     push({ role: "user", content });
+    push({ role: "assistant", content: "" });
     setBusy(true);
+    stop();
+    const ac = new AbortController();
+    abortRef.current = ac;
     try {
-      const history: ChatTurn[] = [
-        ...useCoach.getState().messages,
-        { role: "user" as const, content },
-      ].slice(-16);
-      const res = await askCoach({
-        data: {
-          messages: history,
+      const clean = useCoach
+        .getState()
+        .messages.filter((m) => m.role === "user" || m.content)
+        .slice(-16);
+      const textOut = await streamCoach(
+        {
+          messages: clean,
           ticketBlurb: houseBlurb(),
           hat: useCoach.getState().hat,
         },
-      });
-      if (!res || !res.ok) {
-        setError(!res ? "Roofus missed that. Try again." : res.error);
-        return;
-      }
-      push({ role: "assistant", content: res.text });
-      useCoach.getState().remember(content, ticketId, res.text);
+        (next) => {
+          const now = Date.now();
+          if (now - flushAt.current > 40) {
+            flushAt.current = now;
+            patchLast(next);
+          }
+        },
+        ac.signal,
+      );
+      patchLast(textOut || "…");
+      useCoach.getState().remember(content, ticketId, textOut || "…");
     } catch (e) {
+      if ((e as { name?: string }).name === "AbortError") return;
       setError(e instanceof Error ? e.message : "Roofus missed that.");
+      const last = useCoach.getState().messages.at(-1);
+      if (last?.role === "assistant" && !last.content) {
+        useCoach.setState({ messages: useCoach.getState().messages.slice(0, -1) });
+      }
     } finally {
       setBusy(false);
+      abortRef.current = null;
     }
   }
 
@@ -111,8 +132,10 @@ export function RufusChat() {
               <button
                 type="button"
                 onClick={() => {
+                  stop();
                   reset();
                   setError(null);
+                  setBusy(false);
                 }}
                 className="h-10 px-2 text-xs text-faint hover:text-fg"
               >
@@ -161,23 +184,15 @@ export function RufusChat() {
           </div>
         ) : (
           messages.map((m, i) => (
-            <div
+            <ChatBubble
               key={`${m.role}-${i}`}
-              className={
-                m.role === "user"
-                  ? "ml-10 whitespace-pre-wrap rounded-2xl bg-fg px-4 py-3 text-sm leading-relaxed text-paper"
-                  : "mr-6 whitespace-pre-wrap rounded-2xl border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-fg"
-              }
+              role={m.role}
+              streaming={busy && i === messages.length - 1 && m.role === "assistant"}
             >
               {m.content}
-            </div>
+            </ChatBubble>
           ))
         )}
-        {busy ? (
-          <p className="text-xs text-faint">
-            {hat.id === "roleplay" ? "They are thinking…" : "Roofus is thinking…"}
-          </p>
-        ) : null}
         {error ? <p className="text-sm text-danger">{error}</p> : null}
         {house ? (
           <button

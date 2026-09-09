@@ -1,18 +1,19 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { ChatTurn } from "@/lib/coach-ask";
 import { coachKey, loadAllCoach, loadCoach, saveCoach } from "@/lib/memory";
-import type { HelpPageId } from "@/lib/page-help";
+import { helpQuestion, HOUSE_WALKUP, type HelpPageId } from "@/lib/page-help";
 import type { RufusHatId } from "@/lib/rufus-hats";
+import type { ChatTurn } from "@/lib/stream-coach";
 
 type CoachState = {
   messages: ChatTurn[];
   ticketId: string | null;
   hat: RufusHatId;
   answers: Record<string, string>;
-  pendingHelp: HelpPageId | null;
+  pendingPrompt: string | null;
   helpAt: number;
   push: (turn: ChatTurn) => void;
+  patchLast: (content: string) => void;
   setAll: (messages: ChatTurn[]) => void;
   setTicketId: (id: string | null) => void;
   setHat: (hat: RufusHatId) => void;
@@ -22,7 +23,8 @@ type CoachState = {
   reset: () => void;
   startNew: () => void;
   startHelp: (page: HelpPageId) => void;
-  clearPendingHelp: () => void;
+  startHouseAsk: (houseId: string) => void;
+  clearPending: () => void;
 };
 
 export const useCoach = create<CoachState>()(
@@ -32,9 +34,20 @@ export const useCoach = create<CoachState>()(
       ticketId: null,
       hat: "door",
       answers: {},
-      pendingHelp: null,
+      pendingPrompt: null,
       helpAt: 0,
       push: (turn) => set((s) => ({ messages: [...s.messages, turn].slice(-40) })),
+      patchLast: (content) =>
+        set((s) => {
+          const messages = s.messages.slice();
+          const last = messages[messages.length - 1];
+          if (last?.role === "assistant") {
+            messages[messages.length - 1] = { role: "assistant", content };
+          } else {
+            messages.push({ role: "assistant", content });
+          }
+          return { messages: messages.slice(-40) };
+        }),
       setAll: (messages) => set({ messages: messages.slice(-40) }),
       setTicketId: (ticketId) => set({ ticketId }),
       setHat: (hat) => set({ hat }),
@@ -53,10 +66,19 @@ export const useCoach = create<CoachState>()(
         set((s) => ({ answers: { ...s.answers, [key]: row.answer } }));
         return row.answer;
       },
-      reset: () => set({ messages: [], pendingHelp: null }),
-      startNew: () => set({ messages: [], pendingHelp: null, ticketId: null, hat: "door" }),
-      startHelp: (page) => set({ messages: [], pendingHelp: page, helpAt: Date.now() }),
-      clearPendingHelp: () => set({ pendingHelp: null }),
+      reset: () => set({ messages: [], pendingPrompt: null }),
+      startNew: () => set({ messages: [], pendingPrompt: null, ticketId: null, hat: "door", helpAt: 0 }),
+      startHelp: (page) =>
+        set({ messages: [], pendingPrompt: helpQuestion(page), helpAt: Date.now() }),
+      startHouseAsk: (houseId) =>
+        set({
+          messages: [],
+          ticketId: houseId,
+          hat: "door",
+          pendingPrompt: HOUSE_WALKUP,
+          helpAt: Date.now(),
+        }),
+      clearPending: () => set({ pendingPrompt: null }),
     }),
     {
       name: "roofus-coach",

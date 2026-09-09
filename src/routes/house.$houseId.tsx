@@ -29,8 +29,7 @@ function HouseBriefPage() {
   const hydrated = useHouses((s) => s.hydrated);
   const upsert = useHouses((s) => s.upsert);
   const navigate = useNavigate();
-  const setTicketId = useCoach((s) => s.setTicketId);
-  const setHat = useCoach((s) => s.setHat);
+  const startHouseAsk = useCoach((s) => s.startHouseAsk);
   const googleMapsKey = useSettings((s) => s.googleMapsKey);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,8 +77,7 @@ function HouseBriefPage() {
   }
 
   function askRoofus() {
-    setTicketId(houseId);
-    setHat("door");
+    startHouseAsk(houseId);
     void navigate({ to: "/coach" });
   }
 

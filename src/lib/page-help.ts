@@ -38,3 +38,7 @@ export type HelpPageId = keyof typeof HELP_PAGES;
 export function helpQuestion(page: HelpPageId) {
   return HELP_PAGES[page].question;
 }
+
+export const HOUSE_WALKUP =
+  "I just looked up this house. Brief me for the walk-up. Use the pin facts. If a year is missing, say so. Next line I can say, then the next physical step. Don't invent a storm.";
+

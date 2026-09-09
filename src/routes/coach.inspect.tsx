@@ -2,10 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Camera, Check, ImagePlus } from "lucide-react";
 import { useRef, useState } from "react";
 import { AppHeader } from "@/components/app-header";
+import { ChatBubble } from "@/components/chat-bubble";
 import { Tip } from "@/components/ui/tooltip";
 import { compressImage } from "@/lib/compress-image";
-import { askInspect } from "@/lib/inspect-ask";
 import { ASK_STARTERS, WALK_SLOTS, type WalkSlotId } from "@/lib/inspect-walk";
+import { streamCoach, type ChatTurn } from "@/lib/stream-coach";
 
 export const Route = createFileRoute("/coach/inspect")({
   codeSplitGroupings: [],
@@ -20,12 +21,14 @@ function InspectPage() {
   const [question, setQuestion] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [answer, setAnswer] = useState<string | null>(null);
+  const [turns, setTurns] = useState<ChatTurn[]>([]);
+  const abortRef = useRef<AbortController | null>(null);
 
   async function onFile(file: File | undefined) {
     if (!file) return;
     setError(null);
-    setAnswer(null);
+    setTurns([]);
+    abortRef.current?.abort();
     try {
       const url = await compressImage(file);
       setPhoto(url);
@@ -37,21 +40,42 @@ function InspectPage() {
   async function ask(text?: string) {
     const q = (text ?? question).trim();
     if (!q || !photo || busy) return;
-    setQuestion(q);
+    setQuestion("");
     setBusy(true);
     setError(null);
-    setAnswer(null);
+    const nextTurns: ChatTurn[] = [...turns, { role: "user", content: q }, { role: "assistant", content: "" }];
+    setTurns(nextTurns);
+    abortRef.current?.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
     try {
-      const res = await askInspect({ data: { question: q, imageDataUrl: photo } });
-      if (!res || !res.ok) {
-        setError(!res ? "Roofus missed that. Try again." : res.error);
-        return;
+      const textOut = await streamCoach(
+        {
+          messages: nextTurns.filter((m) => m.role === "user" || m.content),
+          imageDataUrl: photo,
+        },
+        (streamed) => {
+          setTurns((curr) => {
+            const copy = curr.slice();
+            copy[copy.length - 1] = { role: "assistant", content: streamed };
+            return copy;
+          });
+        },
+        ac.signal,
+      );
+      if (!textOut.trim()) {
+        setTurns((curr) => {
+          const copy = curr.slice();
+          copy[copy.length - 1] = { role: "assistant", content: "…" };
+          return copy;
+        });
       }
-      setAnswer(res.text);
     } catch (e) {
+      if ((e as { name?: string }).name === "AbortError") return;
       setError(e instanceof Error ? e.message : "Roofus missed that.");
     } finally {
       setBusy(false);
+      abortRef.current = null;
     }
   }
 
@@ -167,19 +191,33 @@ function InspectPage() {
 
       <section className="mt-8">
         <p className="text-xs font-medium uppercase tracking-wide text-faint">Ask</p>
-        <div className="mt-3 flex flex-col gap-2">
-          {ASK_STARTERS.map((s) => (
-            <button
-              key={s}
-              type="button"
-              disabled={!photo || busy}
-              className="min-h-11 rounded-2xl border border-border bg-surface px-4 py-3 text-left text-sm leading-relaxed disabled:opacity-40"
-              onClick={() => void ask(s)}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
+        {turns.length > 0 ? (
+          <div className="mt-3 flex flex-col gap-3">
+            {turns.map((m, i) => (
+              <ChatBubble
+                key={`${m.role}-${i}`}
+                role={m.role}
+                streaming={busy && i === turns.length - 1 && m.role === "assistant"}
+              >
+                {m.content}
+              </ChatBubble>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-3 flex flex-col gap-2">
+            {ASK_STARTERS.map((s) => (
+              <button
+                key={s}
+                type="button"
+                disabled={!photo || busy}
+                className="min-h-11 rounded-2xl border border-border bg-surface px-4 py-3 text-left text-sm leading-relaxed disabled:opacity-40"
+                onClick={() => void ask(s)}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
         <form
           className="mt-3 flex gap-2"
           onSubmit={(e) => {
@@ -202,13 +240,7 @@ function InspectPage() {
             Ask
           </button>
         </form>
-        {busy ? <p className="mt-3 text-xs text-faint">Roofus is looking…</p> : null}
         {error ? <p className="mt-3 text-sm text-danger">{error}</p> : null}
-        {answer ? (
-          <div className="mt-3 whitespace-pre-wrap rounded-2xl border border-border bg-surface px-4 py-3 text-sm leading-relaxed">
-            {answer}
-          </div>
-        ) : null}
       </section>
 
       <nav className="mt-10 flex items-center justify-around text-[11px] text-faint">

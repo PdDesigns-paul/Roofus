@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HouseRouteImport } from './routes/house'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ApiCoachRouteImport } from './routes/api/coach'
 import { Route as CoachIndexRouteImport } from './routes/coach.index'
 import { Route as CoachInspectRouteImport } from './routes/coach.inspect'
 import { Route as CoachMindsetRouteImport } from './routes/coach.mindset'
@@ -32,6 +33,11 @@ const HouseRoute = HouseRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCoachRoute = ApiCoachRouteImport.update({
+  id: '/api/coach',
+  path: '/api/coach',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoachIndexRoute = CoachIndexRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/house': typeof HouseRouteWithChildren
   '/settings': typeof SettingsRoute
+  '/api/coach': typeof ApiCoachRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings': typeof SettingsRoute
+  '/api/coach': typeof ApiCoachRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/house': typeof HouseRouteWithChildren
   '/settings': typeof SettingsRoute
+  '/api/coach': typeof ApiCoachRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
     | '/'
     | '/house'
     | '/settings'
+    | '/api/coach'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/settings'
+    | '/api/coach'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
@@ -125,6 +136,7 @@ export interface FileRouteTypes {
     | '/'
     | '/house'
     | '/settings'
+    | '/api/coach'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
@@ -137,6 +149,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HouseRoute: typeof HouseRouteWithChildren
   SettingsRoute: typeof SettingsRoute
+  ApiCoachRoute: typeof ApiCoachRoute
   CoachInspectRoute: typeof CoachInspectRoute
   CoachMindsetRoute: typeof CoachMindsetRoute
   CoachReferenceRoute: typeof CoachReferenceRoute
@@ -164,6 +177,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/coach': {
+      id: '/api/coach'
+      path: '/api/coach'
+      fullPath: '/api/coach'
+      preLoaderRoute: typeof ApiCoachRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/coach/': {
@@ -227,6 +247,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HouseRoute: HouseRouteWithChildren,
   SettingsRoute: SettingsRoute,
+  ApiCoachRoute: ApiCoachRoute,
   CoachInspectRoute: CoachInspectRoute,
   CoachMindsetRoute: CoachMindsetRoute,
   CoachReferenceRoute: CoachReferenceRoute,
