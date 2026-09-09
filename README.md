@@ -25,7 +25,3 @@ npm run dev
 ```
 
 Needs Node 22+.
-
-## Name
-
-The app is **Roofus**. One word. Capital R only.
