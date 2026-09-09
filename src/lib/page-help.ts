@@ -5,7 +5,7 @@ export const HELP_PAGES = {
   },
   inspect: {
     question:
-      "I'm on Inspect. Explain the walk list, taking a photo, and asking you what I'm looking at. Don't start a door script.",
+      "I'm on Inspect. This is the camera walk — checklist (Street, Four slopes, Close-up, Witnesses, Attic), then Camera or Photos, then I ask you about the frame. Explain those buttons. There is no notes app. Don't start a door script.",
   },
   mindset: {
     question:
