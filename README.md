@@ -5,19 +5,19 @@ Porch Dawg. Field coach for roofing.
 ## What it does
 
 - **Roofus** — ride-along coach. Pin a hat. Tell him what just happened.
-- **This House** — look up the pin before you knock. Year and listing if they’re out there.
+- **This House** — look up the pin before you knock.
 - **Inspect** — walk, then one photo and a question.
 - **Mindset** — how you stand at the door.
 - **Reference** — 145 InterNACHI Mastering Roof Inspections articles.
 
+Chats are threads on this phone. Tap the round button to resume. Hold it for history. ? starts a new help thread for that page.
+
 ## Keys
 
-Phone Settings can hold Maps. Leave blank for **Paul’s Default Option**:
-
-- `GOOGLE_MAPS_API_KEY` — Geocoding (optional, sharper addresses)
+- `GOOGLE_MAPS_API_KEY` — Geocoding (optional, server)
 - `XAI_API_KEY` — Roofus + Inspect (server)
 
-Do not put keys in the repo.
+Company name and warranty in Presets go to Roofus. Do not put keys in the repo.
 
 ## Run
 

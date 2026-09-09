@@ -32,7 +32,7 @@ function SettingsPage() {
       </header>
 
       <p className="mt-6 text-sm leading-relaxed text-muted">
-        Maps makes typed addresses sharper. Leave a field blank for Paul’s Default Option.
+        Company name and warranty go to Roofus. Maps lives on the server.
       </p>
 
       <section className="mt-8 flex flex-col gap-4">
@@ -43,17 +43,6 @@ function SettingsPage() {
           onChange={(e) => s.setCompanyName(e.target.value)}
           placeholder="Roofus"
         />
-        <Label htmlFor="key">Google Maps key</Label>
-        <Input
-          id="key"
-          value={s.googleMapsKey}
-          onChange={(e) => s.setGoogleMapsKey(e.target.value)}
-          placeholder="Paul's Default Option"
-          autoComplete="off"
-        />
-        <p className="text-xs leading-relaxed text-faint">
-          Optional. Leave blank for Paul’s Default Option.
-        </p>
         <Label htmlFor="warranty">Warranty line</Label>
         <Input
           id="warranty"

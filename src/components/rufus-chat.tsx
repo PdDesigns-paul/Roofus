@@ -1,114 +1,69 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, History } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ChatBubble } from "@/components/chat-bubble";
 import { HelpButton } from "@/components/help-button";
 import { Tip } from "@/components/ui/tooltip";
+import { abortTalk, sendRoofus, stopRoofus } from "@/lib/roofus-talk";
 import { useCoach } from "@/lib/coach-store";
-import { formatHouseBlurb } from "@/lib/house-lookup";
 import { useHouses } from "@/lib/houses-store";
 import { hatById, RUFUS_HATS, type RufusHatId } from "@/lib/rufus-hats";
-import { streamCoach } from "@/lib/stream-coach";
 
 export function RufusChat() {
   const messages = useCoach((s) => s.messages);
-  const push = useCoach((s) => s.push);
-  const patchLast = useCoach((s) => s.patchLast);
-  const reset = useCoach((s) => s.reset);
   const hatId = useCoach((s) => s.hat);
   const setHat = useCoach((s) => s.setHat);
-  const ticketId = useCoach((s) => s.ticketId);
-  const setTicketId = useCoach((s) => s.setTicketId);
+  const houseId = useCoach((s) => s.houseId);
+  const setHouseId = useCoach((s) => s.setHouseId);
   const pendingPrompt = useCoach((s) => s.pendingPrompt);
-  const helpAt = useCoach((s) => s.helpAt);
+  const pendingAt = useCoach((s) => s.pendingAt);
+  const streaming = useCoach((s) => s.streaming);
+  const busy = useCoach((s) => s.busy);
+  const startNew = useCoach((s) => s.startNew);
+  const setHistoryOpen = useCoach((s) => s.setHistoryOpen);
   const houses = useHouses((s) => s.houses);
-  const order = useHouses((s) => s.order);
   const [draft, setDraft] = useState("");
-  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const bottom = useRef<HTMLDivElement>(null);
-  const abortRef = useRef<AbortController | null>(null);
-  const helpSent = useRef(0);
-  const flushAt = useRef(0);
+  const sentAt = useRef(0);
   const hat = hatById(hatId);
-  const house = ticketId ? houses[ticketId] : order[0] ? houses[order[0]] : undefined;
+  const house = houseId ? houses[houseId] : undefined;
 
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "end" });
-  }, [messages.length, messages[messages.length - 1]?.content, busy]);
+  }, [messages.length, streaming, busy]);
 
   useEffect(() => {
-    if (!helpAt || helpSent.current === helpAt) return;
+    if (!pendingAt || sentAt.current === pendingAt) return;
     const q = pendingPrompt ?? useCoach.getState().pendingPrompt;
     if (!q) return;
-    helpSent.current = helpAt;
+    sentAt.current = pendingAt;
     useCoach.getState().clearPending();
-    void send(q);
-    // one-shot from Help / This House / FAB
+    void onSend(q);
+    // one-shot help / house walk-up
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [helpAt]);
-
-  function houseBlurb() {
-    if (!house) return undefined;
-    return formatHouseBlurb(house);
-  }
+  }, [pendingAt]);
 
   function pickHat(id: RufusHatId) {
     setHat(id);
     setError(null);
   }
 
-  function stop() {
-    abortRef.current?.abort();
-    abortRef.current = null;
-  }
-
-  async function send(text?: string) {
+  async function onSend(text?: string) {
     const content = (text ?? draft).trim();
-    if (!content) return;
-    stop();
+    if (!content || busy) return;
     setDraft("");
     setError(null);
-    push({ role: "user", content });
-    push({ role: "assistant", content: "" });
-    setBusy(true);
-    stop();
-    const ac = new AbortController();
-    abortRef.current = ac;
     try {
-      const clean = useCoach
-        .getState()
-        .messages.filter((m) => m.role === "user" || m.content)
-        .slice(-16);
-      const textOut = await streamCoach(
-        {
-          messages: clean,
-          ticketBlurb: houseBlurb(),
-          hat: useCoach.getState().hat,
-        },
-        (next) => {
-          const now = Date.now();
-          if (now - flushAt.current > 40) {
-            flushAt.current = now;
-            patchLast(next);
-          }
-        },
-        ac.signal,
-      );
-      patchLast(textOut || "…");
-      useCoach.getState().remember(content, ticketId, textOut || "…");
+      await sendRoofus(content);
     } catch (e) {
-      if ((e as { name?: string }).name === "AbortError") return;
       setError(e instanceof Error ? e.message : "Roofus missed that.");
-      const last = useCoach.getState().messages.at(-1);
-      if (last?.role === "assistant" && !last.content) {
-        useCoach.setState({ messages: useCoach.getState().messages.slice(0, -1) });
-      }
-    } finally {
-      setBusy(false);
-      abortRef.current = null;
     }
   }
+
+  const shown = streaming
+    ? [...messages, { role: "assistant" as const, content: streaming }]
+    : messages;
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-paper">
@@ -128,14 +83,23 @@ export function RufusChat() {
           </div>
           <div className="flex items-center">
             <HelpButton page="coach" />
+            <Tip label="Past chats">
+              <button
+                type="button"
+                aria-label="Past chats"
+                className="inline-flex size-10 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg"
+                onClick={() => setHistoryOpen(true)}
+              >
+                <History className="size-5" />
+              </button>
+            </Tip>
             <Tip label="Start a new chat">
               <button
                 type="button"
                 onClick={() => {
-                  stop();
-                  reset();
+                  abortTalk();
+                  startNew();
                   setError(null);
-                  setBusy(false);
                 }}
                 className="h-10 px-2 text-xs text-faint hover:text-fg"
               >
@@ -164,7 +128,7 @@ export function RufusChat() {
       </header>
 
       <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
-        {messages.length === 0 ? (
+        {shown.length === 0 ? (
           <div className="mt-4">
             <p className="text-xs font-medium uppercase tracking-wide text-faint">{hat.hint}</p>
             <h1 className="mt-2 font-display text-3xl leading-tight tracking-tight">{hat.label}</h1>
@@ -175,7 +139,7 @@ export function RufusChat() {
                   key={s}
                   type="button"
                   className="min-h-11 rounded-2xl border border-border bg-surface px-4 py-3 text-left text-sm leading-relaxed text-fg hover:bg-surface-2"
-                  onClick={() => void send(s)}
+                  onClick={() => void onSend(s)}
                 >
                   {s}
                 </button>
@@ -183,11 +147,11 @@ export function RufusChat() {
             </div>
           </div>
         ) : (
-          messages.map((m, i) => (
+          shown.map((m, i) => (
             <ChatBubble
               key={`${m.role}-${i}`}
               role={m.role}
-              streaming={busy && i === messages.length - 1 && m.role === "assistant"}
+              streaming={busy && i === shown.length - 1 && m.role === "assistant"}
             >
               {m.content}
             </ChatBubble>
@@ -195,14 +159,17 @@ export function RufusChat() {
         )}
         {error ? <p className="text-sm text-danger">{error}</p> : null}
         {house ? (
+          <p className="truncate text-left text-xs text-faint">
+            This house · {house.address.split(",")[0]}
+            {house.yearBuilt ? ` · ${house.yearBuilt}` : ""}
+          </p>
+        ) : houseId ? (
           <button
             type="button"
-            className="truncate text-left text-xs text-faint"
-            onClick={() => setTicketId(house.id === ticketId ? null : house.id)}
+            className="text-left text-xs text-faint"
+            onClick={() => setHouseId(null)}
           >
-            {ticketId === house.id ? "Using this house" : "Use this house"} ·{" "}
-            {house.address.split(",")[0]}
-            {house.yearBuilt ? ` · ${house.yearBuilt}` : ""}
+            House pin is gone from this phone.
           </button>
         ) : null}
         <div ref={bottom} />
@@ -212,7 +179,7 @@ export function RufusChat() {
         className="sticky bottom-0 z-10 border-t border-border/70 bg-paper px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2"
         onSubmit={(e) => {
           e.preventDefault();
-          void send();
+          void onSend();
         }}
       >
         <div className="flex gap-2">
@@ -223,13 +190,23 @@ export function RufusChat() {
             placeholder={hat.id === "roleplay" ? "Say it like you’re on the porch…" : "Ask Roofus…"}
             enterKeyHint="send"
           />
-          <button
-            type="submit"
-            disabled={busy || !draft.trim()}
-            className="h-12 rounded-full bg-fg px-5 text-sm text-paper disabled:opacity-40"
-          >
-            Send
-          </button>
+          {busy ? (
+            <button
+              type="button"
+              onClick={() => stopRoofus()}
+              className="h-12 rounded-full border border-border px-5 text-sm"
+            >
+              Stop
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={!draft.trim()}
+              className="h-12 rounded-full bg-fg px-5 text-sm text-paper disabled:opacity-40"
+            >
+              Send
+            </button>
+          )}
         </div>
         <nav className="mt-2 flex items-center justify-around text-[11px] text-faint">
           <Link to="/" className="hover:text-fg">

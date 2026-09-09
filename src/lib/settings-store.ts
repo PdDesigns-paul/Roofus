@@ -50,7 +50,6 @@ export const useSettings = create<SettingsState>()(
         theme: s.theme,
         companyName: s.companyName,
         warrantyLine: s.warrantyLine,
-        googleMapsKey: s.googleMapsKey,
       }),
       onRehydrateStorage: () => (state) => {
         if (typeof window !== "undefined" && !localStorage.getItem("roofus-dark-v2")) {

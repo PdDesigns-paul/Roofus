@@ -3,7 +3,10 @@ export type ChatTurn = { role: "user" | "assistant"; content: string };
 export type StreamCoachInput = {
   messages: ChatTurn[];
   hat?: string;
+  houseBlurb?: string;
   ticketBlurb?: string;
+  companyName?: string;
+  warrantyLine?: string;
   imageDataUrl?: string;
 };
 
@@ -15,7 +18,10 @@ export async function streamCoach(
   const res = await fetch("/api/coach", {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
-    body: JSON.stringify(input),
+    body: JSON.stringify({
+      ...input,
+      ticketBlurb: input.houseBlurb ?? input.ticketBlurb,
+    }),
     signal,
   });
   if (!res.ok) {
@@ -67,10 +73,8 @@ export async function streamCoach(
         text += parsed.t;
         onDelta(text);
       }
-    } catch (e) {
-      if (e instanceof Error && e.message !== "Roofus missed that. Try again.") {
-        /* trailing junk */
-      }
+    } catch {
+      /* trailing junk */
     }
   }
   return text;

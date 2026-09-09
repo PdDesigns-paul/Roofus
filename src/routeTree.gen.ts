@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CoachRouteImport } from './routes/coach'
 import { Route as HouseRouteImport } from './routes/house'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
@@ -23,6 +24,11 @@ import { Route as HouseHouseIdRouteImport } from './routes/house.$houseId'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoachRoute = CoachRouteImport.update({
+  id: '/coach',
+  path: '/coach',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HouseRoute = HouseRouteImport.update({
@@ -41,24 +47,24 @@ const ApiCoachRoute = ApiCoachRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoachIndexRoute = CoachIndexRouteImport.update({
-  id: '/coach/',
-  path: '/coach/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => CoachRoute,
 } as any)
 const CoachInspectRoute = CoachInspectRouteImport.update({
-  id: '/coach/inspect',
-  path: '/coach/inspect',
-  getParentRoute: () => rootRouteImport,
+  id: '/inspect',
+  path: '/inspect',
+  getParentRoute: () => CoachRoute,
 } as any)
 const CoachMindsetRoute = CoachMindsetRouteImport.update({
-  id: '/coach/mindset',
-  path: '/coach/mindset',
-  getParentRoute: () => rootRouteImport,
+  id: '/mindset',
+  path: '/mindset',
+  getParentRoute: () => CoachRoute,
 } as any)
 const CoachReferenceRoute = CoachReferenceRouteImport.update({
-  id: '/coach/reference',
-  path: '/coach/reference',
-  getParentRoute: () => rootRouteImport,
+  id: '/reference',
+  path: '/reference',
+  getParentRoute: () => CoachRoute,
 } as any)
 const HouseIndexRoute = HouseIndexRouteImport.update({
   id: '/',
@@ -73,6 +79,7 @@ const HouseHouseIdRoute = HouseHouseIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/coach': typeof CoachRouteWithChildren
   '/house': typeof HouseRouteWithChildren
   '/settings': typeof SettingsRoute
   '/api/coach': typeof ApiCoachRoute
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/coach': typeof CoachRouteWithChildren
   '/house': typeof HouseRouteWithChildren
   '/settings': typeof SettingsRoute
   '/api/coach': typeof ApiCoachRoute
@@ -111,6 +119,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/coach'
     | '/house'
     | '/settings'
     | '/api/coach'
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/coach'
     | '/house'
     | '/settings'
     | '/api/coach'
@@ -147,13 +157,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CoachRoute: typeof CoachRouteWithChildren
   HouseRoute: typeof HouseRouteWithChildren
   SettingsRoute: typeof SettingsRoute
   ApiCoachRoute: typeof ApiCoachRoute
-  CoachInspectRoute: typeof CoachInspectRoute
-  CoachMindsetRoute: typeof CoachMindsetRoute
-  CoachReferenceRoute: typeof CoachReferenceRoute
-  CoachIndexRoute: typeof CoachIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -163,6 +170,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coach': {
+      id: '/coach'
+      path: '/coach'
+      fullPath: '/coach'
+      preLoaderRoute: typeof CoachRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/house': {
@@ -188,31 +202,31 @@ declare module '@tanstack/react-router' {
     }
     '/coach/': {
       id: '/coach/'
-      path: '/coach'
+      path: '/'
       fullPath: '/coach/'
       preLoaderRoute: typeof CoachIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof CoachRoute
     }
     '/coach/inspect': {
       id: '/coach/inspect'
-      path: '/coach/inspect'
+      path: '/inspect'
       fullPath: '/coach/inspect'
       preLoaderRoute: typeof CoachInspectRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof CoachRoute
     }
     '/coach/mindset': {
       id: '/coach/mindset'
-      path: '/coach/mindset'
+      path: '/mindset'
       fullPath: '/coach/mindset'
       preLoaderRoute: typeof CoachMindsetRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof CoachRoute
     }
     '/coach/reference': {
       id: '/coach/reference'
-      path: '/coach/reference'
+      path: '/reference'
       fullPath: '/coach/reference'
       preLoaderRoute: typeof CoachReferenceRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof CoachRoute
     }
     '/house/': {
       id: '/house/'
@@ -231,6 +245,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface CoachRouteChildren {
+  CoachInspectRoute: typeof CoachInspectRoute
+  CoachMindsetRoute: typeof CoachMindsetRoute
+  CoachReferenceRoute: typeof CoachReferenceRoute
+  CoachIndexRoute: typeof CoachIndexRoute
+}
+
+const CoachRouteChildren: CoachRouteChildren = {
+  CoachInspectRoute: CoachInspectRoute,
+  CoachMindsetRoute: CoachMindsetRoute,
+  CoachReferenceRoute: CoachReferenceRoute,
+  CoachIndexRoute: CoachIndexRoute,
+}
+
+const CoachRouteWithChildren = CoachRoute._addFileChildren(CoachRouteChildren)
+
 interface HouseRouteChildren {
   HouseHouseIdRoute: typeof HouseHouseIdRoute
   HouseIndexRoute: typeof HouseIndexRoute
@@ -245,13 +275,10 @@ const HouseRouteWithChildren = HouseRoute._addFileChildren(HouseRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CoachRoute: CoachRouteWithChildren,
   HouseRoute: HouseRouteWithChildren,
   SettingsRoute: SettingsRoute,
   ApiCoachRoute: ApiCoachRoute,
-  CoachInspectRoute: CoachInspectRoute,
-  CoachMindsetRoute: CoachMindsetRoute,
-  CoachReferenceRoute: CoachReferenceRoute,
-  CoachIndexRoute: CoachIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

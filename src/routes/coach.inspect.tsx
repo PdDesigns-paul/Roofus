@@ -5,8 +5,11 @@ import { AppHeader } from "@/components/app-header";
 import { ChatBubble } from "@/components/chat-bubble";
 import { Tip } from "@/components/ui/tooltip";
 import { compressImage } from "@/lib/compress-image";
+import { abortTalk, sendRoofus, stopRoofus } from "@/lib/roofus-talk";
+import { useCoach } from "@/lib/coach-store";
 import { ASK_STARTERS, WALK_SLOTS, type WalkSlotId } from "@/lib/inspect-walk";
-import { streamCoach, type ChatTurn } from "@/lib/stream-coach";
+
+const EMPTY_TURNS: { role: "user" | "assistant"; content: string }[] = [];
 
 export const Route = createFileRoute("/coach/inspect")({
   codeSplitGroupings: [],
@@ -19,16 +22,28 @@ function InspectPage() {
   const [done, setDone] = useState<Partial<Record<WalkSlotId, boolean>>>({});
   const [photo, setPhoto] = useState<string | null>(null);
   const [question, setQuestion] = useState("");
-  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [turns, setTurns] = useState<ChatTurn[]>([]);
-  const abortRef = useRef<AbortController | null>(null);
+  const ensureInspect = useCoach((s) => s.ensureInspect);
+  const inspectTurns = useCoach((s) => {
+    const active = s.activeId ? s.threads[s.activeId] : null;
+    if (active?.origin === "inspect") return active.messages;
+    const last = s.order.map((id) => s.threads[id]).find((t) => t?.origin === "inspect");
+    return last?.messages ?? EMPTY_TURNS;
+  });
+  const streaming = useCoach((s) => s.streaming);
+  const busy = useCoach((s) => s.busy);
+  const activeOrigin = useCoach((s) =>
+    s.activeId ? s.threads[s.activeId]?.origin ?? null : null,
+  );
+  const shown =
+    streaming && activeOrigin === "inspect"
+      ? [...inspectTurns, { role: "assistant" as const, content: streaming }]
+      : inspectTurns;
 
   async function onFile(file: File | undefined) {
     if (!file) return;
     setError(null);
-    setTurns([]);
-    abortRef.current?.abort();
+    abortTalk();
     try {
       const url = await compressImage(file);
       setPhoto(url);
@@ -41,41 +56,12 @@ function InspectPage() {
     const q = (text ?? question).trim();
     if (!q || !photo || busy) return;
     setQuestion("");
-    setBusy(true);
     setError(null);
-    const nextTurns: ChatTurn[] = [...turns, { role: "user", content: q }, { role: "assistant", content: "" }];
-    setTurns(nextTurns);
-    abortRef.current?.abort();
-    const ac = new AbortController();
-    abortRef.current = ac;
+    ensureInspect();
     try {
-      const textOut = await streamCoach(
-        {
-          messages: nextTurns.filter((m) => m.role === "user" || m.content),
-          imageDataUrl: photo,
-        },
-        (streamed) => {
-          setTurns((curr) => {
-            const copy = curr.slice();
-            copy[copy.length - 1] = { role: "assistant", content: streamed };
-            return copy;
-          });
-        },
-        ac.signal,
-      );
-      if (!textOut.trim()) {
-        setTurns((curr) => {
-          const copy = curr.slice();
-          copy[copy.length - 1] = { role: "assistant", content: "…" };
-          return copy;
-        });
-      }
+      await sendRoofus(q, { imageDataUrl: photo });
     } catch (e) {
-      if ((e as { name?: string }).name === "AbortError") return;
       setError(e instanceof Error ? e.message : "Roofus missed that.");
-    } finally {
-      setBusy(false);
-      abortRef.current = null;
     }
   }
 
@@ -191,13 +177,13 @@ function InspectPage() {
 
       <section className="mt-8">
         <p className="text-xs font-medium uppercase tracking-wide text-faint">Ask</p>
-        {turns.length > 0 ? (
+        {shown.length > 0 ? (
           <div className="mt-3 flex flex-col gap-3">
-            {turns.map((m, i) => (
+            {shown.map((m, i) => (
               <ChatBubble
                 key={`${m.role}-${i}`}
                 role={m.role}
-                streaming={busy && i === turns.length - 1 && m.role === "assistant"}
+                streaming={busy && i === shown.length - 1 && m.role === "assistant"}
               >
                 {m.content}
               </ChatBubble>
@@ -232,13 +218,23 @@ function InspectPage() {
             placeholder={photo ? "Ask about this shot…" : "Shoot first, then ask"}
             disabled={!photo || busy}
           />
-          <button
-            type="submit"
-            disabled={!photo || busy || !question.trim()}
-            className="h-12 rounded-full bg-fg px-5 text-sm text-paper disabled:opacity-40"
-          >
-            Ask
-          </button>
+          {busy ? (
+            <button
+              type="button"
+              onClick={() => stopRoofus()}
+              className="h-12 rounded-full border border-border px-5 text-sm"
+            >
+              Stop
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={!photo || !question.trim()}
+              className="h-12 rounded-full bg-fg px-5 text-sm text-paper disabled:opacity-40"
+            >
+              Ask
+            </button>
+          )}
         </form>
         {error ? <p className="mt-3 text-sm text-danger">{error}</p> : null}
       </section>

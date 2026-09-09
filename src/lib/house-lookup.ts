@@ -28,9 +28,8 @@ type GeoHit = { lat: number; lng: number; address: string };
 
 const UA = "Roofus/2.0.1 (porch coach; contact: roofus)";
 
-function mapsKey(fromClient?: string) {
-  const paul = String(process.env.GOOGLE_MAPS_API_KEY ?? "").trim();
-  return fromClient?.trim() || paul;
+function mapsKey() {
+  return String(process.env.GOOGLE_MAPS_API_KEY ?? "").trim();
 }
 
 function listingUrls(address: string) {
@@ -83,7 +82,7 @@ export const geocodeAddress = createServerFn({ method: "POST" })
     try {
       const q = data.query.trim();
       if (!q) return { ok: false, error: "Type an address" };
-      const key = mapsKey(data.googleKey);
+      const key = mapsKey();
       const google = key ? await geocodeGoogle(q, key) : null;
       const hit = google ?? (await geocodeCensus(q)) ?? (await geocodeNominatim(q));
       if (!hit) return { ok: false, error: "No match for that address" };
@@ -96,7 +95,7 @@ export const geocodeAddress = createServerFn({ method: "POST" })
 export const reverseGeocode = createServerFn({ method: "POST" })
   .validator((input: { lat: number; lng: number; googleKey?: string }) => input)
   .handler(async ({ data }): Promise<{ ok: true; address: string } | { ok: false }> => {
-    const key = mapsKey(data.googleKey);
+    const key = mapsKey();
     if (key) {
       const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${data.lat},${data.lng}&key=${encodeURIComponent(key)}`;
       try {
@@ -166,174 +165,10 @@ async function nominatimHouse(lat: number, lng: number) {
   }
 }
 
-/** Best-effort. Grok searches open listing pages. Zillow/Redfin stay tap-to-open. */
-async function listingHints(address: string): Promise<{
-  yearBuilt: number | null;
-  yearSource: string | null;
-  beds: number | null;
-  baths: number | null;
-  livingSqft: number | null;
-  stories: number | null;
-  listingUrl: string | null;
-  listingSource: string | null;
-  notes: string[];
-}> {
-  const empty = {
-    yearBuilt: null as number | null,
-    yearSource: null as string | null,
-    beds: null as number | null,
-    baths: null as number | null,
-    livingSqft: null as number | null,
-    stories: null as number | null,
-    listingUrl: null as string | null,
-    listingSource: null as string | null,
-    notes: [] as string[],
-  };
-  const grok = await grokOpenListings(address);
-  if (!grok) {
-    empty.notes.push("No listing found for this address. Try Zillow on this phone.");
-    return empty;
-  }
-  return grok;
-}
-
-function houseNumber(address: string): string | null {
-  const m = address.trim().match(/^(\d+[A-Za-z]?)\b/);
-  return m ? m[1].toLowerCase() : null;
-}
-
-function streetToken(address: string): string | null {
-  const m = address.trim().match(/^\d+[A-Za-z]?\s+(.+?)(?:,|$)/);
-  if (!m) return null;
-  const first = m[1].toLowerCase().replace(/\./g, " ").split(/\s+/)[0];
-  if (!first || first.length < 4) return null;
-  return first;
-}
-
-function looksLikeThisHouse(address: string, url: string | null, matched: string | null): boolean {
-  const n = houseNumber(address);
-  const street = streetToken(address);
-  const blob = `${url ?? ""} ${matched ?? ""}`.toLowerCase();
-  if (n && !new RegExp(`(?:^|[^0-9])${n}(?:[^0-9]|$)`).test(blob)) return false;
-  if (street && url && !url.toLowerCase().includes(street)) return false;
-  return true;
-}
-
-type GrokListing = {
-  yearBuilt: number | null;
-  beds: number | null;
-  baths: number | null;
-  livingSqft: number | null;
-  stories: number | null;
-  source: string | null;
-  url: string | null;
-  matchedAddress: string | null;
-};
-
-async function grokOpenListings(address: string) {
-  const apiKey = process.env.XAI_API_KEY;
-  if (!apiKey) return null;
-  try {
-    const res = await fetch("https://api.x.ai/v1/responses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "grok-4.3",
-        max_output_tokens: 350,
-        instructions:
-          "Look up ONE house on the public web. Street number must match exactly. Neighboring numbers on the same street are a miss. Never invent. JSON only.",
-        input: [
-          {
-            role: "user",
-            content: `Exact address: ${address}.
-Search open listing pages (Realtor.com, Homes.com, Compass, Coldwell Banker, Movoto).
-Return JSON only:
-{"yearBuilt":number|null,"beds":number|null,"baths":number|null,"livingSqft":number|null,"stories":number|null,"source":string|null,"url":string|null,"matchedAddress":string|null}
-If house number does not match, all fields null and source "no exact match".`,
-          },
-        ],
-        tools: [
-          {
-            type: "web_search",
-            filters: {
-              allowed_domains: [
-                "realtor.com",
-                "homes.com",
-                "compass.com",
-                "coldwellbankerhomes.com",
-                "movoto.com",
-              ],
-            },
-          },
-        ],
-      }),
-      signal: AbortSignal.timeout(40_000),
-    });
-    if (!res.ok) return null;
-    const body = (await res.json()) as {
-      output?: { type?: string; content?: { text?: string }[] }[];
-    };
-    const text = body.output
-      ?.filter((x) => x.type === "message")
-      .map((x) => x.content?.[0]?.text ?? "")
-      .join("\n");
-    if (!text) return null;
-    const jsonText = text.match(/\{[\s\S]*\}/)?.[0];
-    if (!jsonText) return null;
-    const parsed = JSON.parse(jsonText) as GrokListing;
-    const url = typeof parsed.url === "string" ? parsed.url : null;
-    const matched = typeof parsed.matchedAddress === "string" ? parsed.matchedAddress : null;
-    if (!looksLikeThisHouse(address, url, matched)) {
-      return {
-        yearBuilt: null,
-        yearSource: null,
-        beds: null,
-        baths: null,
-        livingSqft: null,
-        stories: null,
-        listingUrl: null,
-        listingSource: null,
-        notes: ["Search found a different house on the street. Skip that year."],
-      };
-    }
-    const year = parseYear(parsed.yearBuilt);
-    const source = parsed.source && parsed.source !== "no exact match" ? parsed.source : null;
-    if (!year && !parsed.beds && !parsed.livingSqft) {
-      return {
-        yearBuilt: null,
-        yearSource: null,
-        beds: null,
-        baths: null,
-        livingSqft: null,
-        stories: null,
-        listingUrl: url,
-        listingSource: source,
-        notes: ["No listing found for this address. Try Zillow on this phone."],
-      };
-    }
-    return {
-      yearBuilt: year,
-      yearSource: year ? source ?? "Open listing" : null,
-      beds: typeof parsed.beds === "number" ? parsed.beds : null,
-      baths: typeof parsed.baths === "number" ? parsed.baths : null,
-      livingSqft: typeof parsed.livingSqft === "number" ? parsed.livingSqft : null,
-      stories: typeof parsed.stories === "number" ? parsed.stories : null,
-      listingUrl: url,
-      listingSource: source,
-      notes: source ? [`Open page: ${source}.`] : [],
-    };
-  } catch {
-    return null;
-  }
-}
-
 export function formatHouseBlurb(h: HouseBrief): string {
   const lines = [
     h.address,
-    h.yearBuilt ? `Year built: ${h.yearBuilt} (${h.yearSource ?? "listing"})` : "Year built: unknown",
+    h.yearBuilt ? `Year built: ${h.yearBuilt} (${h.yearSource ?? "public"})` : "Year built: unknown",
     h.stories ? `Stories: ${h.stories}` : null,
     h.beds || h.baths ? `${h.beds ?? "?"} bed / ${h.baths ?? "?"} bath` : null,
     h.livingSqft ? `Living: ${h.livingSqft.toLocaleString()} sqft` : null,
@@ -364,34 +199,15 @@ export const lookupHouse = createServerFn({ method: "POST" })
       const lng = data.lng;
       const notes: string[] = [];
       try {
-        const [place, osm, listings] = await Promise.all([
-          censusPlace(lat, lng),
-          nominatimHouse(lat, lng),
-          listingHints(data.address || `${lat.toFixed(5)}, ${lng.toFixed(5)}`),
-        ]);
+        const [place, osm] = await Promise.all([censusPlace(lat, lng), nominatimHouse(lat, lng)]);
         const address = data.address || osm?.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
         const tags = osm?.extratags ?? {};
         const year =
-          listings.yearBuilt ??
-          parseYear(tags.start_date) ??
-          parseYear(tags["building:year"]) ??
-          parseYear(tags.year);
-        const yearSource =
-          listings.yearBuilt && listings.yearSource
-            ? listings.yearSource
-            : year
-              ? "OpenStreetMap"
-              : null;
+          parseYear(tags.start_date) ?? parseYear(tags["building:year"]) ?? parseYear(tags.year);
+        const yearSource = year ? "OpenStreetMap" : null;
         const levels = tags["building:levels"] ? Number(tags["building:levels"]) : NaN;
         const { zillowUrl, redfinUrl } = listingUrls(address);
-        if (!year) {
-          notes.push(
-            listings.notes.length
-              ? listings.notes.shift() ?? ""
-              : "Year unknown. Ask on the porch, or open Zillow.",
-          );
-        }
-        notes.push(...listings.notes.filter(Boolean));
+        if (!year) notes.push("Year unknown. Ask on the porch, or open Zillow.");
         return {
           ok: true,
           brief: {
@@ -403,15 +219,15 @@ export const lookupHouse = createServerFn({ method: "POST" })
             state: place.state,
             yearBuilt: year,
             yearSource,
-            stories: listings.stories ?? (Number.isFinite(levels) ? levels : null),
+            stories: Number.isFinite(levels) ? levels : null,
             roofShape: tags["roof:shape"] ?? null,
             roofMaterial: tags["roof:material"] ?? tags["building:material"] ?? null,
             building: osm?.type && osm.type !== "yes" ? osm.type : null,
-            beds: listings.beds,
-            baths: listings.baths,
-            livingSqft: listings.livingSqft,
-            listingUrl: listings.listingUrl,
-            listingSource: listings.listingSource,
+            beds: null,
+            baths: null,
+            livingSqft: null,
+            listingUrl: null,
+            listingSource: null,
             zillowUrl,
             redfinUrl,
             notes,

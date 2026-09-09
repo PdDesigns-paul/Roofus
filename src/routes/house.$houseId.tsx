@@ -6,8 +6,7 @@ import { PinMap } from "@/components/pin-map";
 import { Button } from "@/components/ui/button";
 import { formatHouseBlurb, lookupHouse, reverseGeocode } from "@/lib/house-lookup";
 import { useHouses } from "@/lib/houses-store";
-import { useCoach } from "@/lib/coach-store";
-import { useSettings } from "@/lib/settings-store";
+import { useCoach, whenCoachReady } from "@/lib/coach-store";
 
 export const Route = createFileRoute("/house/$houseId")({
   codeSplitGroupings: [],
@@ -30,7 +29,6 @@ function HouseBriefPage() {
   const upsert = useHouses((s) => s.upsert);
   const navigate = useNavigate();
   const startHouseAsk = useCoach((s) => s.startHouseAsk);
-  const googleMapsKey = useSettings((s) => s.googleMapsKey);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,11 +56,11 @@ function HouseBriefPage() {
     setError(null);
     try {
       const rev = await reverseGeocode({
-        data: { lat, lng, googleKey: googleMapsKey || undefined },
+        data: { lat, lng },
       });
       const address = rev && rev.ok ? rev.address : house.address;
       const looked = await lookupHouse({
-        data: { lat, lng, address, googleKey: googleMapsKey || undefined },
+        data: { lat, lng, address },
       });
       if (!looked || !looked.ok) {
         setError("Could not re-read this pin.");
@@ -77,8 +75,10 @@ function HouseBriefPage() {
   }
 
   function askRoofus() {
-    startHouseAsk(houseId);
-    void navigate({ to: "/coach" });
+    whenCoachReady(() => {
+      startHouseAsk(houseId, house.address);
+      void navigate({ to: "/coach" });
+    });
   }
 
   return (

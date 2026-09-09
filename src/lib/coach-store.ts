@@ -1,97 +1,383 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { coachKey, loadAllCoach, loadCoach, saveCoach } from "@/lib/memory";
 import { helpQuestion, HOUSE_WALKUP, type HelpPageId } from "@/lib/page-help";
 import type { RufusHatId } from "@/lib/rufus-hats";
 import type { ChatTurn } from "@/lib/stream-coach";
 
-type CoachState = {
-  messages: ChatTurn[];
-  ticketId: string | null;
+export type ThreadOrigin = "porch" | "help" | "house" | "inspect";
+
+export type CoachThread = {
+  id: string;
+  title: string;
+  origin: ThreadOrigin;
   hat: RufusHatId;
-  answers: Record<string, string>;
+  houseId: string | null;
+  messages: ChatTurn[];
+  createdAt: number;
+  updatedAt: number;
+};
+
+const EMPTY: ChatTurn[] = [];
+const MAX_THREADS = 20;
+const MAX_TURNS = 40;
+
+type CoachState = {
+  hydrated: boolean;
+  threads: Record<string, CoachThread>;
+  order: string[];
+  activeId: string | null;
   pendingPrompt: string | null;
-  helpAt: number;
-  push: (turn: ChatTurn) => void;
-  patchLast: (content: string) => void;
-  setAll: (messages: ChatTurn[]) => void;
-  setTicketId: (id: string | null) => void;
+  pendingAt: number;
+  streaming: string;
+  busy: boolean;
+  historyOpen: boolean;
+  hat: RufusHatId;
+  houseId: string | null;
+  messages: ChatTurn[];
+  setHistoryOpen: (open: boolean) => void;
   setHat: (hat: RufusHatId) => void;
-  remember: (question: string, ticketId: string | null, text: string) => void;
-  lookup: (question: string, ticketId: string | null) => string | undefined;
-  lookupAsync: (question: string, ticketId: string | null) => Promise<string | undefined>;
-  reset: () => void;
+  setHouseId: (houseId: string | null) => void;
+  resume: () => void;
   startNew: () => void;
   startHelp: (page: HelpPageId) => void;
-  startHouseAsk: (houseId: string) => void;
+  startHouseAsk: (houseId: string, address?: string) => void;
+  ensureInspect: () => void;
+  openThread: (id: string) => void;
+  dropThread: (id: string) => void;
+  pushUser: (content: string) => void;
+  setStreaming: (text: string) => void;
+  setBusy: (busy: boolean) => void;
+  finishAssistant: (content: string) => void;
+  clearStreaming: () => void;
   clearPending: () => void;
 };
+
+function newId() {
+  return `t_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+}
+
+function titleFor(origin: ThreadOrigin, first?: string, address?: string) {
+  if (origin === "help") return "How this page works";
+  if (origin === "inspect") return "Inspect";
+  if (origin === "house") {
+    const street = address?.split(",")[0]?.trim();
+    return street || "This house";
+  }
+  const line = first?.trim().split("\n")[0] ?? "";
+  return line.slice(0, 48) || "Roofus";
+}
+
+function makeThread(
+  origin: ThreadOrigin,
+  extra?: { hat?: RufusHatId; houseId?: string | null; title?: string },
+): CoachThread {
+  const now = Date.now();
+  return {
+    id: newId(),
+    title: extra?.title ?? titleFor(origin),
+    origin,
+    hat: extra?.hat ?? "door",
+    houseId: extra?.houseId ?? null,
+    messages: [],
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+function capThreads(
+  threads: Record<string, CoachThread>,
+  order: string[],
+  keep: string | null,
+) {
+  const nextOrder = order.slice(0, MAX_THREADS);
+  if (keep && !nextOrder.includes(keep)) nextOrder.unshift(keep);
+  const keepSet = new Set(nextOrder.slice(0, MAX_THREADS));
+  const nextThreads: Record<string, CoachThread> = {};
+  for (const id of keepSet) {
+    if (threads[id]) nextThreads[id] = threads[id];
+  }
+  return { threads: nextThreads, order: [...keepSet] };
+}
+
+function patchActive(
+  s: CoachState,
+  write: (t: CoachThread) => CoachThread,
+): Partial<CoachState> {
+  const id = s.activeId;
+  if (!id || !s.threads[id]) return {};
+  const thread = write(s.threads[id]);
+  return {
+    threads: { ...s.threads, [id]: thread },
+    order: [id, ...s.order.filter((x) => x !== id)],
+    hat: thread.hat,
+    houseId: thread.houseId,
+    messages: thread.messages,
+  };
+}
+
+function activate(s: CoachState, thread: CoachThread): Partial<CoachState> {
+  const { threads, order } = capThreads(
+    { ...s.threads, [thread.id]: thread },
+    [thread.id, ...s.order.filter((id) => id !== thread.id)],
+    thread.id,
+  );
+  return {
+    threads,
+    order,
+    activeId: thread.id,
+    hat: thread.hat,
+    houseId: thread.houseId,
+    messages: thread.messages,
+  };
+}
+
+function migrateV1(): { threads: Record<string, CoachThread>; order: string[]; activeId: string } | null {
+  if (typeof localStorage === "undefined") return null;
+  try {
+    const raw = localStorage.getItem("roofus-coach");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as {
+      state?: { messages?: ChatTurn[]; hat?: RufusHatId; ticketId?: string | null };
+    };
+    const st = parsed.state;
+    localStorage.removeItem("roofus-coach");
+    if (!st?.messages?.length) return null;
+    const thread = makeThread("porch", {
+      hat: st.hat ?? "door",
+      houseId: st.ticketId ?? null,
+    });
+    thread.messages = st.messages.filter((m) => m.content).slice(-MAX_TURNS);
+    thread.title = titleFor("porch", thread.messages.find((m) => m.role === "user")?.content);
+    thread.updatedAt = Date.now();
+    return { threads: { [thread.id]: thread }, order: [thread.id], activeId: thread.id };
+  } catch {
+    return null;
+  }
+}
+
+const waiters: Array<() => void> = [];
+
+export function whenCoachReady(fn: () => void) {
+  if (useCoach.getState().hydrated) fn();
+  else waiters.push(fn);
+}
+
+function flushReady() {
+  useCoach.setState({ hydrated: true });
+  while (waiters.length) waiters.shift()?.();
+}
 
 export const useCoach = create<CoachState>()(
   persist(
     (set, get) => ({
-      messages: [],
-      ticketId: null,
-      hat: "door",
-      answers: {},
+      hydrated: false,
+      threads: {},
+      order: [],
+      activeId: null,
       pendingPrompt: null,
-      helpAt: 0,
-      push: (turn) => set((s) => ({ messages: [...s.messages, turn].slice(-40) })),
-      patchLast: (content) =>
+      pendingAt: 0,
+      streaming: "",
+      busy: false,
+      historyOpen: false,
+      hat: "door",
+      houseId: null,
+      messages: EMPTY,
+      setHistoryOpen: (historyOpen) => set({ historyOpen }),
+      setHat: (hat) =>
+        set((s) => ({
+          hat,
+          ...patchActive(s, (t) => ({ ...t, hat, updatedAt: Date.now() })),
+        })),
+      setHouseId: (houseId) =>
+        set((s) => ({
+          houseId,
+          ...patchActive(s, (t) => ({ ...t, houseId, updatedAt: Date.now() })),
+        })),
+      resume: () =>
         set((s) => {
-          const messages = s.messages.slice();
-          const last = messages[messages.length - 1];
-          if (last?.role === "assistant") {
-            messages[messages.length - 1] = { role: "assistant", content };
-          } else {
-            messages.push({ role: "assistant", content });
+          if (s.activeId && s.threads[s.activeId]) {
+            const t = s.threads[s.activeId];
+            return { hat: t.hat, houseId: t.houseId, messages: t.messages, historyOpen: false };
           }
-          return { messages: messages.slice(-40) };
+          const first = s.order[0] ? s.threads[s.order[0]] : null;
+          if (first) {
+            return {
+              activeId: first.id,
+              hat: first.hat,
+              houseId: first.houseId,
+              messages: first.messages,
+              historyOpen: false,
+            };
+          }
+          const thread = makeThread("porch");
+          return { ...activate(s, thread), pendingPrompt: null, historyOpen: false };
         }),
-      setAll: (messages) => set({ messages: messages.slice(-40) }),
-      setTicketId: (ticketId) => set({ ticketId }),
-      setHat: (hat) => set({ hat }),
-      remember: (question, ticketId, text) => {
-        const key = coachKey(question, ticketId);
-        set((s) => ({ answers: { ...s.answers, [key]: text } }));
-        void saveCoach({ key, question, answer: text, ticketId, at: Date.now() });
-      },
-      lookup: (question, ticketId) => get().answers[coachKey(question, ticketId)],
-      lookupAsync: async (question, ticketId) => {
-        const key = coachKey(question, ticketId);
-        const warm = get().answers[key];
-        if (warm) return warm;
-        const row = await loadCoach(key);
-        if (!row) return undefined;
-        set((s) => ({ answers: { ...s.answers, [key]: row.answer } }));
-        return row.answer;
-      },
-      reset: () => set({ messages: [], pendingPrompt: null }),
-      startNew: () => set({ messages: [], pendingPrompt: null, ticketId: null, hat: "door", helpAt: 0 }),
+      startNew: () =>
+        set((s) => {
+          const thread = makeThread("porch");
+          return {
+            ...activate(s, thread),
+            pendingPrompt: null,
+            pendingAt: 0,
+            streaming: "",
+            busy: false,
+            historyOpen: false,
+          };
+        }),
       startHelp: (page) =>
-        set({ messages: [], pendingPrompt: helpQuestion(page), helpAt: Date.now() }),
-      startHouseAsk: (houseId) =>
-        set({
-          messages: [],
-          ticketId: houseId,
-          hat: "door",
-          pendingPrompt: HOUSE_WALKUP,
-          helpAt: Date.now(),
+        set((s) => {
+          const thread = makeThread("help");
+          return {
+            ...activate(s, thread),
+            pendingPrompt: helpQuestion(page),
+            pendingAt: Date.now(),
+            streaming: "",
+            busy: false,
+            historyOpen: false,
+          };
         }),
-      clearPending: () => set({ pendingPrompt: null }),
+      startHouseAsk: (houseId, address) =>
+        set((s) => {
+          const existing = s.order
+            .map((id) => s.threads[id])
+            .find((t) => t?.origin === "house" && t.houseId === houseId);
+          if (existing) {
+            return {
+              ...activate(s, existing),
+              pendingPrompt: existing.messages.length ? null : HOUSE_WALKUP,
+              pendingAt: existing.messages.length ? 0 : Date.now(),
+              streaming: "",
+              busy: false,
+              historyOpen: false,
+            };
+          }
+          const thread = makeThread("house", {
+            houseId,
+            title: titleFor("house", undefined, address),
+          });
+          return {
+            ...activate(s, thread),
+            pendingPrompt: HOUSE_WALKUP,
+            pendingAt: Date.now(),
+            streaming: "",
+            busy: false,
+            historyOpen: false,
+          };
+        }),
+      ensureInspect: () =>
+        set((s) => {
+          const active = s.activeId ? s.threads[s.activeId] : null;
+          if (active?.origin === "inspect") {
+            return { hat: active.hat, houseId: active.houseId, messages: active.messages };
+          }
+          const last = s.order.map((id) => s.threads[id]).find((t) => t?.origin === "inspect");
+          if (last) {
+            return { ...activate(s, last), pendingPrompt: null };
+          }
+          const thread = makeThread("inspect");
+          return {
+            ...activate(s, thread),
+            pendingPrompt: null,
+            streaming: "",
+            busy: false,
+          };
+        }),
+      openThread: (id) =>
+        set((s) => {
+          const t = s.threads[id];
+          if (!t) return {};
+          return {
+            ...activate(s, t),
+            pendingPrompt: null,
+            streaming: "",
+            busy: false,
+            historyOpen: false,
+          };
+        }),
+      dropThread: (id) =>
+        set((s) => {
+          const { [id]: _drop, ...rest } = s.threads;
+          const order = s.order.filter((x) => x !== id);
+          const activeId = s.activeId === id ? (order[0] ?? null) : s.activeId;
+          const t = activeId ? rest[activeId] : null;
+          return {
+            threads: rest,
+            order,
+            activeId,
+            hat: t?.hat ?? "door",
+            houseId: t?.houseId ?? null,
+            messages: t?.messages ?? EMPTY,
+          };
+        }),
+      pushUser: (content) =>
+        set((s) =>
+          patchActive(s, (t) => {
+            const messages = [...t.messages, { role: "user" as const, content }].slice(-MAX_TURNS);
+            const title =
+              t.origin === "porch" && t.messages.length === 0 ? titleFor("porch", content) : t.title;
+            return { ...t, messages, title, updatedAt: Date.now() };
+          }),
+        ),
+      setStreaming: (streaming) => set({ streaming }),
+      setBusy: (busy) => set({ busy }),
+      finishAssistant: (content) =>
+        set((s) => ({
+          streaming: "",
+          busy: false,
+          ...patchActive(s, (t) => ({
+            ...t,
+            messages: [...t.messages, { role: "assistant" as const, content }].slice(-MAX_TURNS),
+            updatedAt: Date.now(),
+          })),
+        })),
+      clearStreaming: () => set({ streaming: "", busy: false }),
+      clearPending: () => set({ pendingPrompt: null, pendingAt: 0 }),
     }),
     {
-      name: "roofus-coach",
-      partialize: (s) => ({ messages: s.messages, ticketId: s.ticketId, hat: s.hat }),
+      name: "roofus-threads-v1",
+      skipHydration: true,
+      partialize: (s) => ({
+        threads: s.threads,
+        order: s.order,
+        activeId: s.activeId,
+      }),
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<CoachState>;
+        const threads = p.threads ?? {};
+        const order = (p.order ?? []).filter((id) => threads[id]);
+        const activeId = p.activeId && threads[p.activeId] ? p.activeId : (order[0] ?? null);
+        const t = activeId ? threads[activeId] : null;
+        return {
+          ...current,
+          threads,
+          order,
+          activeId,
+          hat: t?.hat ?? "door",
+          houseId: t?.houseId ?? null,
+          messages: t?.messages ?? EMPTY,
+        };
+      },
     },
   ),
 );
 
 if (typeof window !== "undefined") {
-  void (async () => {
-    const rows = await loadAllCoach();
-    const answers: Record<string, string> = {};
-    for (const row of rows) answers[row.key] = row.answer;
-    useCoach.setState({ answers });
-  })();
+  void Promise.resolve(useCoach.persist.rehydrate()).then(() => {
+    if (!Object.keys(useCoach.getState().threads).length) {
+      const legacy = migrateV1();
+      if (legacy) {
+        const t = legacy.threads[legacy.activeId];
+        useCoach.setState({
+          ...legacy,
+          hat: t?.hat ?? "door",
+          houseId: t?.houseId ?? null,
+          messages: t?.messages ?? EMPTY,
+        });
+      }
+    }
+    flushReady();
+  });
+  window.setTimeout(() => {
+    if (!useCoach.getState().hydrated) flushReady();
+  }, 600);
 }

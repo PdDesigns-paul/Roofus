@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Tip } from "@/components/ui/tooltip";
 import { geocodeAddress, lookupHouse, reverseGeocode } from "@/lib/house-lookup";
 import { newHouseId, useHouses } from "@/lib/houses-store";
-import { useSettings } from "@/lib/settings-store";
 
 export const Route = createFileRoute("/house/")({
   codeSplitGroupings: [],
@@ -29,16 +28,14 @@ function ThisHouse() {
   const [busy, setBusy] = useState<"gps" | "addr" | string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const hydrated = useHouses((s) => s.hydrated);
-  const settingsReady = useSettings((s) => s.hydrated);
-  const ready = hydrated && settingsReady;
-  const googleMapsKey = useSettings((s) => s.googleMapsKey);
+  const ready = hydrated;
   const order = useHouses((s) => s.order);
   const housesMap = useHouses((s) => s.houses);
   const houses = order.map((id) => housesMap[id]).filter(Boolean);
 
   async function openAt(lat: number, lng: number, address: string) {
     const looked = await lookupHouse({
-      data: { lat, lng, address, googleKey: googleMapsKey || undefined },
+      data: { lat, lng, address },
     });
     if (!looked || !looked.ok) {
       throw new Error(!looked ? "Lookup did not come back." : looked.error);
@@ -65,7 +62,7 @@ function ThisHouse() {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
       const rev = await reverseGeocode({
-        data: { lat, lng, googleKey: googleMapsKey || undefined },
+        data: { lat, lng },
       });
       const address = rev && rev.ok ? rev.address : `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
       await openAt(lat, lng, address);
@@ -85,7 +82,7 @@ function ThisHouse() {
       const hit = cached
         ? cached
         : await geocodeAddress({
-            data: { query, googleKey: googleMapsKey || undefined },
+            data: { query },
           }).then((r) => {
             if (!r || typeof r.ok !== "boolean") {
               throw new Error("Address lookup did not come back. Retry.");
