@@ -1,0 +1,13 @@
+node_modules/
+.tanstack/
+.vercel/
+.output/
+dist/
+artifacts/
+attachments/
+.data/
+*.log
+.node_modules.lock
+.project_id
+.DS_Store
+screenshots/
