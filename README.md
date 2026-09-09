@@ -1,23 +1,21 @@
 # Roofus
 
-Porch Dawg. Field coach for roofing. Inspect photos, Shepard’s 145, mindset, and a public-record look at This House before the door.
-
-Takeoff (Instant Roofer tape, range, customer reveal) lives on the `takeoff` branch.
+Porch Dawg. Field coach for roofing.
 
 ## What it does
 
-- **Roofus** — ride-along coach. Hats. Customer never sees him. CompanyCam is the report.
-- **Inspect** — photo walk, then one shot and a question.
-- **This House** — geocode + Census + OpenStreetMap. Year built if public. No squares.
-- **Mindset** — how you stand.
+- **Roofus** — ride-along coach. Pin a hat. Tell him what just happened.
+- **This House** — look up the pin before you knock. Year and listing if they’re out there.
+- **Inspect** — walk, then one photo and a question.
+- **Mindset** — how you stand at the door.
 - **Reference** — 145 InterNACHI Mastering Roof Inspections articles.
 
 ## Keys
 
 Phone Settings can hold Maps. Leave blank for **Paul’s Default Option**:
 
-- `GOOGLE_MAPS_API_KEY` — Geocoding API only (optional, sharper addresses)
-- `XAI_API_KEY` — Roofus + Inspect vision (server)
+- `GOOGLE_MAPS_API_KEY` — Geocoding (optional, sharper addresses)
+- `XAI_API_KEY` — Roofus + Inspect (server)
 
 Do not put keys in the repo.
 

@@ -1,8 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { GableMark } from "@/components/gable-mark";
-import { RoofusMark } from "@/components/roofus-mark";
 import { askCoach, type ChatTurn } from "@/lib/coach-ask";
 import { useCoach } from "@/lib/coach-store";
 import { formatHouseBlurb } from "@/lib/house-lookup";
@@ -74,7 +72,6 @@ export function RufusChat() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-paper">
-      <RoofusMark />
       <header className="sticky top-0 z-10 border-b border-border/70 bg-paper/95 px-4 pt-3 backdrop-blur">
         <div className="flex items-center justify-between">
           <Link
@@ -85,7 +82,7 @@ export function RufusChat() {
             <ArrowLeft className="size-5" />
           </Link>
           <div className="flex items-center gap-2 text-sm text-muted">
-            <GableMark className="size-4" />
+            <img src="/roofus.png" alt="" className="size-7 object-contain" />
             <span className="font-medium text-fg">Roofus</span>
             <span className="text-faint">· {hat.label}</span>
           </div>

@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, MapPin } from "lucide-react";
 import { useState } from "react";
 import { GableMark } from "@/components/gable-mark";
-import { RoofusMark } from "@/components/roofus-mark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { geocodeAddress, lookupHouse, reverseGeocode } from "@/lib/house-lookup";
@@ -32,7 +31,9 @@ function ThisHouse() {
   const settingsReady = useSettings((s) => s.hydrated);
   const ready = hydrated && settingsReady;
   const googleMapsKey = useSettings((s) => s.googleMapsKey);
-  const houses = useHouses((s) => s.order.map((id) => s.houses[id]).filter(Boolean));
+  const order = useHouses((s) => s.order);
+  const housesMap = useHouses((s) => s.houses);
+  const houses = order.map((id) => housesMap[id]).filter(Boolean);
 
   async function openAt(lat: number, lng: number, address: string) {
     const looked = await lookupHouse({
@@ -102,7 +103,6 @@ function ThisHouse() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-16 pt-4">
-      <RoofusMark />
       <header className="flex items-center justify-between">
         <Link
           to="/"
@@ -120,8 +120,7 @@ function ThisHouse() {
 
       <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">Before the door.</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">
-        Public record only. Year, stories, roof shape if OSM has them. Then ask Roofus. No
-        tape. No range.
+        Look up the house. Year, beds, a listing if one is out there. Then ask Roofus.
       </p>
 
       <Button

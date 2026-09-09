@@ -50,13 +50,13 @@ export const RUFUS_HATS: RufusHat[] = [
     id: "set",
     label: "Set",
     hint: "Next yes",
-    use: "Use after the look, before you hit the driveway. He gets you a morning or afternoon and both names. Flip-the-phone is this hat: range and what’s included, never a rate. Not a porch signature.",
+    use: "Use after the look, before you hit the driveway. He gets you a morning or afternoon and both names.",
     starters: [
       "Look is done. Both are home. Get the kitchen-table set.",
       "I have the name. They said call next week.",
       "Flip the phone in 20 seconds. What do I show?",
     ],
-    brief: `Hat: SET. Goal of a knock is conversation → look → age/condition agreement when true → a set → a name even on a no. Not a porch signature as the default. Set [day] morning or [day] afternoon before the driveway. Both decision-makers. If he is about to flip the phone: range and the included list, never $/square, never $550.`,
+    brief: `Hat: SET. Goal of a knock is conversation → look → age/condition agreement when true → a set → a name even on a no. Not a porch signature as the default. Set [day] morning or [day] afternoon before the driveway. Both decision-makers.`,
   },
   {
     id: "roleplay",

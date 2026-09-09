@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Camera, Check, ImagePlus } from "lucide-react";
 import { useRef, useState } from "react";
 import { GableMark } from "@/components/gable-mark";
-import { RoofusMark } from "@/components/roofus-mark";
 import { compressImage } from "@/lib/compress-image";
 import { askInspect } from "@/lib/inspect-ask";
 import { ASK_STARTERS, WALK_SLOTS, type WalkSlotId } from "@/lib/inspect-walk";
@@ -57,7 +56,6 @@ function InspectPage() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-16 pt-4">
-      <RoofusMark />
       <header className="flex items-center justify-between">
         <Link
           to="/"
@@ -75,7 +73,7 @@ function InspectPage() {
 
       <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">Shoot. Then ask.</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">
-        Coach only. CompanyCam is the report. Don’t announce off the ladder.
+        Walk it first. Then one photo and a question. Don’t talk off the ladder.
       </p>
 
       <section className="mt-8">
@@ -169,7 +167,7 @@ function InspectPage() {
               className="flex min-h-28 flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-surface text-sm hover:bg-surface-2"
             >
               <ImagePlus className="size-5 text-muted" />
-              Roll
+              Photos
             </button>
           </div>
         )}

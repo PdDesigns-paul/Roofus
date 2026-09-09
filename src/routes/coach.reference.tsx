@@ -46,7 +46,7 @@ function ReferencePage() {
 
       <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">The library.</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">
-        {MRI_COUNT} InterNACHI articles. Search, then open a chapter. Roofus has the same list.
+        {MRI_COUNT} InterNACHI articles. Search, open a chapter. Roofus has the same list.
       </p>
 
       <Input

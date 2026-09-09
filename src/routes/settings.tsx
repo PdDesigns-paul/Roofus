@@ -28,7 +28,7 @@ function SettingsPage() {
       </header>
 
       <p className="mt-6 text-sm leading-relaxed text-muted">
-        Coach only. Maps key sharpens This House. Leave blank for Paul’s Default Option.
+        Maps makes typed addresses sharper. Leave a field blank for Paul’s Default Option.
       </p>
 
       <section className="mt-8 flex flex-col gap-4">
@@ -48,8 +48,7 @@ function SettingsPage() {
           autoComplete="off"
         />
         <p className="text-xs leading-relaxed text-faint">
-          Geocoding only. Leave blank for Paul’s Default Option. Makes typed addresses
-          sharper.
+          Optional. Leave blank for Paul’s Default Option.
         </p>
         <Label htmlFor="warranty">Warranty line</Label>
         <Input
