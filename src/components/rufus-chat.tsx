@@ -1,10 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { HelpButton } from "@/components/help-button";
+import { Tip } from "@/components/ui/tooltip";
 import { askCoach, type ChatTurn } from "@/lib/coach-ask";
 import { useCoach } from "@/lib/coach-store";
 import { formatHouseBlurb } from "@/lib/house-lookup";
 import { useHouses } from "@/lib/houses-store";
+import { helpQuestion } from "@/lib/page-help";
 import { hatById, RUFUS_HATS, type RufusHatId } from "@/lib/rufus-hats";
 
 export function RufusChat() {
@@ -15,6 +18,8 @@ export function RufusChat() {
   const setHat = useCoach((s) => s.setHat);
   const ticketId = useCoach((s) => s.ticketId);
   const setTicketId = useCoach((s) => s.setTicketId);
+  const pendingHelp = useCoach((s) => s.pendingHelp);
+  const helpAt = useCoach((s) => s.helpAt);
   const houses = useHouses((s) => s.houses);
   const order = useHouses((s) => s.order);
   const [draft, setDraft] = useState("");
@@ -24,9 +29,23 @@ export function RufusChat() {
   const hat = hatById(hatId);
   const house = ticketId ? houses[ticketId] : order[0] ? houses[order[0]] : undefined;
 
+  const helpSent = useRef(0);
+
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "end" });
   }, [messages.length, busy]);
+
+  useEffect(() => {
+    if (!helpAt || helpSent.current === helpAt) return;
+    const page = pendingHelp ?? useCoach.getState().pendingHelp;
+    if (!page) return;
+    helpSent.current = helpAt;
+    const q = helpQuestion(page);
+    useCoach.getState().clearPendingHelp();
+    void send(q);
+    // one-shot: send the page-help prompt
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [helpAt]);
 
   function houseBlurb() {
     if (!house) return undefined;
@@ -86,31 +105,37 @@ export function RufusChat() {
             <span className="font-medium text-fg">Roofus</span>
             <span className="text-faint">· {hat.label}</span>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              reset();
-              setError(null);
-            }}
-            className="h-10 px-2 text-xs text-faint hover:text-fg"
-          >
-            New
-          </button>
+          <div className="flex items-center">
+            <HelpButton page="coach" />
+            <Tip label="Start a new chat">
+              <button
+                type="button"
+                onClick={() => {
+                  reset();
+                  setError(null);
+                }}
+                className="h-10 px-2 text-xs text-faint hover:text-fg"
+              >
+                New
+              </button>
+            </Tip>
+          </div>
         </div>
         <div className="-mx-1 mt-2 flex gap-1.5 overflow-x-auto pb-3">
           {RUFUS_HATS.map((h) => (
-            <button
-              key={h.id}
-              type="button"
-              onClick={() => pickHat(h.id)}
-              className={
-                h.id === hat.id
-                  ? "shrink-0 rounded-full bg-fg px-3 py-1.5 text-xs text-paper"
-                  : "shrink-0 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted"
-              }
-            >
-              {h.label}
-            </button>
+            <Tip key={h.id} label={h.hint} side="bottom">
+              <button
+                type="button"
+                onClick={() => pickHat(h.id)}
+                className={
+                  h.id === hat.id
+                    ? "shrink-0 rounded-full bg-fg px-3 py-1.5 text-xs text-paper"
+                    : "shrink-0 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted"
+                }
+              >
+                {h.label}
+              </button>
+            </Tip>
           ))}
         </div>
       </header>

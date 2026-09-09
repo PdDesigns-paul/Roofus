@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ChatTurn } from "@/lib/coach-ask";
 import { coachKey, loadAllCoach, loadCoach, saveCoach } from "@/lib/memory";
+import type { HelpPageId } from "@/lib/page-help";
 import type { RufusHatId } from "@/lib/rufus-hats";
 
 type CoachState = {
@@ -9,6 +10,8 @@ type CoachState = {
   ticketId: string | null;
   hat: RufusHatId;
   answers: Record<string, string>;
+  pendingHelp: HelpPageId | null;
+  helpAt: number;
   push: (turn: ChatTurn) => void;
   setAll: (messages: ChatTurn[]) => void;
   setTicketId: (id: string | null) => void;
@@ -17,6 +20,9 @@ type CoachState = {
   lookup: (question: string, ticketId: string | null) => string | undefined;
   lookupAsync: (question: string, ticketId: string | null) => Promise<string | undefined>;
   reset: () => void;
+  startNew: () => void;
+  startHelp: (page: HelpPageId) => void;
+  clearPendingHelp: () => void;
 };
 
 export const useCoach = create<CoachState>()(
@@ -26,6 +32,8 @@ export const useCoach = create<CoachState>()(
       ticketId: null,
       hat: "door",
       answers: {},
+      pendingHelp: null,
+      helpAt: 0,
       push: (turn) => set((s) => ({ messages: [...s.messages, turn].slice(-40) })),
       setAll: (messages) => set({ messages: messages.slice(-40) }),
       setTicketId: (ticketId) => set({ ticketId }),
@@ -45,7 +53,10 @@ export const useCoach = create<CoachState>()(
         set((s) => ({ answers: { ...s.answers, [key]: row.answer } }));
         return row.answer;
       },
-      reset: () => set({ messages: [] }),
+      reset: () => set({ messages: [], pendingHelp: null }),
+      startNew: () => set({ messages: [], pendingHelp: null, ticketId: null, hat: "door" }),
+      startHelp: (page) => set({ messages: [], pendingHelp: page, helpAt: Date.now() }),
+      clearPendingHelp: () => set({ pendingHelp: null }),
     }),
     {
       name: "roofus-coach",

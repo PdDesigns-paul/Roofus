@@ -1,6 +1,8 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
+import { AskFab } from "@/components/ask-fab";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Roofus";
@@ -40,7 +42,10 @@ export const Route = createRootRoute({
       <body>
         <PreviewHostBridge />
         <AuthProvider>
-          <Outlet />
+          <TooltipProvider delayDuration={350} skipDelayDuration={0}>
+            <Outlet />
+            <AskFab />
+          </TooltipProvider>
         </AuthProvider>
         <Scripts />
       </body>

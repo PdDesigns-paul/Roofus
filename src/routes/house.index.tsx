@@ -1,9 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { useState } from "react";
-import { GableMark } from "@/components/gable-mark";
+import { AppHeader } from "@/components/app-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tip } from "@/components/ui/tooltip";
 import { geocodeAddress, lookupHouse, reverseGeocode } from "@/lib/house-lookup";
 import { newHouseId, useHouses } from "@/lib/houses-store";
 import { useSettings } from "@/lib/settings-store";
@@ -102,36 +103,25 @@ function ThisHouse() {
   }
 
   return (
-    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-16 pt-4">
-      <header className="flex items-center justify-between">
-        <Link
-          to="/"
-          className="inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg"
-          aria-label="Home"
-        >
-          <ArrowLeft className="size-5" />
-        </Link>
-        <div className="flex items-center gap-2 text-sm text-muted">
-          <GableMark className="size-4" />
-          This House
-        </div>
-        <span className="w-11" />
-      </header>
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-24 pt-4">
+      <AppHeader title="This House" page="house" />
 
       <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">Before the door.</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">
         Look up the house. Year, beds, a listing if one is out there. Then ask Roofus.
       </p>
 
-      <Button
-        size="xl"
-        className="mt-8 w-full"
-        disabled={busy !== null || !ready}
-        onClick={() => void onThisHouse()}
-      >
-        <MapPin className="size-5" />
-        {busy === "gps" ? "Finding you…" : "This House"}
-      </Button>
+      <Tip label="Use this phone's location">
+        <Button
+          size="xl"
+          className="mt-8 w-full"
+          disabled={busy !== null || !ready}
+          onClick={() => void onThisHouse()}
+        >
+          <MapPin className="size-5" />
+          {busy === "gps" ? "Finding you…" : "This House"}
+        </Button>
+      </Tip>
 
       <form className="mt-6 flex flex-col gap-2" onSubmit={(e) => void onAddress(e)}>
         <Input
@@ -158,19 +148,20 @@ function ThisHouse() {
         <p className="text-xs font-medium uppercase tracking-wide text-faint">Demo</p>
         <div className="mt-2 flex flex-wrap gap-2">
           {DEMOS.map((s) => (
-            <button
-              key={s.query}
-              type="button"
-              disabled={busy !== null || !ready}
-              onClick={() => {
-                setQuery(s.query);
-                setBusy(s.label);
-                void openAt(s.lat, s.lng, s.query).finally(() => setBusy(null));
-              }}
-              className="min-h-10 rounded-full border border-border bg-surface px-3 py-2 text-left text-sm text-fg hover:bg-surface-2 disabled:opacity-40"
-            >
-              {busy === s.label ? "Opening…" : s.label}
-            </button>
+            <Tip key={s.query} label="Opens the demo house">
+              <button
+                type="button"
+                disabled={busy !== null || !ready}
+                onClick={() => {
+                  setQuery(s.query);
+                  setBusy(s.label);
+                  void openAt(s.lat, s.lng, s.query).finally(() => setBusy(null));
+                }}
+                className="min-h-10 rounded-full border border-border bg-surface px-3 py-2 text-left text-sm text-fg hover:bg-surface-2 disabled:opacity-40"
+              >
+                {busy === s.label ? "Opening…" : s.label}
+              </button>
+            </Tip>
           ))}
         </div>
       </div>

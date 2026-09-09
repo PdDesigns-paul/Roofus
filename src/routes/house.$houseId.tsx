@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { useState } from "react";
-import { GableMark } from "@/components/gable-mark";
+import { AppHeader } from "@/components/app-header";
 import { PinMap } from "@/components/pin-map";
 import { Button } from "@/components/ui/button";
 import { formatHouseBlurb, lookupHouse, reverseGeocode } from "@/lib/house-lookup";
@@ -84,21 +84,8 @@ function HouseBriefPage() {
   }
 
   return (
-    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-16 pt-4">
-      <header className="flex items-center justify-between">
-        <Link
-          to="/house"
-          className="inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg"
-          aria-label="This House"
-        >
-          <ArrowLeft className="size-5" />
-        </Link>
-        <div className="flex items-center gap-2 text-sm text-muted">
-          <GableMark className="size-4" />
-          This House
-        </div>
-        <span className="w-11" />
-      </header>
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-24 pt-4">
+      <AppHeader title="This House" backTo="/house" page="houseBrief" />
 
       <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">
         {house.address.split(",")[0]}

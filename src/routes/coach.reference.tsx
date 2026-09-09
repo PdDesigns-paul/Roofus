@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ArrowUpRight, ChevronDown } from "lucide-react";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
-import { GableMark } from "@/components/gable-mark";
+import { AppHeader } from "@/components/app-header";
 import { Input } from "@/components/ui/input";
 import { MRI_CHAPTERS, MRI_COUNT, mriSearchHay } from "@/lib/mri-index";
 
@@ -28,21 +28,8 @@ function ReferencePage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-16 pt-4">
-      <header className="flex items-center justify-between">
-        <Link
-          to="/"
-          className="inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg"
-          aria-label="Home"
-        >
-          <ArrowLeft className="size-5" />
-        </Link>
-        <div className="flex items-center gap-2 text-sm text-muted">
-          <GableMark className="size-4" />
-          Reference
-        </div>
-        <span className="w-11" />
-      </header>
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-24 pt-4">
+      <AppHeader title="Reference" page="reference" />
 
       <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">The library.</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">

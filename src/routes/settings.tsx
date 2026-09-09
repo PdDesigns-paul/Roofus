@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
+import { HelpButton } from "@/components/help-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +15,7 @@ function SettingsPage() {
   const s = useSettings();
 
   return (
-    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-20 pt-4">
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-24 pt-4">
       <header className="flex items-center justify-between">
         <Link
           to="/"
@@ -24,7 +25,10 @@ function SettingsPage() {
           <ArrowLeft className="size-5" />
         </Link>
         <h1 className="font-display text-xl">Presets & Settings</h1>
-        <ThemeToggle />
+        <div className="flex items-center">
+          <HelpButton page="settings" />
+          <ThemeToggle />
+        </div>
       </header>
 
       <p className="mt-6 text-sm leading-relaxed text-muted">

@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Settings } from "lucide-react";
 import { GableMark } from "@/components/gable-mark";
+import { HelpButton } from "@/components/help-button";
 import { RoofusHero } from "@/components/roofus-mark";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Tip } from "@/components/ui/tooltip";
 
 export const Route = createFileRoute("/")({
   codeSplitGroupings: [],
@@ -11,21 +13,24 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   return (
-    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-16 pt-4">
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-24 pt-4">
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-muted">
           <GableMark className="size-4" />
           Roofus
         </div>
         <div className="flex items-center">
+          <HelpButton page="home" />
           <ThemeToggle />
-          <Link
-            to="/settings"
-            className="inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg"
-            aria-label="Presets"
-          >
-            <Settings className="size-5" />
-          </Link>
+          <Tip label="Company name and Maps">
+            <Link
+              to="/settings"
+              className="inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg"
+              aria-label="Presets"
+            >
+              <Settings className="size-5" />
+            </Link>
+          </Tip>
         </div>
       </header>
 

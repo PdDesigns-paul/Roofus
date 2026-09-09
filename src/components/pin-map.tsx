@@ -79,9 +79,7 @@ export function PinMap({ lat, lng, onCommit, busy }: Props) {
         </div>
       </div>
       <div className="flex items-center justify-between gap-3 px-4 py-3">
-        <p className="text-xs leading-relaxed text-muted">
-          Drag if the pin missed the house.
-        </p>
+        <p className="text-xs leading-relaxed text-muted">Drag if the pin missed the house.</p>
         <button
           type="button"
           disabled={!dirty || busy}
