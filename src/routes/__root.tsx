@@ -1,6 +1,9 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import { AskFab } from "@/components/ask-fab";
+import { ChatHistory } from "@/components/chat-history";
+import { ChatSheet } from "@/components/chat-sheet";
+import { TabBar } from "@/components/tab-bar";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import appCss from "../styles.css?url";
@@ -14,7 +17,11 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: APP_NAME },
       { name: "theme-color", content: "#0c0c0d" },
-      { name: "description", content: "Roofus in the truck. Inspect on the roof. Mindset at the door." },
+      { name: "description", content: "Ride-along coach for door-to-door roofers and storm restoration crews." },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: APP_NAME },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -44,7 +51,10 @@ export const Route = createRootRoute({
         <AuthProvider>
           <TooltipProvider delayDuration={350} skipDelayDuration={0}>
             <Outlet />
+            <TabBar />
             <AskFab />
+            <ChatSheet />
+            <ChatHistory />
           </TooltipProvider>
         </AuthProvider>
         <Scripts />

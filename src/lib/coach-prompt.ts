@@ -21,6 +21,7 @@ export type CoachRequest = {
   companyName?: string;
   warrantyLine?: string;
   imageDataUrl?: string;
+  dayBook?: string;
 };
 
 type XaiMessage =
@@ -43,6 +44,9 @@ export function buildXaiPayload(req: CoachRequest): {
   if (req.imageDataUrl) {
     const last = [...history].reverse().find((m) => m.role === "user");
     const question = last?.content?.trim() || "What am I looking at?";
+    const stormNote = req.dayBook?.trim()
+      ? `\n\n${req.dayBook.trim()}\nIf the photo is damage, still do not invent hail. Use the logged storm only as context for what they may later say — not as a verdict.`
+      : "";
     return {
       model: "grok-4.5",
       max_tokens: 400,
@@ -53,7 +57,7 @@ export function buildXaiPayload(req: CoachRequest): {
           role: "user",
           content: [
             { type: "image_url", image_url: { url: req.imageDataUrl, detail: "high" } },
-            { type: "text", text: question },
+            { type: "text", text: question + stormNote },
           ],
         },
       ],
@@ -68,6 +72,7 @@ export function buildXaiPayload(req: CoachRequest): {
     req.warrantyLine?.trim()
       ? `Warranty line from Presets (this wins over the default): ${req.warrantyLine.trim()}`
       : "",
+    req.dayBook?.trim() ? req.dayBook.trim() : "",
   ]
     .filter(Boolean)
     .join("\n\n");

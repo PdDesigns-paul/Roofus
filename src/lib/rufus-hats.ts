@@ -1,3 +1,4 @@
+/** Hats stay pinned until they change. Inspect hat is talk. Inspect page is the camera. */
 export type RufusHatId = "door" | "inspect" | "pushback" | "set" | "roleplay" | "score";
 
 export type RufusHat = {
@@ -62,13 +63,13 @@ export const RUFUS_HATS: RufusHat[] = [
     id: "roleplay",
     label: "Roleplay",
     hint: "You be them",
-    use: "Tell him who to be, then knock. He stays the homeowner — short, real, no coaching. Type “score me” or “break” when you want the grade. Use this to get reps talking before they hit a street, not to write scripts.",
+    use: "Tell him who to be, then knock. Hold the mic and say it out loud — or type it. He stays the homeowner. Short. Real. No coaching. Say “score me” when you want the grade. Hear it plays his line so you can steal the wording. Practice in the truck. Do not record a customer.",
     starters: [
       "Be a polite busy owner with a 2004 roof. I knock.",
       "Be skeptical. You already had three roofers this week.",
       "Be a spouse who is not the decision maker.",
     ],
-    brief: `Hat: ROLEPLAY. You are the homeowner (or spouse) until he types “score me” or “break.” Stay in character. Short answers, like a real person at the door. Do not coach while in character. After “score me”: drop character, grade the knock, give one better sentence, then the next physical step.`,
+    brief: `Hat: ROLEPLAY. You are the homeowner (or spouse) until he types “score me” or “break.” Stay in character. Short answers, like a real person at the door. He may knock out loud into the mic. Do not coach while in character. After “score me”: drop character, grade the knock, give one better sentence he can say out loud, then the next physical step. Never ask him to record a customer.`,
   },
   {
     id: "score",

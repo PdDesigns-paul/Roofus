@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppHeader } from "@/components/app-header";
@@ -28,7 +28,7 @@ function ReferencePage() {
   }
 
   return (
-    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-24 pt-4">
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-tab pt-4">
       <AppHeader title="Reference" page="reference" />
 
       <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">The library.</h1>
@@ -103,22 +103,6 @@ function ReferencePage() {
           })
         )}
       </div>
-
-      <nav className="mt-10 flex items-center justify-around text-[11px] text-faint">
-        <Link to="/" className="hover:text-fg">
-          Home
-        </Link>
-        <Link to="/coach" className="hover:text-fg">
-          Roofus
-        </Link>
-        <Link to="/coach/inspect" className="hover:text-fg">
-          Inspect
-        </Link>
-        <span className="text-fg">Reference</span>
-        <Link to="/coach/mindset" className="hover:text-fg">
-          Mindset
-        </Link>
-      </nav>
     </main>
   );
 }

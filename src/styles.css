@@ -24,6 +24,13 @@
     background: var(--color-paper);
     color: var(--color-fg);
     font-family: var(--font-sans);
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button,
+  a,
+  [role="button"] {
+    touch-action: manipulation;
   }
   html.dark {
     --color-fg: #f2f1ee;
@@ -38,5 +45,8 @@
   }
   .font-display {
     font-family: var(--font-display);
+  }
+  .pb-tab {
+    padding-bottom: calc(6.75rem + env(safe-area-inset-bottom));
   }
 }

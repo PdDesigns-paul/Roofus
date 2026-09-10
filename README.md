@@ -1,27 +1,105 @@
 # Roofus
 
-Porch Dawg. Field coach for roofing.
+Phone-first ride-along **journal + coach** for door-to-door roofers and storm restoration canvassers.
 
-## What it does
+The phone is the live log. Roofus (the orange button) rides shotgun. Notion is an optional copy so a dead phone is not a dead year.
 
-- **Roofus** — ride-along coach. Pin a hat. Tell him what just happened.
-- **Inspect** — walk, then one photo and a question.
-- **Mindset** — how you stand at the door.
-- **Reference** — 145 InterNACHI Mastering Roof Inspections articles.
+**The app is Roofus.** One word. Capital R only.
 
-Chats are threads on this phone. Tap the round button to resume. Hold it for history. ? starts a new help thread for that page.
+## What you do in it
 
-## Keys
+| Surface | What it is |
+| --- | --- |
+| **Today** | Four counts (Doors, Talked, On the roof, Appointments), neighborhood, weather you may mention, After Action Report, tomorrow. |
+| **Streets** | Age-band loops from your counties (default 17–25 year roofs). Working / Done / Skip. Maps on the card. |
+| **Last 48 hours** | On-demand. NWS first, then local news and X. Grade H / M / L. **H on a loop you keep is tomorrow.** Medium and Low do not pick the day. |
+| **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. CompanyCam is the report. |
+| **Roofus** | Orange button. Pin a hat: Door, Inspect, Pushback, Set, Roleplay, Score. Hold-to-talk in Roleplay. Hear it reads his line. Practice only — do not record a homeowner. |
+| **Mindset** | Why, Name the demon, Pace, Talent stack. Private. After Action Report lives on Today. |
+| **Presets** | Company name, warranty line, optional Notion backup, FAQs Roofus should remember. |
 
-- `XAI_API_KEY` — Roofus + Inspect (server)
+Bottom bar: Today · Streets · Inspect. Mindset, Reference, and Presets sit behind the three dots.
 
-Company name and warranty in Presets go to Roofus. Do not put keys in the repo.
+## Doctrine (short)
+
+- Age first. Storms are a footnote unless you **Keep** them and they match that street.
+- Owner-pay houses. Clustered streets. Skip apartments, HOA-paid roofs, renters (card for the owner only).
+- Script A (claim talk) only after Keep, and only on matching streets. Default door is age / free look.
+- One appointment from a day of knocking is a winning day.
+- Homeowner lines: 5th-grade, plain meaning first. Coach talk can sound like a closer.
+
+## Data
+
+Everything lives in **this browser** (`localStorage` via Zustand):
+
+- `roofus-day-v1` — profile + last 60 days
+- `roofus-streets-v1` — loops and age band
+- `roofus-weather-v1` — kept / tossed storms and the 48h pulse
+- `roofus-survive-v1` — mindset worksheets
+- `roofus-notion-v1` — optional integration secret, table ids, FAQs
+- `roofus-settings` — theme, company, warranty
+- coach threads in the coach store
+
+There is **no login** and **no app database**. Do not put a Notion secret in the repo. The secret stays on the phone and is sent to Notion only when they tap Connect or Backup.
+
+### Notion backup (optional, recommended)
+
+Free Notion account. Internal integration. They paste the secret and a page link. We build **Days, Streets, Storms, Mindset, Memory** in *their* workspace. Restore fills blanks and keeps the higher counts. It does not wipe what they already tapped.
+
+FAQs under “Things Roofus should remember” work even before they connect. He reads them in chat.
+
+## Stack
+
+- TanStack Start + Router, React 19, Tailwind v4, Zustand
+- xAI for coach chat, speech-to-text, and text-to-speech
+- Census Reporter + TIGERweb for streets
+- NWS / IEM Local Storm Reports for season weather
+- Notion REST `2022-06-28` via a server proxy (no CORS from the phone)
 
 ## Run
+
+Node 22+.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Needs Node 22+.
+### Env
+
+| Variable | Where | What |
+| --- | --- | --- |
+| `XAI_API_KEY` | server only | Roofus chat, transcribe, speak. Never `VITE_`. |
+| `DATABASE_URL` | unused by this app | Platform leftover. Auth and Postgres stay off. |
+
+Do not commit a `.env`. Do not put keys in the client.
+
+### Scripts
+
+```bash
+npm run dev          # local app
+npm run build        # production build
+npm run typecheck
+npm test
+```
+
+## Layout
+
+```
+src/routes/            pages + /api/* proxies
+src/components/        phone chrome (tabs, chat sheet, FAB)
+src/lib/               stores, ranking, Notion, coach prompt
+public/roofus.png      the dog
+```
+
+Coach context is assembled in `src/lib/roofus-talk.ts`: today’s log, streets, weather, mindset, Notion memory. The system prompt in `src/lib/coach-system.ts` is the product contract — keep it in sync with the buttons that actually exist.
+
+Backup merge rules live in `src/lib/notion-merge.ts` and are unit-tested. Writes to Notion are chunked in `src/lib/notion-client.ts` so a full copy does not time out.
+
+## Tests
+
+`node --test` on `src/lib/*.test.ts`. Pure functions only (labels, hail grade, county parse, Notion merge). No live Notion token, no live xAI key.
+
+## Name
+
+Roofus. Not Rufus, not RoofUS. The package and the dog match.

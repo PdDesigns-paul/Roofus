@@ -28,10 +28,13 @@ type CoachState = {
   streaming: string;
   busy: boolean;
   historyOpen: boolean;
+  sheetOpen: boolean;
   hat: RufusHatId;
   houseId: string | null;
   messages: ChatTurn[];
   setHistoryOpen: (open: boolean) => void;
+  openSheet: () => void;
+  closeSheet: () => void;
   setHat: (hat: RufusHatId) => void;
   resume: () => void;
   startNew: () => void;
@@ -170,10 +173,13 @@ export const useCoach = create<CoachState>()(
       streaming: "",
       busy: false,
       historyOpen: false,
+      sheetOpen: false,
       hat: "door",
       houseId: null,
       messages: EMPTY,
       setHistoryOpen: (historyOpen) => set({ historyOpen }),
+      openSheet: () => set({ sheetOpen: true, historyOpen: false }),
+      closeSheet: () => set({ sheetOpen: false }),
       setHat: (hat) =>
         set((s) => ({
           hat,

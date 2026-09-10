@@ -12,7 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoachRouteImport } from './routes/coach'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as StreetsRouteImport } from './routes/streets'
+import { Route as TodayRouteImport } from './routes/today'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
+import { Route as ApiNotionSetupRouteImport } from './routes/api/notion-setup'
+import { Route as ApiNotionSyncRouteImport } from './routes/api/notion-sync'
+import { Route as ApiSpeechRouteImport } from './routes/api/speech'
+import { Route as ApiStreetsRouteImport } from './routes/api/streets'
+import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
+import { Route as ApiWeatherRouteImport } from './routes/api/weather'
+import { Route as ApiWeatherPulseRouteImport } from './routes/api/weather-pulse'
 import { Route as CoachIndexRouteImport } from './routes/coach.index'
 import { Route as CoachInspectRouteImport } from './routes/coach.inspect'
 import { Route as CoachMindsetRouteImport } from './routes/coach.mindset'
@@ -33,9 +42,54 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StreetsRoute = StreetsRouteImport.update({
+  id: '/streets',
+  path: '/streets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TodayRoute = TodayRouteImport.update({
+  id: '/today',
+  path: '/today',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCoachRoute = ApiCoachRouteImport.update({
   id: '/api/coach',
   path: '/api/coach',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiNotionSetupRoute = ApiNotionSetupRouteImport.update({
+  id: '/api/notion-setup',
+  path: '/api/notion-setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiNotionSyncRoute = ApiNotionSyncRouteImport.update({
+  id: '/api/notion-sync',
+  path: '/api/notion-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSpeechRoute = ApiSpeechRouteImport.update({
+  id: '/api/speech',
+  path: '/api/speech',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiStreetsRoute = ApiStreetsRouteImport.update({
+  id: '/api/streets',
+  path: '/api/streets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTranscribeRoute = ApiTranscribeRouteImport.update({
+  id: '/api/transcribe',
+  path: '/api/transcribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWeatherRoute = ApiWeatherRouteImport.update({
+  id: '/api/weather',
+  path: '/api/weather',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWeatherPulseRoute = ApiWeatherPulseRouteImport.update({
+  id: '/api/weather-pulse',
+  path: '/api/weather-pulse',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoachIndexRoute = CoachIndexRouteImport.update({
@@ -63,7 +117,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/coach': typeof CoachRouteWithChildren
   '/settings': typeof SettingsRoute
+  '/streets': typeof StreetsRoute
+  '/today': typeof TodayRoute
   '/api/coach': typeof ApiCoachRoute
+  '/api/notion-setup': typeof ApiNotionSetupRoute
+  '/api/notion-sync': typeof ApiNotionSyncRoute
+  '/api/speech': typeof ApiSpeechRoute
+  '/api/streets': typeof ApiStreetsRoute
+  '/api/transcribe': typeof ApiTranscribeRoute
+  '/api/weather': typeof ApiWeatherRoute
+  '/api/weather-pulse': typeof ApiWeatherPulseRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
@@ -72,7 +135,16 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/settings': typeof SettingsRoute
+  '/streets': typeof StreetsRoute
+  '/today': typeof TodayRoute
   '/api/coach': typeof ApiCoachRoute
+  '/api/notion-setup': typeof ApiNotionSetupRoute
+  '/api/notion-sync': typeof ApiNotionSyncRoute
+  '/api/speech': typeof ApiSpeechRoute
+  '/api/streets': typeof ApiStreetsRoute
+  '/api/transcribe': typeof ApiTranscribeRoute
+  '/api/weather': typeof ApiWeatherRoute
+  '/api/weather-pulse': typeof ApiWeatherPulseRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
@@ -83,7 +155,16 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/coach': typeof CoachRouteWithChildren
   '/settings': typeof SettingsRoute
+  '/streets': typeof StreetsRoute
+  '/today': typeof TodayRoute
   '/api/coach': typeof ApiCoachRoute
+  '/api/notion-setup': typeof ApiNotionSetupRoute
+  '/api/notion-sync': typeof ApiNotionSyncRoute
+  '/api/speech': typeof ApiSpeechRoute
+  '/api/streets': typeof ApiStreetsRoute
+  '/api/transcribe': typeof ApiTranscribeRoute
+  '/api/weather': typeof ApiWeatherRoute
+  '/api/weather-pulse': typeof ApiWeatherPulseRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
@@ -95,7 +176,16 @@ export interface FileRouteTypes {
     | '/'
     | '/coach'
     | '/settings'
+    | '/streets'
+    | '/today'
     | '/api/coach'
+    | '/api/notion-setup'
+    | '/api/notion-sync'
+    | '/api/speech'
+    | '/api/streets'
+    | '/api/transcribe'
+    | '/api/weather'
+    | '/api/weather-pulse'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
@@ -104,7 +194,16 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/settings'
+    | '/streets'
+    | '/today'
     | '/api/coach'
+    | '/api/notion-setup'
+    | '/api/notion-sync'
+    | '/api/speech'
+    | '/api/streets'
+    | '/api/transcribe'
+    | '/api/weather'
+    | '/api/weather-pulse'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
@@ -114,7 +213,16 @@ export interface FileRouteTypes {
     | '/'
     | '/coach'
     | '/settings'
+    | '/streets'
+    | '/today'
     | '/api/coach'
+    | '/api/notion-setup'
+    | '/api/notion-sync'
+    | '/api/speech'
+    | '/api/streets'
+    | '/api/transcribe'
+    | '/api/weather'
+    | '/api/weather-pulse'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
@@ -125,7 +233,16 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CoachRoute: typeof CoachRouteWithChildren
   SettingsRoute: typeof SettingsRoute
+  StreetsRoute: typeof StreetsRoute
+  TodayRoute: typeof TodayRoute
   ApiCoachRoute: typeof ApiCoachRoute
+  ApiNotionSetupRoute: typeof ApiNotionSetupRoute
+  ApiNotionSyncRoute: typeof ApiNotionSyncRoute
+  ApiSpeechRoute: typeof ApiSpeechRoute
+  ApiStreetsRoute: typeof ApiStreetsRoute
+  ApiTranscribeRoute: typeof ApiTranscribeRoute
+  ApiWeatherRoute: typeof ApiWeatherRoute
+  ApiWeatherPulseRoute: typeof ApiWeatherPulseRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -151,11 +268,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/streets': {
+      id: '/streets'
+      path: '/streets'
+      fullPath: '/streets'
+      preLoaderRoute: typeof StreetsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/today': {
+      id: '/today'
+      path: '/today'
+      fullPath: '/today'
+      preLoaderRoute: typeof TodayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/coach': {
       id: '/api/coach'
       path: '/api/coach'
       fullPath: '/api/coach'
       preLoaderRoute: typeof ApiCoachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/notion-setup': {
+      id: '/api/notion-setup'
+      path: '/api/notion-setup'
+      fullPath: '/api/notion-setup'
+      preLoaderRoute: typeof ApiNotionSetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/notion-sync': {
+      id: '/api/notion-sync'
+      path: '/api/notion-sync'
+      fullPath: '/api/notion-sync'
+      preLoaderRoute: typeof ApiNotionSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/speech': {
+      id: '/api/speech'
+      path: '/api/speech'
+      fullPath: '/api/speech'
+      preLoaderRoute: typeof ApiSpeechRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/streets': {
+      id: '/api/streets'
+      path: '/api/streets'
+      fullPath: '/api/streets'
+      preLoaderRoute: typeof ApiStreetsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/transcribe': {
+      id: '/api/transcribe'
+      path: '/api/transcribe'
+      fullPath: '/api/transcribe'
+      preLoaderRoute: typeof ApiTranscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/weather': {
+      id: '/api/weather'
+      path: '/api/weather'
+      fullPath: '/api/weather'
+      preLoaderRoute: typeof ApiWeatherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/weather-pulse': {
+      id: '/api/weather-pulse'
+      path: '/api/weather-pulse'
+      fullPath: '/api/weather-pulse'
+      preLoaderRoute: typeof ApiWeatherPulseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/coach/': {
@@ -209,7 +389,16 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CoachRoute: CoachRouteWithChildren,
   SettingsRoute: SettingsRoute,
+  StreetsRoute: StreetsRoute,
+  TodayRoute: TodayRoute,
   ApiCoachRoute: ApiCoachRoute,
+  ApiNotionSetupRoute: ApiNotionSetupRoute,
+  ApiNotionSyncRoute: ApiNotionSyncRoute,
+  ApiSpeechRoute: ApiSpeechRoute,
+  ApiStreetsRoute: ApiStreetsRoute,
+  ApiTranscribeRoute: ApiTranscribeRoute,
+  ApiWeatherRoute: ApiWeatherRoute,
+  ApiWeatherPulseRoute: ApiWeatherPulseRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

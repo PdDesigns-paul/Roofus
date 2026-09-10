@@ -1,0 +1,206 @@
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import {
+  fillProfile,
+  fillSurvive,
+  MAX_BACKUP_DAYS,
+  mergeDays,
+  mergeFaqs,
+  mergeLoops,
+  mergeStorms,
+  packLabeled,
+  packMindset,
+  unpackLabeled,
+  unpackMindset,
+  type SurviveFields,
+} from "./notion-merge.ts";
+import type { DayEntry } from "./day-book.ts";
+import type { StreetLoop } from "./streets-types.ts";
+
+function day(date: string, extra: Partial<DayEntry> = {}): DayEntry {
+  return {
+    date,
+    knocks: 0,
+    talks: 0,
+    looks: 0,
+    sets: 0,
+    cluster: "",
+    storm: "",
+    afterAction: "",
+    tomorrowStreet: "",
+    ...extra,
+  };
+}
+
+const emptySurvive = (): SurviveFields => ({
+  earned: "",
+  byDate: "",
+  why1: "",
+  why2: "",
+  why3: "",
+  demon: "",
+  origin: "",
+  offBlock: "",
+  phoneDown: "",
+  stackMonth: "2026-09",
+  skill: "",
+  drill: "",
+});
+
+describe("mergeDays", () => {
+  it("takes the higher counts and fills blanks", () => {
+    const cur = {
+      "2026-09-01": day("2026-09-01", { knocks: 4, afterAction: "won the set" }),
+    };
+    const merged = mergeDays(cur, [
+      day("2026-09-01", { knocks: 10, talks: 3, afterAction: "older copy", cluster: "Oak" }),
+    ]);
+    assert.equal(merged["2026-09-01"]?.knocks, 10);
+    assert.equal(merged["2026-09-01"]?.talks, 3);
+    assert.equal(merged["2026-09-01"]?.afterAction, "won the set");
+    assert.equal(merged["2026-09-01"]?.cluster, "Oak");
+  });
+
+  it("keeps the newest 60 days", () => {
+    const incoming = Array.from({ length: MAX_BACKUP_DAYS + 5 }, (_, i) => {
+      const d = new Date(Date.UTC(2026, 0, 1 + i));
+      return day(d.toISOString().slice(0, 10));
+    });
+    incoming[0] = day("2025-01-01");
+    const merged = mergeDays({}, incoming.concat(day("2026-09-09")));
+    assert.equal(Object.keys(merged).length, MAX_BACKUP_DAYS);
+    assert.equal(Boolean(merged["2025-01-01"]), false);
+    assert.equal(Boolean(merged["2026-09-09"]), true);
+  });
+});
+
+describe("mergeLoops / storms / faqs", () => {
+  it("phone status wins", () => {
+    const cur: StreetLoop[] = [
+      {
+        id: "a",
+        title: "Oak",
+        streets: ["Oak"],
+        county: "Cumberland",
+        state: "PA",
+        medianYear: 2004,
+        homes: 40,
+        lat: 40.2,
+        lon: -76.8,
+        status: "working",
+        lastResult: "callback",
+      },
+    ];
+    const merged = mergeLoops(cur, [
+      {
+        ...cur[0]!,
+        status: "done",
+        lastResult: "appointment",
+        title: "Oak Estates",
+      },
+    ]);
+    assert.equal(merged[0]?.status, "working");
+    assert.equal(merged[0]?.lastResult, "callback");
+    assert.equal(merged[0]?.title, "Oak Estates");
+  });
+
+  it("does not wipe kept storms", () => {
+    const a = {
+      id: "s1",
+      date: "2026-09-01",
+      kind: "hail" as const,
+      county: "Cumberland",
+      state: "PA",
+      magnitude: "1.00",
+      places: ["Camp Hill"],
+      say: "inch hail",
+      source: "NWS",
+      lat: 40.2,
+      lon: -76.8,
+      remark: "",
+    };
+    const merged = mergeStorms([a], [{ ...a, say: "should not replace" }]);
+    assert.equal(merged[0]?.say, "inch hail");
+  });
+
+  it("unions FAQs by question", () => {
+    const merged = mergeFaqs(
+      [{ id: "f1", q: "Warranty?", a: "local" }],
+      [
+        { id: "f2", q: "Warranty?", a: "from notion" },
+        { id: "f3", q: "Hours?", a: "after work" },
+      ],
+    );
+    assert.equal(merged.length, 2);
+    assert.equal(merged.find((f) => f.q === "Warranty?")?.a, "local");
+    assert.equal(merged.find((f) => f.q === "Hours?")?.a, "after work");
+  });
+});
+
+describe("mindset pack / unpack", () => {
+  it("roundtrips labeled why + profile", () => {
+    const packed = packMindset(
+      { ...emptySurvive(), earned: "80k", byDate: "Dec", why3: "kids" },
+      {
+        setupDone: true,
+        goBy: "Deshaun",
+        company: "Ridge",
+        counties: "Cumberland",
+        states: "PA",
+        knockWindow: "after work",
+        paperWindow: "",
+        hardStop: "dark",
+      },
+      { ageMin: 17, ageMax: 25, companyName: "Ridge", warrantyLine: "see OC" },
+    );
+    const rows: Record<string, string> = {};
+    for (const r of packed) rows[r.name] = r.body;
+    const out = unpackMindset(rows);
+    assert.equal(out.survive.earned, "80k");
+    assert.equal(out.survive.why3, "kids");
+    assert.equal(out.profile.goBy, "Deshaun");
+    assert.equal(out.profile.counties, "Cumberland");
+    assert.equal(out.ageMin, 17);
+    assert.equal(out.companyName, "Ridge");
+  });
+
+  it("reads the old unlabeled why body", () => {
+    const out = unpackMindset({ Why: "80k\nDec\none\ntwo\nthree" });
+    assert.equal(out.survive.earned, "80k");
+    assert.equal(out.survive.why3, "three");
+  });
+
+  it("fills survive blanks only", () => {
+    const patch = fillSurvive(
+      { ...emptySurvive(), earned: "already" },
+      { earned: "80k", why3: "kids", skill: "i35" },
+    );
+    assert.equal(patch.earned, undefined);
+    assert.equal(patch.skill, "i35");
+  });
+
+  it("marks setup done when counties come back", () => {
+    const next = fillProfile(
+      {
+        setupDone: false,
+        goBy: "",
+        company: "",
+        counties: "",
+        states: "",
+        knockWindow: "",
+        paperWindow: "",
+        hardStop: "",
+      },
+      { counties: "Cumberland", states: "PA", goBy: "D" },
+    );
+    assert.equal(next.setupDone, true);
+    assert.equal(next.goBy, "D");
+  });
+});
+
+describe("packLabeled", () => {
+  it("skips empty and flattens newlines", () => {
+    assert.equal(packLabeled({ a: "x", b: "" }), "a: x");
+    assert.equal(unpackLabeled("origin: line1 · line2").origin, "line1\nline2");
+  });
+});

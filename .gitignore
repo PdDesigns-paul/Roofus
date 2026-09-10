@@ -11,3 +11,10 @@ attachments/
 .project_id
 .DS_Store
 screenshots/
+.grok/status
+.grok/og-pending
+.grok/*.pid
+.grok/preview.log
+.env
+.env.*
+

@@ -6,6 +6,7 @@ export type StreamCoachInput = {
   companyName?: string;
   warrantyLine?: string;
   imageDataUrl?: string;
+  dayBook?: string;
 };
 
 export async function streamCoach(

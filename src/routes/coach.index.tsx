@@ -1,11 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { RufusChat } from "@/components/rufus-chat";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { openCoach } from "@/lib/open-coach";
 
 export const Route = createFileRoute("/coach/")({
   codeSplitGroupings: [],
-  component: CoachPage,
+  component: CoachRedirect,
 });
 
-function CoachPage() {
-  return <RufusChat />;
+function CoachRedirect() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    openCoach("resume");
+    void navigate({ to: "/", replace: true });
+  }, [navigate]);
+  return null;
 }

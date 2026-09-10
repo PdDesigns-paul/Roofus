@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Camera, Check, ImagePlus } from "lucide-react";
 import { useRef, useState } from "react";
 import { AppHeader } from "@/components/app-header";
@@ -35,10 +35,10 @@ function InspectPage() {
   const activeOrigin = useCoach((s) =>
     s.activeId ? s.threads[s.activeId]?.origin ?? null : null,
   );
-  const shown =
-    streaming && activeOrigin === "inspect"
-      ? [...inspectTurns, { role: "assistant" as const, content: streaming }]
-      : inspectTurns;
+  const looking = busy && activeOrigin === "inspect";
+  const shown = looking
+    ? [...inspectTurns, { role: "assistant" as const, content: streaming }]
+    : inspectTurns;
 
   async function onFile(file: File | undefined) {
     if (!file) return;
@@ -66,16 +66,16 @@ function InspectPage() {
   }
 
   return (
-    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-24 pt-4">
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-tab pt-4">
       <AppHeader title="Inspect" page="inspect" />
 
       <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">Shoot. Then ask.</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">
-        Walk it first. Then one photo and a question. Don’t talk off the ladder.
+        Photos first. Check the list. Then one shot and a question. Don’t talk off the ladder.
       </p>
 
       <section className="mt-8">
-        <p className="text-xs font-medium uppercase tracking-wide text-faint">The walk</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-faint">Shots</p>
         <ul className="mt-3 flex flex-col gap-2">
           {WALK_SLOTS.map((s) => {
             const on = Boolean(done[s.id]);
@@ -183,7 +183,8 @@ function InspectPage() {
               <ChatBubble
                 key={`${m.role}-${i}`}
                 role={m.role}
-                streaming={busy && i === shown.length - 1 && m.role === "assistant"}
+                streaming={looking && i === shown.length - 1 && m.role === "assistant"}
+                waitLabel="Looking at the shot…"
               >
                 {m.content}
               </ChatBubble>
@@ -238,22 +239,6 @@ function InspectPage() {
         </form>
         {error ? <p className="mt-3 text-sm text-danger">{error}</p> : null}
       </section>
-
-      <nav className="mt-10 flex items-center justify-around text-[11px] text-faint">
-        <Link to="/" className="hover:text-fg">
-          Home
-        </Link>
-        <Link to="/coach" className="hover:text-fg">
-          Roofus
-        </Link>
-        <span className="text-fg">Inspect</span>
-        <Link to="/coach/mindset" className="hover:text-fg">
-          Mindset
-        </Link>
-        <Link to="/coach/reference" className="hover:text-fg">
-          Reference
-        </Link>
-      </nav>
     </main>
   );
 }
