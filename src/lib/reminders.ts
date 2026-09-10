@@ -1,7 +1,6 @@
 /**
- * Nags when they open the app. Real lock-screen push needs the PWA installed
- * plus a later Vercel cron + Web Push (iOS 16.4+ only after Add to Home Screen).
- * Do not add a VAPID key until they turn that on.
+ * Nags when they open the app. Lock-screen push uses Notion as the drawer
+ * (same secret as backup) plus a morning/evening ping. No Firebase.
  */
 import { localDateKey } from "./day-book.ts";
 import { setupScore, type SetupSnap } from "./setup-progress.ts";
@@ -17,7 +16,7 @@ export const REMINDERS = [
     id: "storm",
     label: "Storm report",
     when: "Daily",
-    hint: "Last 48 hours. Cron later. Until then, this nags when you open the app.",
+    hint: "Last 48 hours. Morning ping if Notion is connected.",
   },
   {
     id: "journal",
@@ -70,11 +69,11 @@ export function reminderDue(
   id: ReminderId,
   prefs: ReminderPrefs,
   today: string,
-  snap: SetupSnap,
+  ready: boolean,
   extra: { afterAction: string; stormFetchedOn: string; stackMonth: string },
 ): boolean {
   if (!prefs.on[id]) return false;
-  if (id === "setup") return !setupScore(snap).ready;
+  if (id === "setup") return !ready;
   const done = prefs.lastDone[id] ?? "";
   if (id === "storm") return extra.stormFetchedOn !== today && done !== today;
   if (id === "journal") {
@@ -96,5 +95,21 @@ export function dueReminders(
   extra: { afterAction: string; stormFetchedOn: string; stackMonth: string },
   today = localDateKey(),
 ) {
-  return REMINDERS.filter((r) => reminderDue(r.id, prefs, today, snap, extra));
+  return REMINDERS.filter((r) => reminderDue(r.id, prefs, today, setupScore(snap).ready, extra));
+}
+
+export function pingCopy(ids: ReminderId[]): { title: string; body: string; url: string } {
+  const labels = ids
+    .map((id) => REMINDERS.find((r) => r.id === id)?.label)
+    .filter((v) => Boolean(v));
+  const url = ids.includes("setup")
+    ? "/"
+    : ids.includes("pace") || ids.includes("stack")
+      ? "/settings#mindset"
+      : "/today";
+  return {
+    title: "Roofus",
+    body: labels.length ? labels.join(" · ") : "Open the app.",
+    url,
+  };
 }

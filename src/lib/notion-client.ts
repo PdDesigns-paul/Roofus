@@ -5,6 +5,7 @@
  * of 60 days + 120 streets does not blow a serverless time limit.
  */
 import { parseNotionId, type NotionFaq, type NotionIds, type NotionTable } from "@/lib/notion-ids";
+import { isPushFaq, packDrawer, unpackDrawer, PUSH_KEY, type PushDrawer } from "@/lib/push-payload";
 import type { DayEntry } from "@/lib/day-book";
 import type { StreetLoop } from "@/lib/streets-types";
 import type { StormEvent } from "@/lib/weather-types";
@@ -514,7 +515,27 @@ export async function pullSnapshot(token: string, ids: NotionIds): Promise<Notio
       q: readTitle(p),
       a: readRich(p, "Answer"),
     }))
-    .filter((f) => f.q && f.a);
+    .filter((f) => f.q && f.a && !isPushFaq(f.q, f.id));
 
   return { days, loops, storms, mindset, faqs };
+}
+
+export async function readPushDrawer(token: string, ids: NotionIds): Promise<PushDrawer | null> {
+  const pages = await queryAll(token, ids.memoryDb);
+  for (const p of pages) {
+    const key = readRich(p, "Key") || readTitle(p);
+    if (!isPushFaq(key) && !isPushFaq(readTitle(p), key)) continue;
+    return unpackDrawer(readRich(p, "Answer"));
+  }
+  return null;
+}
+
+export async function writePushDrawer(token: string, ids: NotionIds, drawer: PushDrawer) {
+  const pages = await queryAll(token, ids.memoryDb);
+  const map = keyMap(pages, true);
+  await upsert(token, ids.memoryDb, map, PUSH_KEY, faqProps({
+    id: PUSH_KEY,
+    q: PUSH_KEY,
+    a: packDrawer(drawer),
+  }));
 }

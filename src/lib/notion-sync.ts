@@ -25,6 +25,7 @@ import type { StreetLoop } from "@/lib/streets-types";
 import { useSurvive } from "@/lib/survive-store";
 import { useWeather } from "@/lib/weather-store";
 import type { StormEvent } from "@/lib/weather-types";
+import { isPushFaq } from "@/lib/push-payload";
 
 type Progress = (label: string) => void;
 
@@ -67,7 +68,7 @@ function tableItems(table: NotionTable): unknown[] {
       }),
     );
   }
-  return useNotion.getState().faqs;
+  return useNotion.getState().faqs.filter((f) => !isPushFaq(f.q, f.id));
 }
 
 const LABELS: Record<NotionTable, string> = {

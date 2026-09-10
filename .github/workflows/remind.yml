@@ -1,0 +1,38 @@
+name: remind
+
+on:
+  schedule:
+    - cron: "0 11 * * *"
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping Roofus
+        env:
+          TOKEN: ${{ secrets.NOTION_TOKEN }}
+          PAGE: ${{ secrets.NOTION_PAGE }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.error, urllib.request
+          token = os.environ.get("TOKEN", "").strip()
+          page = os.environ.get("PAGE", "").strip()
+          if not token or not page:
+              print("No Notion secrets. Skip.")
+              raise SystemExit(0)
+          req = urllib.request.Request(
+              "https://roofus.coach/api/remind",
+              data=json.dumps({"action": "send", "token": token, "pageUrl": page}).encode(),
+              headers={"content-type": "application/json"},
+              method="POST",
+          )
+          try:
+              with urllib.request.urlopen(req, timeout=60) as r:
+                  print(r.read().decode())
+          except urllib.error.HTTPError as e:
+              print(e.read().decode())
+              raise
+          PY

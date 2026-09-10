@@ -20,7 +20,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 | **Roofus** | Orange button. Tap fans Live, Roleplay, Mindset — each is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. Hold-to-talk in Roleplay. Beats at the bottom. Score me is a button. Hear it reads his line. Practice only — do not record a homeowner. |
 | **Cards** | Five pocket cards: Door, Pushback, i35, Set, Compass. Compass is truck only. |
 | **Mindset** | Worksheets in Presets: Why (ladder), Name the demon, Pace (gear), Talent stack. Chat from the orange fan. Private. After Action Report lives on Today. |
-| **Presets** | Counties, zips (Streets), hours, company, warranty, mindset, reminders, optional Notion backup, FAQs Roofus should remember. |
+| **Presets** | Counties, zips (Streets), hours, company, warranty, mindset, reminders, optional Notion backup, FAQs Roofus should remember. Lock-screen pings need Notion. |
 
 Bottom bar: Today · Inspect · Home. Footer: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Menu: Cards, Reference, Presets. Streets and mindset worksheets live in Presets.
 

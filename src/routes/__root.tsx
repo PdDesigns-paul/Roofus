@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import { AskFab } from "@/components/ask-fab";
@@ -7,6 +8,7 @@ import { OnboardOverlay } from "@/components/onboard-overlay";
 import { TabBar } from "@/components/tab-bar";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ensurePushWorker } from "@/lib/remind-client";
 import appCss from "../styles.css?url";
 
 const APP_NAME = "Roofus";
@@ -50,6 +52,7 @@ export const Route = createRootRoute({
       </head>
       <body>
         <PreviewHostBridge />
+        <PushBoot />
         <AuthProvider>
           <TooltipProvider delayDuration={350} skipDelayDuration={0}>
             <Outlet />
@@ -65,3 +68,10 @@ export const Route = createRootRoute({
     </html>
   ),
 });
+
+function PushBoot() {
+  useEffect(() => {
+    void ensurePushWorker();
+  }, []);
+  return null;
+}

@@ -57,7 +57,7 @@ export const PAGE_HELP = {
     body: [
       "First name, counties, state, when you knock, morning work, hard stop. Company name and warranty line. He uses those when he talks product.",
       "Zips (Streets) opens from this page. Rebuild after you change counties.",
-      "Reminders nag you when you open the app. Lock-screen push is later.",
+      "Reminders nag you when you open the app. Lock-screen pings need Notion — same secret as backup — and the Home Screen icon.",
       "Mindset worksheets (Why, demon, Pace, stack) live on this page. The orange fan opens the chat. After Action Report is on Today.",
       "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Connect finds the tables. Restore brings the copy onto this phone. Do not Backup from an empty phone.",
       "FAQs ship with public porch answers already filled. Edit or drop. Your office rules win.",
