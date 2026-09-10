@@ -9,9 +9,10 @@ describe("showBack", () => {
     assert.equal(showBack("/coach/inspect"), false);
   });
 
-  it("shows Back on nested pages, including Streets", () => {
+  it("shows Back on nested pages, including Streets and Presets sub pages", () => {
     assert.equal(showBack("/streets"), true);
     assert.equal(showBack("/settings"), true);
+    assert.equal(showBack("/settings/you"), true);
     assert.equal(showBack("/coach/cards"), true);
     assert.equal(showBack("/coach/reference"), true);
   });
@@ -24,6 +25,8 @@ describe("helpPageFor", () => {
     assert.equal(helpPageFor("/streets"), "streets");
     assert.equal(helpPageFor("/coach/inspect"), "inspect");
     assert.equal(helpPageFor("/settings"), "settings");
+    assert.equal(helpPageFor("/settings/you"), "settings");
+    assert.equal(helpPageFor("/settings/mindset"), "settings");
     assert.equal(helpPageFor("/coach/cards"), "cards");
   });
 });

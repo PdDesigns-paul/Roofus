@@ -29,16 +29,14 @@ export const REMINDERS = [
     label: "Weekly pace",
     when: "Sundays",
     hint: "Gear and one off-block. Presets → Mindset.",
-    to: "/settings",
-    hash: "mindset",
+    to: "/settings/mindset",
   },
   {
     id: "stack",
     label: "Monthly stack",
     when: "The 1st",
     hint: "Three skills this month.",
-    to: "/settings",
-    hash: "mindset",
+    to: "/settings/mindset",
   },
 ] as const;
 

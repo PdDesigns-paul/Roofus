@@ -146,7 +146,7 @@ function StreetsPage() {
           band — not from hail.
         </p>
         <Link
-          to="/settings"
+          to="/settings/territory"
           className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-fg text-sm text-paper"
         >
           Open Presets

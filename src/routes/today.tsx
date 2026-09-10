@@ -118,14 +118,14 @@ function DaySheet() {
           <>
             {market}
             {profile.knockWindow.trim() ? ` · ${profile.knockWindow.trim()}` : ""}{" "}
-            <Link to="/settings" className="underline-offset-4 hover:text-fg hover:underline">
+            <Link to="/settings/hours" className="underline-offset-4 hover:text-fg hover:underline">
               Presets
             </Link>
           </>
         ) : (
           <>
             Set counties in{" "}
-            <Link to="/settings" className="underline-offset-4 hover:text-fg hover:underline">
+            <Link to="/settings/territory" className="underline-offset-4 hover:text-fg hover:underline">
               Presets
             </Link>
             .
@@ -303,7 +303,7 @@ function NotionHint() {
       </p>
       <div className="mt-3 flex gap-2">
         <Link
-          to="/settings"
+          to="/settings/backup"
           className="inline-flex h-11 flex-1 items-center justify-center rounded-full bg-fg text-sm text-paper"
         >
           Set up backup

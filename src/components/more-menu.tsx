@@ -9,7 +9,7 @@ const LINKS = [
   { to: "/coach/cards", label: "Cards", hint: "Door, pushback, i35, set, compass." },
   { to: "/coach/reference", label: "Reference", hint: "145 roof articles" },
   { to: "/streets", label: "Streets", hint: "Park-once loops by township. Where you knock." },
-  { to: "/settings", label: "Presets", hint: "Counties, zips, hours, warranty, mindset, backup" },
+  { to: "/settings", label: "Presets", hint: "You, territory, hours, mindset, backup" },
 ] as const;
 
 export function MoreMenu() {

@@ -247,7 +247,7 @@ Roofus is not their lawyer.
 
 ## Product map (keep the coach prompt in sync)
 
-Bottom bar: **Today · Inspect · Home**. Home is the porch: setup bar, Tell Roofus (pinned Setup chat), links into Presets. Footer above it: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Streets is not a tab — open it from Menu, Home, Today, or Presets. Menu: Cards, Reference, Streets, Presets. Mindset worksheets live in Presets. Reminders nag on open (morning storm, evening journal, Sundays pace, the 1st stack) if that box is empty. Roofus is the orange button — tap fans Live / Roleplay / Mindset. Hold starts Live. Inspect hides him. Not a tab.
+Bottom bar: **Today · Inspect · Home**. Home is the porch: setup bar, Tell Roofus (pinned Setup chat), links into Presets. Footer above it: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Streets is not a tab — open it from Menu, Home, Today, or Presets. Menu: Cards, Reference, Streets, Presets. Mindset worksheets live in Presets → Mindset. Reminders nag on open (morning storm, evening journal, Sundays pace, the 1st stack) if that box is empty. Roofus is the orange button — tap fans Live / Roleplay / Mindset. Hold starts Live. Inspect hides him. Not a tab.
 
 | Surface | What it is |
 | --- | --- |
@@ -257,9 +257,9 @@ Bottom bar: **Today · Inspect · Home**. Home is the porch: setup bar, Tell Roo
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Inspect** | Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic (what to shoot). Then This shot: Camera, Photos, or Practice. Ask about that frame. He names the i35 slot (Bad / Good / Worst / skip theater). Practice shot is a sample close-up — not this house. |
 | **Roofus** | Tap fans Live, Roleplay, Mindset. Each pick is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. New Live lives on the History sheet. Live’s first starter is the million-dollar script (B). Roleplay beats at the bottom: Walk-up, They push, After photos (talk only), The set, Whole visit. Score me is a button. Hold-to-talk in Roleplay. Hear it reads his line. Mindset is truck only. |
-| **Mindset** | Worksheets in Presets: Why, demon, Pace, Talent stack. Chat from the orange fan. Private. Why is a ladder. Demon names the attack. Pace drops a gear. Stack is three skills. |
+| **Mindset** | Worksheets in Presets → Mindset: Why, demon, Pace, Talent stack. Chat from the orange fan. Private. Why is a ladder. Demon names the attack. Pace drops a gear. Stack is three skills. |
 | **Reference** | InterNACHI Mastering Roof Inspections cards. Name the title. Do not paste article bodies. |
-| **Presets** | Name, counties, state, hours, company, website, warranty, mindset worksheets, optional Notion, Memory FAQs. He can write these when they clearly set them. |
+| **Presets** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. Streets is its own page. Name, counties, state, hours, company, website, warranty, mindset worksheets, optional Notion, Memory FAQs. He can write these when they clearly set them. |
 
 Tomorrow, in order: last-48h **High** on a loop they keep → Working → next fresh loop in that township → next township. Do not ask a newbie where to go. Do not invent hail.
 

@@ -5,6 +5,8 @@ import {
   companyOf,
   nextIncomplete,
   rowDone,
+  settingsHashPath,
+  setupRowPath,
   setupScore,
   setupSnap,
   type SetupSnap,
@@ -90,6 +92,34 @@ describe("nextIncomplete", () => {
   it("stays on the preferred row until that row is done", () => {
     assert.equal(nextIncomplete(snap({ goBy: "P" }), "you"), "you");
     assert.equal(nextIncomplete(snap({ goBy: "P", company: "Ridge" }), "you"), "territory");
+  });
+});
+
+describe("setupRowPath", () => {
+  it("sends Home rows to the Presets page, Streets for zips", () => {
+    assert.equal(setupRowPath("you"), "/settings/you");
+    assert.equal(setupRowPath("warranty"), "/settings/you");
+    assert.equal(setupRowPath("territory"), "/settings/territory");
+    assert.equal(setupRowPath("hours"), "/settings/hours");
+    assert.equal(setupRowPath("zips"), "/streets");
+    assert.equal(setupRowPath("why"), "/settings/mindset");
+    assert.equal(setupRowPath("pace"), "/settings/mindset");
+  });
+});
+
+describe("settingsHashPath", () => {
+  it("maps old hashes onto the sub pages", () => {
+    assert.equal(settingsHashPath("#you"), "/settings/you");
+    assert.equal(settingsHashPath("warranty"), "/settings/you");
+    assert.equal(settingsHashPath("territory"), "/settings/territory");
+    assert.equal(settingsHashPath("hours"), "/settings/hours");
+    assert.equal(settingsHashPath("zips"), "/streets");
+    assert.equal(settingsHashPath("mindset"), "/settings/mindset");
+    assert.equal(settingsHashPath("why"), "/settings/mindset");
+    assert.equal(settingsHashPath("reminders"), "/settings/reminders");
+    assert.equal(settingsHashPath("backup"), "/settings/backup");
+    assert.equal(settingsHashPath(""), undefined);
+    assert.equal(settingsHashPath("#nope"), undefined);
   });
 });
 

@@ -19,10 +19,10 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 | **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot. Practice shot is off the roof. CompanyCam is the report. |
 | **Roofus** | Orange button. Tap fans Live, Roleplay, Mindset — each is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. Hold-to-talk in Roleplay. Beats at the bottom. Score me is a button. Hear it reads his line. Practice only — do not record a homeowner. |
 | **Cards** | Five pocket cards: Door, Pushback, i35, Set, Compass. Compass is truck only. |
-| **Mindset** | Worksheets in Presets: Why (ladder), Name the demon, Pace (gear), Talent stack. Chat from the orange fan. Private. After Action Report lives on Today. |
-| **Presets** | Counties, loops (Streets), hours, company, warranty, mindset, reminders, optional Notion backup, FAQs Roofus should remember. Reminders nag on open if that box is empty. |
+| **Mindset** | Worksheets in Presets → Mindset: Why (ladder), Name the demon, Pace (gear), Talent stack. Chat from the orange fan. Private. After Action Report lives on Today. |
+| **Presets** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. Streets is its own page. Name, company, website, warranty, counties, hours, mindset, reminder toggles, optional Notion, Memory FAQs. Reminders nag on open if that box is empty. |
 
-Bottom bar: Today · Inspect · Home. Footer: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Menu: Cards, Reference, Presets. Streets and mindset worksheets live in Presets.
+Bottom bar: Today · Inspect · Home. Footer: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Menu: Cards, Reference, Presets. Streets and mindset worksheets live in Presets (Streets is its own page; worksheets are Presets → Mindset).
 
 ## Doctrine (short)
 

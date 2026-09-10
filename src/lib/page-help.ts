@@ -2,7 +2,7 @@ export const PAGE_HELP = {
   home: {
     title: "Roofus",
     body: [
-      "This is the porch. The bar is setup — name, territory, zips, hours, warranty, Why. Each row opens Presets or Ask Roofus. Tell Roofus is the pinned setup chat.",
+      "This is the porch. The bar is setup — name, territory, zips, hours, warranty, Why. Each row opens that Presets page or Ask Roofus. Tell Roofus is the pinned setup chat.",
       "Orange button is Roofus. Tap to pick Live, Roleplay, or Mindset — each is a new chat. Hold starts Live. History is the clock in the chat. Menu: Cards, Reference, Streets, Presets. First open walks the question mark.",
       "Bottom: Today, Inspect, Home. Back shows on Cards, Reference, Presets, and Streets. Put the app on your Home Screen so the tile says Roofus and shows the dog.",
     ],
@@ -40,7 +40,7 @@ export const PAGE_HELP = {
   mindset: {
     title: "Mindset",
     body: [
-      "Worksheets live in Presets. Four truths at the top. Then Why, Name the demon, Pace, Talent stack.",
+      "Worksheets live in Presets → Mindset. Four truths at the top. Then Why, Name the demon, Pace, Talent stack.",
       "Why is a ladder: number, what it buys, who else, the person or promise. Read it with Roofus on a dead day. Demon names the attack. Pace drops a gear. Stack is three skills. After Action Report is on Today — wins, facts, a plan.",
       "Coach me through this opens a Mindset chat and asks one question. The orange fan also opens that chat. Answers land on this page. Private. Not a pitch.",
     ],
@@ -55,12 +55,12 @@ export const PAGE_HELP = {
   settings: {
     title: "Presets",
     body: [
-      "First name, counties, state, when you knock, morning work, hard stop. Company name, website, warranty line. He reads the site when you tap Read the site. He uses those when he talks product.",
-      "Zips (Streets) opens from this page. Rebuild after you change counties. Cards are park-once loops, not whole zips.",
+      "Presets is a list of pages. You, Territory, Hours, Mindset, Reminders, Backup. Streets is its own page. Back on every sub page. Tour and sample day stay on this list.",
+      "You: first name, company, website, warranty. He reads the site when you tap Read the site. He uses those when he talks product.",
+      "Territory: counties and a state. Rebuild Streets after you change them. Hours: when you knock, morning work, hard stop.",
       "Reminders nag you when you open the app. Morning: storm report if it is empty. Evening: After Action Report if it is blank. Sundays: pace. The 1st: talent stack. Did it dismisses that nag for today.",
-      "Mindset worksheets (Why, demon, Pace, stack) live on this page. The orange fan opens the chat. After Action Report is on Today.",
-      "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Connect finds the tables. Restore brings the copy onto this phone. Do not Backup from an empty phone.",
-      "FAQs ship with public porch answers already filled. Edit or drop. Your office rules win.",
+      "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report is on Today.",
+      "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Do not Restore onto a full phone. Do not Backup from an empty one.",
       "Show the question-mark tour plays the first-open walk again.",
     ],
   },
@@ -69,7 +69,7 @@ export const PAGE_HELP = {
     body: [
       "Tap the orange button to pick a mode. That starts a fresh chat. Live, Roleplay, Mindset. Hold starts Live. Live’s first starter is the million-dollar script. The dog in the corner is him. History is the clock at the bottom. Tags by color.",
       "Roleplay: pick a beat at the bottom (Walk-up, They push, After photos, The set, Whole visit), who they are, then knock. Hold the mic. Score me grades it. Hear it plays his line. Practice only — do not record a homeowner.",
-      "Mindset is truck only. Worksheets are in Presets. Camera is the Inspect page. X closes him. The day is still underneath.",
+      "Mindset is truck only. Worksheets are in Presets → Mindset. Camera is the Inspect page. X closes him. The day is still underneath.",
     ],
   },
 } as const;

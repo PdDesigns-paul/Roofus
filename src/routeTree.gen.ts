@@ -28,6 +28,13 @@ import { Route as CoachCardsRouteImport } from './routes/coach.cards'
 import { Route as CoachInspectRouteImport } from './routes/coach.inspect'
 import { Route as CoachMindsetRouteImport } from './routes/coach.mindset'
 import { Route as CoachReferenceRouteImport } from './routes/coach.reference'
+import { Route as SettingsIndexRouteImport } from './routes/settings.index'
+import { Route as SettingsBackupRouteImport } from './routes/settings.backup'
+import { Route as SettingsHoursRouteImport } from './routes/settings.hours'
+import { Route as SettingsMindsetRouteImport } from './routes/settings.mindset'
+import { Route as SettingsRemindersRouteImport } from './routes/settings.reminders'
+import { Route as SettingsTerritoryRouteImport } from './routes/settings.territory'
+import { Route as SettingsYouRouteImport } from './routes/settings.you'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -124,11 +131,46 @@ const CoachReferenceRoute = CoachReferenceRouteImport.update({
   path: '/reference',
   getParentRoute: () => CoachRoute,
 } as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsBackupRoute = SettingsBackupRouteImport.update({
+  id: '/backup',
+  path: '/backup',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsHoursRoute = SettingsHoursRouteImport.update({
+  id: '/hours',
+  path: '/hours',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsMindsetRoute = SettingsMindsetRouteImport.update({
+  id: '/mindset',
+  path: '/mindset',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsRemindersRoute = SettingsRemindersRouteImport.update({
+  id: '/reminders',
+  path: '/reminders',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsTerritoryRoute = SettingsTerritoryRouteImport.update({
+  id: '/territory',
+  path: '/territory',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsYouRoute = SettingsYouRouteImport.update({
+  id: '/you',
+  path: '/you',
+  getParentRoute: () => SettingsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/coach': typeof CoachRouteWithChildren
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/streets': typeof StreetsRoute
   '/today': typeof TodayRoute
   '/api/coach': typeof ApiCoachRoute
@@ -144,11 +186,17 @@ export interface FileRoutesByFullPath {
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
+  '/settings/backup': typeof SettingsBackupRoute
+  '/settings/hours': typeof SettingsHoursRoute
+  '/settings/mindset': typeof SettingsMindsetRoute
+  '/settings/reminders': typeof SettingsRemindersRoute
+  '/settings/territory': typeof SettingsTerritoryRoute
+  '/settings/you': typeof SettingsYouRoute
   '/coach/': typeof CoachIndexRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/settings': typeof SettingsRoute
   '/streets': typeof StreetsRoute
   '/today': typeof TodayRoute
   '/api/coach': typeof ApiCoachRoute
@@ -164,13 +212,20 @@ export interface FileRoutesByTo {
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
+  '/settings/backup': typeof SettingsBackupRoute
+  '/settings/hours': typeof SettingsHoursRoute
+  '/settings/mindset': typeof SettingsMindsetRoute
+  '/settings/reminders': typeof SettingsRemindersRoute
+  '/settings/territory': typeof SettingsTerritoryRoute
+  '/settings/you': typeof SettingsYouRoute
   '/coach': typeof CoachIndexRoute
+  '/settings': typeof SettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/coach': typeof CoachRouteWithChildren
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/streets': typeof StreetsRoute
   '/today': typeof TodayRoute
   '/api/coach': typeof ApiCoachRoute
@@ -186,7 +241,14 @@ export interface FileRoutesById {
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
+  '/settings/backup': typeof SettingsBackupRoute
+  '/settings/hours': typeof SettingsHoursRoute
+  '/settings/mindset': typeof SettingsMindsetRoute
+  '/settings/reminders': typeof SettingsRemindersRoute
+  '/settings/territory': typeof SettingsTerritoryRoute
+  '/settings/you': typeof SettingsYouRoute
   '/coach/': typeof CoachIndexRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -209,11 +271,17 @@ export interface FileRouteTypes {
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
+    | '/settings/backup'
+    | '/settings/hours'
+    | '/settings/mindset'
+    | '/settings/reminders'
+    | '/settings/territory'
+    | '/settings/you'
     | '/coach/'
+    | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/settings'
     | '/streets'
     | '/today'
     | '/api/coach'
@@ -229,7 +297,14 @@ export interface FileRouteTypes {
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
+    | '/settings/backup'
+    | '/settings/hours'
+    | '/settings/mindset'
+    | '/settings/reminders'
+    | '/settings/territory'
+    | '/settings/you'
     | '/coach'
+    | '/settings'
   id:
     | '__root__'
     | '/'
@@ -250,13 +325,20 @@ export interface FileRouteTypes {
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
+    | '/settings/backup'
+    | '/settings/hours'
+    | '/settings/mindset'
+    | '/settings/reminders'
+    | '/settings/territory'
+    | '/settings/you'
     | '/coach/'
+    | '/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CoachRoute: typeof CoachRouteWithChildren
-  SettingsRoute: typeof SettingsRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
   StreetsRoute: typeof StreetsRoute
   TodayRoute: typeof TodayRoute
   ApiCoachRoute: typeof ApiCoachRoute
@@ -405,6 +487,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoachReferenceRouteImport
       parentRoute: typeof CoachRoute
     }
+    '/settings/': {
+      id: '/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/backup': {
+      id: '/settings/backup'
+      path: '/backup'
+      fullPath: '/settings/backup'
+      preLoaderRoute: typeof SettingsBackupRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/hours': {
+      id: '/settings/hours'
+      path: '/hours'
+      fullPath: '/settings/hours'
+      preLoaderRoute: typeof SettingsHoursRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/mindset': {
+      id: '/settings/mindset'
+      path: '/mindset'
+      fullPath: '/settings/mindset'
+      preLoaderRoute: typeof SettingsMindsetRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/reminders': {
+      id: '/settings/reminders'
+      path: '/reminders'
+      fullPath: '/settings/reminders'
+      preLoaderRoute: typeof SettingsRemindersRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/territory': {
+      id: '/settings/territory'
+      path: '/territory'
+      fullPath: '/settings/territory'
+      preLoaderRoute: typeof SettingsTerritoryRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/you': {
+      id: '/settings/you'
+      path: '/you'
+      fullPath: '/settings/you'
+      preLoaderRoute: typeof SettingsYouRouteImport
+      parentRoute: typeof SettingsRoute
+    }
   }
 }
 
@@ -426,10 +557,34 @@ const CoachRouteChildren: CoachRouteChildren = {
 
 const CoachRouteWithChildren = CoachRoute._addFileChildren(CoachRouteChildren)
 
+interface SettingsRouteChildren {
+  SettingsBackupRoute: typeof SettingsBackupRoute
+  SettingsHoursRoute: typeof SettingsHoursRoute
+  SettingsMindsetRoute: typeof SettingsMindsetRoute
+  SettingsRemindersRoute: typeof SettingsRemindersRoute
+  SettingsTerritoryRoute: typeof SettingsTerritoryRoute
+  SettingsYouRoute: typeof SettingsYouRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsBackupRoute: SettingsBackupRoute,
+  SettingsHoursRoute: SettingsHoursRoute,
+  SettingsMindsetRoute: SettingsMindsetRoute,
+  SettingsRemindersRoute: SettingsRemindersRoute,
+  SettingsTerritoryRoute: SettingsTerritoryRoute,
+  SettingsYouRoute: SettingsYouRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CoachRoute: CoachRouteWithChildren,
-  SettingsRoute: SettingsRoute,
+  SettingsRoute: SettingsRouteWithChildren,
   StreetsRoute: StreetsRoute,
   TodayRoute: TodayRoute,
   ApiCoachRoute: ApiCoachRoute,

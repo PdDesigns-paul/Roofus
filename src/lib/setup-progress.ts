@@ -9,61 +9,97 @@ export const SETUP_ROWS = [
     id: "you",
     label: "You",
     hint: "First name, company, website",
-    hash: "you",
+    path: "/settings/you",
     ask: "Ask me my first name, then the company on the truck, then the company website if we have one. One at a time. Website is optional. You use name and company on the porch. You may read the website for product talk — you do not invent a URL.",
   },
   {
     id: "territory",
     label: "Territory",
     hint: "Counties and state",
-    hash: "territory",
+    path: "/settings/territory",
     ask: "Ask which counties I knock and which state. One at a time. Explain Streets builds park-once loops from that — you do not invent a town.",
   },
   {
     id: "zips",
     label: "Zips",
     hint: "Age-band loops from those counties",
-    hash: "zips",
+    path: "/streets",
     ask: "Tell me to open Streets from Presets and build loops. You cannot invent zips or subdivision names in chat. Then wait.",
   },
   {
     id: "hours",
     label: "Hours",
     hint: "When you knock",
-    hash: "hours",
+    path: "/settings/hours",
     ask: "Ask when I knock. Then morning work and when I stop, if blank. One at a time.",
   },
   {
     id: "warranty",
     label: "Warranty",
     hint: "The line you may say",
-    hash: "you",
+    path: "/settings/you",
     ask: "Ask for the warranty line I may say on a porch. One sentence. Do not invent a manufacturer promise.",
   },
   {
     id: "why",
     label: "Why",
     hint: "The ladder. Private.",
-    hash: "mindset",
+    path: "/settings/mindset",
     ask: "Walk me through Why. One question. First blank. Private. Not a door.",
   },
   {
     id: "demon",
     label: "Demon",
     hint: "Name it. Private.",
-    hash: "mindset",
+    path: "/settings/mindset",
     ask: "Walk me through naming the demon. One question. Private. Not a door.",
   },
   {
     id: "pace",
     label: "Pace + stack",
     hint: "This week, this month",
-    hash: "mindset",
+    path: "/settings/mindset",
     ask: "Walk Pace first if it is blank, else talent stack. One question. First blank. Not a door.",
   },
 ] as const;
 
 export type SetupRowId = (typeof SETUP_ROWS)[number]["id"];
+export type SetupRowPath = (typeof SETUP_ROWS)[number]["path"];
+
+export type SettingsHashTarget =
+  | "/settings/you"
+  | "/settings/territory"
+  | "/settings/hours"
+  | "/streets"
+  | "/settings/mindset"
+  | "/settings/reminders"
+  | "/settings/backup";
+
+const HASH_PATH: Record<string, SettingsHashTarget> = {
+  you: "/settings/you",
+  warranty: "/settings/you",
+  territory: "/settings/territory",
+  hours: "/settings/hours",
+  zips: "/streets",
+  mindset: "/settings/mindset",
+  why: "/settings/mindset",
+  demon: "/settings/mindset",
+  pace: "/settings/mindset",
+  stack: "/settings/mindset",
+  reminders: "/settings/reminders",
+  backup: "/settings/backup",
+};
+
+/** Old `#you` bookmarks land on the sub page. Unknown hashes stay put. */
+export function settingsHashPath(hash: string): SettingsHashTarget | undefined {
+  const id = hash.replace(/^#/, "").trim().toLowerCase();
+  if (!id) return undefined;
+  return HASH_PATH[id];
+}
+
+export function setupRowPath(id: SetupRowId): SetupRowPath {
+  return SETUP_ROWS.find((r) => r.id === id)?.path ?? "/settings/you";
+}
 
 export type SetupSnap = {
   goBy: string;
