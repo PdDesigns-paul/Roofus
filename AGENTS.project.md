@@ -2,7 +2,7 @@
 
 You are editing **an existing app**. Never scaffold a blank one. Never rebrand it. Never add login or a database.
 
-This file is for the Build agent. Porch doctrine is [`DOCTRINE.md`](./DOCTRINE.md). That file wins over Drive, chat history, and summaries.
+This file is for any agent (Grok Build, Cursor, Copilot). Porch doctrine is [`DOCTRINE.md`](./DOCTRINE.md). That file wins over Drive, chat history, and summaries. If you also see `AGENTS.md`, that is Grok sandbox chrome (ports, preview, platform plugins) — do not grow Roofus rules there.
 
 ## One source of truth
 
@@ -23,7 +23,7 @@ If `DOCTRINE.md` and a button disagree, fix both in the same change.
 3. Do only the slice they asked. Push back to that repo when it works.
 4. Do not paste the old chat. Do not dump the archive playbooks into new files.
 
-Publish from this Grok chat. Do **not** create or deploy a Vercel project unless they ask. GitHub (`PdDesigns-paul/Roofus`) is the book.
+GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at **roofus.coach**. Do **not** create a second Vercel project. Do not move the custom domain onto grok.me unless they ask.
 
 ## Product (short)
 
@@ -51,6 +51,16 @@ Phone-first PWA. First screen is the porch. Bottom bar: Today · Streets · Insp
 - `src/lib/porch-faqs.ts`
 - `src/lib/page-help.ts`
 
+## How we write code
+
+Comments explain a trap, not the line. One short why is enough (`Zip when we have one — that’s the card now.`). Do not JSDoc `bump()`. Do not narrate `// increment knocks`. Do not comment-out dead code. Do not sweep old files adding comments.
+
+Tests live in `src/lib/*.test.ts` (`node:test`). Pure functions: labels, hail grade, county parse, Notion merge, Inspect-blank. No live xAI, Notion, Census, or NWS. A slice that changes those rules **ships a test in the same change**. Do not add Playwright / browser suites to CI. Phone UI is them tapping roofus.coach.
+
+`npm run test:app` is the product suite. `npm test` also runs Grok platform script tests — CI must not use that. `npm run typecheck` and `npm run test:app` must pass before push.
+
+Do not add login, Postgres, new API keys, Codecov, Husky, or commitlint. Conventional-commit prefixes are optional; a sentence that says what the phone does is better.
+
 ## After a slice
 
-Commit in this repo and push to `PdDesigns-paul/Roofus` on `main`. One working slice per chat is enough.
+Run `npm run typecheck` and `npm run test:app`. Commit and push to `PdDesigns-paul/Roofus` on `main`. Vercel rebuilds roofus.coach from that push. One working slice per chat is enough.

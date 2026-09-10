@@ -6,7 +6,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun. Notion is a
 
 **The app is Roofus.** One word. Capital R only.
 
-**Doctrine lives in this repo.** [`DOCTRINE.md`](./DOCTRINE.md) is the only live porch + product book. Drive archives and old chats do not override it. Build agents read [`AGENTS.project.md`](./AGENTS.project.md).
+**Doctrine lives in this repo.** [`DOCTRINE.md`](./DOCTRINE.md) is the only live porch + product book. Drive archives and old chats do not override it. Build agents read [`AGENTS.project.md`](./AGENTS.project.md). GitHub is the book. The live phone is [roofus.coach](https://roofus.coach) on Vercel Hobby. SuperGrok is the editor, not a second host.
 
 ## What you do in it
 
@@ -88,14 +88,15 @@ Do not commit a `.env`. Do not put keys in the client.
 npm run dev          # local app
 npm run build        # production build
 npm run typecheck
-npm test
+npm run test:app     # Roofus lib tests (what CI runs)
+npm test             # includes Grok platform script tests — not CI
 ```
 
 ## Layout
 
 ```
 DOCTRINE.md            porch + product book (source of truth)
-AGENTS.project.md      instructions for the next Build chat
+AGENTS.project.md      instructions for any agent (Grok, Cursor, Copilot)
 src/routes/            pages + /api/* proxies
 src/components/        phone chrome (tabs, chat sheet, FAB)
 src/lib/               stores, ranking, Notion, coach prompt
@@ -108,7 +109,7 @@ Backup merge rules live in `src/lib/notion-merge.ts` and are unit-tested. Writes
 
 ## Tests
 
-`node --test` on `src/lib/*.test.ts`. Pure functions only (labels, hail grade, county parse, Notion merge). No live Notion token, no live xAI key.
+`npm run test:app` is `node --test` on `src/lib/*.test.ts`. Pure functions only (labels, hail grade, county parse, Notion merge, Inspect-blank). No live Notion token, no live xAI key. GitHub Action on `main` runs typecheck, `test:app`, and build. Do not put Grok `scripts/**/*.test.mjs` in CI.
 
 ## Name
 
