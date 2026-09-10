@@ -12,6 +12,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun. Notion is a
 
 | Surface | What it is |
 | --- | --- |
+| **Porch** | First screen. Who this is. Open Today, Streets, or Inspect. |
 | **Today** | Four counts (Doors, Talked, On the roof, Appointments), neighborhood, weather you may mention, After Action Report, tomorrow. |
 | **Streets** | Age-band **zips** from your counties (default 17–25 year roofs), grouped by county. Working / Done / Skip. Maps on the card. |
 | **Last 48 hours** | On-demand. NWS first, then local news and X. Grade H / M / L. **H on a zip you keep is tomorrow.** Medium and Low do not pick the day. |
@@ -20,7 +21,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun. Notion is a
 | **Mindset** | Why, Name the demon, Pace, Talent stack. Private. After Action Report lives on Today. |
 | **Presets** | Counties, hours, company name, warranty, optional Notion backup, FAQs Roofus should remember (starters from public porch teaching). |
 
-Bottom bar: Today · Streets · Inspect. Mindset, Reference, and Presets sit behind the three dots.
+Bottom bar: Today · Streets · Inspect. The gable mark goes back to the porch. Mindset, Reference, and Presets sit behind the three dots.
 
 ## Doctrine (short)
 
@@ -74,8 +75,10 @@ npm run dev
 
 | Variable | Where | What |
 | --- | --- | --- |
-| `XAI_API_KEY` | server only | Roofus chat, transcribe, speak. Never `VITE_`. |
+| `XAI_API_KEY` | server only | Roofus chat, transcribe, speak, Last 48 hours pulse. Never `VITE_`. |
 | `DATABASE_URL` | unused by this app | Platform leftover. Auth and Postgres stay off. |
+
+Maps open Google Maps search links. No Maps API key. Streets come from Census TIGERweb. Weather is NWS. Notion secret is pasted in Presets and stays on the phone.
 
 Do not commit a `.env`. Do not put keys in the client.
 

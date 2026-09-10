@@ -27,7 +27,7 @@ Publish from this Grok chat. Do **not** create or deploy a Vercel project unless
 
 ## Product (short)
 
-Phone-first PWA. Bottom bar: Today · Streets · Inspect. More: Mindset, Reference, Presets. Orange button = Roofus the coach.
+Phone-first PWA. First screen is the porch. Bottom bar: Today · Streets · Inspect. More: Mindset, Reference, Presets. Orange button = Roofus the coach.
 
 - Streets = **zip** cards grouped by county (not named subdivisions, not one card per block group).
 - Door hat first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.

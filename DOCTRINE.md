@@ -13,7 +13,7 @@ If this file and the UI disagree, fix the UI or fix this file in the same change
 Phone-first ride-along **journal + coach** for door-to-door roofers and storm restoration canvassers.
 
 - The phone is the live log. Notion is an optional copy so a dead phone is not a dead year.
-- Roofus (the orange button) is the coach. CompanyCam is the report. This app is not a CRM, takeoff, clipboard, listing lookup, or notes app.
+- First screen is the porch. Today is the log. Roofus (the orange button) is the coach. CompanyCam is the report. This app is not a CRM, takeoff, clipboard, listing lookup, or notes app.
 - Generic canvasser. Never assume a name, employer, West Shore loop, or 3:30 start. Today’s log and Presets win.
 - The app is **Roofus**. One word. Capital R only. Not Rufus, not RoofUS.
 

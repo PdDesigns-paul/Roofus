@@ -19,9 +19,13 @@ export function AppHeader({
   return (
     <header className="flex items-center justify-between">
       {home ? (
-        <div className="inline-flex size-11 items-center justify-center text-muted">
+        <Link
+          to="/"
+          className="inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg"
+          aria-label="Roofus"
+        >
           <GableMark className="size-4" />
-        </div>
+        </Link>
       ) : (
         <Link
           to={backTo}

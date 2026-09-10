@@ -52,7 +52,7 @@ function MindsetPage() {
       </section>
 
       <Link
-        to="/"
+        to="/today"
         className="mt-4 flex min-h-14 items-center justify-between rounded-2xl border border-border px-4 text-sm"
       >
         <span>3 · After Action Report</span>

@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { AppHeader } from "@/components/app-header";
 import { InstallHint } from "@/components/install-hint";
@@ -19,9 +19,8 @@ import { stormsNearLoop } from "@/lib/weather-match";
 import { useWeather } from "@/lib/weather-store";
 
 export const Route = createFileRoute("/today")({
-  beforeLoad: () => {
-    throw redirect({ to: "/" });
-  },
+  codeSplitGroupings: [],
+  component: TodayJournal,
 });
 
 export function TodayJournal() {

@@ -1,8 +1,8 @@
 export const PAGE_HELP = {
   home: {
-    title: "Today",
+    title: "Roofus",
     body: [
-      "This is your day. Tap Doors, Talked, On the roof, Appointments. That’s the count Roofus reads tonight.",
+      "This is the porch. Open Today for the four counts. Streets is zips. Inspect is the camera.",
       "Orange button is Roofus. Tap him — he's in the corner of the chat. Hold the button for old chats. Three dots: Mindset, Reference, Presets. First open walks the question mark.",
       "Bottom: Today, Streets, Inspect. Put the app on your Home Screen so it opens like anything else on this phone.",
     ],

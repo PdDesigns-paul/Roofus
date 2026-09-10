@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { CalendarDays, Camera, Map } from "lucide-react";
 
 const TABS = [
-  { to: "/", id: "today", label: "Today", icon: CalendarDays, match: (p: string) => p === "/" || p === "/today" },
+  { to: "/today", id: "today", label: "Today", icon: CalendarDays, match: (p: string) => p === "/today" },
   { to: "/streets", id: "streets", label: "Streets", icon: Map, match: (p: string) => p.startsWith("/streets") },
   {
     to: "/coach/inspect",

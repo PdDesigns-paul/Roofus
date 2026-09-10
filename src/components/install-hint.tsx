@@ -40,7 +40,7 @@ export function InstallHint() {
   }
 
   return (
-    <div className="mt-8 rounded-2xl border border-border px-4 py-3">
+    <div className="mt-4 rounded-2xl border border-border px-4 py-3">
       <p className="text-xs font-medium uppercase tracking-wide text-faint">Install this</p>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         {isIos()
