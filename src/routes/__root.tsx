@@ -3,6 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { AskFab } from "@/components/ask-fab";
 import { ChatHistory } from "@/components/chat-history";
 import { ChatSheet } from "@/components/chat-sheet";
+import { OnboardOverlay } from "@/components/onboard-overlay";
 import { TabBar } from "@/components/tab-bar";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -55,6 +56,7 @@ export const Route = createRootRoute({
             <AskFab />
             <ChatSheet />
             <ChatHistory />
+            <OnboardOverlay />
           </TooltipProvider>
         </AuthProvider>
         <Scripts />

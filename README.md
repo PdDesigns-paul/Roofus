@@ -42,6 +42,7 @@ Everything lives in **this browser** (`localStorage` via Zustand):
 - `roofus-survive-v1` — mindset worksheets
 - `roofus-notion-v1` — optional integration secret, table ids, FAQs
 - `roofus-settings` — theme, company, warranty
+- `roofus-onboard-v1` — first-run question-mark tour
 - coach threads in the coach store
 
 There is **no login** and **no app database**. Do not put a Notion secret in the repo. The secret stays on the phone and is sent to Notion only when they tap Connect or Backup.

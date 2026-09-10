@@ -44,6 +44,7 @@ export function AskFab() {
       <button
         type="button"
         aria-label="Talk to Roofus"
+        data-tour="roofus"
         className="fixed right-4 z-30 flex size-14 items-center justify-center rounded-full bg-accent text-paper shadow-lg ring-2 ring-paper/40"
         style={{ bottom: "calc(4.25rem + env(safe-area-inset-bottom))" }}
         onPointerDown={onDown}

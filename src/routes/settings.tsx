@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { HelpButton } from "@/components/help-button";
 import { NotionBackup } from "@/components/notion-backup";
@@ -6,6 +6,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useDayBook } from "@/lib/day-book";
+import { resetOnboard } from "@/lib/onboard";
 import { useSettings } from "@/lib/settings-store";
 
 export const Route = createFileRoute("/settings")({
@@ -17,6 +18,7 @@ function SettingsPage() {
   const s = useSettings();
   const profile = useDayBook((st) => st.profile);
   const patchProfile = useDayBook((st) => st.patchProfile);
+  const navigate = useNavigate();
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
@@ -38,6 +40,17 @@ function SettingsPage() {
       <p className="mt-3 text-sm leading-snug text-muted">
         Counties, hours, company, warranty. Backup is optional.
       </p>
+
+      <button
+        type="button"
+        className="mt-4 h-11 w-full rounded-full border border-border text-sm"
+        onClick={() => {
+          void navigate({ to: "/" });
+          resetOnboard();
+        }}
+      >
+        Show the question-mark tour
+      </button>
 
       <section className="mt-5 flex flex-col gap-3">
         <p className="text-xs font-medium uppercase tracking-wide text-faint">You</p>

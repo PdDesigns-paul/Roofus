@@ -3,7 +3,7 @@ export const PAGE_HELP = {
     title: "Today",
     body: [
       "This is your day. Tap Doors, Talked, On the roof, Appointments. That’s the count Roofus reads tonight.",
-      "Orange button is Roofus. Tap him — he's in the corner of the chat. Hold the button for old chats. Three dots: Mindset, Reference, company name.",
+      "Orange button is Roofus. Tap him — he's in the corner of the chat. Hold the button for old chats. Three dots: Mindset, Reference, Presets. First open walks the question mark.",
       "Bottom: Today, Streets, Inspect. Put the app on your Home Screen so it opens like anything else on this phone.",
     ],
   },
@@ -51,6 +51,7 @@ export const PAGE_HELP = {
       "First name, counties, state, when you knock, morning work, hard stop. Company name and warranty line. He uses those when he talks product.",
       "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Free account. Recommended so a dead phone is not a dead year.",
       "FAQs ship with public porch answers already filled. Edit or drop. Your office rules win.",
+      "Show the question-mark tour plays the first-open walk again.",
     ],
   },
   coach: {

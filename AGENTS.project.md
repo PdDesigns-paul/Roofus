@@ -23,7 +23,7 @@ If `DOCTRINE.md` and a button disagree, fix both in the same change.
 3. Do only the slice they asked. Push back to that repo when it works.
 4. Do not paste the old chat. Do not dump the archive playbooks into new files.
 
-Live site: `https://roofus-six.vercel.app`
+Publish from this Grok chat. Do **not** create or deploy a Vercel project unless they ask. GitHub (`PdDesigns-paul/Roofus`) is the book.
 
 ## Product (short)
 
