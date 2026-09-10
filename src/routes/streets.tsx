@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { useDayBook } from "@/lib/day-book";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
-import { loopAge, loopLabel, groupLoopsByCounty, splitWorking } from "@/lib/streets-rank";
+import { loopAge, loopHeadline, loopLabel, loopZip, groupLoopsByCounty, splitWorking } from "@/lib/streets-rank";
 import { marketKey, useStreets } from "@/lib/streets-store";
 import type { LoopResult, LoopStatus, StreetLoop, StreetsBuildResponse } from "@/lib/streets-types";
 import { mentionOnStreet } from "@/lib/weather-match";
@@ -101,6 +101,25 @@ function StreetsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile.setupDone, profile.counties, profile.states]);
 
+  useEffect(() => {
+    const missing = loops.filter((l) => /^\d{5}$/.test(l.zip) && !(l.town ?? "").trim()).map((l) => l.zip);
+    if (!missing.length) return;
+    let cancelled = false;
+    void fetch(`/api/streets?zips=${missing.slice(0, 80).join(",")}`)
+      .then((r) => r.json())
+      .then((data: { towns?: Record<string, string> }) => {
+        if (cancelled || !data.towns) return;
+        if (!Object.keys(data.towns).length) return;
+        useStreets.getState().setTowns(data.towns);
+      })
+      .catch(() => {
+        /* zip still shows */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [loops]);
+
   if (!profile.setupDone) {
     return (
       <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
@@ -125,7 +144,7 @@ function StreetsPage() {
       <AppHeader title="Streets" />
       <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where you knock.</h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
-        {profile.counties.trim()}, {profile.states.trim()}. One card per zip.
+        {profile.counties.trim()}, {profile.states.trim()}. Town name on the card so it is not a list of numbers.
       </p>
 
       <button
@@ -261,15 +280,18 @@ function LoopCard({ loop }: { loop: StreetLoop }) {
   const setResult = useStreets((s) => s.setResult);
   const patchToday = useDayBook((s) => s.patchToday);
   const kept = useWeather((s) => s.kept);
-  const label = loopLabel(loop);
+  const zip = loopZip(loop) || loopLabel(loop);
+  const town = (loop.town ?? "").trim();
+  const title = town || loopHeadline(loop);
   const age = loopAge(loop);
   const mention = loop.status === "working" ? mentionOnStreet(kept, loop) : "";
 
   return (
     <li className="rounded-2xl border border-border bg-surface px-4 py-3">
       <button type="button" className="w-full text-left" onClick={() => setOpen((o) => !o)}>
-        <p className="font-display text-xl tracking-tight">{label}</p>
+        <p className="font-display text-xl tracking-tight">{title}</p>
         <p className="mt-1 text-xs text-muted">
+          {town && zip ? `${zip} · ` : ""}
           roofs around {age} years
           {loop.status !== "fresh" ? ` · ${loop.status}` : ""}
         </p>
@@ -319,7 +341,7 @@ function LoopCard({ loop }: { loop: StreetLoop }) {
             className="mt-3 h-11 w-full rounded-full border border-border text-sm"
             onClick={() => {
               setStatus(loop.id, "working");
-              patchToday({ cluster: label, storm: mentionOnStreet(kept, loop) });
+              patchToday({ cluster: zip, storm: mentionOnStreet(kept, loop) });
             }}
           >
             Use today

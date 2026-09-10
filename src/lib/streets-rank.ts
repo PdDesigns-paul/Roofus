@@ -16,6 +16,14 @@ export function loopLabel(loop: { zip?: string; title?: string; streets?: string
   return "Untitled streets";
 }
 
+/** Human line: Mechanicsburg · 17050. Zip stays the key. */
+export function loopHeadline(loop: { zip?: string; title?: string; town?: string; streets?: string[] }): string {
+  const zip = loopZip(loop);
+  const town = (loop.town ?? "").trim();
+  if (zip && town) return `${town} · ${zip}`;
+  return loopLabel(loop);
+}
+
 export function loopAge(loop: Pick<StreetLoop, "medianYear">, now = new Date().getFullYear()): number {
   return Math.max(0, now - loop.medianYear);
 }

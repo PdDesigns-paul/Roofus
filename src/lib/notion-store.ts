@@ -3,7 +3,6 @@ import { persist } from "zustand/middleware";
 import { mergeFaqs } from "@/lib/notion-merge";
 import type { NotionFaq, NotionIds } from "@/lib/notion-ids";
 import { DEFAULT_FAQS } from "@/lib/porch-faqs";
-import { isPushFaq } from "@/lib/push-payload";
 
 export type { NotionFaq, NotionIds };
 
@@ -53,7 +52,7 @@ export const useNotion = create<NotionState>()(
         const aa = a.trim();
         if (!qq || !aa) return;
         set({
-          faqs: [{ id: `f_${Date.now().toString(36)}`, q: qq, a: aa }, ...get().faqs.filter((f) => !isPushFaq(f.q, f.id))].slice(0, 40),
+          faqs: [{ id: `f_${Date.now().toString(36)}`, q: qq, a: aa }, ...get().faqs].slice(0, 40),
         });
       },
       dropFaq: (id) => set({ faqs: get().faqs.filter((f) => f.id !== id) }),
@@ -110,7 +109,6 @@ export function notionForCoach(): string {
   }
   const lines = ["# Memory (from Notion / this phone). Treat as their long-term notes. Not porch fiction."];
   for (const f of s.faqs.slice(0, 24)) {
-    if (isPushFaq(f.q, f.id)) continue;
     lines.push(`Q: ${f.q}\nA: ${f.a}`);
   }
   if (s.lastSyncAt) lines.push(`Last Notion backup: ${s.lastSyncAt.slice(0, 10)}`);

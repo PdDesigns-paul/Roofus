@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { buildStreetLoops } from "@/lib/streets-build";
+import { buildStreetLoops, lookupTowns } from "@/lib/streets-build";
 import type { StreetsBuildRequest } from "@/lib/streets-types";
 
 function json(body: unknown, status = 200) {
@@ -7,6 +7,16 @@ function json(body: unknown, status = 200) {
     status,
     headers: { "content-type": "application/json", "cache-control": "no-store" },
   });
+}
+
+async function handleGet({ request }: { request: Request }) {
+  const url = new URL(request.url);
+  const zips = (url.searchParams.get("zips") ?? "")
+    .split(",")
+    .map((z) => z.trim())
+    .filter((z) => /^\d{5}$/.test(z));
+  const towns = await lookupTowns(zips);
+  return json({ towns });
 }
 
 async function handlePost({ request }: { request: Request }) {
@@ -26,5 +36,5 @@ async function handlePost({ request }: { request: Request }) {
 }
 
 export const Route = createFileRoute("/api/streets")({
-  server: { handlers: { POST: handlePost } },
+  server: { handlers: { GET: handleGet, POST: handlePost } },
 });

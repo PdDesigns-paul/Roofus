@@ -247,13 +247,13 @@ Roofus is not their lawyer.
 
 ## Product map (keep the coach prompt in sync)
 
-Bottom bar: **Today · Inspect · Home**. Home is the porch: setup bar, Tell Roofus (pinned Setup chat), links into Presets. Footer above it: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Streets is not a tab — open it from Presets. Menu: Cards, Reference, Presets. Mindset worksheets live in Presets. Reminders nag on open; lock-screen pings need Notion (same backup). Roofus is the orange button — tap fans Live / Roleplay / Mindset. Hold starts Live. Inspect hides him. Not a tab.
+Bottom bar: **Today · Inspect · Home**. Home is the porch: setup bar, Tell Roofus (pinned Setup chat), links into Presets. Footer above it: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Streets is not a tab — open it from Presets. Menu: Cards, Reference, Presets. Mindset worksheets live in Presets. Reminders nag on open (morning storm, evening journal, Sundays pace, the 1st stack) if that box is empty. Roofus is the orange button — tap fans Live / Roleplay / Mindset. Hold starts Live. Inspect hides him. Not a tab.
 
 | Surface | What it is |
 | --- | --- |
 | **Today** | Pre-knock strip (zip, age, weather you may mention, first door line). Four counts (Doors, Talked, On the roof, Appointments), zip, weather they may mention, After Action Report (wins, do-better, plan), tomorrow. Pocket cards. Counties and hours are **not** here — Presets. |
 | **Cards** | Five pocket cards: Door, Pushback, i35, Set, Compass. Distilled from this file. Compass is truck only. |
-| **Streets** | Age-band **zips**, grouped by county. Working pinned. Maps. One weather sentence on the Working zip if a kept storm matches. **Use today** copies that sentence to Today. Last 48 hours and season log are **not** on this page. |
+| **Streets** | Age-band **zips** with town names, grouped by county. Working pinned. Maps. One weather sentence on the Working zip if a kept storm matches. **Use today** copies that sentence to Today. Last 48 hours and season log are **not** on this page. |
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot (Bad / Good / Worst / skip theater). Practice shot is a sample close-up — not this house. |
 | **Roofus** | Tap fans Live, Roleplay, Mindset. Each pick is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. New Live lives on the History sheet. Live’s first starter is the million-dollar script (B). Roleplay beats at the bottom: Walk-up, They push, After photos (talk only), The set, Whole visit. Score me is a button. Hold-to-talk in Roleplay. Hear it reads his line. Mindset is truck only. |

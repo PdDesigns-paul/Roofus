@@ -18,7 +18,7 @@ export const PAGE_HELP = {
   streets: {
     title: "Streets",
     body: [
-      "Build from the counties in Presets — this page is not a tab. You pick the roof age — default 17–25 years. Tap Change to edit. Cards are zips. Working sits at the top. Tap a county to open the rest. Streets on a card are the age-band pockets — tap the card.",
+      "Build from the counties in Presets — this page is not a tab. You pick the roof age — default 17–25 years. Tap Change to edit. Cards are town · zip, not a list of numbers. Working sits at the top. Tap a county to open the rest. Streets on a card are the age-band pockets — tap the card.",
       "A Working zip shows one sentence if a kept storm actually hit it. Use today copies that sentence onto Today. Last 48 hours and the season log are not on this page.",
     ],
   },
@@ -57,7 +57,7 @@ export const PAGE_HELP = {
     body: [
       "First name, counties, state, when you knock, morning work, hard stop. Company name and warranty line. He uses those when he talks product.",
       "Zips (Streets) opens from this page. Rebuild after you change counties.",
-      "Reminders nag you when you open the app. Lock-screen pings need Notion — same secret as backup — and the Home Screen icon.",
+      "Reminders nag you when you open the app. Morning: storm report if it is empty. Evening: After Action Report if it is blank. Sundays: pace. The 1st: talent stack. Did it dismisses that nag for today.",
       "Mindset worksheets (Why, demon, Pace, stack) live on this page. The orange fan opens the chat. After Action Report is on Today.",
       "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Connect finds the tables. Restore brings the copy onto this phone. Do not Backup from an empty phone.",
       "FAQs ship with public porch answers already filled. Edit or drop. Your office rules win.",

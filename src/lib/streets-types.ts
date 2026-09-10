@@ -6,6 +6,8 @@ export type StreetLoop = {
   /** Zip when we have one. Old saves may still hold a subdivision name. */
   title: string;
   zip: string;
+  /** USPS city / town for that zip. Blank on old saves until they rebuild or Streets fills it. */
+  town: string;
   streets: string[];
   county: string;
   state: string;

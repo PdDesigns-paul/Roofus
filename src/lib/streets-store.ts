@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { LoopResult, LoopStatus, StreetLoop } from "@/lib/streets-types";
-import { loopLabel } from "@/lib/streets-rank";
+import { loopHeadline, loopLabel } from "@/lib/streets-rank";
 import { hOverrideLoop, pulseIsFresh } from "@/lib/weather-grade";
 import { useWeather } from "@/lib/weather-store";
 
@@ -20,6 +20,7 @@ type StreetsState = {
   setAge: (ageMin: number, ageMax: number) => void;
   setStatus: (id: string, status: LoopStatus) => void;
   setResult: (id: string, lastResult: LoopResult) => void;
+  setTowns: (towns: Record<string, string>) => void;
   hide: (id: string) => void;
 };
 
@@ -37,7 +38,12 @@ function mergeStatus(incoming: StreetLoop[], previous: StreetLoop[]): StreetLoop
       (l.zip ? byZip.get(`${l.county}:${l.zip}`) : undefined) ??
       (l.title ? byTitle.get(`${l.county}:${l.title.toLowerCase()}`) : undefined);
     if (!old) return l;
-    return { ...l, status: old.status, lastResult: old.lastResult };
+    return {
+      ...l,
+      status: old.status,
+      lastResult: old.lastResult,
+      town: l.town?.trim() || old.town || "",
+    };
   });
 }
 
@@ -70,6 +76,19 @@ export const useStreets = create<StreetsState>()(
         set((s) => ({ loops: s.loops.map((l) => (l.id === id ? { ...l, status } : l)) })),
       setResult: (id, lastResult) =>
         set((s) => ({ loops: s.loops.map((l) => (l.id === id ? { ...l, lastResult } : l)) })),
+      setTowns: (towns) =>
+        set((s) => {
+          let changed = false;
+          const loops = s.loops.map((l) => {
+            const town = towns[l.zip];
+            if (town && !(l.town ?? "").trim()) {
+              changed = true;
+              return { ...l, town };
+            }
+            return l;
+          });
+          return changed ? { loops } : s;
+        }),
       hide: (id) => set((s) => ({ loops: s.loops.filter((l) => l.id !== id) })),
     }),
     {
@@ -119,13 +138,13 @@ export function streetsForCoach(): string {
     "Pick tomorrow: a 48h High on a loop they keep jumps Working (restoration). Then Working. Then the next fresh age-band loop. M/L do not pick the day. Do not ask a newbie where to go. Do not rank the whole list by hail.",
   ];
   for (const l of loops.slice(0, 24)) {
-    const name = loopLabel(l);
+    const name = loopHeadline(l);
     const streets = l.streets.slice(0, 8).join(", ");
     lines.push(
       `- ${name} · ${l.county} · ~${l.medianYear} · ${l.status}${l.lastResult ? `/${l.lastResult}` : ""} · ${streets}`,
     );
   }
   const next = suggestTomorrow(loops);
-  if (next) lines.push(`Suggested tomorrow: ${loopLabel(next)} (${next.streets.slice(0, 4).join(", ")}).`);
+  if (next) lines.push(`Suggested tomorrow: ${loopHeadline(next)} (${next.streets.slice(0, 4).join(", ")}).`);
   return lines.join("\n");
 }

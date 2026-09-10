@@ -280,6 +280,7 @@ function rollupZips(county: CountyHit, rows: BgReady[], zips: ZipMeta[]): Street
       id: `${county.geoid}-z${zip}`,
       title: zip,
       zip,
+      town: "",
       streets,
       county: county.name,
       state: county.stateFp,
@@ -374,10 +375,39 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
     noteParts.push("No zips in that age band. Try a wider year range.");
   }
 
+  const sliced = loops.slice(0, 40);
+  const towns = await lookupTowns(sliced.map((l) => l.zip));
+  for (const l of sliced) {
+    const town = towns[l.zip];
+    if (town) l.town = town;
+  }
+
   return {
-    loops: loops.slice(0, 40),
+    loops: sliced,
     note: noteParts.join(" "),
     yearFrom,
     yearTo,
   };
+}
+
+export async function lookupTowns(zips: string[]): Promise<Record<string, string>> {
+  const unique = [...new Set(zips.filter((z) => /^\d{5}$/.test(z)))].slice(0, 80);
+  const out: Record<string, string> = {};
+  for (let i = 0; i < unique.length; i += 8) {
+    const chunk = unique.slice(i, i + 8);
+    await Promise.all(
+      chunk.map(async (zip) => {
+        try {
+          const data = (await getJson(`https://api.zippopotam.us/us/${zip}`, "Town", 8_000)) as {
+            places?: { "place name"?: string }[];
+          };
+          const name = String(data.places?.[0]?.["place name"] ?? "").trim();
+          if (name) out[zip] = name;
+        } catch {
+          /* leave blank — zip still shows */
+        }
+      }),
+    );
+  }
+  return out;
 }

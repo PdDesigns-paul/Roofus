@@ -4,6 +4,7 @@ import type { StreetLoop } from "./streets-types.ts";
 
 type MapLoop = Pick<StreetLoop, "lat" | "lon" | "streets" | "title" | "county" | "state"> & {
   zip?: string;
+  town?: string;
 };
 
 /** Google Maps search. Zip when we have one — that’s the card now. */
@@ -18,8 +19,10 @@ export function mapsUrl(loop: MapLoop): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
 }
 
-export function mapsLabel(loop: Pick<StreetLoop, "streets" | "title"> & { zip?: string }): string {
+export function mapsLabel(loop: Pick<StreetLoop, "streets" | "title"> & { zip?: string; town?: string }): string {
   const zip = loopZip(loop);
+  const town = (loop.town ?? "").trim();
+  if (zip && town) return `Map · ${town} · ${zip}`;
   if (zip) return `Map · ${zip}`;
   const street = loop.streets[0] || loop.title;
   return street ? `Map · ${street}` : "Open in Maps";

@@ -152,6 +152,7 @@ export function sanitizeLoop(raw: Partial<StreetLoop> & { id: string }): StreetL
     id: raw.id,
     title,
     zip,
+    town: s(raw.town),
     streets,
     county: s(raw.county),
     state: s(raw.state),
@@ -177,6 +178,7 @@ export function mergeLoops(current: StreetLoop[], incoming: StreetLoop[]): Stree
             ...l,
             status: cur.status || l.status,
             lastResult: cur.lastResult || l.lastResult,
+            town: l.town.trim() || cur.town,
           }
         : l,
     );

@@ -1,7 +1,4 @@
-/**
- * Nags when they open the app. Lock-screen push uses Notion as the drawer
- * (same secret as backup) plus a morning/evening ping. No Firebase.
- */
+/** Nags when they open the app. Morning storm, evening journal, Sunday pace, the 1st stack. */
 import { localDateKey } from "./day-book.ts";
 import { setupScore, type SetupSnap } from "./setup-progress.ts";
 
@@ -11,30 +8,37 @@ export const REMINDERS = [
     label: "Finish setup",
     when: "Until territory is in",
     hint: "Name, counties, state. The bar on Home.",
+    to: "/",
   },
   {
     id: "storm",
     label: "Storm report",
-    when: "Daily",
-    hint: "Last 48 hours. Morning ping if Notion is connected.",
+    when: "Morning",
+    hint: "Last 48 hours. Only if you open before noon and it is empty.",
+    to: "/today",
   },
   {
     id: "journal",
     label: "Tracking + journal",
-    when: "Daily",
-    hint: "Four counts. After Action Report on Today.",
+    when: "Evening",
+    hint: "Four counts. After Action Report. After 5, if it is blank.",
+    to: "/today",
   },
   {
     id: "pace",
     label: "Weekly pace",
-    when: "Weekly",
+    when: "Sundays",
     hint: "Gear and one off-block. Presets → Mindset.",
+    to: "/settings",
+    hash: "mindset",
   },
   {
     id: "stack",
     label: "Monthly stack",
-    when: "Monthly",
+    when: "The 1st",
     hint: "Three skills this month.",
+    to: "/settings",
+    hash: "mindset",
   },
 ] as const;
 
@@ -43,6 +47,12 @@ export type ReminderId = (typeof REMINDERS)[number]["id"];
 export type ReminderPrefs = {
   on: Record<ReminderId, boolean>;
   lastDone: Partial<Record<ReminderId, string>>;
+};
+
+export type RemindClock = {
+  hour: number;
+  weekday: number;
+  day: number;
 };
 
 export const DEFAULT_REMINDER_ON: Record<ReminderId, boolean> = {
@@ -55,6 +65,10 @@ export const DEFAULT_REMINDER_ON: Record<ReminderId, boolean> = {
 
 export function blankReminderPrefs(): ReminderPrefs {
   return { on: { ...DEFAULT_REMINDER_ON }, lastDone: {} };
+}
+
+export function nowClock(d = new Date()): RemindClock {
+  return { hour: d.getHours(), weekday: d.getDay(), day: d.getDate() };
 }
 
 function daysBetween(a: string, b: string): number {
@@ -71,22 +85,29 @@ export function reminderDue(
   today: string,
   ready: boolean,
   extra: { afterAction: string; stormFetchedOn: string; stackMonth: string },
+  clock: RemindClock,
 ): boolean {
   if (!prefs.on[id]) return false;
+  if ((prefs.lastDone[id] ?? "") === today) return false;
   if (id === "setup") return !ready;
-  const done = prefs.lastDone[id] ?? "";
-  if (id === "storm") return extra.stormFetchedOn !== today && done !== today;
+  if (id === "storm") {
+    if (clock.hour >= 12) return false;
+    return extra.stormFetchedOn !== today;
+  }
   if (id === "journal") {
-    if (extra.afterAction.trim()) return false;
-    return done !== today;
+    if (clock.hour < 17) return false;
+    return !extra.afterAction.trim();
   }
   if (id === "pace") {
+    if (clock.weekday !== 0) return false;
+    const done = prefs.lastDone[id] ?? "";
     if (!done) return true;
     return daysBetween(done, today) >= 7;
   }
+  if (clock.day !== 1) return false;
   const month = today.slice(0, 7);
   if (extra.stackMonth === month) return false;
-  return done.slice(0, 7) !== month;
+  return true;
 }
 
 export function dueReminders(
@@ -94,22 +115,7 @@ export function dueReminders(
   snap: SetupSnap,
   extra: { afterAction: string; stormFetchedOn: string; stackMonth: string },
   today = localDateKey(),
+  clock = nowClock(),
 ) {
-  return REMINDERS.filter((r) => reminderDue(r.id, prefs, today, setupScore(snap).ready, extra));
-}
-
-export function pingCopy(ids: ReminderId[]): { title: string; body: string; url: string } {
-  const labels = ids
-    .map((id) => REMINDERS.find((r) => r.id === id)?.label)
-    .filter((v) => Boolean(v));
-  const url = ids.includes("setup")
-    ? "/"
-    : ids.includes("pace") || ids.includes("stack")
-      ? "/settings#mindset"
-      : "/today";
-  return {
-    title: "Roofus",
-    body: labels.length ? labels.join(" · ") : "Open the app.",
-    url,
-  };
+  return REMINDERS.filter((r) => reminderDue(r.id, prefs, today, setupScore(snap).ready, extra, clock));
 }

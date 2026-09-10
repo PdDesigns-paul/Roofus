@@ -94,6 +94,7 @@ describe("mergeLoops / storms / faqs", () => {
         id: "a",
         title: "Oak",
         zip: "",
+        town: "",
         streets: ["Oak"],
         county: "Cumberland",
         state: "PA",
@@ -227,6 +228,7 @@ describe("sanitizeLoop zip", () => {
       id: "a",
       title: "Oak",
       zip: "17050",
+      town: "Mechanicsburg",
       streets: [],
       county: "Cumberland",
       state: "PA",
@@ -238,6 +240,7 @@ describe("sanitizeLoop zip", () => {
       lastResult: "",
     });
     assert.equal(fromField.zip, "17050");
+    assert.equal(fromField.town, "Mechanicsburg");
     const fromTitle = sanitizeLoop({
       id: "b",
       title: "17055",

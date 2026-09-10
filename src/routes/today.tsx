@@ -19,7 +19,7 @@ import { useWeather } from "@/lib/weather-store";
 import { preKnock } from "@/lib/pocket-cards";
 import { companyOf } from "@/lib/setup-progress";
 import { useSettings } from "@/lib/settings-store";
-import { loopLabel } from "@/lib/streets-rank";
+import { loopHeadline, loopLabel } from "@/lib/streets-rank";
 import { suggestTomorrow, useStreets } from "@/lib/streets-store";
 
 export const Route = createFileRoute("/today")({
@@ -135,7 +135,9 @@ function DaySheet() {
 
       <section className="mt-4 rounded-2xl border border-border bg-surface px-4 py-3">
         <p className="text-xs font-medium uppercase tracking-wide text-faint">Before you knock</p>
-        <p className="mt-2 font-display text-2xl tracking-tight">{knock.zip}</p>
+        <p className="mt-2 font-display text-2xl tracking-tight">
+          {selected ? loopHeadline(selected) : knock.zip}
+        </p>
         <p className="mt-1 text-sm text-muted">
           {knock.age}
           {knock.hours ? ` · ${knock.hours}` : ""}
@@ -204,7 +206,9 @@ function DaySheet() {
         />
         <datalist id="street-loops">
           {loops.map((l) => (
-            <option key={l.id} value={loopLabel(l)} />
+            <option key={l.id} value={loopLabel(l)}>
+              {loopHeadline(l)}
+            </option>
           ))}
         </datalist>
       </Field>

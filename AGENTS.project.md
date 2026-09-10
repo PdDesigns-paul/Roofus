@@ -27,11 +27,11 @@ GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at 
 
 ## Product (short)
 
-Phone-first PWA. First screen is the porch. Bottom bar: Today · Inspect · Home. Home holds setup (bar + Tell Roofus + Presets links). Footer above it: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Menu: Cards, Reference, Presets. Streets, mindset, and reminders live in Presets. Lock-screen pings need Notion (same as backup).
+Phone-first PWA. First screen is the porch. Bottom bar: Today · Inspect · Home. Home holds setup (bar + Tell Roofus + Presets links). Footer above it: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Menu: Cards, Reference, Presets. Streets, mindset, and reminders live in Presets. Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. No lock-screen.
 
 Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Inspect hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 
-- Streets = **zip** cards grouped by county (not named subdivisions, not one card per block group).
+- Streets = **zip** cards grouped by county (not named subdivisions, not one card per block group). Town name sits next to the zip so it is not a list of numbers.
 - Door / Live first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.
 - Auth OFF. Database OFF. localStorage / Zustand only. Notion is optional backup in **their** workspace.
 - No CRM, takeoff, listing lookup, notes app, or apartment flow.

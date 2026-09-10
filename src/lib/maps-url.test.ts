@@ -38,6 +38,9 @@ describe("mapsLabel", () => {
   it("names the zip", () => {
     assert.equal(mapsLabel({ ...loop, zip: "17050" }), "Map · 17050");
   });
+  it("names the town next to the zip", () => {
+    assert.equal(mapsLabel({ ...loop, zip: "17050", town: "Mechanicsburg" }), "Map · Mechanicsburg · 17050");
+  });
   it("names the first street when there is no zip", () => {
     assert.equal(mapsLabel(loop), "Map · Oak St");
   });

@@ -145,6 +145,7 @@ export async function runWeatherPulse(req: WeatherPulseRequest): Promise<PulseRe
     id: l.id,
     title: l.title,
     zip: l.zip ?? (/^\d{5}$/.test(l.title) ? l.title : ""),
+    town: "",
     streets: l.streets,
     county: l.county,
     state: "",

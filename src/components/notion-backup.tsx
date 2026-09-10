@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { looksLikeNotionToken, parseNotionId } from "@/lib/notion-ids";
-import { isPushFaq } from "@/lib/push-payload";
 import { useNotion } from "@/lib/notion-store";
 import { backupNotion, connectNotion, restoreNotion } from "@/lib/notion-sync";
 
@@ -51,8 +50,7 @@ export function NotionBackup() {
       <p className="text-xs font-medium uppercase tracking-wide text-faint">Backup (optional)</p>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         Your day lives on this phone. A free Notion account keeps a copy if this phone dies — days,
-        streets, storms, mindset, and things Roofus should remember. Lock-screen reminders use that
-        same page as the drawer. Without Notion, backup and morning pings both stay on this phone.
+        streets, storms, mindset, and things Roofus should remember. Recommended. Not required.
       </p>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         The secret stays on this phone. We only send it to Notion when you tap Connect, Backup, or
@@ -176,7 +174,7 @@ export function NotionBackup() {
       </button>
       {faqs.length ? (
         <ul className="mt-4 flex flex-col gap-2">
-          {faqs.filter((f) => !isPushFaq(f.q, f.id)).map((f) => (
+          {faqs.map((f) => (
             <li key={f.id} className="rounded-xl border border-border px-3 py-2">
               <p className="text-sm">{f.q}</p>
               <p className="mt-1 text-xs leading-relaxed text-muted">{f.a}</p>

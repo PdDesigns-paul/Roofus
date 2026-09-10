@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { groupLoopsByCounty, loopAge, loopLabel, nearestZip, splitWorking } from "./streets-rank.ts";
+import { groupLoopsByCounty, loopAge, loopHeadline, loopLabel, nearestZip, splitWorking } from "./streets-rank.ts";
 import type { StreetLoop } from "./streets-types.ts";
 
 function loop(p: Partial<StreetLoop> = {}): StreetLoop {
@@ -8,6 +8,7 @@ function loop(p: Partial<StreetLoop> = {}): StreetLoop {
     id: "l1",
     title: "Oak Hills",
     zip: "",
+    town: "",
     streets: ["Oak St"],
     county: "Cumberland",
     state: "PA",
@@ -33,6 +34,15 @@ describe("loopLabel", () => {
   });
   it("does not invent a name when the map has none", () => {
     assert.equal(loopLabel(loop({ title: "", streets: [] })), "Untitled streets");
+  });
+});
+
+describe("loopHeadline", () => {
+  it("puts the town next to the zip", () => {
+    assert.equal(loopHeadline(loop({ zip: "17050", town: "Mechanicsburg" })), "Mechanicsburg · 17050");
+  });
+  it("falls back to the zip when the town is blank", () => {
+    assert.equal(loopHeadline(loop({ zip: "17050", town: "" })), "17050");
   });
 });
 
