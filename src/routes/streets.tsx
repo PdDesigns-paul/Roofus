@@ -49,6 +49,7 @@ function StreetsPage() {
   const [err, setErr] = useState<string | null>(null);
   const key = marketKey(profile.counties, profile.states, ageMin, ageMax);
   const stale = Boolean(loops.length && builtFor && builtFor !== key);
+  const autoBuild = useRef(false);
 
   async function build() {
     if (!profile.counties.trim() || !profile.states.trim()) {
@@ -82,6 +83,17 @@ function StreetsPage() {
       setBusy(false);
     }
   }
+
+  useEffect(() => {
+    if (autoBuild.current) return;
+    if (!profile.setupDone) return;
+    if (!profile.counties.trim() || !profile.states.trim()) return;
+    if (useStreets.getState().loops.length) return;
+    autoBuild.current = true;
+    void build();
+    // first empty visit only
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile.setupDone, profile.counties, profile.states]);
 
   if (!profile.setupDone) {
     return (
@@ -162,7 +174,7 @@ function StreetsPage() {
         type="button"
         disabled={busy}
         onClick={() => void build()}
-        className="mt-4 h-11 rounded-full bg-fg text-sm text-paper disabled:opacity-40"
+        className="mt-4 h-12 w-full rounded-full bg-fg text-sm text-paper disabled:opacity-40"
       >
         {busy ? "Building zips…" : loops.length ? "Rebuild from my counties" : "Build zips from my counties"}
       </button>
@@ -170,28 +182,25 @@ function StreetsPage() {
         <p className="mt-2 text-sm text-muted">Counties or age band changed. Rebuild to match.</p>
       ) : null}
       {err ? <p className="mt-2 text-sm text-danger">{err}</p> : null}
-      {note && loops.length ? <p className="mt-3 text-xs leading-relaxed text-faint">{note}</p> : null}
+      {note && loops.length ? (
+        <p className="mt-3 text-sm leading-relaxed text-muted">
+          {loops.length} zip{loops.length === 1 ? "" : "s"}. {note}
+        </p>
+      ) : null}
 
       {busy ? (
-        <p className="mt-8 text-sm text-muted">
+        <p className="mt-6 text-sm text-muted">
           Reading housing years and rolling them into zips. This can take half a minute. Stay on
           this page.
         </p>
       ) : null}
 
       {!busy && !loops.length ? (
-        <p className="mt-8 text-sm leading-relaxed text-muted">
+        <p className="mt-6 text-sm leading-relaxed text-muted">
           Empty until you build. One card per zip, grouped by county. We use Census years on the
           streets that sit in your age band — not the median of the whole zip. Storms do not pick
           these cards.
         </p>
-      ) : null}
-
-      {profile.setupDone ? (
-        <>
-          <PulsePanel counties={profile.counties} states={profile.states} loops={loops} />
-          <WeatherPanel counties={profile.counties} states={profile.states} />
-        </>
       ) : null}
 
       <ul className="mt-5 flex flex-col gap-5">
@@ -206,6 +215,13 @@ function StreetsPage() {
           </li>
         ))}
       </ul>
+
+      {profile.setupDone ? (
+        <>
+          <PulsePanel counties={profile.counties} states={profile.states} loops={loops} />
+          <WeatherPanel counties={profile.counties} states={profile.states} />
+        </>
+      ) : null}
     </main>
   );
 }
@@ -424,7 +440,6 @@ function WeatherPanel({ counties, states }: { counties: string; states: string }
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const key = weatherMarketKey(counties, states);
-  const auto = useRef(false);
 
   async function check() {
     if (!counties.trim() || !states.trim()) {
@@ -448,16 +463,6 @@ function WeatherPanel({ counties, states }: { counties: string; states: string }
       setBusy(false);
     }
   }
-
-  useEffect(() => {
-    if (auto.current) return;
-    if (fetchedFor === key) return;
-    if (!counties.trim() || !states.trim()) return;
-    auto.current = true;
-    void check();
-    // first visit for this market only
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
 
   return (
     <section className="mt-6 min-w-0">
