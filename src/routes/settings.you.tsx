@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { siteReadError } from "@/lib/company-site";
 import { useDayBook } from "@/lib/day-book";
 import { useSettings } from "@/lib/settings-store";
 
@@ -78,13 +79,14 @@ function WebsiteField() {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ url }),
+        signal: AbortSignal.timeout(25_000),
       });
       const data = (await res.json()) as { brief?: string; url?: string; error?: string };
       if (!res.ok) throw new Error(data.error || "Could not read that site.");
       if (data.url && data.url !== url) setWebsite(data.url);
       setBrief(data.brief ?? "");
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Could not read that site.");
+      setErr(siteReadError(e));
     } finally {
       setBusy(false);
     }

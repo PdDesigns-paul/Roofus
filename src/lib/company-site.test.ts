@@ -1,6 +1,12 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { htmlToText, looksLikeWebsite, normalizeWebsiteUrl } from "./company-site.ts";
+import {
+  extractSiteBrief,
+  htmlToText,
+  looksLikeWebsite,
+  normalizeWebsiteUrl,
+  siteReadError,
+} from "./company-site.ts";
 
 describe("looksLikeWebsite", () => {
   it("accepts a bare host and an https URL", () => {
@@ -36,5 +42,37 @@ describe("htmlToText", () => {
     const quot = "&" + "quot;";
     const t = htmlToText("<p>A" + amp + "B " + quot + "quoted" + quot + "</p>");
     assert.equal(t, 'A&B "quoted"');
+  });
+});
+
+const SAMPLE = `<html><head>
+<title>Northridge Roofing | Sample Town</title>
+<meta name="description" content="Roof repair and replacement. Owens Corning shingles."/>
+<script type="application/ld+json">{"@type":"RoofingContractor","name":"Northridge Roofing","telephone":"555-0100","address":{"addressLocality":"Sample Town","addressRegion":"PA"},"areaServed":[{"address":{"addressLocality":"Riverside, United States"}}]}</script>
+</head><body><p>Veteran-owned. Storm restoration and siding.</p></body></html>`;
+
+describe("extractSiteBrief", () => {
+  it("keeps title, meta, JSON-LD towns, and the page line", () => {
+    const t = extractSiteBrief(SAMPLE);
+    assert.match(t, /Northridge Roofing \| Sample Town/);
+    assert.match(t, /Roof repair and replacement/);
+    assert.match(t, /555-0100/);
+    assert.match(t, /Sample Town, PA/);
+    assert.match(t, /Riverside/);
+    assert.match(t, /Veteran-owned/);
+  });
+  it("still reads a page that is only a paragraph", () => {
+    assert.equal(extractSiteBrief("<p>We install shingles.</p>"), "We install shingles.");
+  });
+});
+
+describe("siteReadError", () => {
+  it("does not dump the AbortSignal timeout", () => {
+    const e = new Error("The operation was aborted due to timeout");
+    e.name = "TimeoutError";
+    assert.equal(siteReadError(e), "That site took too long to answer.");
+  });
+  it("keeps a site status", () => {
+    assert.equal(siteReadError(new Error("Site returned 403.")), "Site returned 403.");
   });
 });
