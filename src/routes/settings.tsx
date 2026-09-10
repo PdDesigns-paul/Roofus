@@ -35,7 +35,7 @@ function SettingsPage() {
       <AppHeader title="Presets" />
 
       <p className="mt-3 text-sm leading-snug text-muted">
-        Counties, hours, company, warranty. Zips. Mindset. Reminders. Backup is optional.
+        Counties, hours, company, warranty. Streets. Mindset. Reminders. Backup is optional.
       </p>
 
       <button
@@ -112,7 +112,7 @@ function SettingsPage() {
           />
         </div>
         <p className="text-xs leading-snug text-faint">
-          Streets builds zips from these counties. Rebuild there if you change them.
+          Streets builds park-once loops from these counties. Rebuild there if you change them.
         </p>
       </section>
 
@@ -123,7 +123,7 @@ function SettingsPage() {
           className="mt-2 flex min-h-14 flex-col justify-center border-b border-border py-3"
         >
           <span className="text-sm text-fg">Streets</span>
-          <span className="text-xs text-faint">Age-band zip list. Rebuild after you change counties.</span>
+          <span className="text-xs text-faint">Age-band loops. Rebuild after you change counties.</span>
         </Link>
       </section>
 

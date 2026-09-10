@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { LoopResult, LoopStatus, StreetLoop } from "@/lib/streets-types";
-import { loopHeadline, loopLabel } from "@/lib/streets-rank";
+import { loopHeadline, mergeStatus, nextFreshInTownship } from "@/lib/streets-rank";
 import { hOverrideLoop, pulseIsFresh } from "@/lib/weather-grade";
 import { useWeather } from "@/lib/weather-store";
 
@@ -23,29 +23,6 @@ type StreetsState = {
   setTowns: (towns: Record<string, string>) => void;
   hide: (id: string) => void;
 };
-
-function mergeStatus(incoming: StreetLoop[], previous: StreetLoop[]): StreetLoop[] {
-  const byId = new Map(previous.map((l) => [l.id, l]));
-  const byZip = new Map(
-    previous.filter((l) => l.zip).map((l) => [`${l.county}:${l.zip}`, l]),
-  );
-  const byTitle = new Map(
-    previous.filter((l) => l.title).map((l) => [`${l.county}:${l.title.toLowerCase()}`, l]),
-  );
-  return incoming.map((l) => {
-    const old =
-      byId.get(l.id) ??
-      (l.zip ? byZip.get(`${l.county}:${l.zip}`) : undefined) ??
-      (l.title ? byTitle.get(`${l.county}:${l.title.toLowerCase()}`) : undefined);
-    if (!old) return l;
-    return {
-      ...l,
-      status: old.status,
-      lastResult: old.lastResult,
-      town: l.town?.trim() || old.town || "",
-    };
-  });
-}
 
 export const useStreets = create<StreetsState>()(
   persist(
@@ -121,27 +98,25 @@ export function suggestTomorrow(loops: StreetLoop[]): StreetLoop | null {
     const h = hOverrideLoop(loops, pulse.leads);
     if (h) return h;
   }
-  const working = loops.filter((l) => l.status === "working");
-  if (working[0]) return working[0];
-  const fresh = loops.filter((l) => l.status === "fresh");
-  return fresh[0] ?? null;
+  return nextFreshInTownship(loops);
 }
 
 export function streetsForCoach(): string {
   const { loops, note, yearFrom, yearTo, ageMin, ageMax } = useStreets.getState();
   if (!loops.length) {
-    return `# Streets\nNo zip list yet. Send them to Presets, then Streets, and build from their counties. Their age band is ${ageMin}–${ageMax} years. Age first. Do not invent a zip.`;
+    return `# Streets\nNo loop list yet. Send them to Presets, then Streets, and build from their counties. Their age band is ${ageMin}–${ageMax} years. Age first. Do not invent a zip or a subdivision name.`;
   }
   const lines = [
-    "# Streets (age-band zips from Census, grouped by county. Storms are NOT why these are here.)",
+    "# Streets (park-once loops from Census, grouped by township. Storms are NOT why these are here.)",
     note || `They set roofs about ${ageMin}–${ageMax} years old (built ${yearFrom}–${yearTo}).`,
-    "Pick tomorrow: a 48h High on a loop they keep jumps Working (restoration). Then Working. Then the next fresh age-band loop. M/L do not pick the day. Do not ask a newbie where to go. Do not rank the whole list by hail.",
+    "Pick tomorrow: a 48h High on a loop they keep jumps Working (restoration). Then Working. Then the next fresh loop in that township. M/L do not pick the day. Do not ask a newbie where to go. Do not rank the whole list by hail.",
   ];
   for (const l of loops.slice(0, 24)) {
     const name = loopHeadline(l);
     const streets = l.streets.slice(0, 8).join(", ");
+    const twp = l.township ? ` · ${l.township}` : "";
     lines.push(
-      `- ${name} · ${l.county} · ~${l.medianYear} · ${l.status}${l.lastResult ? `/${l.lastResult}` : ""} · ${streets}`,
+      `- ${name}${twp} · ${l.county} · ~${l.medianYear} · ${l.status}${l.lastResult ? `/${l.lastResult}` : ""} · ${streets}`,
     );
   }
   const next = suggestTomorrow(loops);

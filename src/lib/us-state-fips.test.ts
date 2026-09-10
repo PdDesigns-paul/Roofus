@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { countyBasename, fipsToAbbr, parseList, stateAbbr, stateFips } from "./us-state-fips.ts";
+import { countyBasename, fipsToAbbr, isMcdState, parseList, stateAbbr, stateFips } from "./us-state-fips.ts";
 
 describe("stateFips / stateAbbr", () => {
   it("reads PA, Pennsylvania, and 42", () => {
@@ -22,5 +22,13 @@ describe("parseList / countyBasename", () => {
   it("strips County / Co", () => {
     assert.equal(countyBasename("Cumberland County"), "Cumberland");
     assert.equal(countyBasename("York Co."), "York");
+  });
+});
+
+describe("isMcdState", () => {
+  it("treats PA as MCD and TX as CCD", () => {
+    assert.equal(isMcdState("42"), true);
+    assert.equal(isMcdState("PA"), false);
+    assert.equal(isMcdState("48"), false);
   });
 });

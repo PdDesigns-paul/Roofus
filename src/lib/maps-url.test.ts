@@ -13,11 +13,9 @@ const loop = {
 };
 
 describe("mapsUrl", () => {
-  it("searches the zip when the card is a zip", () => {
+  it("parks on the cluster point even when a zip exists", () => {
     const url = mapsUrl({ ...loop, zip: "17050" });
-    assert.match(url, /17050/);
-    assert.match(url, /Cumberland/);
-    assert.match(url, /PA/);
+    assert.equal(url, "https://www.google.com/maps/search/?api=1&query=40.24%2C-76.92");
   });
   it("uses coords when there is no zip", () => {
     assert.equal(mapsUrl(loop), "https://www.google.com/maps/search/?api=1&query=40.24%2C-76.92");
@@ -35,13 +33,19 @@ describe("mapsUrl", () => {
 });
 
 describe("mapsLabel", () => {
-  it("names the zip", () => {
-    assert.equal(mapsLabel({ ...loop, zip: "17050" }), "Map · 17050");
+  it("names the cluster next to the zip", () => {
+    assert.equal(
+      mapsLabel({ ...loop, zip: "17050", place: "Creekview Dr / Mill Rd" }),
+      "Map · Creekview Dr / Mill Rd · 17050",
+    );
   });
-  it("names the town next to the zip", () => {
-    assert.equal(mapsLabel({ ...loop, zip: "17050", town: "Mechanicsburg" }), "Map · Mechanicsburg · 17050");
+  it("names the town next to the zip on old zip cards", () => {
+    assert.equal(
+      mapsLabel({ ...loop, title: "17050", zip: "17050", town: "Mechanicsburg" }),
+      "Map · Mechanicsburg · 17050",
+    );
   });
   it("names the first street when there is no zip", () => {
-    assert.equal(mapsLabel(loop), "Map · Oak St");
+    assert.equal(mapsLabel({ ...loop, title: "" }), "Map · Oak St");
   });
 });

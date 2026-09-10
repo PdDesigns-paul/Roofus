@@ -19,7 +19,7 @@ import { useWeather } from "@/lib/weather-store";
 import { preKnock } from "@/lib/pocket-cards";
 import { companyOf } from "@/lib/setup-progress";
 import { useSettings } from "@/lib/settings-store";
-import { groupLoopsByCounty, loopHeadline, loopLabel, matchLoopCluster } from "@/lib/streets-rank";
+import { groupLoopsByTownship, loopHeadline, loopLabel, matchLoopCluster } from "@/lib/streets-rank";
 import { suggestTomorrow, useStreets } from "@/lib/streets-store";
 
 export const Route = createFileRoute("/today")({
@@ -75,7 +75,7 @@ function DaySheet() {
       void (async () => {
         try {
           await sendRoofus(
-            "Read today's log, the zip list, and the 48-hour weather pulse. Tell me what the numbers say. Then name tomorrow: a High lead on a zip I keep jumps Working. Then Working. Then the next age-band zip. Medium and Low do not pick the day. Don't invent weather. Keep is what I may say on the porch.",
+            "Read today's log, the loop list, and the 48-hour weather pulse. Tell me what the numbers say. Then name tomorrow: a High lead on a loop I keep jumps Working. Then Working. Then the next age-band loop in that township. Medium and Low do not pick the day. Don't invent weather. Keep is what I may say on the porch.",
           );
         } catch (e) {
           setAskErr(e instanceof Error ? e.message : "Roofus missed that.");
@@ -106,7 +106,7 @@ function DaySheet() {
           to="/"
           className="mt-3 flex min-h-12 items-center rounded-2xl border border-border px-4 text-sm text-muted"
         >
-          Finish setup on Home — counties and a state so Streets can build zips.
+          Finish setup on Home — counties and a state so Streets can build loops.
         </Link>
       ) : null}
       <p className="mt-4 text-xs font-medium uppercase tracking-wide text-faint">{day.date}</p>
@@ -188,8 +188,8 @@ function DaySheet() {
         label="Neighborhood today"
         hint={
           loops.length
-            ? "Town · zip from Streets. Pick or type."
-            : "Build Streets from your counties, or type a town · zip."
+            ? "Park-once loop from Streets. Pick or type."
+            : "Build Streets from your counties, or type a loop · zip."
         }
       >
         {loops.length ? (
@@ -203,16 +203,18 @@ function DaySheet() {
               if (hit) useStreets.getState().setStatus(hit.id, "working");
             }}
           >
-            <option value="">Pick a town · zip</option>
-            {groupLoopsByCounty(loops).map((g) => (
-              <optgroup key={g.county} label={g.county}>
-                {g.loops.map((l) => (
-                  <option key={l.id} value={loopHeadline(l)}>
-                    {loopHeadline(l)}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
+            <option value="">Pick a loop</option>
+            {groupLoopsByTownship(loops).map((g) =>
+              g.townships.map((t) => (
+                <optgroup key={`${g.county}-${t.township}`} label={`${t.township} · ${g.county}`}>
+                  {t.loops.map((l) => (
+                    <option key={l.id} value={loopHeadline(l)}>
+                      {loopHeadline(l)}
+                    </option>
+                  ))}
+                </optgroup>
+              )),
+            )}
           </select>
         ) : null}
         <input
@@ -227,7 +229,7 @@ function DaySheet() {
               if (/^\d{5}$/.test(value.trim())) patchToday({ cluster: loopHeadline(hit) });
             }
           }}
-          placeholder="Town · zip, or type"
+          placeholder="Loop · zip, or type"
           list="street-loops"
         />
         <datalist id="street-loops">
@@ -237,7 +239,7 @@ function DaySheet() {
         </datalist>
       </Field>
       <Link to="/streets" className="mt-2 text-sm text-muted underline-offset-4 hover:text-fg hover:underline">
-        {loops.length ? "Open Streets" : "Build zips from my counties"}
+        {loops.length ? "Open Streets" : "Build loops from my counties"}
       </Link>
       {selected ? (
         <a

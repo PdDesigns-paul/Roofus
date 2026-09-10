@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { useDayBook } from "@/lib/day-book";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
-import { loopAge, loopHeadline, loopLabel, loopZip, groupLoopsByCounty, splitWorking } from "@/lib/streets-rank";
+import { loopAge, loopHeadline, loopPlace, loopZip, groupLoopsByTownship, searchStreetLoops } from "@/lib/streets-rank";
 import { marketKey, useStreets } from "@/lib/streets-store";
 import type { LoopResult, LoopStatus, StreetLoop, StreetsBuildResponse } from "@/lib/streets-types";
 import { parseList, countyBasename } from "@/lib/us-state-fips";
@@ -53,17 +53,8 @@ function StreetsPage() {
   const key = marketKey(profile.counties, profile.states, ageMin, ageMax);
   const stale = Boolean(loops.length && builtFor && builtFor !== key);
   const autoBuild = useRef(false);
-  const { working, rest } = splitWorking(loops);
-  const needle = q.trim().toLowerCase();
-  const visible = needle
-    ? rest.filter(
-        (l) =>
-          loopHeadline(l).toLowerCase().includes(needle) ||
-          l.county.toLowerCase().includes(needle) ||
-          l.streets.some((s) => s.toLowerCase().includes(needle)),
-      )
-    : rest;
-  const groups = groupLoopsByCounty(visible);
+  const { working, rest, searching } = searchStreetLoops(loops, q);
+  const groups = groupLoopsByTownship(rest);
   const asked = parseList(profile.counties);
   const have = new Set(loops.map((l) => countyBasename(l.county).toLowerCase()));
   const ghostCounties = [
@@ -73,8 +64,8 @@ function StreetsPage() {
       ),
     ),
   ].filter((c) => {
-    if (!needle) return true;
-    return c.toLowerCase().includes(needle);
+    if (!searching) return true;
+    return c.toLowerCase().includes(q.trim().toLowerCase());
   });
   const defaultCounty = working.length ? null : (groups[0]?.county ?? null);
   const shownCounty = openCounty === undefined ? defaultCounty : openCounty;
@@ -151,7 +142,7 @@ function StreetsPage() {
         <AppHeader title="Streets" />
         <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where you knock.</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted">
-          Presets needs a county and a state first. Then we build zips from roofs in the age
+          Presets needs a county and a state first. Then we build park-once loops from roofs in the age
           band — not from hail.
         </p>
         <Link
@@ -169,7 +160,7 @@ function StreetsPage() {
       <AppHeader title="Streets" />
       <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where you knock.</h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
-        {profile.counties.trim()}, {profile.states.trim()}. Town name on the card so it is not a list of numbers.
+        {profile.counties.trim()}, {profile.states.trim()}. Each card is a walkable loop. Township is the folder.
       </p>
 
       <button
@@ -223,7 +214,7 @@ function StreetsPage() {
             </label>
           </div>
           <p className="mt-2 text-xs text-faint">
-            Targeting for the zip. The house in front of you is the year they give you.
+            Targeting for the loop. The house in front of you is the year they give you.
           </p>
         </div>
       ) : null}
@@ -234,7 +225,7 @@ function StreetsPage() {
         onClick={() => void build(true)}
         className="mt-4 h-12 w-full rounded-full bg-fg text-sm text-paper disabled:opacity-40"
       >
-        {busy ? "Building zips…" : loops.length ? "Rebuild from my counties" : "Build zips from my counties"}
+        {busy ? "Building loops…" : loops.length ? "Rebuild from my counties" : "Build loops from my counties"}
       </button>
       {stale ? (
         <p className="mt-2 text-sm text-muted">Counties or age band changed. Rebuild to match.</p>
@@ -242,7 +233,7 @@ function StreetsPage() {
       {err ? <p className="mt-2 text-sm text-danger">{err}</p> : null}
       {note && loops.length ? (
         <p className="mt-3 text-sm leading-relaxed text-muted">
-          {loops.length} zip{loops.length === 1 ? "" : "s"}. {note}
+          {loops.length} loop{loops.length === 1 ? "" : "s"}. {note}
         </p>
       ) : null}
 
@@ -251,7 +242,7 @@ function StreetsPage() {
           className="mt-4 h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Find a town, zip, street, or county"
+          placeholder="Find a township, loop, street, zip, or county"
         />
       ) : null}
 
@@ -263,7 +254,7 @@ function StreetsPage() {
 
       {!busy && !loops.length ? (
         <p className="mt-6 text-sm leading-relaxed text-muted">
-          Empty until you build. Census years on streets in your age band — not hail.
+          Empty until you build. Census years on streets in your age band — not hail. Each card is a park-once loop.
         </p>
       ) : null}
 
@@ -280,7 +271,8 @@ function StreetsPage() {
 
       <ul className="mt-5 flex flex-col gap-2">
         {groups.map((group) => {
-          const open = shownCounty === group.county;
+          const open = searching || shownCounty === group.county;
+          const n = group.townships.reduce((sum, t) => sum + t.loops.length, 0);
           return (
             <li key={group.county}>
               <button
@@ -290,13 +282,20 @@ function StreetsPage() {
               >
                 <span className="text-xs font-medium uppercase tracking-wide">{group.county}</span>
                 <span className="text-xs text-muted">
-                  {group.loops.length} zip{group.loops.length === 1 ? "" : "s"}
+                  {n} loop{n === 1 ? "" : "s"}
                 </span>
               </button>
               {open ? (
-                <ul className="mt-3 flex flex-col gap-3">
-                  {group.loops.map((loop) => (
-                    <LoopCard key={loop.id} loop={loop} />
+                <ul className="mt-3 flex flex-col gap-4">
+                  {group.townships.map((twp) => (
+                    <li key={`${group.county}-${twp.township}`}>
+                      <p className="px-1 text-xs font-medium uppercase tracking-wide text-faint">{twp.township}</p>
+                      <ul className="mt-2 flex flex-col gap-3">
+                        {twp.loops.map((loop) => (
+                          <LoopCard key={loop.id} loop={loop} />
+                        ))}
+                      </ul>
+                    </li>
                   ))}
                 </ul>
               ) : null}
@@ -307,7 +306,7 @@ function StreetsPage() {
           <li key={`empty-${county}`}>
             <div className="flex min-h-11 w-full items-center justify-between rounded-2xl border border-dashed border-border px-4">
               <span className="text-xs font-medium uppercase tracking-wide">{county}</span>
-              <span className="text-xs text-muted">No age-band zips yet</span>
+              <span className="text-xs text-muted">No age-band loops yet</span>
             </div>
           </li>
         ))}
@@ -322,18 +321,19 @@ function LoopCard({ loop }: { loop: StreetLoop }) {
   const setResult = useStreets((s) => s.setResult);
   const patchToday = useDayBook((s) => s.patchToday);
   const kept = useWeather((s) => s.kept);
-  const zip = loopZip(loop) || loopLabel(loop);
-  const town = (loop.town ?? "").trim();
-  const title = town || loopHeadline(loop);
+  const zip = loopZip(loop);
+  const place = loopPlace(loop) || loopHeadline(loop);
+  const twp = (loop.township ?? "").trim();
   const age = loopAge(loop);
   const mention = loop.status === "working" ? mentionOnStreet(kept, loop) : "";
+  const sub = [twp, zip].filter(Boolean).join(" · ");
 
   return (
     <li className="rounded-2xl border border-border bg-surface px-4 py-3">
       <button type="button" className="w-full text-left" onClick={() => setOpen((o) => !o)}>
-        <p className="font-display text-xl tracking-tight">{title}</p>
+        <p className="font-display text-xl tracking-tight">{place}</p>
         <p className="mt-1 text-xs text-muted">
-          {town && zip ? `${zip} · ` : ""}
+          {sub ? `${sub} · ` : ""}
           roofs around {age} years
           {loop.status !== "fresh" ? ` · ${loop.status}` : ""}
         </p>
