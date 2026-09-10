@@ -12,7 +12,7 @@ export const PAGE_HELP = {
     body: [
       "First time: your name, which counties, which state. Hours live in Presets. Then the four counts.",
       "Before you knock is the zip, age band, weather you may mention, and the first door line. Pocket cards is Door, Pushback, i35, Set, Compass.",
-      "Neighborhood today is the zip you’re on. After Action Report is wins first, then what you’ll do different. Ask Roofus and he’ll name tomorrow.",
+      "Neighborhood today is the zip you’re on. After Action Report is wins first, then facts, then a plan with verbs. Ask Roofus and he’ll name tomorrow.",
     ],
   },
   streets: {
@@ -41,7 +41,8 @@ export const PAGE_HELP = {
     title: "Mindset",
     body: [
       "Four truths at the top. Then Why, Name the demon, Pace, Talent stack.",
-      "After Action Report is on Today. Coach me through this pins the Mindset hat and asks one question. Answers land on this page. Private. Not a pitch.",
+      "Why is a ladder: number, what it buys, who else, the person or promise. Read it with Roofus on a dead day. Demon names the attack. Pace drops a gear. Stack is three skills. After Action Report is on Today — wins, facts, a plan.",
+      "Coach me through this pins the Mindset hat and asks one question. Answers land on this page. Private. Not a pitch.",
     ],
   },
   reference: {

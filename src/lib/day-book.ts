@@ -12,6 +12,8 @@ export type DayCounts = {
   sets: number;
 };
 
+export type AfterAction = { wins: string; better: string; plan: string };
+
 export type DayEntry = DayCounts & {
   date: string;
   cluster: string;
@@ -19,6 +21,49 @@ export type DayEntry = DayCounts & {
   afterAction: string;
   tomorrowStreet: string;
 };
+
+export function unpackAfterAction(body: string): AfterAction {
+  const raw = body.trim();
+  const out: AfterAction = { wins: "", better: "", plan: "" };
+  if (!raw) return out;
+  const labeled: Partial<AfterAction> = {};
+  let cur: keyof AfterAction | null = null;
+  const buf: string[] = [];
+  const flush = () => {
+    if (!cur) return;
+    labeled[cur] = buf.join("\n").trim();
+    buf.length = 0;
+  };
+  for (const line of raw.split("\n")) {
+    const m = line.match(/^(Wins|Better|Plan):\s?(.*)$/i);
+    if (m?.[1]) {
+      flush();
+      const key = m[1].toLowerCase() as keyof AfterAction;
+      cur = key;
+      buf.push(m[2] ?? "");
+      continue;
+    }
+    if (cur) buf.push(line);
+  }
+  flush();
+  if (labeled.wins || labeled.better || labeled.plan) {
+    return {
+      wins: labeled.wins ?? "",
+      better: labeled.better ?? "",
+      plan: labeled.plan ?? "",
+    };
+  }
+  return { wins: raw, better: "", plan: "" };
+}
+
+export function packAfterAction(a: AfterAction): string {
+  const lines: string[] = [];
+  if (a.wins.trim()) lines.push(`Wins: ${a.wins.trim()}`);
+  if (a.better.trim()) lines.push(`Better: ${a.better.trim()}`);
+  if (a.plan.trim()) lines.push(`Plan: ${a.plan.trim()}`);
+  return lines.join("\n");
+}
+
 
 export type DayProfile = {
   setupDone: boolean;

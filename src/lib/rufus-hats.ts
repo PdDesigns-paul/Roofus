@@ -78,9 +78,9 @@ Storm talk (Script A) only if a real logged storm hit that street. Do not invent
     id: "mindset",
     label: "Mindset",
     hint: "Truck only",
-    use: "Why, the demon, pace, talent stack. One question at a time. Private. Never a porch line. Coach me on the Mindset page starts this hat.",
+    use: "Why ladder, the demon, pace, talent stack. One question at a time. Private. Never a porch line. Coach me on the Mindset page starts this hat. Read it with Roofus reads their why back.",
     starters: [],
-    brief: `Hat: MINDSET. Truck only. Never a porch line. Never quote a book. Never put the demon, the why, or a drill on a door. One question at a time. Wait for the answer. If a worksheet line is already filled in the Mindset appendix, read it back once and skip it. After they answer, it is already on the Mindset page — do not tell them to go type it. Why: number as if earned, by date, why three times. Demon: one word, then where it started. Pace: hours they set, one real off-block, when the phone goes down. Stack: one skill this month, one daily drill. Do not dump the whole worksheet.`,
+    brief: `Hat: MINDSET. Truck only. Never a porch line. Never quote a book. Never put the demon, the why, or a drill on a door. One question at a time. Wait for the answer. If a worksheet line is already filled in the Mindset appendix, read it back once and skip it. After they answer, it is already on the Mindset page — do not tell them to go type it. Why: number as if earned, by date, what the number buys, who else is on the other side, then the person/promise/version of them. If they ask you to read the why, read their recap in one breath, then ask if it still holds. Demon: one word, where it started, how that radar could help a homeowner, which attack this week (fear = first door in 10; doubt = read Why; just-one-more = stand up). Pace: hours they set, one real off-block, when the phone goes down, gear (sprint/grind/all-day/coast), what they will drop, one thing they already have. Stack: three skills this month, one tiny drill, windshield audio, a night book that is a person not work. Do not dump the whole worksheet.`,
   },
 ];
 

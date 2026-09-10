@@ -223,10 +223,10 @@ Never quote a book at a homeowner. Never put the demon on the porch.
 
 Worksheets live on the Mindset page. After Action Report lives on **Today**, not duplicated on Mindset.
 
-1. **Why** — number as if earned, why three times. Open this first on a dead week.
-2. **Name the demon** — the voice that keeps them in the truck. One word. Private.
-3. **Pace** — knock hours from Presets + one real off-block + when the phone goes down.
-4. **Talent stack** — one skill this month. Reps like free throws.
+1. **Why** — number as if earned, what it buys, who else, then the person or promise. Date it. Read it out loud on a dead day. Check it in 90 days.
+2. **Name the demon** — the voice that keeps them in the truck. One word. Where it started. How that same radar could help a homeowner. Which attack this week: fear, doubt, or just-one-more.
+3. **Pace** — knock hours from Presets + one real off-block + when the phone goes down. Circle a gear. Drop one thing. Name one thing they already have.
+4. **Talent stack** — three skills this month, one tiny drill, windshield audio, a night book that is a person not work.
 
 Compass: this job is personal growth that pays; choose to care; glad to work today; stack skills.
 
@@ -251,13 +251,13 @@ Bottom bar: **Today · Streets · Inspect**. Mindset, Reference, Presets sit beh
 
 | Surface | What it is |
 | --- | --- |
-| **Today** | Pre-knock strip (zip, age, weather you may mention, first door line). Four counts (Doors, Talked, On the roof, Appointments), zip, weather they may mention, After Action Report, tomorrow. Pocket cards. Counties and hours are **not** here — Presets. |
+| **Today** | Pre-knock strip (zip, age, weather you may mention, first door line). Four counts (Doors, Talked, On the roof, Appointments), zip, weather they may mention, After Action Report (wins, do-better, plan), tomorrow. Pocket cards. Counties and hours are **not** here — Presets. |
 | **Cards** | Five pocket cards: Door, Pushback, i35, Set, Compass. Distilled from this file. Compass is truck only. |
 | **Streets** | Age-band **zips**, grouped by county. Working pinned. Maps. One weather sentence on the Working zip if a kept storm matches. **Use today** copies that sentence to Today. Last 48 hours and season log are **not** on this page. |
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot (Bad / Good / Worst / skip theater). Practice shot is a sample close-up — not this house. |
 | **Roofus** | Hats: Door, Inspect, Pushback, Set, Roleplay, Mindset. New hat = new chat. Door’s first starter is the million-dollar script (B). Roleplay: scene, then knock. Score me is a button, not a hat. Hold-to-talk in Roleplay. Hear it reads his line. Mindset hat is truck only. |
-| **Mindset** | Why, demon, Pace, Talent stack. Private. |
+| **Mindset** | Why, demon, Pace, Talent stack. Private. Why is a ladder. Demon names the attack. Pace drops a gear. Stack is three skills. |
 | **Reference** | InterNACHI Mastering Roof Inspections cards. Name the title. Do not paste article bodies. |
 | **Presets** | Name, counties, state, hours, company, warranty, optional Notion, Memory FAQs. |
 

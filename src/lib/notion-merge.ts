@@ -20,13 +20,21 @@ export type SurviveFields = {
   why1: string;
   why2: string;
   why3: string;
+  writtenOn: string;
   demon: string;
   origin: string;
+  radar: string;
+  attack: string;
   offBlock: string;
   phoneDown: string;
+  gear: string;
+  drop: string;
+  alreadyHave: string;
   stackMonth: string;
   skill: string;
   drill: string;
+  windshield: string;
+  nightBook: string;
 };
 
 export type MindsetRow = { name: string; body: string };
@@ -237,15 +245,27 @@ export function packMindset(
         why1: survive.why1,
         why2: survive.why2,
         why3: survive.why3,
+        writtenOn: survive.writtenOn,
       }),
     },
     {
       name: "Demon",
-      body: packLabeled({ demon: survive.demon, origin: survive.origin }),
+      body: packLabeled({
+        demon: survive.demon,
+        origin: survive.origin,
+        radar: survive.radar,
+        attack: survive.attack,
+      }),
     },
     {
       name: "Pace",
-      body: packLabeled({ offBlock: survive.offBlock, phoneDown: survive.phoneDown }),
+      body: packLabeled({
+        offBlock: survive.offBlock,
+        phoneDown: survive.phoneDown,
+        gear: survive.gear,
+        drop: survive.drop,
+        alreadyHave: survive.alreadyHave,
+      }),
     },
     {
       name: "Stack",
@@ -255,6 +275,8 @@ export function packMindset(
               stackMonth: survive.stackMonth,
               skill: survive.skill,
               drill: survive.drill,
+              windshield: survive.windshield,
+              nightBook: survive.nightBook,
             }
           : {}),
       }),
@@ -303,6 +325,7 @@ export function unpackMindset(rows: Record<string, string>): RestoreMindset {
     if (why.why1) survive.why1 = why.why1;
     if (why.why2) survive.why2 = why.why2;
     if (why.why3) survive.why3 = why.why3;
+    if (why.writtenOn) survive.writtenOn = why.writtenOn;
   } else if (rows.Why) {
     const lines = fallbackLines(rows.Why);
     if (lines[0]) survive.earned = lines[0];
@@ -316,6 +339,8 @@ export function unpackMindset(rows: Record<string, string>): RestoreMindset {
   if (Object.keys(demon).length) {
     if (demon.demon) survive.demon = demon.demon;
     if (demon.origin) survive.origin = demon.origin;
+    if (demon.radar) survive.radar = demon.radar;
+    if (demon.attack) survive.attack = demon.attack;
   } else if (rows.Demon) {
     const lines = fallbackLines(rows.Demon);
     if (lines[0]) survive.demon = lines[0];
@@ -326,6 +351,9 @@ export function unpackMindset(rows: Record<string, string>): RestoreMindset {
   if (Object.keys(pace).length) {
     if (pace.offBlock) survive.offBlock = pace.offBlock;
     if (pace.phoneDown) survive.phoneDown = pace.phoneDown;
+    if (pace.gear) survive.gear = pace.gear;
+    if (pace.drop) survive.drop = pace.drop;
+    if (pace.alreadyHave) survive.alreadyHave = pace.alreadyHave;
   } else if (rows.Pace) {
     const lines = fallbackLines(rows.Pace);
     if (lines[0]) survive.offBlock = lines[0];
@@ -337,6 +365,8 @@ export function unpackMindset(rows: Record<string, string>): RestoreMindset {
     if (stack.stackMonth) survive.stackMonth = stack.stackMonth;
     if (stack.skill) survive.skill = stack.skill;
     if (stack.drill) survive.drill = stack.drill;
+    if (stack.windshield) survive.windshield = stack.windshield;
+    if (stack.nightBook) survive.nightBook = stack.nightBook;
   } else if (rows.Stack) {
     const lines = fallbackLines(rows.Stack);
     if (lines[0]) survive.stackMonth = lines[0];
@@ -404,20 +434,32 @@ export function fillSurvive(cur: SurviveFields, incoming: Partial<SurviveFields>
     if (incoming.why1) patch.why1 = incoming.why1;
     if (incoming.why2) patch.why2 = incoming.why2;
     if (incoming.why3) patch.why3 = incoming.why3;
+    if (incoming.writtenOn) patch.writtenOn = incoming.writtenOn;
   }
   if (!cur.demon.trim() && incoming.demon?.trim()) {
     patch.demon = incoming.demon;
     if (incoming.origin) patch.origin = incoming.origin;
+    if (incoming.radar) patch.radar = incoming.radar;
+    if (incoming.attack) patch.attack = incoming.attack;
   }
+  if (!cur.radar.trim() && incoming.radar?.trim()) patch.radar = incoming.radar;
+  if (!cur.attack.trim() && incoming.attack?.trim()) patch.attack = incoming.attack;
   if (!cur.offBlock.trim() && incoming.offBlock?.trim()) {
     patch.offBlock = incoming.offBlock;
     if (incoming.phoneDown) patch.phoneDown = incoming.phoneDown;
   }
+  if (!cur.gear.trim() && incoming.gear?.trim()) patch.gear = incoming.gear;
+  if (!cur.drop.trim() && incoming.drop?.trim()) patch.drop = incoming.drop;
+  if (!cur.alreadyHave.trim() && incoming.alreadyHave?.trim()) patch.alreadyHave = incoming.alreadyHave;
   if (!cur.skill.trim() && incoming.skill?.trim()) {
     patch.skill = incoming.skill;
     if (incoming.stackMonth) patch.stackMonth = incoming.stackMonth;
     if (incoming.drill) patch.drill = incoming.drill;
+    if (incoming.windshield) patch.windshield = incoming.windshield;
+    if (incoming.nightBook) patch.nightBook = incoming.nightBook;
   }
+  if (!cur.windshield.trim() && incoming.windshield?.trim()) patch.windshield = incoming.windshield;
+  if (!cur.nightBook.trim() && incoming.nightBook?.trim()) patch.nightBook = incoming.nightBook;
   return patch;
 }
 

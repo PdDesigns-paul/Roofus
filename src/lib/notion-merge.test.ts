@@ -43,13 +43,21 @@ const emptySurvive = (): SurviveFields => ({
   why1: "",
   why2: "",
   why3: "",
+  writtenOn: "",
   demon: "",
   origin: "",
+  radar: "",
+  attack: "",
   offBlock: "",
   phoneDown: "",
+  gear: "",
+  drop: "",
+  alreadyHave: "",
   stackMonth: "2026-09",
   skill: "",
   drill: "",
+  windshield: "",
+  nightBook: "",
 });
 
 describe("mergeDays", () => {
@@ -146,7 +154,7 @@ describe("mergeLoops / storms / faqs", () => {
 describe("mindset pack / unpack", () => {
   it("roundtrips labeled why + profile", () => {
     const packed = packMindset(
-      { ...emptySurvive(), earned: "80k", byDate: "Dec", why3: "kids" },
+      { ...emptySurvive(), earned: "80k", byDate: "Dec", why3: "kids", radar: "listen", attack: "fear" },
       {
         setupDone: true,
         goBy: "Deshaun",
@@ -164,6 +172,8 @@ describe("mindset pack / unpack", () => {
     const out = unpackMindset(rows);
     assert.equal(out.survive.earned, "80k");
     assert.equal(out.survive.why3, "kids");
+    assert.equal(out.survive.radar, "listen");
+    assert.equal(out.survive.attack, "fear");
     assert.equal(out.profile.goBy, "Deshaun");
     assert.equal(out.profile.counties, "Cumberland");
     assert.equal(out.ageMin, 17);

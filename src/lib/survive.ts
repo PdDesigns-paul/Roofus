@@ -1,5 +1,6 @@
 /** Mindset worksheets. Private. Never a pitch. After Action Report lives on Today. */
-import type { SurviveState } from "@/lib/survive-store";
+import { localDateKey } from "./day-book.ts";
+import type { SurviveState } from "./survive-store.ts";
 
 export type WalkId = "why" | "demon" | "pace" | "stack";
 
@@ -22,30 +23,81 @@ export const WALKS: {
     n: "1",
     title: "Your why",
     when: "Once, then every dead day",
-    blurb: "Money fades. Write the number as if it already happened, then ask why three times.",
+    blurb: "Money fades. Write the number as if it already happened. What it buys, who else, then the person or promise. Stop when it still hurts a little.",
   },
   {
     id: "demon",
     n: "2",
     title: "Name the demon",
     when: "Once. Private.",
-    blurb: "The voice that keeps you in the truck. One word is enough. Private.",
+    blurb: "The voice that keeps you in the truck. Name it. Where it started. Then how that same radar could help a homeowner.",
   },
   {
     id: "pace",
     n: "4",
     title: "Pace",
     when: "This week",
-    blurb: "Hours you knock. When the phone goes down. One real off-block. You train people when you reply late.",
+    blurb: "Hours you knock. One real off-block. Drop one gear. Name one thing you already have that last-year-you wanted.",
   },
   {
     id: "stack",
     n: "5",
     title: "Talent stack",
     when: "First of the month",
-    blurb: "What you are practicing. Treat reps like free throws, not a new career.",
+    blurb: "Pick three skills. One tiny drill. Windshield learning. A night book that is a person, not work.",
   },
 ];
+
+export const ATTACKS = [
+  { id: "fear", label: "Fear", fix: "First door in 10 minutes. Through, not around." },
+  { id: "doubt", label: "Doubt", fix: "Read Why out loud. Then one more cluster." },
+  { id: "more", label: "Just one more", fix: "Hear the phrase. Stand up. Phone in the other room." },
+] as const;
+
+export type AttackId = (typeof ATTACKS)[number]["id"];
+
+export const GEARS = ["sprint", "grind", "all-day", "coast"] as const;
+
+export type GearId = (typeof GEARS)[number];
+
+export const STACK_SKILLS = [
+  "Talk / listen",
+  "Ask questions",
+  "Body language",
+  "Conflict",
+  "Time blocks",
+  "Truck",
+  "Product",
+  "Texts",
+  "Numbers",
+  "Photos",
+  "Negotiation",
+  "Systems",
+] as const;
+
+const SKILL_MAX = 3;
+const SKILL_JOIN = " · ";
+
+export function parseSkills(value: string): string[] {
+  return value
+    .split(SKILL_JOIN)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+export function toggleSkill(value: string, name: string): string {
+  const have = parseSkills(value);
+  if (have.includes(name)) return have.filter((s) => s !== name).join(SKILL_JOIN);
+  if (have.length >= SKILL_MAX) return value;
+  return [...have, name].join(SKILL_JOIN);
+}
+
+export function whyRecap(s: Pick<SurviveState, "earned" | "byDate" | "why3" | "writtenOn">): string | null {
+  if (!s.earned.trim() || !s.why3.trim()) return null;
+  const when = s.byDate.trim() ? ` by ${s.byDate.trim()}` : "";
+  const dated = s.writtenOn.trim() ? ` Written ${s.writtenOn.trim()}.` : "";
+  return `I have earned ${s.earned.trim()}${when}. ${s.why3.trim()}.${dated} If the street feels pointless, read this out loud before you drive home.`;
+}
 
 /** Short kickoff for the API. Not shown as a homework dump in chat. */
 export function walkKickoff(id: WalkId): string {
@@ -55,10 +107,18 @@ export function walkKickoff(id: WalkId): string {
   return "Walk me through talent stack. One question. First blank. Not a door.";
 }
 
+export function walkReadWhy(): string {
+  return "Read my why back. One breath. Ask if it still holds. Private. Not a door.";
+}
+
 export type WalkPatch = {
   survive?: Partial<Omit<SurviveState, "patch">>;
   profile?: { knockWindow?: string; paperWindow?: string; hardStop?: string };
 };
+
+function stampWritten(s: SurviveState): Partial<SurviveState> {
+  return s.writtenOn.trim() ? {} : { writtenOn: localDateKey() };
+}
 
 /** Next blank on this walk gets their chat answer. Null if the sheet is full. */
 export function applyWalkAnswer(
@@ -70,16 +130,21 @@ export function applyWalkAnswer(
   const value = text.trim();
   if (!value) return null;
   if (id === "why") {
-    if (!s.earned.trim()) return { survive: { earned: value } };
+    if (!s.earned.trim()) return { survive: { earned: value, ...stampWritten(s) } };
     if (!s.byDate.trim()) return { survive: { byDate: value } };
     if (!s.why1.trim()) return { survive: { why1: value } };
     if (!s.why2.trim()) return { survive: { why2: value } };
-    if (!s.why3.trim()) return { survive: { why3: value } };
+    if (!s.why3.trim()) return { survive: { why3: value, ...stampWritten(s) } };
     return null;
   }
   if (id === "demon") {
     if (!s.demon.trim()) return { survive: { demon: value } };
     if (!s.origin.trim()) return { survive: { origin: value } };
+    if (!s.radar.trim()) return { survive: { radar: value } };
+    if (!s.attack.trim()) {
+      const hit = ATTACKS.find((a) => a.id === value || a.label.toLowerCase() === value.toLowerCase());
+      return { survive: { attack: hit?.id ?? value } };
+    }
     return null;
   }
   if (id === "pace") {
@@ -88,9 +153,17 @@ export function applyWalkAnswer(
     if (!hours.stop.trim()) return { profile: { hardStop: value } };
     if (!s.offBlock.trim()) return { survive: { offBlock: value } };
     if (!s.phoneDown.trim()) return { survive: { phoneDown: value } };
+    if (!s.gear.trim()) {
+      const hit = GEARS.find((g) => g === value || g === value.toLowerCase());
+      return { survive: { gear: hit ?? value } };
+    }
+    if (!s.drop.trim()) return { survive: { drop: value } };
+    if (!s.alreadyHave.trim()) return { survive: { alreadyHave: value } };
     return null;
   }
   if (!s.skill.trim()) return { survive: { skill: value } };
   if (!s.drill.trim()) return { survive: { drill: value } };
+  if (!s.windshield.trim()) return { survive: { windshield: value } };
+  if (!s.nightBook.trim()) return { survive: { nightBook: value } };
   return null;
 }
