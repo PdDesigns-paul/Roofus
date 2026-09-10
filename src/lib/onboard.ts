@@ -44,6 +44,6 @@ export const ONBOARD_STEPS = [
     id: "tabs",
     selector: "[data-tour='tabs']",
     title: "The day",
-    body: "Today. Streets. Inspect. Three dots hide Mindset, Reference, and Presets.",
+    body: "Today. Streets. Inspect. Three dots hide Mindset, Cards, Reference, and Presets.",
   },
 ] as const;

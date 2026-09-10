@@ -251,7 +251,8 @@ Bottom bar: **Today · Streets · Inspect**. Mindset, Reference, Presets sit beh
 
 | Surface | What it is |
 | --- | --- |
-| **Today** | Four counts (Doors, Talked, On the roof, Appointments), zip, weather they may mention, After Action Report, tomorrow. Counties and hours are **not** here — Presets. |
+| **Today** | Pre-knock strip (zip, age, weather you may mention, first door line). Four counts (Doors, Talked, On the roof, Appointments), zip, weather they may mention, After Action Report, tomorrow. Pocket cards. Counties and hours are **not** here — Presets. |
+| **Cards** | Five pocket cards: Door, Pushback, i35, Set, Compass. Distilled from this file. Compass is truck only. |
 | **Streets** | Age-band **zips**, grouped by county. Working pinned. Maps. One weather sentence on the Working zip if a kept storm matches. **Use today** copies that sentence to Today. Last 48 hours and season log are **not** on this page. |
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. |

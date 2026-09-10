@@ -12,11 +12,12 @@ import {
   type DayCounts,
   type DayProfile,
 } from "@/lib/day-book";
-import { loopLabel } from "@/lib/streets-rank";
-import { suggestTomorrow, useStreets } from "@/lib/streets-store";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
 import { stormsNearLoop } from "@/lib/weather-match";
 import { useWeather } from "@/lib/weather-store";
+import { preKnock } from "@/lib/pocket-cards";
+import { loopLabel } from "@/lib/streets-rank";
+import { suggestTomorrow, useStreets } from "@/lib/streets-store";
 
 export const Route = createFileRoute("/today")({
   codeSplitGroupings: [],
@@ -120,6 +121,8 @@ function DaySheet() {
   const patchToday = useDayBook((s) => s.patchToday);
   const profile = useDayBook((s) => s.profile);
   const loops = useStreets((s) => s.loops);
+  const ageMin = useStreets((s) => s.ageMin);
+  const ageMax = useStreets((s) => s.ageMax);
   const kept = useWeather((s) => s.kept);
   const busy = useCoach((s) => s.busy);
   const [askErr, setAskErr] = useState<string | null>(null);
@@ -156,6 +159,18 @@ function DaySheet() {
   }
 
   const market = [profile.counties, profile.states].filter(Boolean).join(", ");
+  const working = loops.find((l) => l.status === "working");
+  const knock = preKnock({
+    cluster: day.cluster,
+    storm: day.storm,
+    goBy: profile.goBy,
+    company: profile.company,
+    knockWindow: profile.knockWindow,
+    hardStop: profile.hardStop,
+    ageMin,
+    ageMax,
+    workingZip: working ? loopLabel(working) : "",
+  });
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
@@ -183,6 +198,24 @@ function DaySheet() {
           </>
         )}
       </p>
+
+      <section className="mt-4 rounded-2xl border border-border bg-surface px-4 py-3">
+        <p className="text-xs font-medium uppercase tracking-wide text-faint">Before you knock</p>
+        <p className="mt-2 font-display text-2xl tracking-tight">{knock.zip}</p>
+        <p className="mt-1 text-sm text-muted">
+          {knock.age}
+          {knock.hours ? ` · ${knock.hours}` : ""}
+        </p>
+        <p className="mt-2 text-sm leading-relaxed">{knock.weather}</p>
+        <p className="mt-2 text-xs leading-relaxed text-muted">{knock.script}</p>
+        <p className="mt-3 text-sm leading-relaxed">{knock.opener}</p>
+        <Link
+          to="/coach/cards"
+          className="mt-3 inline-flex h-11 items-center text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
+        >
+          Pocket cards
+        </Link>
+      </section>
 
       <section className="mt-4">
         <p className="text-xs font-medium uppercase tracking-wide text-faint">Tap to count</p>

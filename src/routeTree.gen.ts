@@ -23,6 +23,7 @@ import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
 import { Route as ApiWeatherRouteImport } from './routes/api/weather'
 import { Route as ApiWeatherPulseRouteImport } from './routes/api/weather-pulse'
 import { Route as CoachIndexRouteImport } from './routes/coach.index'
+import { Route as CoachCardsRouteImport } from './routes/coach.cards'
 import { Route as CoachInspectRouteImport } from './routes/coach.inspect'
 import { Route as CoachMindsetRouteImport } from './routes/coach.mindset'
 import { Route as CoachReferenceRouteImport } from './routes/coach.reference'
@@ -97,6 +98,11 @@ const CoachIndexRoute = CoachIndexRouteImport.update({
   path: '/',
   getParentRoute: () => CoachRoute,
 } as any)
+const CoachCardsRoute = CoachCardsRouteImport.update({
+  id: '/cards',
+  path: '/cards',
+  getParentRoute: () => CoachRoute,
+} as any)
 const CoachInspectRoute = CoachInspectRouteImport.update({
   id: '/inspect',
   path: '/inspect',
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/api/transcribe': typeof ApiTranscribeRoute
   '/api/weather': typeof ApiWeatherRoute
   '/api/weather-pulse': typeof ApiWeatherPulseRoute
+  '/coach/cards': typeof CoachCardsRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/api/transcribe': typeof ApiTranscribeRoute
   '/api/weather': typeof ApiWeatherRoute
   '/api/weather-pulse': typeof ApiWeatherPulseRoute
+  '/coach/cards': typeof CoachCardsRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/api/transcribe': typeof ApiTranscribeRoute
   '/api/weather': typeof ApiWeatherRoute
   '/api/weather-pulse': typeof ApiWeatherPulseRoute
+  '/coach/cards': typeof CoachCardsRoute
   '/coach/inspect': typeof CoachInspectRoute
   '/coach/mindset': typeof CoachMindsetRoute
   '/coach/reference': typeof CoachReferenceRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/api/transcribe'
     | '/api/weather'
     | '/api/weather-pulse'
+    | '/coach/cards'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/api/transcribe'
     | '/api/weather'
     | '/api/weather-pulse'
+    | '/coach/cards'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
@@ -223,6 +234,7 @@ export interface FileRouteTypes {
     | '/api/transcribe'
     | '/api/weather'
     | '/api/weather-pulse'
+    | '/coach/cards'
     | '/coach/inspect'
     | '/coach/mindset'
     | '/coach/reference'
@@ -345,6 +357,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoachIndexRouteImport
       parentRoute: typeof CoachRoute
     }
+    '/coach/cards': {
+      id: '/coach/cards'
+      path: '/cards'
+      fullPath: '/coach/cards'
+      preLoaderRoute: typeof CoachCardsRouteImport
+      parentRoute: typeof CoachRoute
+    }
     '/coach/inspect': {
       id: '/coach/inspect'
       path: '/inspect'
@@ -370,6 +389,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface CoachRouteChildren {
+  CoachCardsRoute: typeof CoachCardsRoute
   CoachInspectRoute: typeof CoachInspectRoute
   CoachMindsetRoute: typeof CoachMindsetRoute
   CoachReferenceRoute: typeof CoachReferenceRoute
@@ -377,6 +397,7 @@ interface CoachRouteChildren {
 }
 
 const CoachRouteChildren: CoachRouteChildren = {
+  CoachCardsRoute: CoachCardsRoute,
   CoachInspectRoute: CoachInspectRoute,
   CoachMindsetRoute: CoachMindsetRoute,
   CoachReferenceRoute: CoachReferenceRoute,

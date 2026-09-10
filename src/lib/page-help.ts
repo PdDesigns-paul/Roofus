@@ -3,7 +3,7 @@ export const PAGE_HELP = {
     title: "Roofus",
     body: [
       "This is the porch. Open Today for the four counts. Streets is zips. Inspect is the camera.",
-      "Orange button is Roofus. Tap him — he's in the corner of the chat. Hold the button for old chats. Three dots: Mindset, Reference, Presets. First open walks the question mark.",
+      "Orange button is Roofus. Tap him — he's in the corner of the chat. Hold the button for old chats. Three dots: Mindset, Cards, Reference, Presets. First open walks the question mark.",
       "Bottom: Today, Streets, Inspect. Put the app on your Home Screen so it opens like anything else on this phone.",
     ],
   },
@@ -11,8 +11,8 @@ export const PAGE_HELP = {
     title: "Today",
     body: [
       "First time: your name, which counties, which state. Hours live in Presets. Then the four counts.",
+      "Before you knock is the zip, age band, weather you may mention, and the first door line. Pocket cards is Door, Pushback, i35, Set, Compass.",
       "Neighborhood today is the zip you’re on. After Action Report is wins first, then what you’ll do different. Ask Roofus and he’ll name tomorrow.",
-      "Weather you can mention copies from the Working zip when you tap Use today. Only a kept storm that hit that zip. Age first.",
     ],
   },
   streets: {
@@ -20,6 +20,13 @@ export const PAGE_HELP = {
     body: [
       "Build from the counties in Presets. You pick the roof age — default 17–25 years. Tap Change to edit. Cards are zips. Working sits at the top. Tap a county to open the rest. Streets on a card are the age-band pockets — tap the card.",
       "A Working zip shows one sentence if a kept storm actually hit it. Use today copies that sentence onto Today. Last 48 hours and the season log are not on this page.",
+    ],
+  },
+  cards: {
+    title: "Cards",
+    body: [
+      "Five pocket cards from the porch book. Door is the default knock. Pushback restates first. i35 is after photos. Set is morning or afternoon. Compass is truck only.",
+      "Ask Roofus pins the matching hat. This is not Reference — those are InterNACHI articles.",
     ],
   },
   inspect: {
