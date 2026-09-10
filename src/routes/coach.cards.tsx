@@ -15,7 +15,7 @@ export function CardsPage() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <AppHeader title="Cards" page="cards" />
+      <AppHeader title="Cards" />
       <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">In your pocket.</h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         Five cards. Door is the default knock. Compass is truck only. Ask Roofus opens Roleplay on

@@ -1,4 +1,4 @@
-/** Ride-along chat. Three modes. Roleplay beats sit in the thumb zone. */
+/** Ride-along chat. Mode comes from the orange fan. Roleplay beats sit in the thumb zone. */
 import { X, History } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ChatBubble } from "@/components/chat-bubble";
@@ -10,12 +10,10 @@ import { Tip } from "@/components/ui/tooltip";
 import { abortTalk, sendRoofus, stopRoofus } from "@/lib/roofus-talk";
 import { useCoach } from "@/lib/coach-store";
 import {
-  COACH_MODES,
   ROLEPLAY_SCENES,
   ROLEPLAY_WHO,
   modeById,
   roleplayKnockLine,
-  type CoachMode,
   type RoleplaySceneId,
   type RoleplayWhoId,
 } from "@/lib/rufus-modes";
@@ -26,13 +24,11 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
   const modeId = useCoach((s) => s.mode);
   const scene = useCoach((s) => s.scene);
   const who = useCoach((s) => s.who);
-  const switchMode = useCoach((s) => s.switchMode);
   const setScene = useCoach((s) => s.setScene);
   const setWho = useCoach((s) => s.setWho);
   const setWalk = useCoach((s) => s.setWalk);
   const streaming = useCoach((s) => s.streaming);
   const busy = useCoach((s) => s.busy);
-  const startNew = useCoach((s) => s.startNew);
   const setHistoryOpen = useCoach((s) => s.setHistoryOpen);
   const closeSheet = useCoach((s) => s.closeSheet);
   const [draft, setDraft] = useState("");
@@ -46,12 +42,6 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "end" });
   }, [messages.length, streaming, busy]);
-
-  function pickMode(id: CoachMode) {
-    abortTalk();
-    switchMode(id);
-    setError(null);
-  }
 
   async function onSend(text?: string) {
     const content = (text ?? draft).trim();
@@ -92,7 +82,7 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
     <div
       className={
         embedded
-          ? "flex min-h-0 flex-1 flex-col"
+          ? "flex min-h-0 flex-1 flex-col bg-paper"
           : "relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col bg-paper"
       }
     >
@@ -111,49 +101,7 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
             <span className="font-medium text-fg">Roofus</span>
             <span className="text-faint">· {mode.label}</span>
           </div>
-          <div className="flex items-center">
-            <HelpButton page="coach" />
-            <Tip label="Past chats">
-              <button
-                type="button"
-                aria-label="Past chats"
-                className="inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg"
-                onClick={() => setHistoryOpen(true)}
-              >
-                <History className="size-5" />
-              </button>
-            </Tip>
-            <Tip label="Start a new chat">
-              <button
-                type="button"
-                onClick={() => {
-                  abortTalk();
-                  startNew({ mode: mode.id });
-                  setError(null);
-                }}
-                className="h-11 px-2 text-xs text-faint hover:text-fg"
-              >
-                New
-              </button>
-            </Tip>
-          </div>
-        </div>
-        <div className="-mx-1 mt-1 flex gap-1.5 pb-3">
-          {COACH_MODES.map((m) => (
-            <Tip key={m.id} label={m.hint} side="bottom">
-              <button
-                type="button"
-                onClick={() => pickMode(m.id)}
-                className={
-                  m.id === mode.id
-                    ? "min-h-11 flex-1 rounded-full bg-fg px-3 text-sm text-paper"
-                    : "min-h-11 flex-1 rounded-full border border-border bg-surface px-3 text-sm text-muted"
-                }
-              >
-                {m.label}
-              </button>
-            </Tip>
-          ))}
+          <HelpButton page="coach" />
         </div>
       </header>
 
@@ -235,6 +183,16 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
           </button>
         ) : null}
         <div className="flex items-center gap-2">
+          <Tip label="Past chats">
+            <button
+              type="button"
+              aria-label="Past chats"
+              className="inline-flex size-12 shrink-0 items-center justify-center rounded-full border border-border text-muted hover:bg-surface-2 hover:text-fg"
+              onClick={() => setHistoryOpen(true)}
+            >
+              <History className="size-5" />
+            </button>
+          </Tip>
           {roleplay ? (
             <RoleplayMic
               disabled={busy}
@@ -354,7 +312,7 @@ function MindsetStart({ onWalk }: { onWalk: (id: WalkId) => void }) {
       <p className="text-xs font-medium uppercase tracking-wide text-faint">Truck only</p>
       <h1 className="mt-2 font-display text-3xl leading-tight tracking-tight">Mindset</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">
-        One question at a time. Private. Never a porch line.
+        One question at a time. Private. Never a porch line. What you wrote in Presets is his notes.
       </p>
       <div className="mt-5 flex flex-col gap-2">
         {WALKS.map((w) => (

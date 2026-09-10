@@ -104,13 +104,14 @@ function InspectPage() {
 
   return (
     <main className="relative z-10 mx-auto flex h-dvh w-full min-w-0 max-w-lg flex-col overflow-hidden px-4 pt-3">
-      <AppHeader title="Inspect" page="inspect" />
+      <AppHeader title="Inspect" />
 
       <div className="mt-3 flex items-end justify-between gap-3">
         <div className="min-w-0">
           <h1 className="font-display text-xl leading-tight tracking-tight">Shoot. Then ask.</h1>
           <p className="mt-1 text-xs leading-relaxed text-muted">
-            One shot. He names the i35 slot. Don’t talk off the ladder.
+            One shot. He names the i35 slot. Ticks are this house — they don’t save. Not a report.
+            Don’t talk off the ladder.
           </p>
         </div>
         {photo || shown.length ? (
@@ -121,7 +122,7 @@ function InspectPage() {
       </div>
 
       <section className="mt-3 shrink-0">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-faint">Shots</p>
+        <p className="text-[11px] font-medium uppercase tracking-wide text-faint">This house</p>
         <ul className="mt-2 flex flex-wrap gap-1.5">
           {WALK_SLOTS.map((s) => {
             const on = Boolean(done[s.id]);
@@ -262,7 +263,7 @@ function InspectPage() {
         </div>
         <form
           className="shrink-0 border-t border-border/70 bg-paper pt-2"
-          style={{ paddingBottom: "calc(4.75rem + env(safe-area-inset-bottom))" }}
+          style={{ paddingBottom: "calc(7.25rem + env(safe-area-inset-bottom))" }}
           onSubmit={(e) => {
             e.preventDefault();
             void ask();

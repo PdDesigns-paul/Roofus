@@ -6,10 +6,9 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Tip } from "@/components/ui/tooltip";
 
 const LINKS = [
-  { to: "/coach/mindset", label: "Mindset", hint: "Why you stay. What scares you. Hours. Skills." },
   { to: "/coach/cards", label: "Cards", hint: "Door, pushback, i35, set, compass." },
   { to: "/coach/reference", label: "Reference", hint: "145 roof articles" },
-  { to: "/settings", label: "Presets", hint: "Counties, hours, warranty, FAQs, backup" },
+  { to: "/settings", label: "Presets", hint: "Counties, hours, warranty, mindset, backup" },
 ] as const;
 
 export function MoreMenu() {
@@ -17,7 +16,7 @@ export function MoreMenu() {
 
   return (
     <>
-      <Tip label="Mindset, Cards, Reference, Presets">
+      <Tip label="Cards, Reference, Presets">
         <button
           type="button"
           aria-label="More"

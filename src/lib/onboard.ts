@@ -32,18 +32,18 @@ export const ONBOARD_STEPS = [
     id: "help",
     selector: "[data-tour='help']",
     title: "The question mark",
-    body: "Every page has this in the top right. Tap it when you're lost. That's how this page works.",
+    body: "Every page has this above the tabs. Tap it when you're lost. That's how this page works.",
   },
   {
     id: "roofus",
     selector: "[data-tour='roofus']",
     title: "That's Roofus",
-    body: "Orange button. Tap to talk. Hold for old chats.",
+    body: "Orange button. Tap to pick Live, Roleplay, or Mindset. Hold for a new Live chat.",
   },
   {
     id: "tabs",
     selector: "[data-tour='tabs']",
     title: "The day",
-    body: "Today. Streets. Inspect. Three dots hide Mindset, Cards, Reference, and Presets.",
+    body: "Today. Streets. Inspect. Menu hides Cards, Reference, and Presets. Mindset worksheets live in Presets.",
   },
 ] as const;

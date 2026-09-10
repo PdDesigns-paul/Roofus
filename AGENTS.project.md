@@ -19,7 +19,7 @@ If `DOCTRINE.md` and a button disagree, fix both in the same change.
 ## Resume (fresh Build chat)
 
 1. This workspace may already have the app. If it looks like a blank template, **pull** [PdDesigns-paul/Roofus](https://github.com/PdDesigns-paul/Roofus) before you write code.
-2. Read `DOCTRINE.md` + `README.md` + `src/lib/coach-system.ts`. Confirm the prompt still matches the buttons.
+2. Read `DOCTRINE.md` only when the slice touches porch words. Do not reread the coach prompt “just in case.”
 3. Do only the slice they asked. Push back to that repo when it works.
 4. Do not paste the old chat. Do not dump the archive playbooks into new files.
 
@@ -27,7 +27,9 @@ GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at 
 
 ## Product (short)
 
-Phone-first PWA. First screen is the porch. Bottom bar: Today · Streets · Inspect. More: Mindset, Reference, Presets. Orange button = Roofus the coach.
+Phone-first PWA. First screen is the porch. Bottom bar: Today · Streets · Inspect. Footer above it: Back · Home · Help · Menu (Back and Home hide on those three tabs). Menu: Cards, Reference, Presets. Mindset worksheets live in Presets.
+
+Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Inspect hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 
 - Streets = **zip** cards grouped by county (not named subdivisions, not one card per block group).
 - Door / Live first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.
@@ -57,10 +59,10 @@ Comments explain a trap, not the line. One short why is enough (`Zip when we hav
 
 Tests live in `src/lib/*.test.ts` (`node:test`). Pure functions: labels, hail grade, county parse, Notion merge, Inspect-blank. No live xAI, Notion, Census, or NWS. A slice that changes those rules **ships a test in the same change**. Do not add Playwright / browser suites to CI. Phone UI is them tapping roofus.coach.
 
-`npm run test:app` is the product suite. `npm test` also runs Grok platform script tests — CI must not use that. `npm run typecheck` and `npm run test:app` must pass before push.
+`npm run test:app` is the product suite. `npm test` also runs Grok platform script tests — CI must not use that.
 
 Do not add login, Postgres, new API keys, Codecov, Husky, or commitlint. Conventional-commit prefixes are optional; a sentence that says what the phone does is better.
 
 ## After a slice
 
-Run `npm run typecheck` and `npm run test:app`. Commit and push to `PdDesigns-paul/Roofus` on `main`. Vercel rebuilds roofus.coach from that push. One working slice per chat is enough.
+Push to `PdDesigns-paul/Roofus` on `main`. GitHub Action + Vercel are the gate. Do not run build, browser-smoke, or a second preview unless this slice moves chrome (tabs, FAB, header/footer, chat sheet) or they say “QA”. If a lib rule changed, run `test:app` only. One working slice per chat is enough.

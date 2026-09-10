@@ -3,8 +3,8 @@ export const PAGE_HELP = {
     title: "Roofus",
     body: [
       "This is the porch. Open Today for the four counts. Streets is zips. Inspect is the camera.",
-      "Orange button is Roofus. Tap him — he's in the corner of the chat. Hold the button for old chats. Live, Roleplay, and Mindset are the three modes. Three dots: Mindset, Cards, Reference, Presets. First open walks the question mark.",
-      "Bottom: Today, Streets, Inspect. Put the app on your Home Screen so it opens like anything else on this phone.",
+      "Orange button is Roofus. Tap to pick Live, Roleplay, or Mindset — each is a new chat. Hold starts Live. History is the clock in the chat. Menu: Cards, Reference, Presets. Mindset worksheets live in Presets. First open walks the question mark.",
+      "Bottom: Today, Streets, Inspect. Back, Home, Help, and Menu sit above those on nested pages. Put the app on your Home Screen so it opens like anything else on this phone.",
     ],
   },
   today: {
@@ -32,17 +32,17 @@ export const PAGE_HELP = {
   inspect: {
     title: "Inspect",
     body: [
-      "Photos first. Check Street, Four slopes, Close-up, Witnesses, Attic.",
+      "Photos first. Check Street, Four slopes, Close-up, Witnesses, Attic. Ticks are working memory for this house — they don’t save and they’re not a report.",
       "Then Camera, Photos, or Practice shot. Ask what you’re looking at, whether it’s the worst, or what to say. He names the i35 slot — Bad, Good, Worst, or skip theater. Practice is not this house.",
-      "Don’t announce off the ladder. Opening this page starts a blank ask — old inspect chats live under Roofus, hold the orange button.",
+      "Don’t announce off the ladder. Opening this page starts a blank ask — old inspect chats live under Roofus history.",
     ],
   },
   mindset: {
     title: "Mindset",
     body: [
-      "Four truths at the top. Then Why, Name the demon, Pace, Talent stack.",
+      "Worksheets live in Presets. Four truths at the top. Then Why, Name the demon, Pace, Talent stack.",
       "Why is a ladder: number, what it buys, who else, the person or promise. Read it with Roofus on a dead day. Demon names the attack. Pace drops a gear. Stack is three skills. After Action Report is on Today — wins, facts, a plan.",
-      "Coach me through this opens a Mindset chat and asks one question. Answers land on this page. Private. Not a pitch.",
+      "Coach me through this opens a Mindset chat and asks one question. The orange fan also opens that chat. Answers land on this page. Private. Not a pitch.",
     ],
   },
   reference: {
@@ -56,6 +56,7 @@ export const PAGE_HELP = {
     title: "Presets",
     body: [
       "First name, counties, state, when you knock, morning work, hard stop. Company name and warranty line. He uses those when he talks product.",
+      "Mindset worksheets (Why, demon, Pace, stack) live on this page. The orange fan opens the chat. After Action Report is on Today.",
       "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Connect finds the tables. Restore brings the copy onto this phone. Do not Backup from an empty phone.",
       "FAQs ship with public porch answers already filled. Edit or drop. Your office rules win.",
       "Show the question-mark tour plays the first-open walk again.",
@@ -64,9 +65,9 @@ export const PAGE_HELP = {
   coach: {
     title: "Roofus",
     body: [
-      "Pin a mode. That starts a fresh chat. Live, Roleplay, Mindset. Live’s first starter is the million-dollar script. The dog in the corner is him. History tags each chat by color.",
+      "Tap the orange button to pick a mode. That starts a fresh chat. Live, Roleplay, Mindset. Hold starts Live. Live’s first starter is the million-dollar script. The dog in the corner is him. History is the clock at the bottom. Tags by color.",
       "Roleplay: pick a beat at the bottom (Walk-up, They push, After photos, The set, Whole visit), who they are, then knock. Hold the mic. Score me grades it. Hear it plays his line. Practice only — do not record a homeowner.",
-      "Mindset is truck only. Camera is the Inspect page. X closes him. The day is still underneath.",
+      "Mindset is truck only. Worksheets are in Presets. Camera is the Inspect page. X closes him. The day is still underneath.",
     ],
   },
 } as const;

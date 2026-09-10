@@ -79,7 +79,7 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_why",
     q: "Why can’t I ask why in the house?",
-    a: "WHY puts them on trial. Use “how does that make you feel” and “what would you like to do about it.” Save why for your own Mindset page, never the kitchen.",
+    a: "WHY puts them on trial. Use “how does that make you feel” and “what would you like to do about it.” Save why for Presets, never the kitchen.",
   },
   {
     id: "f_seed_options",

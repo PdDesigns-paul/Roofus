@@ -247,7 +247,7 @@ Roofus is not their lawyer.
 
 ## Product map (keep the coach prompt in sync)
 
-Bottom bar: **Today · Streets · Inspect**. Mindset, Reference, Presets sit behind More (three dots). Roofus is the orange button, not a tab.
+Bottom bar: **Today · Streets · Inspect**. Footer above it: Back · Home · Help · Menu (Back and Home hide on the three tabs). Menu: Cards, Reference, Presets. Mindset worksheets live in Presets. Roofus is the orange button — tap fans Live / Roleplay / Mindset. Hold starts Live. Inspect hides him. Not a tab.
 
 | Surface | What it is |
 | --- | --- |
@@ -256,10 +256,10 @@ Bottom bar: **Today · Streets · Inspect**. Mindset, Reference, Presets sit beh
 | **Streets** | Age-band **zips**, grouped by county. Working pinned. Maps. One weather sentence on the Working zip if a kept storm matches. **Use today** copies that sentence to Today. Last 48 hours and season log are **not** on this page. |
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot (Bad / Good / Worst / skip theater). Practice shot is a sample close-up — not this house. |
-| **Roofus** | Three modes: Live, Roleplay, Mindset. New mode = new chat. History is tagged by color. Live’s first starter is the million-dollar script (B). Roleplay beats at the bottom: Walk-up, They push, After photos (talk only), The set, Whole visit. Score me is a button. Hold-to-talk in Roleplay. Hear it reads his line. Mindset is truck only. |
-| **Mindset** | Why, demon, Pace, Talent stack. Private. Why is a ladder. Demon names the attack. Pace drops a gear. Stack is three skills. |
+| **Roofus** | Tap fans Live, Roleplay, Mindset. Each pick is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. New Live lives on the History sheet. Live’s first starter is the million-dollar script (B). Roleplay beats at the bottom: Walk-up, They push, After photos (talk only), The set, Whole visit. Score me is a button. Hold-to-talk in Roleplay. Hear it reads his line. Mindset is truck only. |
+| **Mindset** | Worksheets in Presets: Why, demon, Pace, Talent stack. Chat from the orange fan. Private. Why is a ladder. Demon names the attack. Pace drops a gear. Stack is three skills. |
 | **Reference** | InterNACHI Mastering Roof Inspections cards. Name the title. Do not paste article bodies. |
-| **Presets** | Name, counties, state, hours, company, warranty, optional Notion, Memory FAQs. |
+| **Presets** | Name, counties, state, hours, company, warranty, mindset worksheets, optional Notion, Memory FAQs. |
 
 Tomorrow, in order: last-48h **High** on a zip they keep → Working → next fresh age-band zip. Do not ask a newbie where to go. Do not invent hail.
 

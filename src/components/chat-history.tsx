@@ -35,11 +35,11 @@ export function ChatHistory() {
             openCoach("new");
           }}
         >
-          New chat
+          New Live
         </button>
       </div>
       {rows.length === 0 ? (
-        <p className="mt-8 text-sm text-muted">Nothing saved yet. Tap New chat.</p>
+        <p className="mt-8 text-sm text-muted">Nothing saved yet. Tap New Live.</p>
       ) : (
         <ul className="mt-4 max-h-[55dvh] overflow-y-auto">
           {rows.map((t) => {

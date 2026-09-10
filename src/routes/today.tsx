@@ -62,7 +62,7 @@ function SetupForm() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <AppHeader title="Today" page="today" home />
+      <AppHeader title="Today" />
       <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where do you knock?</h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         Once is enough. Hours, warranty, and FAQs live in Presets. Stays on this phone.
@@ -176,7 +176,7 @@ function DaySheet() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <AppHeader title="Today" page="today" home />
+      <AppHeader title="Today" />
       <p className="mt-4 text-xs font-medium uppercase tracking-wide text-faint">{day.date}</p>
       <h1 className="mt-1 font-display text-2xl leading-tight tracking-tight">
         {profile.goBy.trim() ? `${profile.goBy.trim()}'s day` : "Today"}

@@ -104,7 +104,7 @@ function StreetsPage() {
   if (!profile.setupDone) {
     return (
       <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-        <AppHeader title="Streets" page="streets" />
+        <AppHeader title="Streets" />
         <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where you knock.</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted">
           Presets needs a county and a state first. Then we build zips from roofs in the age
@@ -122,7 +122,7 @@ function StreetsPage() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <AppHeader title="Streets" page="streets" />
+      <AppHeader title="Streets" />
       <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where you knock.</h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         {profile.counties.trim()}, {profile.states.trim()}. One card per zip.

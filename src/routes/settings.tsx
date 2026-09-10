@@ -1,8 +1,8 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
-import { HelpButton } from "@/components/help-button";
+import { createFileRoute, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { AppHeader } from "@/components/app-header";
+import { MindsetWorksheets } from "@/components/mindset-worksheets";
 import { NotionBackup } from "@/components/notion-backup";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useDayBook } from "@/lib/day-book";
@@ -19,26 +19,19 @@ function SettingsPage() {
   const profile = useDayBook((st) => st.profile);
   const patchProfile = useDayBook((st) => st.patchProfile);
   const navigate = useNavigate();
+  const hash = useRouterState({ select: (st) => st.location.hash });
+
+  useEffect(() => {
+    if (hash.replace(/^#/, "") !== "mindset") return;
+    document.getElementById("mindset")?.scrollIntoView({ block: "start" });
+  }, [hash]);
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <header className="flex items-center justify-between">
-        <Link
-          to="/"
-          className="inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-surface-2"
-          aria-label="Home"
-        >
-          <ArrowLeft className="size-5" />
-        </Link>
-        <h1 className="font-display text-xl">Presets & Settings</h1>
-        <div className="flex items-center">
-          <HelpButton page="settings" />
-          <ThemeToggle />
-        </div>
-      </header>
+      <AppHeader title="Presets" />
 
       <p className="mt-3 text-sm leading-snug text-muted">
-        Counties, hours, company, warranty. Backup is optional.
+        Counties, hours, company, warranty. Mindset worksheets. Backup is optional.
       </p>
 
       <button
@@ -147,6 +140,12 @@ function SettingsPage() {
           />
         </div>
       </section>
+
+      <section className="mt-8">
+        <p className="mb-3 text-xs font-medium uppercase tracking-wide text-faint">Mindset</p>
+        <MindsetWorksheets />
+      </section>
+
       <NotionBackup />
     </main>
   );

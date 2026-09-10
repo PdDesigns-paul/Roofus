@@ -97,7 +97,7 @@ export const POCKET_CARDS: PocketCard[] = [
     when: "Truck only. Never a porch line.",
     lines: [
       ...COMPASS.map((line) => ({ note: line })),
-      { note: "Why is on Mindset. The demon never goes on a door." },
+      { note: "Why is in Presets. The demon never goes on a door." },
     ],
   },
 ];

@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarDays, Camera, Map } from "lucide-react";
-import { AppHeader } from "@/components/app-header";
 import { InstallHint } from "@/components/install-hint";
 import { RoofusFace } from "@/components/roofus-mark";
 import { useDayBook } from "@/lib/day-book";
@@ -23,9 +22,7 @@ function LandingPage() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <AppHeader title="" page="home" home />
-
-      <div className="mt-5 flex items-center gap-3">
+      <div className="mt-2 flex items-center gap-3">
         <RoofusFace className="size-16" />
         <div className="min-w-0">
           <h1 className="font-display text-3xl leading-tight tracking-tight">Roofus</h1>
