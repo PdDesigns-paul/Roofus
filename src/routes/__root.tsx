@@ -1,4 +1,5 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import { Analytics } from "@vercel/analytics/react";
 import { AuthProvider } from "@/lib/auth/provider";
 import { AskFab } from "@/components/ask-fab";
 import { ChatHistory } from "@/components/chat-history";
@@ -61,6 +62,7 @@ export const Route = createRootRoute({
           </TooltipProvider>
         </AuthProvider>
         <Scripts />
+        <Analytics />
       </body>
     </html>
   ),
