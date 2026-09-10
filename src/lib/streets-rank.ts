@@ -50,3 +50,14 @@ export function groupLoopsByCounty(loops: StreetLoop[]): { county: string; loops
   }
   return order.map((county) => ({ county, loops: map.get(county) ?? [] }));
 }
+
+/** Working zips sit above the county list so they are not buried. */
+export function splitWorking(loops: StreetLoop[]): { working: StreetLoop[]; rest: StreetLoop[] } {
+  const working: StreetLoop[] = [];
+  const rest: StreetLoop[] = [];
+  for (const l of loops) {
+    if (l.status === "working") working.push(l);
+    else rest.push(l);
+  }
+  return { working, rest };
+}

@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { stormsNearLoop } from "./weather-match.ts";
+import { mentionOnStreet, stormsNearLoop } from "./weather-match.ts";
 import type { StormEvent } from "./weather-types.ts";
 
 function storm(p: Partial<StormEvent> = {}): StormEvent {
@@ -35,5 +35,21 @@ describe("stormsNearLoop", () => {
   });
   it("treats County suffix as the same place", () => {
     assert.equal(stormsNearLoop([storm({ county: "Cumberland Co" })], loop).length, 1);
+  });
+});
+
+describe("mentionOnStreet", () => {
+  const loop = { county: "Cumberland County", lat: 40.24, lon: -76.92 };
+
+  it("is one porch sentence from the first kept hit", () => {
+    assert.equal(
+      mentionOnStreet([storm()], loop),
+      "You may mention 1 inch hail in Camp Hill on this street.",
+    );
+  });
+  it("is blank when nothing kept actually hit this zip", () => {
+    assert.equal(mentionOnStreet([storm({ county: "York" })], loop), "");
+    assert.equal(mentionOnStreet([], loop), "");
+    assert.equal(mentionOnStreet([storm({ say: "  " })], loop), "");
   });
 });

@@ -12,15 +12,14 @@ export const PAGE_HELP = {
     body: [
       "First time: your name, which counties, which state. Hours live in Presets. Then the four counts.",
       "Neighborhood today is the zip you’re on. After Action Report is wins first, then what you’ll do different. Ask Roofus and he’ll name tomorrow.",
-      "Weather you can mention only fills from storms you Keep on Streets, and only if they hit this zip.",
+      "Weather you can mention copies from the Working zip when you tap Use today. Only a kept storm that hit that zip. Age first.",
     ],
   },
   streets: {
     title: "Streets",
     body: [
-      "Build from the counties in Presets. You pick the roof age — default 17–25 years. Cards are zips, grouped by county. Streets on a card are the age-band pockets, not the whole zip.",
-      "Last 48 hours: tap to check. NWS first, then local news and X. High on a zip you keep is tomorrow. Keep is the porch line. Medium and Low stay a footnote.",
-      "Season log is six months of NWS. Keep / Toss. Age first.",
+      "Build from the counties in Presets. You pick the roof age — default 17–25 years. Tap Change to edit. Cards are zips. Working sits at the top. Tap a county to open the rest. Streets on a card are the age-band pockets — tap the card.",
+      "A Working zip shows one sentence if a kept storm actually hit it. Use today copies that sentence onto Today. Last 48 hours and the season log are not on this page.",
     ],
   },
   inspect: {

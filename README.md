@@ -14,8 +14,8 @@ The phone is the live log. Roofus (the orange button) rides shotgun. Notion is a
 | --- | --- |
 | **Porch** | First screen. Who this is. Open Today, Streets, or Inspect. |
 | **Today** | Four counts (Doors, Talked, On the roof, Appointments), neighborhood, weather you may mention, After Action Report, tomorrow. |
-| **Streets** | Age-band **zips** from your counties (default 17–25 year roofs), grouped by county. Working / Done / Skip. Maps on the card. |
-| **Last 48 hours** | On-demand. NWS first, then local news and X. Grade H / M / L. **H on a zip you keep is tomorrow.** Medium and Low do not pick the day. |
+| **Streets** | Age-band **zips** from your counties (default 17–25 year roofs). Working pinned. Maps. One weather sentence on the Working zip if a kept storm matches. Use today copies it to Today. |
+| **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. CompanyCam is the report. |
 | **Roofus** | Orange button. Pin a hat: Door, Inspect, Pushback, Set, Roleplay, Score. Hold-to-talk in Roleplay. Hear it reads his line. Practice only — do not record a homeowner. |
 | **Mindset** | Why, Name the demon, Pace, Talent stack. Private. After Action Report lives on Today. |

@@ -27,3 +27,14 @@ export function stormsNearLoop(
     return miles(s.lat, s.lon, loop.lat, loop.lon) <= milesLimit;
   });
 }
+
+/** One porch sentence. Empty if nothing kept actually hit this zip. */
+export function mentionOnStreet(
+  storms: StormEvent[],
+  loop: { county: string; lat: number; lon: number },
+): string {
+  const hit = stormsNearLoop(storms, loop)[0];
+  const say = hit?.say.trim() ?? "";
+  if (!say) return "";
+  return `You may mention ${say} on this street.`;
+}

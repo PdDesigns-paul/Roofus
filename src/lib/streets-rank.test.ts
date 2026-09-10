@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { groupLoopsByCounty, loopAge, loopLabel, nearestZip } from "./streets-rank.ts";
+import { groupLoopsByCounty, loopAge, loopLabel, nearestZip, splitWorking } from "./streets-rank.ts";
 import type { StreetLoop } from "./streets-types.ts";
 
 function loop(p: Partial<StreetLoop> = {}): StreetLoop {
@@ -71,6 +71,33 @@ describe("groupLoopsByCounty", () => {
         ["Cumberland", ["a", "c"]],
         ["York", ["b"]],
       ],
+    );
+  });
+});
+
+describe("splitWorking", () => {
+  it("pins working zips and leaves the rest in order", () => {
+    const { working, rest } = splitWorking([
+      loop({ id: "a", status: "fresh" }),
+      loop({ id: "b", status: "working" }),
+      loop({ id: "c", status: "done" }),
+      loop({ id: "d", status: "working" }),
+    ]);
+    assert.deepEqual(
+      working.map((l) => l.id),
+      ["b", "d"],
+    );
+    assert.deepEqual(
+      rest.map((l) => l.id),
+      ["a", "c"],
+    );
+  });
+  it("is all rest when nothing is working", () => {
+    const { working, rest } = splitWorking([loop({ id: "a" }), loop({ id: "b", status: "skip" })]);
+    assert.equal(working.length, 0);
+    assert.deepEqual(
+      rest.map((l) => l.id),
+      ["a", "b"],
     );
   });
 });

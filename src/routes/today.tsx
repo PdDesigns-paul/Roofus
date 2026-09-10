@@ -257,7 +257,7 @@ function DaySheet() {
 
       <Field
         label="Weather you can mention"
-        hint="Filled from storms you kept, only if they match this loop. Edit freely. Age first."
+        hint="Copied from Streets when you tap Use today. Edit freely. Age first."
       >
         <textarea
           className="mt-2 min-h-16 w-full min-w-0 rounded-xl border border-border bg-surface px-3 py-2 text-base leading-relaxed"

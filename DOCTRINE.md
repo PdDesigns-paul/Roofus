@@ -37,7 +37,7 @@ Phone-first ride-along **journal + coach** for door-to-door roofers and storm re
 
 Storms are a bucket **inside** the inspection, not the reason we knocked.
 
-- Script A (claim talk) only after they **Keep** a storm on Last 48 hours, and only on a zip that storm actually hit.
+- Script A (claim talk) only after they **Keep** a storm, and only on a zip that storm actually hit.
 - Named weather only from storms they kept. If it is not kept, do not name it.
 - H (High) on a zip they keep is tomorrow. Medium and Low do not pick the day.
 - No damage on the roof = say no damage. The insurance option is then “not this roof,” not a softer lie.
@@ -252,8 +252,8 @@ Bottom bar: **Today · Streets · Inspect**. Mindset, Reference, Presets sit beh
 | Surface | What it is |
 | --- | --- |
 | **Today** | Four counts (Doors, Talked, On the roof, Appointments), zip, weather they may mention, After Action Report, tomorrow. Counties and hours are **not** here — Presets. |
-| **Streets** | Age-band **zips**, grouped by county. Census block groups rolled up to zip. Roads on the card are the age-band pockets, not the whole zip. Working / Done / Skip. |
-| **Last 48 hours** | On-demand. NWS first, then local news and X. Grade H / M / L. Keep = porch language. H on a kept zip = tomorrow. |
+| **Streets** | Age-band **zips**, grouped by county. Working pinned. Maps. One weather sentence on the Working zip if a kept storm matches. **Use today** copies that sentence to Today. Last 48 hours and season log are **not** on this page. |
+| **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. |
 | **Roofus** | Hats: Door, Inspect, Pushback, Set, Roleplay, Score. Door’s first starter is the million-dollar script (B). Hold-to-talk in Roleplay. Hear it reads his line. |
 | **Mindset** | Why, demon, Pace, Talent stack. Private. |
