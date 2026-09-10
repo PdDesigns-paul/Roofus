@@ -1,6 +1,7 @@
 import { Sheet } from "@/components/sheet";
 import { openCoach, openCoachThread } from "@/lib/open-coach";
-import { useCoach, type CoachThread, type ThreadOrigin } from "@/lib/coach-store";
+import { useCoach, type CoachThread } from "@/lib/coach-store";
+import { threadTag } from "@/lib/rufus-modes";
 
 function ago(at: number) {
   const s = Math.max(0, Math.round((Date.now() - at) / 1000));
@@ -8,13 +9,6 @@ function ago(at: number) {
   if (s < 3600) return `${Math.round(s / 60)}m`;
   if (s < 86400) return `${Math.round(s / 3600)}h`;
   return `${Math.round(s / 86400)}d`;
-}
-
-function originLabel(origin: ThreadOrigin) {
-  if (origin === "help") return "Help";
-  if (origin === "inspect") return "Inspect";
-  if (origin === "mindset") return "Mindset";
-  return "Porch";
 }
 
 export function ChatHistory() {
@@ -48,31 +42,41 @@ export function ChatHistory() {
         <p className="mt-8 text-sm text-muted">Nothing saved yet. Tap New chat.</p>
       ) : (
         <ul className="mt-4 max-h-[55dvh] overflow-y-auto">
-          {rows.map((t) => (
-            <li key={t.id} className="flex items-stretch gap-2 border-b border-border last:border-0">
-              <button
-                type="button"
-                className="min-h-14 flex-1 py-3 text-left"
-                onClick={() => {
-                  setOpen(false);
-                  openCoachThread(t.id);
-                }}
-              >
-                <span className="block truncate text-sm text-fg">{t.title}</span>
-                <span className="mt-0.5 block text-xs text-faint">
-            {originLabel(t.origin)} · {ago(t.updatedAt)}
-                  {t.id === activeId ? " · open" : ""}
-                </span>
-              </button>
-              <button
-                type="button"
-                className="shrink-0 px-2 text-xs text-faint hover:text-fg"
-                onClick={() => dropThread(t.id)}
-              >
-                Drop
-              </button>
-            </li>
-          ))}
+          {rows.map((t) => {
+            const tag = threadTag(t);
+            return (
+              <li key={t.id} className="flex items-stretch gap-2 border-b border-border last:border-0">
+                <button
+                  type="button"
+                  className="min-h-14 flex-1 py-3 text-left"
+                  onClick={() => {
+                    setOpen(false);
+                    openCoachThread(t.id);
+                  }}
+                >
+                  <span className="flex items-center gap-2">
+                    <span
+                      className={`inline-flex h-5 shrink-0 items-center rounded-full px-2 text-[11px] font-medium ${tag.className}`}
+                    >
+                      {tag.label}
+                    </span>
+                    <span className="truncate text-sm text-fg">{t.title}</span>
+                  </span>
+                  <span className="mt-0.5 block text-xs text-faint">
+                    {ago(t.updatedAt)}
+                    {t.id === activeId ? " · open" : ""}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className="shrink-0 px-2 text-xs text-faint hover:text-fg"
+                  onClick={() => dropThread(t.id)}
+                >
+                  Drop
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
     </Sheet>

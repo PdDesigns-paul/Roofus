@@ -50,7 +50,7 @@ This product’s names. Do not invert them because an old Alpha file used “Mil
 
 | Name in this app | What it is | When |
 | --- | --- | --- |
-| **Million-dollar door script** (Door hat starter, Script **B**) | Retail / age. Dashaun Bryant public opener, told honest. | Default knock. Almost every street. |
+| **Million-dollar door script** (Live starter, Script **B**) | Retail / age. Dashaun Bryant public opener, told honest. | Default knock. Almost every street. |
 | **Script A** | Insurance-path canvas. Claim-stage questions. | Only after Keep, and only on a matching zip. |
 
 Default = B. Mixed / not sure = start B. Insurance only after you see damage or they bring it up.
@@ -256,7 +256,7 @@ Bottom bar: **Today · Streets · Inspect**. Mindset, Reference, Presets sit beh
 | **Streets** | Age-band **zips**, grouped by county. Working pinned. Maps. One weather sentence on the Working zip if a kept storm matches. **Use today** copies that sentence to Today. Last 48 hours and season log are **not** on this page. |
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot (Bad / Good / Worst / skip theater). Practice shot is a sample close-up — not this house. |
-| **Roofus** | Hats: Door, Inspect, Pushback, Set, Roleplay, Mindset. New hat = new chat. Door’s first starter is the million-dollar script (B). Roleplay: scene, then knock. Score me is a button, not a hat. Hold-to-talk in Roleplay. Hear it reads his line. Mindset hat is truck only. |
+| **Roofus** | Three modes: Live, Roleplay, Mindset. New mode = new chat. History is tagged by color. Live’s first starter is the million-dollar script (B). Roleplay beats at the bottom: Walk-up, They push, After photos (talk only), The set, Whole visit. Score me is a button. Hold-to-talk in Roleplay. Hear it reads his line. Mindset is truck only. |
 | **Mindset** | Why, demon, Pace, Talent stack. Private. Why is a ladder. Demon names the attack. Pace drops a gear. Stack is three skills. |
 | **Reference** | InterNACHI Mastering Roof Inspections cards. Name the title. Do not paste article bodies. |
 | **Presets** | Name, counties, state, hours, company, warranty, optional Notion, Memory FAQs. |

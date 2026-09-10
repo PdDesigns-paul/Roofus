@@ -1,12 +1,13 @@
 /** Five pocket cards. Distilled from /DOCTRINE.md. Not a Drive dump. */
-import type { RufusHatId } from "./rufus-hats.ts";
+import type { CoachMode, RoleplaySceneId } from "./rufus-modes.ts";
 import { COMPASS } from "./survive.ts";
 
 export type PocketLine = { say?: string; note?: string };
 
 export type PocketCard = {
   id: "door" | "pushback" | "i35" | "set" | "compass";
-  hat: RufusHatId;
+  mode: CoachMode;
+  scene?: RoleplaySceneId;
   title: string;
   when: string;
   lines: PocketLine[];
@@ -15,7 +16,8 @@ export type PocketCard = {
 export const POCKET_CARDS: PocketCard[] = [
   {
     id: "door",
-    hat: "door",
+    mode: "roleplay",
+    scene: "walkup",
     title: "Door",
     when: "Walk-up. Default knock.",
     lines: [
@@ -40,7 +42,8 @@ export const POCKET_CARDS: PocketCard[] = [
   },
   {
     id: "pushback",
-    hat: "pushback",
+    mode: "roleplay",
+    scene: "push",
     title: "Pushback",
     when: "They push. Restate first.",
     lines: [
@@ -56,7 +59,8 @@ export const POCKET_CARDS: PocketCard[] = [
   },
   {
     id: "i35",
-    hat: "inspect",
+    mode: "roleplay",
+    scene: "after",
     title: "i35",
     when: "After photos. Never on the ladder.",
     lines: [
@@ -72,7 +76,8 @@ export const POCKET_CARDS: PocketCard[] = [
   },
   {
     id: "set",
-    hat: "set",
+    mode: "roleplay",
+    scene: "set",
     title: "Set",
     when: "After they agreed what they saw.",
     lines: [
@@ -87,7 +92,7 @@ export const POCKET_CARDS: PocketCard[] = [
   },
   {
     id: "compass",
-    hat: "mindset",
+    mode: "mindset",
     title: "Compass",
     when: "Truck only. Never a porch line.",
     lines: [

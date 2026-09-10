@@ -17,7 +17,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun. Notion is a
 | **Streets** | Age-band **zips** from your counties (default 17–25 year roofs). Working pinned. Maps. One weather sentence on the Working zip if a kept storm matches. Use today copies it to Today. |
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot. Practice shot is off the roof. CompanyCam is the report. |
-| **Roofus** | Orange button. Pin a hat: Door, Inspect, Pushback, Set, Roleplay, Mindset. New hat = new chat. Hold-to-talk in Roleplay. Score me is a button. Hear it reads his line. Practice only — do not record a homeowner. |
+| **Roofus** | Orange button. Three modes: Live, Roleplay, Mindset. New mode = new chat. History is tagged by color. Hold-to-talk in Roleplay. Beats at the bottom. Score me is a button. Hear it reads his line. Practice only — do not record a homeowner. |
 | **Cards** | Five pocket cards: Door, Pushback, i35, Set, Compass. Compass is truck only. |
 | **Mindset** | Why (ladder), Name the demon (plus the attack), Pace (gear), Talent stack (three skills). Private. After Action Report lives on Today. |
 | **Presets** | Counties, hours, company name, warranty, optional Notion backup, FAQs Roofus should remember (starters from public porch teaching). |
@@ -30,7 +30,7 @@ Full book: [`DOCTRINE.md`](./DOCTRINE.md).
 
 - Age first. Storms are a footnote unless you **Keep** them and they match that street.
 - Owner-pay houses. Clustered streets. Skip apartments, HOA-paid roofs, renters (card for the owner only).
-- **Million-dollar door script** = Script B (age / free look). Door hat’s first starter. Script A (claim talk) only after Keep, and only on matching zips.
+- **Million-dollar door script** = Script B (age / free look). Live’s first starter. Script A (claim talk) only after Keep, and only on matching zips.
 - One appointment from a day of knocking is a winning day.
 - Homeowner lines: 5th-grade, plain meaning first. Coach talk can sound like a closer.
 

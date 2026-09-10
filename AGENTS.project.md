@@ -30,7 +30,7 @@ GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at 
 Phone-first PWA. First screen is the porch. Bottom bar: Today · Streets · Inspect. More: Mindset, Reference, Presets. Orange button = Roofus the coach.
 
 - Streets = **zip** cards grouped by county (not named subdivisions, not one card per block group).
-- Door hat first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.
+- Door / Live first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.
 - Auth OFF. Database OFF. localStorage / Zustand only. Notion is optional backup in **their** workspace.
 - No CRM, takeoff, listing lookup, notes app, or apartment flow.
 
@@ -47,7 +47,7 @@ Phone-first PWA. First screen is the porch. Bottom bar: Today · Streets · Insp
 
 - `DOCTRINE.md`
 - `src/lib/coach-system.ts`
-- `src/lib/rufus-hats.ts`
+- `src/lib/rufus-modes.ts`
 - `src/lib/porch-faqs.ts`
 - `src/lib/page-help.ts`
 

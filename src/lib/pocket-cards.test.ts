@@ -22,11 +22,12 @@ describe("POCKET_CARDS", () => {
     const text = i35.lines.map((l) => `${l.say ?? ""} ${l.note ?? ""}`).join(" ");
     assert.match(text, /Never WHY in the house/);
     assert.match(text, /Can you see this/);
-    assert.equal(i35.hat, "inspect");
+    assert.equal(i35.mode, "roleplay");
+    assert.equal(i35.scene, "after");
   });
   it("Compass stays off the porch", () => {
     const c = POCKET_CARDS.find((x) => x.id === "compass")!;
-    assert.equal(c.hat, "mindset");
+    assert.equal(c.mode, "mindset");
     assert.match(c.when, /Truck only/);
     assert.match(c.lines.map((l) => l.note).join(" "), /demon never/);
   });

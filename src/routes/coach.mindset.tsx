@@ -109,7 +109,7 @@ function WalkSheet({ id }: { id: WalkId }) {
     whenCoachReady(() => {
       abortTalk();
       useCoach.getState().startNew({
-        hat: "mindset",
+        mode: "mindset",
         origin: "mindset",
         walkId: id,
         title: title ?? sheet?.title ?? "Mindset",

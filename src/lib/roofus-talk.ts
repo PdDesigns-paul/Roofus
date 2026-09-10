@@ -26,7 +26,7 @@ export function abortTalk() {
 
 export async function sendRoofus(
   text: string,
-  opts?: { imageDataUrl?: string; kickoff?: boolean },
+  opts?: { imageDataUrl?: string; kickoff?: boolean; year?: string },
 ) {
   const content = text.trim();
   if (!content) return;
@@ -35,7 +35,7 @@ export async function sendRoofus(
   if (!coach.activeId) coach.startNew();
   const live = useCoach.getState();
   const thread = live.activeId ? live.threads[live.activeId] : null;
-  if (!opts?.kickoff && thread?.hat === "mindset" && thread.walkId) {
+  if (!opts?.kickoff && thread?.mode === "mindset" && thread.walkId) {
     const patch = applyWalkAnswer(thread.walkId, content, useSurvive.getState(), {
       knock: useDayBook.getState().profile.knockWindow,
       paper: useDayBook.getState().profile.paperWindow,
@@ -57,10 +57,14 @@ export async function sendRoofus(
       .messages.filter((m) => m.role === "user" || m.content)
       .slice(-16);
     const messages = opts?.kickoff ? [{ role: "user" as const, content }, ...stored] : stored;
+    const now = useCoach.getState();
     const textOut = await streamCoach(
       {
         messages,
-        hat: useCoach.getState().hat,
+        mode: now.mode,
+        scene: now.scene ?? undefined,
+        who: now.who ?? undefined,
+        year: opts?.year,
         companyName: settings.companyName,
         warrantyLine: settings.warrantyLine,
         imageDataUrl: opts?.imageDataUrl,

@@ -1,6 +1,15 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { normalizeHat, type RufusHatId } from "./rufus-hats.ts";
+import {
+  modeOrigin,
+  normalizeMode,
+  normalizeScene,
+  normalizeWho,
+  sceneById,
+  type CoachMode,
+  type RoleplaySceneId,
+  type RoleplayWhoId,
+} from "./rufus-modes.ts";
 import type { ChatTurn } from "./stream-coach.ts";
 import type { WalkId } from "./survive.ts";
 
@@ -10,7 +19,9 @@ export type CoachThread = {
   id: string;
   title: string;
   origin: ThreadOrigin;
-  hat: RufusHatId;
+  mode: CoachMode;
+  scene: RoleplaySceneId | null;
+  who: RoleplayWhoId | null;
   walkId: WalkId | null;
   houseId: string | null;
   messages: ChatTurn[];
@@ -19,10 +30,12 @@ export type CoachThread = {
 };
 
 export type StartNewOpts = {
-  hat?: RufusHatId;
+  mode?: CoachMode;
   origin?: ThreadOrigin;
   title?: string;
   walkId?: WalkId | null;
+  scene?: RoleplaySceneId | null;
+  who?: RoleplayWhoId | null;
 };
 
 const EMPTY: ChatTurn[] = [];
@@ -38,15 +51,20 @@ type CoachState = {
   busy: boolean;
   historyOpen: boolean;
   sheetOpen: boolean;
-  hat: RufusHatId;
+  mode: CoachMode;
+  scene: RoleplaySceneId | null;
+  who: RoleplayWhoId | null;
+  lastScene: RoleplaySceneId;
+  lastWho: RoleplayWhoId;
   walkId: WalkId | null;
   houseId: string | null;
   messages: ChatTurn[];
   setHistoryOpen: (open: boolean) => void;
   openSheet: () => void;
   closeSheet: () => void;
-  setHat: (hat: RufusHatId) => void;
-  switchHat: (hat: RufusHatId) => void;
+  switchMode: (mode: CoachMode) => void;
+  setScene: (scene: RoleplaySceneId) => void;
+  setWho: (who: RoleplayWhoId) => void;
   setWalk: (walkId: WalkId, title?: string) => void;
   resume: () => void;
   startNew: (opts?: StartNewOpts) => void;
@@ -60,35 +78,40 @@ type CoachState = {
   clearStreaming: () => void;
 };
 
+type RawThread = Partial<CoachThread> & { hat?: string; id: string };
+
 function newId() {
   return `t_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
 }
 
-function titleFor(origin: ThreadOrigin, first?: string, address?: string) {
+function titleFor(
+  origin: ThreadOrigin,
+  mode: CoachMode,
+  first?: string,
+  scene?: RoleplaySceneId | null,
+): string {
   if (origin === "help") return "How this page works";
   if (origin === "inspect") return "Inspect";
-  if (origin === "mindset") return "Mindset";
-  if (origin === "house") {
-    const street = address?.split(",")[0]?.trim();
-    return street || "This house";
-  }
+  if (origin === "mindset" || mode === "mindset") return "Mindset";
+  if (mode === "roleplay") return scene ? sceneById(scene).label : "Roleplay";
   const line = first?.trim().split("\n")[0] ?? "";
-  return line.slice(0, 48) || "Roofus";
+  return line.slice(0, 48) || "Live";
 }
 
-function makeThread(
-  origin: ThreadOrigin,
-  extra?: { hat?: RufusHatId; houseId?: string | null; title?: string; walkId?: WalkId | null },
-): CoachThread {
+function makeThread(origin: ThreadOrigin, extra?: StartNewOpts): CoachThread {
   const now = Date.now();
-  const hat = normalizeHat(extra?.hat ?? (origin === "mindset" ? "mindset" : "door"));
+  const mode = extra?.mode ?? (origin === "mindset" ? "mindset" : origin === "inspect" ? "live" : "live");
+  const scene = mode === "roleplay" ? (extra?.scene ?? "walkup") : null;
+  const who = mode === "roleplay" ? (extra?.who ?? "busy") : null;
   return {
     id: newId(),
-    title: extra?.title ?? titleFor(origin),
+    title: extra?.title ?? titleFor(origin, mode, undefined, scene),
     origin,
-    hat,
+    mode,
+    scene,
+    who,
     walkId: extra?.walkId ?? null,
-    houseId: extra?.houseId ?? null,
+    houseId: null,
     messages: [],
     createdAt: now,
     updatedAt: now,
@@ -110,11 +133,46 @@ function capThreads(
   return { threads: nextThreads, order: [...keepSet] };
 }
 
-function normalizeThread(t: CoachThread): CoachThread {
-  const hat = normalizeHat(t.hat);
-  const walkId = t.walkId ?? null;
-  if (hat === t.hat && walkId === t.walkId) return t;
-  return { ...t, hat, walkId };
+function normalizeThread(raw: RawThread): CoachThread {
+  const mode = normalizeMode(raw.mode ?? raw.hat);
+  const origin: ThreadOrigin =
+    raw.origin === "help" ||
+    raw.origin === "house" ||
+    raw.origin === "inspect" ||
+    raw.origin === "mindset" ||
+    raw.origin === "porch"
+      ? raw.origin
+      : mode === "mindset"
+        ? "mindset"
+        : "porch";
+  const scene = mode === "roleplay" ? normalizeScene(raw.scene) : null;
+  const who = mode === "roleplay" ? normalizeWho(raw.who) : null;
+  return {
+    id: raw.id,
+    title: raw.title || titleFor(origin, mode, undefined, scene),
+    origin,
+    mode,
+    scene,
+    who,
+    walkId: raw.walkId ?? null,
+    houseId: raw.houseId ?? null,
+    messages: raw.messages ?? [],
+    createdAt: raw.createdAt ?? Date.now(),
+    updatedAt: raw.updatedAt ?? Date.now(),
+  };
+}
+
+function liveFields(thread: CoachThread, extras?: Partial<CoachState>): Partial<CoachState> {
+  return {
+    mode: thread.mode,
+    scene: thread.scene,
+    who: thread.who,
+    walkId: thread.walkId,
+    houseId: thread.houseId,
+    messages: thread.messages,
+    lastScene: thread.scene ?? extras?.lastScene ?? "walkup",
+    lastWho: thread.who ?? extras?.lastWho ?? "busy",
+  };
 }
 
 function patchActive(
@@ -127,10 +185,7 @@ function patchActive(
   return {
     threads: { ...s.threads, [id]: thread },
     order: [id, ...s.order.filter((x) => x !== id)],
-    hat: thread.hat,
-    walkId: thread.walkId,
-    houseId: thread.houseId,
-    messages: thread.messages,
+    ...liveFields(thread, s),
   };
 }
 
@@ -145,10 +200,7 @@ function activate(s: CoachState, thread: CoachThread): Partial<CoachState> {
     threads,
     order,
     activeId: live.id,
-    hat: live.hat,
-    walkId: live.walkId,
-    houseId: live.houseId,
-    messages: live.messages,
+    ...liveFields(live, s),
   };
 }
 
@@ -158,17 +210,15 @@ function migrateV1(): { threads: Record<string, CoachThread>; order: string[]; a
     const raw = localStorage.getItem("roofus-coach");
     if (!raw) return null;
     const parsed = JSON.parse(raw) as {
-      state?: { messages?: ChatTurn[]; hat?: RufusHatId; ticketId?: string | null };
+      state?: { messages?: ChatTurn[]; hat?: string; ticketId?: string | null };
     };
     const st = parsed.state;
     localStorage.removeItem("roofus-coach");
     if (!st?.messages?.length) return null;
-    const thread = makeThread("porch", {
-      hat: normalizeHat(st.hat),
-      houseId: st.ticketId ?? null,
-    });
+    const thread = makeThread("porch", { mode: normalizeMode(st.hat) });
+    thread.houseId = st.ticketId ?? null;
     thread.messages = st.messages.filter((m) => m.content).slice(-MAX_TURNS);
-    thread.title = titleFor("porch", thread.messages.find((m) => m.role === "user")?.content);
+    thread.title = titleFor("porch", thread.mode, thread.messages.find((m) => m.role === "user")?.content);
     thread.updatedAt = Date.now();
     return { threads: { [thread.id]: thread }, order: [thread.id], activeId: thread.id };
   } catch {
@@ -199,40 +249,89 @@ export const useCoach = create<CoachState>()(
       busy: false,
       historyOpen: false,
       sheetOpen: false,
-      hat: "door",
+      mode: "live",
+      scene: null,
+      who: null,
+      lastScene: "walkup",
+      lastWho: "busy",
       walkId: null,
       houseId: null,
       messages: EMPTY,
       setHistoryOpen: (historyOpen) => set({ historyOpen }),
       openSheet: () => set({ sheetOpen: true, historyOpen: false }),
       closeSheet: () => set({ sheetOpen: false }),
-      setHat: (hat) => get().switchHat(hat),
-      switchHat: (hat) =>
+      switchMode: (mode) =>
         set((s) => {
-          const want = normalizeHat(hat);
+          const want = normalizeMode(mode);
           const active = s.activeId ? s.threads[s.activeId] : null;
-          if (active && normalizeHat(active.hat) === want) {
-            return { hat: want };
+          if (active && active.mode === want) {
+            return { mode: want };
           }
           if (active && active.messages.length === 0) {
             const origin: ThreadOrigin =
               want === "mindset" ? "mindset" : active.origin === "mindset" ? "porch" : active.origin;
+            const scene = want === "roleplay" ? (active.scene ?? s.lastScene) : null;
+            const who = want === "roleplay" ? (active.who ?? s.lastWho) : null;
             const thread: CoachThread = {
               ...active,
-              hat: want,
+              mode: want,
               origin,
+              scene,
+              who,
               walkId: want === "mindset" ? active.walkId : null,
-              title: want === "mindset" ? (active.walkId ? active.title : "Mindset") : active.title,
+              title: titleFor(origin, want, undefined, scene),
               updatedAt: Date.now(),
             };
             return { ...activate(s, thread) };
           }
-          const thread = makeThread(want === "mindset" ? "mindset" : "porch", { hat: want });
+          const thread = makeThread(modeOrigin(want), {
+            mode: want,
+            scene: want === "roleplay" ? s.lastScene : null,
+            who: want === "roleplay" ? s.lastWho : null,
+          });
           return {
             ...activate(s, thread),
             streaming: "",
             busy: false,
           };
+        }),
+      setScene: (scene) =>
+        set((s) => {
+          const want = normalizeScene(scene);
+          const active = s.activeId ? s.threads[s.activeId] : null;
+          if (!active || active.mode !== "roleplay") {
+            return { lastScene: want, scene: want };
+          }
+          if (active.messages.length === 0) {
+            const thread: CoachThread = {
+              ...active,
+              scene: want,
+              title: titleFor(active.origin, "roleplay", undefined, want),
+              updatedAt: Date.now(),
+            };
+            return { ...activate(s, thread), lastScene: want };
+          }
+          const thread = makeThread("porch", {
+            mode: "roleplay",
+            scene: want,
+            who: active.who ?? s.lastWho,
+          });
+          return {
+            ...activate(s, thread),
+            lastScene: want,
+            streaming: "",
+            busy: false,
+          };
+        }),
+      setWho: (who) =>
+        set((s) => {
+          const want = normalizeWho(who);
+          const active = s.activeId ? s.threads[s.activeId] : null;
+          if (active && active.mode === "roleplay" && active.messages.length === 0) {
+            const thread: CoachThread = { ...active, who: want, updatedAt: Date.now() };
+            return { ...activate(s, thread), lastWho: want };
+          }
+          return { lastWho: want, who: want };
         }),
       setWalk: (walkId, title) =>
         set((s) => {
@@ -241,15 +340,17 @@ export const useCoach = create<CoachState>()(
             return {
               ...activate(s, {
                 ...active,
-                hat: "mindset",
+                mode: "mindset",
                 origin: "mindset",
                 walkId,
+                scene: null,
+                who: null,
                 title: title ?? active.title,
                 updatedAt: Date.now(),
               }),
             };
           }
-          const thread = makeThread("mindset", { hat: "mindset", walkId, title });
+          const thread = makeThread("mindset", { mode: "mindset", walkId, title });
           return {
             ...activate(s, thread),
             streaming: "",
@@ -260,31 +361,30 @@ export const useCoach = create<CoachState>()(
         set((s) => {
           if (s.activeId && s.threads[s.activeId]) {
             const t = normalizeThread(s.threads[s.activeId]);
-            return { hat: t.hat, walkId: t.walkId, houseId: t.houseId, messages: t.messages, historyOpen: false };
+            return { ...liveFields(t, s), historyOpen: false };
           }
           const first = s.order[0] ? s.threads[s.order[0]] : null;
           if (first) {
             const t = normalizeThread(first);
             return {
               activeId: first.id,
-              hat: t.hat,
-              walkId: t.walkId,
-              houseId: t.houseId,
-              messages: t.messages,
+              ...liveFields(t, s),
               historyOpen: false,
             };
           }
-          const thread = makeThread("porch");
+          const thread = makeThread("porch", { mode: "live" });
           return { ...activate(s, thread), historyOpen: false };
         }),
       startNew: (opts) =>
         set((s) => {
-          const hat = normalizeHat(opts?.hat ?? s.hat);
-          const origin = opts?.origin ?? (hat === "mindset" ? "mindset" : "porch");
+          const mode = normalizeMode(opts?.mode ?? s.mode);
+          const origin = opts?.origin ?? modeOrigin(mode);
           const thread = makeThread(origin, {
-            hat,
+            mode,
             title: opts?.title,
             walkId: opts?.walkId ?? null,
+            scene: opts?.scene ?? (mode === "roleplay" ? s.lastScene : null),
+            who: opts?.who ?? (mode === "roleplay" ? s.lastWho : null),
           });
           return {
             ...activate(s, thread),
@@ -297,9 +397,9 @@ export const useCoach = create<CoachState>()(
         set((s) => {
           const active = s.activeId ? s.threads[s.activeId] : null;
           if (active?.origin === "inspect" && active.messages.length === 0) {
-            return { hat: active.hat, walkId: active.walkId, houseId: active.houseId, messages: active.messages };
+            return liveFields(active, s);
           }
-          const thread = makeThread("inspect");
+          const thread = makeThread("inspect", { mode: "live" });
           return {
             ...activate(s, thread),
             streaming: "",
@@ -327,7 +427,9 @@ export const useCoach = create<CoachState>()(
             threads: rest,
             order,
             activeId,
-            hat: t?.hat ?? "door",
+            mode: t?.mode ?? "live",
+            scene: t?.scene ?? null,
+            who: t?.who ?? null,
             walkId: t?.walkId ?? null,
             houseId: t?.houseId ?? null,
             messages: t?.messages ?? EMPTY,
@@ -338,7 +440,9 @@ export const useCoach = create<CoachState>()(
           patchActive(s, (t) => {
             const messages = [...t.messages, { role: "user" as const, content }].slice(-MAX_TURNS);
             const title =
-              t.origin === "porch" && t.messages.length === 0 ? titleFor("porch", content) : t.title;
+              t.origin === "porch" && t.mode === "live" && t.messages.length === 0
+                ? titleFor("porch", "live", content)
+                : t.title;
             return { ...t, messages, title, updatedAt: Date.now() };
           }),
         ),
@@ -363,13 +467,17 @@ export const useCoach = create<CoachState>()(
         threads: s.threads,
         order: s.order,
         activeId: s.activeId,
+        lastScene: s.lastScene,
+        lastWho: s.lastWho,
       }),
       merge: (persisted, current) => {
-        const p = (persisted ?? {}) as Partial<CoachState>;
+        const p = (persisted ?? {}) as Partial<CoachState> & {
+          threads?: Record<string, RawThread>;
+        };
         const raw = p.threads ?? {};
         const threads: Record<string, CoachThread> = {};
         for (const [id, t] of Object.entries(raw)) {
-          threads[id] = normalizeThread(t);
+          threads[id] = normalizeThread({ ...t, id });
         }
         const order = (p.order ?? []).filter((id) => threads[id]);
         const activeId = p.activeId && threads[p.activeId] ? p.activeId : (order[0] ?? null);
@@ -379,7 +487,11 @@ export const useCoach = create<CoachState>()(
           threads,
           order,
           activeId,
-          hat: t?.hat ?? "door",
+          mode: t?.mode ?? "live",
+          scene: t?.scene ?? null,
+          who: t?.who ?? null,
+          lastScene: p.lastScene ? normalizeScene(p.lastScene) : current.lastScene,
+          lastWho: p.lastWho ? normalizeWho(p.lastWho) : current.lastWho,
           walkId: t?.walkId ?? null,
           houseId: t?.houseId ?? null,
           messages: t?.messages ?? EMPTY,
@@ -397,10 +509,7 @@ if (typeof window !== "undefined") {
         const t = legacy.threads[legacy.activeId];
         useCoach.setState({
           ...legacy,
-          hat: t?.hat ?? "door",
-          walkId: t?.walkId ?? null,
-          houseId: t?.houseId ?? null,
-          messages: t?.messages ?? EMPTY,
+          ...liveFields(t, useCoach.getState()),
         });
       }
     }

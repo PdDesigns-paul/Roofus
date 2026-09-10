@@ -9,7 +9,7 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_mds",
     q: "What is the million-dollar door script?",
-    a: "Retail / age. Dashaun Bryant’s public opener, told honest: “Hey — I’m [name] with [company]. I stopped by to see if you heard what’s been going on in the area.” They ask what’s going on. You tell the truth: “A lot of these houses are on the original roof from around [year]. That’s first-roof age. We’re doing free looks this week. Do you know what year this one went on?” Before the ladder: “We’d both agree this roof is at the age where it’s time to plan a replacement, right?” Close the hook with age + a free look. Do not invent a storm to finish the sentence. Storm talk only if Today has a logged storm that hit this street. This is the Door starter.",
+    a: "Retail / age. Dashaun Bryant’s public opener, told honest: “Hey — I’m [name] with [company]. I stopped by to see if you heard what’s been going on in the area.” They ask what’s going on. You tell the truth: “A lot of these houses are on the original roof from around [year]. That’s first-roof age. We’re doing free looks this week. Do you know what year this one went on?” Before the ladder: “We’d both agree this roof is at the age where it’s time to plan a replacement, right?” Close the hook with age + a free look. Do not invent a storm to finish the sentence. Storm talk only if Today has a logged storm that hit this street. This is the Live starter.",
   },
   {
     id: "f_seed_enroll",

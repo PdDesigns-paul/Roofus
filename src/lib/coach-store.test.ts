@@ -1,7 +1,7 @@
 import "./test-setup.ts";
 import { beforeEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { useCoach } from "./coach-store.ts";
+import { useCoach, type CoachThread } from "./coach-store.ts";
 
 function reset() {
   useCoach.setState({
@@ -9,7 +9,11 @@ function reset() {
     order: [],
     activeId: null,
     messages: [],
-    hat: "door",
+    mode: "live",
+    scene: null,
+    who: null,
+    lastScene: "walkup",
+    lastWho: "busy",
     walkId: null,
     houseId: null,
     streaming: "",
@@ -27,7 +31,9 @@ describe("ensureInspect", () => {
       id: "t_old",
       title: "Inspect",
       origin: "inspect" as const,
-      hat: "door" as const,
+      mode: "live" as const,
+      scene: null,
+      who: null,
       walkId: null,
       houseId: null,
       messages: [
@@ -60,29 +66,84 @@ describe("ensureInspect", () => {
   });
 });
 
-describe("switchHat", () => {
+describe("switchMode", () => {
   beforeEach(reset);
 
   it("retags an empty thread", () => {
-    useCoach.getState().startNew({ hat: "door" });
+    useCoach.getState().startNew({ mode: "live" });
     const first = useCoach.getState().activeId;
-    useCoach.getState().switchHat("roleplay");
+    useCoach.getState().switchMode("roleplay");
     const s = useCoach.getState();
     assert.equal(s.activeId, first);
-    assert.equal(s.hat, "roleplay");
+    assert.equal(s.mode, "roleplay");
+    assert.equal(s.scene, "walkup");
     assert.deepEqual(s.messages, []);
   });
 
   it("starts a new chat when the current one already has lines", () => {
-    useCoach.getState().startNew({ hat: "door" });
-    const doorId = useCoach.getState().activeId;
+    useCoach.getState().startNew({ mode: "live" });
+    const liveId = useCoach.getState().activeId;
     useCoach.getState().pushUser("Give me the million-dollar door script.");
-    useCoach.getState().switchHat("roleplay");
+    useCoach.getState().switchMode("roleplay");
     const s = useCoach.getState();
-    assert.notEqual(s.activeId, doorId);
-    assert.equal(s.hat, "roleplay");
+    assert.notEqual(s.activeId, liveId);
+    assert.equal(s.mode, "roleplay");
     assert.deepEqual(s.messages, []);
-    assert.equal(s.threads[doorId ?? ""]?.messages.length, 1);
-    assert.equal(s.threads[doorId ?? ""]?.hat, "door");
+    assert.equal(s.threads[liveId ?? ""]?.messages.length, 1);
+    assert.equal(s.threads[liveId ?? ""]?.mode, "live");
+  });
+});
+
+describe("setScene", () => {
+  beforeEach(reset);
+
+  it("patches an empty Roleplay thread", () => {
+    useCoach.getState().startNew({ mode: "roleplay" });
+    const id = useCoach.getState().activeId;
+    useCoach.getState().setScene("visit");
+    const s = useCoach.getState();
+    assert.equal(s.activeId, id);
+    assert.equal(s.scene, "visit");
+    assert.equal(s.threads[id ?? ""]?.title, "Whole visit");
+    assert.equal(s.lastScene, "visit");
+  });
+
+  it("starts a new Roleplay when the visit already has lines", () => {
+    useCoach.getState().startNew({ mode: "roleplay", scene: "walkup" });
+    const first = useCoach.getState().activeId;
+    useCoach.getState().pushUser("Walk-up. I knock.");
+    useCoach.getState().setScene("visit");
+    const s = useCoach.getState();
+    assert.notEqual(s.activeId, first);
+    assert.equal(s.scene, "visit");
+    assert.deepEqual(s.messages, []);
+    assert.equal(s.threads[first ?? ""]?.scene, "walkup");
+  });
+});
+
+describe("normalizeThread", () => {
+  beforeEach(reset);
+
+  it("migrates a saved Door hat onto Live", () => {
+    const old = {
+      id: "t_old",
+      title: "Give me the million-dollar door script.",
+      origin: "porch" as const,
+      hat: "door",
+      walkId: null,
+      houseId: null,
+      messages: [{ role: "user" as const, content: "Give me the million-dollar door script." }],
+      createdAt: 1,
+      updatedAt: 1,
+    };
+    useCoach.setState({
+      threads: { t_old: old as unknown as CoachThread },
+      order: ["t_old"],
+      activeId: "t_old",
+    });
+    useCoach.getState().openThread("t_old");
+    const t = useCoach.getState().threads.t_old;
+    assert.equal(t?.mode, "live");
+    assert.equal(useCoach.getState().mode, "live");
   });
 });

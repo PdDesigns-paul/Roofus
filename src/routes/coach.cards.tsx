@@ -4,7 +4,6 @@ import { AppHeader } from "@/components/app-header";
 import { whenCoachReady, useCoach } from "@/lib/coach-store";
 import { abortTalk } from "@/lib/roofus-talk";
 import { POCKET_CARDS, type PocketCard } from "@/lib/pocket-cards";
-import type { RufusHatId } from "@/lib/rufus-hats";
 
 export const Route = createFileRoute("/coach/cards")({
   codeSplitGroupings: [],
@@ -19,8 +18,8 @@ export function CardsPage() {
       <AppHeader title="Cards" page="cards" />
       <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">In your pocket.</h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
-        Five cards. Door is the default knock. Compass is truck only. Ask Roofus pins the matching
-        hat.
+        Five cards. Door is the default knock. Compass is truck only. Ask Roofus opens Roleplay on
+        that beat — Compass opens Mindset.
       </p>
       <ul className="mt-5 flex flex-col gap-3">
         {POCKET_CARDS.map((c) => (
@@ -57,7 +56,7 @@ function CardBody({ card }: { card: PocketCard }) {
       <button
         type="button"
         className="mt-4 h-11 w-full rounded-full border border-border text-sm"
-        onClick={() => askHat(card.hat)}
+        onClick={() => askCard(card)}
       >
         Ask Roofus
       </button>
@@ -65,10 +64,13 @@ function CardBody({ card }: { card: PocketCard }) {
   );
 }
 
-function askHat(hat: RufusHatId) {
+function askCard(card: PocketCard) {
   abortTalk();
   whenCoachReady(() => {
-    useCoach.getState().startNew({ hat });
+    useCoach.getState().startNew({
+      mode: card.mode,
+      scene: card.scene,
+    });
     useCoach.getState().openSheet();
   });
 }

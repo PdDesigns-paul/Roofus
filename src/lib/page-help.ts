@@ -3,7 +3,7 @@ export const PAGE_HELP = {
     title: "Roofus",
     body: [
       "This is the porch. Open Today for the four counts. Streets is zips. Inspect is the camera.",
-      "Orange button is Roofus. Tap him — he's in the corner of the chat. Hold the button for old chats. Three dots: Mindset, Cards, Reference, Presets. First open walks the question mark.",
+      "Orange button is Roofus. Tap him — he's in the corner of the chat. Hold the button for old chats. Live, Roleplay, and Mindset are the three modes. Three dots: Mindset, Cards, Reference, Presets. First open walks the question mark.",
       "Bottom: Today, Streets, Inspect. Put the app on your Home Screen so it opens like anything else on this phone.",
     ],
   },
@@ -26,7 +26,7 @@ export const PAGE_HELP = {
     title: "Cards",
     body: [
       "Five pocket cards from the porch book. Door is the default knock. Pushback restates first. i35 is after photos. Set is morning or afternoon. Compass is truck only.",
-      "Ask Roofus pins the matching hat. This is not Reference — those are InterNACHI articles.",
+      "Ask Roofus opens Roleplay on that beat. Compass opens Mindset. This is not Reference — those are InterNACHI articles.",
     ],
   },
   inspect: {
@@ -42,7 +42,7 @@ export const PAGE_HELP = {
     body: [
       "Four truths at the top. Then Why, Name the demon, Pace, Talent stack.",
       "Why is a ladder: number, what it buys, who else, the person or promise. Read it with Roofus on a dead day. Demon names the attack. Pace drops a gear. Stack is three skills. After Action Report is on Today — wins, facts, a plan.",
-      "Coach me through this pins the Mindset hat and asks one question. Answers land on this page. Private. Not a pitch.",
+      "Coach me through this opens a Mindset chat and asks one question. Answers land on this page. Private. Not a pitch.",
     ],
   },
   reference: {
@@ -64,9 +64,9 @@ export const PAGE_HELP = {
   coach: {
     title: "Roofus",
     body: [
-      "Pin a hat. That starts a fresh chat. Door, Inspect, Pushback, Set, Roleplay, Mindset. Door’s first starter is the million-dollar script. The dog in the corner is him.",
-      "Roleplay: pick who they are, then knock. Hold the mic. Score me grades it. Hear it plays his line. Practice only — do not record a homeowner.",
-      "Mindset is truck only. Inspect hat is on-roof talk. Camera is the Inspect page. X closes him. The day is still underneath.",
+      "Pin a mode. That starts a fresh chat. Live, Roleplay, Mindset. Live’s first starter is the million-dollar script. The dog in the corner is him. History tags each chat by color.",
+      "Roleplay: pick a beat at the bottom (Walk-up, They push, After photos, The set, Whole visit), who they are, then knock. Hold the mic. Score me grades it. Hear it plays his line. Practice only — do not record a homeowner.",
+      "Mindset is truck only. Camera is the Inspect page. X closes him. The day is still underneath.",
     ],
   },
 } as const;

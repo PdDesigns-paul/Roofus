@@ -2,7 +2,7 @@ import { COACH_SYSTEM } from "@/lib/coach-system";
 import { INSPECT_SYSTEM } from "@/lib/inspect-system";
 import { inspectKnowledge } from "@/lib/mri-index";
 import { mindsetKnowledge } from "@/lib/mindset";
-import { hatById } from "@/lib/rufus-hats";
+import { modeBrief } from "@/lib/rufus-modes";
 import type { ChatTurn } from "@/lib/stream-coach";
 
 const KNOWLEDGE = `
@@ -15,6 +15,10 @@ ${mindsetKnowledge()}
 
 export type CoachRequest = {
   messages: ChatTurn[];
+  mode?: string;
+  scene?: string;
+  who?: string;
+  year?: string;
   hat?: string;
   companyName?: string;
   warrantyLine?: string;
@@ -62,9 +66,9 @@ export function buildXaiPayload(req: CoachRequest): {
     };
   }
 
-  const hat = hatById(req.hat);
+  const brief = modeBrief(req.mode ?? req.hat, req.scene, req.who, req.year);
   const extra = [
-    `\n\n${hat.brief}`,
+    `\n\n${brief}`,
     KNOWLEDGE,
     req.companyName?.trim() ? `Company name from Presets: ${req.companyName.trim()}` : "",
     req.warrantyLine?.trim()

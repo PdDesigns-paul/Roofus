@@ -2,7 +2,10 @@ export type ChatTurn = { role: "user" | "assistant"; content: string };
 
 export type StreamCoachInput = {
   messages: ChatTurn[];
-  hat?: string;
+  mode?: string;
+  scene?: string;
+  who?: string;
+  year?: string;
   companyName?: string;
   warrantyLine?: string;
   imageDataUrl?: string;

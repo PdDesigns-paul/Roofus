@@ -1,4 +1,4 @@
-/** Ride-along chat. Hats stay pinned. The dog in the corner is Roofus. */
+/** Ride-along chat. Three modes. Roleplay beats sit in the thumb zone. */
 import { X, History } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ChatBubble } from "@/components/chat-bubble";
@@ -10,19 +10,25 @@ import { Tip } from "@/components/ui/tooltip";
 import { abortTalk, sendRoofus, stopRoofus } from "@/lib/roofus-talk";
 import { useCoach } from "@/lib/coach-store";
 import {
-  hatById,
+  COACH_MODES,
+  ROLEPLAY_SCENES,
   ROLEPLAY_WHO,
+  modeById,
   roleplayKnockLine,
-  RUFUS_HATS,
+  type CoachMode,
+  type RoleplaySceneId,
   type RoleplayWhoId,
-  type RufusHatId,
-} from "@/lib/rufus-hats";
+} from "@/lib/rufus-modes";
 import { WALKS, walkKickoff, type WalkId } from "@/lib/survive";
 
 export function RufusChat({ embedded = false }: { embedded?: boolean }) {
   const messages = useCoach((s) => s.messages);
-  const hatId = useCoach((s) => s.hat);
-  const setHat = useCoach((s) => s.setHat);
+  const modeId = useCoach((s) => s.mode);
+  const scene = useCoach((s) => s.scene);
+  const who = useCoach((s) => s.who);
+  const switchMode = useCoach((s) => s.switchMode);
+  const setScene = useCoach((s) => s.setScene);
+  const setWho = useCoach((s) => s.setWho);
   const setWalk = useCoach((s) => s.setWalk);
   const streaming = useCoach((s) => s.streaming);
   const busy = useCoach((s) => s.busy);
@@ -30,17 +36,20 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
   const setHistoryOpen = useCoach((s) => s.setHistoryOpen);
   const closeSheet = useCoach((s) => s.closeSheet);
   const [draft, setDraft] = useState("");
+  const [year, setYear] = useState("");
   const [error, setError] = useState<string | null>(null);
   const bottom = useRef<HTMLDivElement>(null);
-  const hat = hatById(hatId);
+  const mode = modeById(modeId);
+  const beat = scene ?? "walkup";
+  const person = who ?? "busy";
 
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "end" });
   }, [messages.length, streaming, busy]);
 
-  function pickHat(id: RufusHatId) {
+  function pickMode(id: CoachMode) {
     abortTalk();
-    setHat(id);
+    switchMode(id);
     setError(null);
   }
 
@@ -50,7 +59,7 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
     setDraft("");
     setError(null);
     try {
-      await sendRoofus(content);
+      await sendRoofus(content, { year });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Roofus missed that.");
     }
@@ -70,13 +79,14 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
   const shown = busy
     ? [...messages, { role: "assistant" as const, content: streaming }]
     : messages;
+  const roleplay = mode.id === "roleplay";
+  const empty = shown.length === 0;
 
-  const placeholder =
-    hat.id === "roleplay"
-      ? "Hold the mic and knock, or type it."
-      : hat.id === "mindset"
-        ? "Your answer"
-        : "What just happened?";
+  const placeholder = roleplay
+    ? "Hold the mic and knock, or type it."
+    : mode.id === "mindset"
+      ? "Your answer"
+      : "What just happened?";
 
   return (
     <div
@@ -91,7 +101,7 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
           <button
             type="button"
             className="inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg"
-            aria-label={embedded ? "Close" : "Close"}
+            aria-label="Close"
             onClick={() => closeSheet()}
           >
             <X className="size-5" />
@@ -99,7 +109,7 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
           <div className="flex items-center gap-2 text-sm text-muted">
             <RoofusFace className="size-10" alt="" />
             <span className="font-medium text-fg">Roofus</span>
-            <span className="text-faint">· {hat.label}</span>
+            <span className="text-faint">· {mode.label}</span>
           </div>
           <div className="flex items-center">
             <HelpButton page="coach" />
@@ -118,7 +128,7 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
                 type="button"
                 onClick={() => {
                   abortTalk();
-                  startNew();
+                  startNew({ mode: mode.id });
                   setError(null);
                 }}
                 className="h-11 px-2 text-xs text-faint hover:text-fg"
@@ -128,19 +138,19 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
             </Tip>
           </div>
         </div>
-        <div className="-mx-1 mt-1 flex gap-1.5 overflow-x-auto pb-3">
-          {RUFUS_HATS.map((h) => (
-            <Tip key={h.id} label={h.hint} side="bottom">
+        <div className="-mx-1 mt-1 flex gap-1.5 pb-3">
+          {COACH_MODES.map((m) => (
+            <Tip key={m.id} label={m.hint} side="bottom">
               <button
                 type="button"
-                onClick={() => pickHat(h.id)}
+                onClick={() => pickMode(m.id)}
                 className={
-                  h.id === hat.id
-                    ? "shrink-0 rounded-full bg-fg px-3 py-1.5 text-xs text-paper"
-                    : "shrink-0 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted"
+                  m.id === mode.id
+                    ? "min-h-11 flex-1 rounded-full bg-fg px-3 text-sm text-paper"
+                    : "min-h-11 flex-1 rounded-full border border-border bg-surface px-3 text-sm text-muted"
                 }
               >
-                {h.label}
+                {m.label}
               </button>
             </Tip>
           ))}
@@ -150,28 +160,28 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
       <div className="relative min-h-0 flex-1">
         <RoofusMark />
         <div className="relative z-10 flex h-full min-h-0 flex-col gap-3 overflow-y-auto px-4 py-4">
-        {shown.length === 0 ? (
-          hat.id === "roleplay" ? (
-            <RoleplayScene onKnock={(line) => void onSend(line)} />
-          ) : hat.id === "mindset" ? (
+        {empty ? (
+          mode.id === "mindset" ? (
             <MindsetStart onWalk={(id) => void startWalk(id)} />
           ) : (
             <div className="mt-2">
-              <p className="text-xs font-medium uppercase tracking-wide text-faint">{hat.hint}</p>
-              <h1 className="mt-2 font-display text-3xl leading-tight tracking-tight">{hat.label}</h1>
-              <p className="mt-3 text-sm leading-relaxed text-muted">{hat.use}</p>
-              <div className="mt-5 flex flex-col gap-2">
-                {hat.starters.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    className="min-h-11 rounded-2xl border border-border bg-surface px-4 py-3 text-left text-sm leading-relaxed text-fg hover:bg-surface-2"
-                    onClick={() => void onSend(s)}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
+              <p className="text-xs font-medium uppercase tracking-wide text-faint">{mode.hint}</p>
+              <h1 className="mt-2 font-display text-3xl leading-tight tracking-tight">{mode.label}</h1>
+              <p className="mt-3 text-sm leading-relaxed text-muted">{mode.use}</p>
+              {mode.starters.length ? (
+                <div className="mt-5 flex flex-col gap-2">
+                  {mode.starters.map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      className="min-h-11 rounded-2xl border border-border bg-surface px-4 py-3 text-left text-sm leading-relaxed text-fg hover:bg-surface-2"
+                      onClick={() => void onSend(s)}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
           )
         ) : (
@@ -183,7 +193,7 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
               >
                 {m.content}
               </ChatBubble>
-              {hat.id === "roleplay" &&
+              {roleplay &&
               m.role === "assistant" &&
               m.content.trim() &&
               !(busy && i === shown.length - 1) ? (
@@ -204,7 +214,18 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
           void onSend();
         }}
       >
-        {hat.id === "roleplay" && shown.length > 0 && !busy ? (
+        {roleplay && empty ? (
+          <RoleplayBar
+            beat={beat}
+            person={person}
+            year={year}
+            onBeat={setScene}
+            onPerson={setWho}
+            onYear={setYear}
+            onKnock={() => void onSend(roleplayKnockLine(person, year, beat))}
+          />
+        ) : null}
+        {roleplay && !empty && !busy ? (
           <button
             type="button"
             onClick={() => void onSend("score me")}
@@ -214,7 +235,7 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
           </button>
         ) : null}
         <div className="flex items-center gap-2">
-          {hat.id === "roleplay" ? (
+          {roleplay ? (
             <RoleplayMic
               disabled={busy}
               onText={(text) => void onSend(text)}
@@ -253,48 +274,76 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
   );
 }
 
-function RoleplayScene({ onKnock }: { onKnock: (line: string) => void }) {
-  const [who, setWho] = useState<RoleplayWhoId>("busy");
-  const [year, setYear] = useState("");
-
+function RoleplayBar({
+  beat,
+  person,
+  year,
+  onBeat,
+  onPerson,
+  onYear,
+  onKnock,
+}: {
+  beat: RoleplaySceneId;
+  person: RoleplayWhoId;
+  year: string;
+  onBeat: (id: RoleplaySceneId) => void;
+  onPerson: (id: RoleplayWhoId) => void;
+  onYear: (year: string) => void;
+  onKnock: () => void;
+}) {
   return (
-    <div className="mt-2">
-      <p className="text-xs font-medium uppercase tracking-wide text-faint">You be them</p>
-      <h1 className="mt-2 font-display text-3xl leading-tight tracking-tight">Roleplay</h1>
-      <p className="mt-3 text-sm leading-relaxed text-muted">
-        Pick who they are. Then knock. Hold the mic or type it. Score me after.
-      </p>
-      <div className="mt-4 flex flex-col gap-2">
+    <div className="mb-2 flex flex-col gap-2">
+      <div className="flex flex-wrap gap-1.5">
+        {ROLEPLAY_SCENES.map((s) => (
+          <button
+            key={s.id}
+            type="button"
+            onClick={() => onBeat(s.id)}
+            className={
+              s.id === beat
+                ? "min-h-11 rounded-full bg-fg px-3 text-sm text-paper"
+                : "min-h-11 rounded-full border border-border bg-surface px-3 text-sm"
+            }
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-1.5">
         {ROLEPLAY_WHO.map((w) => (
           <button
             key={w.id}
             type="button"
-            onClick={() => setWho(w.id)}
-            className={`min-h-11 rounded-2xl px-4 py-3 text-left text-sm ${
-              who === w.id ? "bg-fg text-paper" : "border border-border bg-surface"
-            }`}
+            onClick={() => onPerson(w.id)}
+            className={
+              w.id === person
+                ? "min-h-11 rounded-full bg-fg px-3 text-sm text-paper"
+                : "min-h-11 rounded-full border border-border bg-surface px-3 text-sm"
+            }
           >
             {w.label}
           </button>
         ))}
       </div>
-      <label className="mt-4 block">
-        <span className="text-xs text-muted">Roof year</span>
-        <input
-          className="mt-1 h-11 w-full rounded-xl border border-border bg-surface px-3 text-base"
-          inputMode="numeric"
-          placeholder="2004"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-        />
-      </label>
-      <button
-        type="button"
-        onClick={() => onKnock(roleplayKnockLine(who, year))}
-        className="mt-4 h-12 w-full rounded-full bg-fg text-sm text-paper"
-      >
-        Knock
-      </button>
+      <div className="flex gap-2">
+        <label className="min-w-0 flex-1">
+          <span className="sr-only">Roof year</span>
+          <input
+            className="h-12 w-full rounded-full border border-border bg-surface px-4 text-base"
+            inputMode="numeric"
+            placeholder="Roof year"
+            value={year}
+            onChange={(e) => onYear(e.target.value)}
+          />
+        </label>
+        <button
+          type="button"
+          onClick={onKnock}
+          className="h-12 shrink-0 rounded-full bg-accent px-5 text-sm text-paper"
+        >
+          Knock
+        </button>
+      </div>
     </div>
   );
 }
