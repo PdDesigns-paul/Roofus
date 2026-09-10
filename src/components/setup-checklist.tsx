@@ -20,9 +20,10 @@ export function SetupChecklist({
     () => typeof localStorage !== "undefined" && localStorage.getItem("roofus-setup-hide") === "1",
   );
   const score = setupScore(snap);
-  const prefs = useReminders((s) => ({ on: s.on, lastDone: s.lastDone }));
+  const on = useReminders((s) => s.on);
+  const lastDone = useReminders((s) => s.lastDone);
   const markDone = useReminders((s) => s.markDone);
-  const due = dueReminders(prefs, snap, { afterAction, stormFetchedOn, stackMonth });
+  const due = dueReminders({ on, lastDone }, snap, { afterAction, stormFetchedOn, stackMonth });
 
   if (hidden && score.done === score.total) {
     return null;

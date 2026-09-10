@@ -4,7 +4,7 @@ import { CalendarDays, Camera } from "lucide-react";
 import { InstallHint } from "@/components/install-hint";
 import { RoofusFace } from "@/components/roofus-mark";
 import { SetupChecklist } from "@/components/setup-checklist";
-import { useDayBook } from "@/lib/day-book";
+import { blankDay, localDateKey, useDayBook } from "@/lib/day-book";
 import { useSettings } from "@/lib/settings-store";
 import { setupSnap } from "@/lib/setup-progress";
 import { useStreets } from "@/lib/streets-store";
@@ -24,8 +24,12 @@ const DOORS = [
 
 function LandingPage() {
   const profile = useDayBook((s) => s.profile);
-  const day = useDayBook((s) => s.today());
-  const settings = useSettings();
+  const date = localDateKey();
+  const storedDay = useDayBook((s) => s.days[date]);
+  const day = storedDay ?? blankDay(date);
+  const companyName = useSettings((s) => s.companyName);
+  const setCompanyName = useSettings((s) => s.setCompanyName);
+  const warrantyLine = useSettings((s) => s.warrantyLine);
   const zipCount = useStreets((s) => s.loops.length);
   const survive = useSurvive();
   const fetchedAt = useWeather((s) => s.fetchedAt);
@@ -33,21 +37,21 @@ function LandingPage() {
 
   useEffect(() => {
     const leftover = profile.company.trim();
-    if (leftover && (!settings.companyName.trim() || settings.companyName === "Roofus")) {
-      settings.setCompanyName(leftover);
+    if (leftover && (!companyName.trim() || companyName === "Roofus")) {
+      setCompanyName(leftover);
     }
-  }, [profile.company, settings]);
+  }, [profile.company, companyName, setCompanyName]);
 
   const snap = setupSnap({
     goBy: profile.goBy,
     profileCompany: profile.company,
-    settingsCompany: settings.companyName,
+    settingsCompany: companyName,
     counties: profile.counties,
     states: profile.states,
     knockWindow: profile.knockWindow,
     paperWindow: profile.paperWindow,
     hardStop: profile.hardStop,
-    warranty: settings.warrantyLine,
+    warranty: warrantyLine,
     zipCount,
     survive,
   });

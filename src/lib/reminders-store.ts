@@ -27,6 +27,7 @@ export const useReminders = create<ReminderState>()(
     }),
     {
       name: "roofus-reminders-v1",
+      skipHydration: true,
       partialize: (s) => ({ on: s.on, lastDone: s.lastDone }),
     },
   ),
