@@ -1,10 +1,10 @@
 /**
- * Age-band zips from Census block groups, rolled up to ZCTA.
- * Whole-zip median year is too coarse — we keep streets whose block groups
- * sit in the years they set, then show one card per zip, grouped by county.
+ * Age-band block groups, clustered into park-once loops.
+ * Township is a fence. The card is 40–150 homes / a handful of streets.
  */
+import { clusterSeeds, loopsFromClusters, pointInPolygon, townshipLabel, unionBbox, type ClusterSeed } from "@/lib/streets-cluster";
 import { fairCountySlice, nearestZip } from "@/lib/streets-rank";
-import { countyBasename, parseList, stateFips } from "@/lib/us-state-fips";
+import { countyBasename, isMcdState, parseList, stateFips } from "@/lib/us-state-fips";
 import type { StreetLoop, StreetsBuildRequest, StreetsBuildResponse } from "@/lib/streets-types";
 
 const UA = "RoofusCoach/1.0 (https://roofus.coach; D2D street loops)";
@@ -83,7 +83,7 @@ function uniqueStreets(names: string[]): string[] {
     out.push(n);
   }
   out.sort((a, b) => a.localeCompare(b));
-  return out.slice(0, 24);
+  return out.slice(0, 8);
 }
 
 type CountyHit = { name: string; state: string; stateFp: string; countyFp: string; geoid: string };
@@ -140,9 +140,9 @@ async function blockGroups(county: CountyHit): Promise<BgYear[]> {
 function pickBands(rows: BgYear[], yearFrom: number, yearTo: number): BgYear[] {
   const inBand = (minHomes: number, from: number, to: number) =>
     rows.filter((r) => r.medianYear >= from && r.medianYear <= to && r.homes >= minHomes);
-  let core = inBand(120, yearFrom, yearTo);
-  if (core.length < 3) core = inBand(40, yearFrom, yearTo);
-  if (core.length < 2) core = inBand(20, yearFrom - 5, yearTo + 5);
+  let core = inBand(40, yearFrom, yearTo);
+  if (core.length < 8) core = inBand(20, yearFrom, yearTo);
+  if (core.length < 4) core = inBand(10, yearFrom - 5, yearTo + 5);
   const target = Math.round((yearFrom + yearTo) / 2);
   const scored = core.slice();
   scored.sort((a, b) => {
@@ -150,7 +150,7 @@ function pickBands(rows: BgYear[], yearFrom: number, yearTo: number): BgYear[] {
     if (da) return da;
     return b.homes - a.homes;
   });
-  return scored.slice(0, 24);
+  return scored.slice(0, 48);
 }
 
 async function bgCenters(geoids: string[]): Promise<Map<string, { lat: number; lon: number; bbox: [number, number, number, number] }>> {
@@ -191,7 +191,7 @@ async function roadsIn(bbox: [number, number, number, number]): Promise<string[]
       spatialRel: "esriSpatialRelIntersects",
       outFields: "NAME",
       returnGeometry: "false",
-      resultRecordCount: "400",
+      resultRecordCount: "200",
     },
     18_000,
   );
@@ -256,45 +256,140 @@ async function zipAt(lat: number, lon: number): Promise<ZipMeta | null> {
   }
 }
 
-type BgReady = { bg: BgYear; streets: string[]; lat: number; lon: number };
+type PlacePoly = { name: string; id: string; rings?: number[][][]; statistical: boolean };
 
-function rollupZips(county: CountyHit, rows: BgReady[], zips: ZipMeta[]): StreetLoop[] {
-  const buckets = new Map<string, BgReady[]>();
-  const extra = new Map<string, ZipMeta>();
-  for (const z of zips) extra.set(z.zip, z);
-  for (const row of rows) {
-    const zip = nearestZip(row.lat, row.lon, zips);
-    if (!zip) continue;
-    const list = buckets.get(zip) ?? [];
-    list.push(row);
-    buckets.set(zip, list);
+async function couSubsForCounty(county: CountyHit): Promise<PlacePoly[]> {
+  const rows = await tigerQuery(
+    "Places_CouSub_ConCity_SubMCD/MapServer/1",
+    {
+      where: `STATE='${county.stateFp}' AND COUNTY='${county.countyFp}'`,
+      outFields: "NAME,BASENAME,GEOID,FUNCSTAT,COUSUB",
+      returnGeometry: "true",
+      resultRecordCount: "80",
+    },
+    25_000,
+  );
+  return rows.map((f) => {
+    const basename = String(f.attributes.BASENAME ?? f.attributes.NAME ?? "").trim();
+    const func = String(f.attributes.FUNCSTAT ?? "").toUpperCase();
+    return {
+      name: townshipLabel(basename || String(f.attributes.NAME ?? "")),
+      id: String(f.attributes.GEOID ?? f.attributes.COUSUB ?? basename),
+      rings: f.geometry?.rings,
+      statistical: func === "S",
+    };
+  });
+}
+
+async function cdpsForCounty(county: CountyHit, zips: ZipMeta[]): Promise<PlacePoly[]> {
+  let envelope = "";
+  if (zips.length) {
+    const lats = zips.map((z) => z.lat);
+    const lons = zips.map((z) => z.lon);
+    envelope = `${Math.min(...lons) - 0.15},${Math.min(...lats) - 0.15},${Math.max(...lons) + 0.15},${Math.max(...lats) + 0.15}`;
   }
-  const loops: StreetLoop[] = [];
-  for (const [zip, parts] of buckets) {
-    const streets = uniqueStreets(parts.flatMap((p) => p.streets));
-    if (streets.length < 2) continue;
-    const homes = parts.reduce((n, p) => n + p.bg.homes, 0);
-    const medianYear = Math.round(
-      parts.reduce((n, p) => n + p.bg.medianYear * Math.max(1, p.bg.homes), 0) / Math.max(1, homes),
-    );
-    const meta = extra.get(zip);
-    loops.push({
-      id: `${county.geoid}-z${zip}`,
-      title: zip,
+  const params: Record<string, string> = {
+    where: `STATE='${county.stateFp}'`,
+    outFields: "NAME,BASENAME,GEOID",
+    returnGeometry: "true",
+    resultRecordCount: "80",
+  };
+  if (envelope) {
+    params.geometry = envelope;
+    params.geometryType = "esriGeometryEnvelope";
+    params.inSR = "4326";
+    params.spatialRel = "esriSpatialRelIntersects";
+  }
+  try {
+    const rows = await tigerQuery("Places_CouSub_ConCity_SubMCD/MapServer/5", params, 25_000);
+    return rows.map((f) => ({
+      name: townshipLabel(String(f.attributes.BASENAME ?? f.attributes.NAME ?? "")),
+      id: String(f.attributes.GEOID ?? ""),
+      rings: f.geometry?.rings,
+      statistical: false,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function hitPlace(lat: number, lon: number, places: PlacePoly[]): PlacePoly | null {
+  for (const p of places) {
+    if (p.rings && pointInPolygon(lon, lat, p.rings)) return p;
+  }
+  return null;
+}
+
+async function clusterCounty(
+  county: CountyHit,
+  yearFrom: number,
+  yearTo: number,
+): Promise<StreetLoop[]> {
+  const bgs = pickBands(await blockGroups(county), yearFrom, yearTo);
+  const [centers, zipList, couSubs] = await Promise.all([
+    bgCenters(bgs.map((b) => b.geoid)),
+    zipsForCounty(county),
+    couSubsForCounty(county),
+  ]);
+  const zips = [...zipList];
+  const cdps = await cdpsForCounty(county, zips);
+  const ccdState = !isMcdState(county.stateFp);
+  const seeds: ClusterSeed[] = [];
+
+  for (const bg of bgs) {
+    const c = centers.get(bg.geoid);
+    if (!c) continue;
+    let zip = nearestZip(c.lat, c.lon, zips);
+    if (!zip) {
+      const hit = await zipAt(c.lat, c.lon);
+      if (hit) {
+        if (!zips.some((z) => z.zip === hit.zip)) zips.push(hit);
+        zip = hit.zip;
+      }
+    }
+    const cou = hitPlace(c.lat, c.lon, couSubs);
+    const cdp = hitPlace(c.lat, c.lon, cdps);
+    const statistical = ccdState || Boolean(cou?.statistical);
+    seeds.push({
+      geoid: bg.geoid,
+      homes: bg.homes,
+      medianYear: bg.medianYear,
+      lat: c.lat,
+      lon: c.lon,
+      bbox: c.bbox,
       zip,
-      town: "",
-      streets,
-      county: county.name,
-      state: county.stateFp,
-      medianYear,
-      homes,
-      lat: meta?.lat ?? parts[0]!.lat,
-      lon: meta?.lon ?? parts[0]!.lon,
-      status: "fresh",
-      lastResult: "",
+      township: statistical ? "" : cou?.name ?? "",
+      townshipId: statistical ? "_ccd" : cou?.id || "_",
+      cdp: cdp?.name ?? "",
+      ccd: statistical,
     });
   }
-  return loops;
+
+  const groups = clusterSeeds(seeds);
+  const streetCache = new Map<string, string[]>();
+  async function streetsFor(members: ClusterSeed[]): Promise<string[]> {
+    const key = members.map((m) => m.geoid).sort().join(",");
+    const hit = streetCache.get(key);
+    if (hit) return hit;
+    const box = unionBbox(members.map((m) => m.bbox));
+    const streets = box ? await roadsIn(box) : [];
+    streetCache.set(key, streets);
+    return streets;
+  }
+
+  const fetched = new Map<string, string[]>();
+  await Promise.all(
+    groups.map(async (members) => {
+      const streets = await streetsFor(members);
+      fetched.set(members.map((m) => m.geoid).sort().join(","), streets);
+    }),
+  );
+
+  return loopsFromClusters(
+    groups,
+    (members) => fetched.get(members.map((m) => m.geoid).sort().join(",")) ?? [],
+    { name: county.name, geoid: county.geoid, stateFp: county.stateFp },
+  );
 }
 
 export async function buildStreetLoops(req: StreetsBuildRequest): Promise<StreetsBuildResponse> {
@@ -333,30 +428,7 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
   const loops: StreetLoop[] = [];
 
   for (const county of counties) {
-    const bgs = pickBands(await blockGroups(county), yearFrom, yearTo);
-    const [centers, zipList] = await Promise.all([
-      bgCenters(bgs.map((b) => b.geoid)),
-      zipsForCounty(county),
-    ]);
-    const roadLists = await Promise.all(
-      bgs.map(async (bg) => {
-        const c = centers.get(bg.geoid);
-        if (!c) return null;
-        const streets = await roadsIn(c.bbox);
-        return { bg, streets, lat: c.lat, lon: c.lon };
-      }),
-    );
-    const ready: BgReady[] = [];
-    const zips = [...zipList];
-    for (const row of roadLists) {
-      if (!row || row.streets.length < 2) continue;
-      ready.push(row);
-      if (!zips.length) {
-        const hit = await zipAt(row.lat, row.lon);
-        if (hit && !zips.some((z) => z.zip === hit.zip)) zips.push(hit);
-      }
-    }
-    loops.push(...rollupZips(county, ready, zips));
+    loops.push(...(await clusterCounty(county, yearFrom, yearTo)));
   }
 
   loops.sort((a, b) => {
@@ -364,10 +436,11 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
     const da = Math.abs(a.medianYear - target) - Math.abs(b.medianYear - target);
     if (da) return da;
     if (a.county !== b.county) return a.county.localeCompare(b.county);
+    if (a.township !== b.township) return a.township.localeCompare(b.township);
     return b.homes - a.homes;
   });
 
-  const sliced = fairCountySlice(loops, countyNames, 48, 6);
+  const sliced = fairCountySlice(loops, countyNames, 80, 12);
   const towns = await lookupTowns(sliced.map((l) => l.zip));
   for (const l of sliced) {
     const town = towns[l.zip];
@@ -380,18 +453,18 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
     .filter((name) => !foundKeys.has(countyBasename(name).toLowerCase()));
 
   const noteParts = [
-    `Roofs about ${ageMin}–${ageMax} years old (built ${yearFrom}–${yearTo}). One card per zip, grouped by county.`,
-    "Streets are the age-band pockets inside the zip — not every house in the zip. Census median year, not a house-by-house assessor.",
+    `Roofs about ${ageMin}–${ageMax} years old (built ${yearFrom}–${yearTo}). Each card is a park-once loop. Township is the folder.`,
+    "Streets are Census names in that pocket — not a developer list, not every house in the zip. Old zip Working does not carry over.",
     "Storms are not in this list.",
   ];
   if (missing.length) noteParts.push(`Skipped (not found): ${missing.join(", ")}.`);
   if (emptyCounties.length) {
     noteParts.push(
-      `${emptyCounties.join(", ")}: found the county, no age-band zips yet. Try a wider year range.`,
+      `${emptyCounties.join(", ")}: found the county, no age-band loops yet. Try a wider year range.`,
     );
   }
   if (!sliced.length) {
-    noteParts.push("No zips in that age band. Try a wider year range.");
+    noteParts.push("No loops in that age band. Try a wider year range.");
   }
 
   return {

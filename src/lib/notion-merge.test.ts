@@ -95,6 +95,8 @@ describe("mergeLoops / storms / faqs", () => {
         title: "Oak",
         zip: "",
         town: "",
+        place: "",
+        township: "",
         streets: ["Oak"],
         county: "Cumberland",
         state: "PA",

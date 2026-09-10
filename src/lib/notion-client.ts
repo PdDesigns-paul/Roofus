@@ -177,6 +177,8 @@ const DAY_PROPS = {
 const STREET_EXTRAS = {
   Town: { rich_text: {} },
   Zip: { rich_text: {} },
+  Place: { rich_text: {} },
+  Township: { rich_text: {} },
 };
 
 const STREET_PROPS = {
@@ -338,6 +340,8 @@ function streetProps(l: StreetLoop): Record<string, NotionProp> {
     Key: rich(l.id),
     Zip: rich(l.zip),
     Town: rich(l.town),
+    Place: rich(l.place),
+    Township: rich(l.township),
     County: rich(l.county),
     State: rich(l.state),
     Status: sel(l.status || "fresh"),
@@ -474,11 +478,15 @@ export async function pullSnapshot(token: string, ids: NotionIds): Promise<Notio
       const title = readTitle(p);
       const zip = readRich(p, "Zip") || zipFromHeadline(title);
       const town = readRich(p, "Town") || townFromHeadline(title);
+      const place = readRich(p, "Place") || (!/^\d{5}$/.test(title) ? townFromHeadline(title) || title : "");
+      const township = readRich(p, "Township");
       return sanitizeLoop({
         id: readRich(p, "Key") || String(p.id),
-        title,
+        title: place || title,
         zip,
         town,
+        place,
+        township,
         streets: readRich(p, "Streets")
           .split(",")
           .map((s) => s.trim())

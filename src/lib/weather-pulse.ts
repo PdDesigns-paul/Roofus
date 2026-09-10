@@ -2,7 +2,7 @@
  * Slice 3: last 48h pulse — IEM spine + on-demand Grok web/X crawl.
  * H on a Streets loop overrides tomorrow's Working. Keep still gates the porch.
  */
-import { loopLabel } from "@/lib/streets-rank";
+import { loopHeadline, loopLabel, matchLoopCluster } from "@/lib/streets-rank";
 import type { StreetLoop } from "@/lib/streets-types";
 import { buildWeatherLog } from "@/lib/weather-build";
 import { applyCrawlUpgrade, gradeStormAgainstLoops } from "@/lib/weather-grade";
@@ -39,13 +39,12 @@ function parseJson(text: string): { quiet?: boolean; summary?: string; leads?: R
 }
 
 function matchLoop(hint: string, loops: StreetLoop[]): StreetLoop | null {
-  const h = hint.trim().toLowerCase();
+  const h = hint.trim();
   if (!h) return null;
   return (
-    loops.find((l) => loopLabel(l).toLowerCase() === h) ??
-    loops.find((l) => l.zip && l.zip === h) ??
-    loops.find((l) => l.title && l.title.toLowerCase() === h) ??
-    loops.find((l) => l.streets.some((s) => h.includes(s.toLowerCase()))) ??
+    loops.find((l) => matchLoopCluster(l, h)) ??
+    loops.find((l) => loopHeadline(l).toLowerCase() === h.toLowerCase()) ??
+    loops.find((l) => l.streets.some((s) => h.toLowerCase().includes(s.toLowerCase()))) ??
     null
   );
 }
@@ -63,8 +62,9 @@ async function crawlNews(
   const fromDate = from.toISOString().slice(0, 10);
   const toDate = new Date().toISOString().slice(0, 10);
   const loopLines = loops.slice(0, 20).map((l) => {
-    const label = loopLabel(l);
-    return `- ${label} | ${l.county} | ${l.lat.toFixed(3)},${l.lon.toFixed(3)} | ${l.streets.slice(0, 4).join(", ")}`;
+    const label = loopHeadline(l);
+    const twp = l.township ? ` | ${l.township}` : "";
+    return `- ${label}${twp} | ${l.county} | ${l.lat.toFixed(3)},${l.lon.toFixed(3)} | ${l.streets.slice(0, 4).join(", ")}`;
   });
   const prompt = `You are a storm scanner for a door-to-door roofing canvasser. Generic — not a named company.
 
@@ -75,7 +75,7 @@ Last 48 hours (${fromDate} to ${toDate}).
 NWS LSR spine (already fetched):
 ${iemNote}
 
-Their zip list (age-band, owner-pay targeting). Only name a zip if it is on this list:
+Their loop list (age-band park-once cards, owner-pay targeting). Only name a loop if it is on this list:
 ${loopLines.join("\n") || "(none built yet)"}
 
 Search:
@@ -84,12 +84,12 @@ Search:
 
 Rules:
 - Do not invent hail size, a named cell, or "everyone filed."
-- If a place is not on the zip list, set loopHint empty and say "township only."
+- If a place is not on the loop list, set loopHint empty and say "township only."
 - Grade H only if a loop on the list is hit AND (personal damage language, photo, or multi-source). M = township/county damage, no loop. L = weak/distant.
 - Quiet day if nothing usable.
 
 Return ONLY JSON:
-{"quiet":boolean,"summary":"one short sentence","leads":[{"grade":"H"|"M"|"L","kind":"hail"|"wind","county":"","places":["string"],"say":"one door line they can Keep","loopHint":"exact zip or empty","why":"short","sources":["local news"|"X"|"NWS"]}]}`;
+{"quiet":boolean,"summary":"one short sentence","leads":[{"grade":"H"|"M"|"L","kind":"hail"|"wind","county":"","places":["string"],"say":"one door line they can Keep","loopHint":"exact loop headline or zip or empty","why":"short","sources":["local news"|"X"|"NWS"]}]}`;
 
   const res = await fetch("https://api.x.ai/v1/responses", {
     method: "POST",
@@ -146,6 +146,8 @@ export async function runWeatherPulse(req: WeatherPulseRequest): Promise<PulseRe
     title: l.title,
     zip: l.zip ?? (/^\d{5}$/.test(l.title) ? l.title : ""),
     town: "",
+    place: "",
+    township: "",
     streets: l.streets,
     county: l.county,
     state: "",

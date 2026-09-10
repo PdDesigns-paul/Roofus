@@ -20,8 +20,8 @@ Phone-first ride-along **journal + coach** for door-to-door roofers and storm re
 ## Who we knock
 
 - Owner-pay single-family first. Fee-simple townhomes only if the **owner** pays the roof.
-- Age-band stock. Default targeting **17–25 year** original roofs (in 2026 that is roughly 2001–2009). They set the years in Streets. Targeting is for the **zip**. The house in front of them is the year they give you.
-- Clustered streets inside a zip. Park once, walk a loop.
+- Age-band stock. Default targeting **17–25 year** original roofs (in 2026 that is roughly 2001–2009). They set the years in Streets. Targeting is for the **loop**. The house in front of them is the year they give you.
+- Clustered streets inside a zip **is the card**. Park once, walk a loop. Township is the folder, not Working today.
 - Density beats scattered houses.
 
 ## Who we skip
@@ -251,9 +251,9 @@ Bottom bar: **Today · Inspect · Home**. Home is the porch: setup bar, Tell Roo
 
 | Surface | What it is |
 | --- | --- |
-| **Today** | Pre-knock strip (town · zip, age, weather you may mention, first door line). Four counts (Doors, Talked, On the roof, Appointments), neighborhood picker from Streets, weather they may mention, After Action Report (wins, do-better, plan), tomorrow. Pocket cards. Counties and hours are **not** here — Presets. |
+| **Today** | Pre-knock strip (loop · zip, age, weather you may mention, first door line). Four counts (Doors, Talked, On the roof, Appointments), neighborhood picker from Streets, weather they may mention, After Action Report (wins, do-better, plan), tomorrow. Pocket cards. Counties and hours are **not** here — Presets. |
 | **Cards** | Five pocket cards: Door, Pushback, i35, Set, Compass. Distilled from this file. Compass is truck only. |
-| **Streets** | Age-band **zips** with town names, grouped by county. Working pinned. Search. Rural counties still get a row. Maps. One weather sentence on the Working zip if a kept storm matches. **Use today** copies that sentence to Today. Last 48 hours and season log are **not** on this page. |
+| **Streets** | Age-band **park-once loops** named from Census streets (or a small CDP), grouped by county then township. Working pinned. Search. Rural counties still get a row. Maps parks on the loop. One weather sentence on the Working loop if a kept storm matches. **Use today** copies that sentence to Today. Last 48 hours and season log are **not** on this page. Not a developer-subdivision dump. Not one card per block group. |
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Inspect** | Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic (what to shoot). Then This shot: Camera, Photos, or Practice. Ask about that frame. He names the i35 slot (Bad / Good / Worst / skip theater). Practice shot is a sample close-up — not this house. |
 | **Roofus** | Tap fans Live, Roleplay, Mindset. Each pick is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. New Live lives on the History sheet. Live’s first starter is the million-dollar script (B). Roleplay beats at the bottom: Walk-up, They push, After photos (talk only), The set, Whole visit. Score me is a button. Hold-to-talk in Roleplay. Hear it reads his line. Mindset is truck only. |
@@ -261,7 +261,7 @@ Bottom bar: **Today · Inspect · Home**. Home is the porch: setup bar, Tell Roo
 | **Reference** | InterNACHI Mastering Roof Inspections cards. Name the title. Do not paste article bodies. |
 | **Presets** | Name, counties, state, hours, company, website, warranty, mindset worksheets, optional Notion, Memory FAQs. He can write these when they clearly set them. |
 
-Tomorrow, in order: last-48h **High** on a zip they keep → Working → next fresh age-band zip. Do not ask a newbie where to go. Do not invent hail.
+Tomorrow, in order: last-48h **High** on a loop they keep → Working → next fresh loop in that township → next township. Do not ask a newbie where to go. Do not invent hail.
 
 Starter FAQs in `src/lib/porch-faqs.ts` must match this file. Coach prompt in `src/lib/coach-system.ts` must match this file **and** the buttons that exist.
 

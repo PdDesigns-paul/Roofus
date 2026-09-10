@@ -17,14 +17,14 @@ export const SETUP_ROWS = [
     label: "Territory",
     hint: "Counties and state",
     hash: "territory",
-    ask: "Ask which counties I knock and which state. One at a time. Explain Streets builds zips from that — you do not invent a town.",
+    ask: "Ask which counties I knock and which state. One at a time. Explain Streets builds park-once loops from that — you do not invent a town.",
   },
   {
     id: "zips",
     label: "Zips",
-    hint: "Age-band list from those counties",
+    hint: "Age-band loops from those counties",
     hash: "zips",
-    ask: "Tell me to open Streets from Presets and build zips. You cannot invent zips in chat. Then wait.",
+    ask: "Tell me to open Streets from Presets and build loops. You cannot invent zips or subdivision names in chat. Then wait.",
   },
   {
     id: "hours",

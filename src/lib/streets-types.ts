@@ -3,11 +3,15 @@ export type LoopResult = "" | "no-answer" | "not-now" | "callback" | "appointmen
 
 export type StreetLoop = {
   id: string;
-  /** Zip when we have one. Old saves may still hold a subdivision name. */
+  /** Cluster label (streets, small CDP, or township fallback). Old saves may still hold a zip. */
   title: string;
   zip: string;
   /** USPS city / town for that zip. Blank on old saves until they rebuild or Streets fills it. */
   town: string;
+  /** Park-once name. Census streets or a small CDP — not a developer list. */
+  place: string;
+  /** CouSub fence. Folder, not the card. */
+  township: string;
   streets: string[];
   county: string;
   state: string;

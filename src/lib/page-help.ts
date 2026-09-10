@@ -11,15 +11,15 @@ export const PAGE_HELP = {
     title: "Today",
     body: [
       "First time: finish setup on Home — counties and a state. Hours live in Presets. Then the four counts.",
-      "Before you knock is the zip, age band, weather you may mention, and the first door line. Pocket cards is Door, Pushback, i35, Set, Compass.",
-      "Neighborhood today is town · zip from Streets. Open Streets from More, Home, or that line. After Action Report is wins first, then facts, then a plan with verbs. Ask Roofus and he’ll name tomorrow.",
+      "Before you knock is the loop, age band, weather you may mention, and the first door line. Pocket cards is Door, Pushback, i35, Set, Compass.",
+      "Neighborhood today is the park-once loop from Streets. Open Streets from More, Home, or that line. After Action Report is wins first, then facts, then a plan with verbs. Ask Roofus and he’ll name tomorrow.",
     ],
   },
   streets: {
     title: "Streets",
     body: [
-      "Build from the counties in Presets. Open from More, Home, Today, or Presets. You pick the roof age — default 17–25 years. Tap Change to edit. Cards are town · zip, not a list of numbers. Working sits at the top. Tap a county to open the rest. Search the list. A rural county still gets a row even if Census found no age-band zips yet.",
-      "A Working zip shows one sentence if a kept storm actually hit it. Use today copies that sentence onto Today. Last 48 hours and the season log are not on this page.",
+      "Build from the counties in Presets. Open from More, Home, Today, or Presets. You pick the roof age — default 17–25 years. Tap Change to edit. Each card is a park-once loop (Census streets or a small CDP). Township is the folder. Working sits at the top. Tap a county to open the rest. Search township, loop, street, or zip. A rural county still gets a row even if Census found no age-band loops yet.",
+      "A Working loop shows one sentence if a kept storm actually hit it. Use today copies that sentence onto Today. Last 48 hours and the season log are not on this page. Rebuild does not copy old zip Working onto the new loops.",
     ],
   },
   cards: {
@@ -56,7 +56,7 @@ export const PAGE_HELP = {
     title: "Presets",
     body: [
       "First name, counties, state, when you knock, morning work, hard stop. Company name, website, warranty line. He reads the site when you tap Read the site. He uses those when he talks product.",
-      "Zips (Streets) opens from this page. Rebuild after you change counties.",
+      "Zips (Streets) opens from this page. Rebuild after you change counties. Cards are park-once loops, not whole zips.",
       "Reminders nag you when you open the app. Morning: storm report if it is empty. Evening: After Action Report if it is blank. Sundays: pace. The 1st: talent stack. Did it dismisses that nag for today.",
       "Mindset worksheets (Why, demon, Pace, stack) live on this page. The orange fan opens the chat. After Action Report is on Today.",
       "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Connect finds the tables. Restore brings the copy onto this phone. Do not Backup from an empty phone.",

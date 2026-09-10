@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
 const DOORS = [
   { to: "/today", label: "Today", hint: "Four counts. After Action Report.", icon: CalendarDays },
   { to: "/coach/inspect", label: "Inspect", hint: "Walk the house. Then the shot.", icon: Camera },
-  { to: "/streets", label: "Streets", hint: "Town · zip. Grouped by county.", icon: MapPin },
+  { to: "/streets", label: "Streets", hint: "Park-once loops. Grouped by township.", icon: MapPin },
 ] as const;
 
 function LandingPage() {

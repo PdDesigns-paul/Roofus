@@ -154,6 +154,8 @@ export function sanitizeLoop(raw: Partial<StreetLoop> & { id: string }): StreetL
     title,
     zip,
     town: s(raw.town),
+    place: s(raw.place) || (!/^\d{5}$/.test(title) ? title : ""),
+    township: s(raw.township),
     streets,
     county: s(raw.county),
     state: s(raw.state),
@@ -180,6 +182,8 @@ export function mergeLoops(current: StreetLoop[], incoming: StreetLoop[]): Stree
             status: cur.status || l.status,
             lastResult: cur.lastResult || l.lastResult,
             town: l.town.trim() || cur.town,
+            place: l.place.trim() || cur.place,
+            township: l.township.trim() || cur.township,
           }
         : l,
     );
@@ -418,7 +422,7 @@ export function restoreTally(pulled: {
     bits.push(`${pulled.days.length} day${pulled.days.length === 1 ? "" : "s"}`);
   }
   if (pulled.loops.length) {
-    bits.push(`${pulled.loops.length} zip${pulled.loops.length === 1 ? "" : "s"}`);
+    bits.push(`${pulled.loops.length} loop${pulled.loops.length === 1 ? "" : "s"}`);
   }
   if (pulled.storms.length) {
     bits.push(`${pulled.storms.length} storm${pulled.storms.length === 1 ? "" : "s"}`);

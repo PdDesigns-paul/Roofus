@@ -31,7 +31,7 @@ Phone-first PWA. First screen is the porch. Bottom bar: Today · Inspect · Home
 
 Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Inspect hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 
-- Streets = **zip** cards grouped by county (not named subdivisions, not one card per block group). Town name sits next to the zip so it is not a list of numbers. Open from Menu, Home, Today, or Presets.
+- Streets = **park-once loops** grouped by county then township (not named subdivisions, not one card per zip, not one card per block group). Headline is cluster · zip. Township is the folder. Open from Menu, Home, Today, or Presets.
 - Door / Live first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.
 - Auth OFF. Database OFF. localStorage / Zustand only. Notion is optional backup in **their** workspace.
 - No CRM, takeoff, listing lookup, notes app, or apartment flow.

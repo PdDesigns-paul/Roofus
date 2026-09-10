@@ -31,6 +31,11 @@ const NAMES: Record<string, string> = {
 const BY_ABBR = Object.fromEntries(ROWS);
 const BY_FIPS = Object.fromEntries(ROWS.map(([abbr, fp]) => [fp, abbr]));
 
+/** Strong-MCD states: CouSub is a real township / borough, not a CCD blob. */
+const MCD_FIPS = new Set([
+  "09", "17", "18", "20", "23", "25", "26", "27", "31", "33", "34", "36", "38", "39", "42", "44", "46", "50", "55",
+]);
+
 export function stateFips(raw: string): string | null {
   const t = raw.trim().toLowerCase().replace(/\./g, "");
   if (!t) return null;
@@ -58,4 +63,8 @@ export function parseList(raw: string): string[] {
 
 export function countyBasename(raw: string): string {
   return raw.trim().replace(/\s+county$/i, "").replace(/\s+co\.?$/i, "").trim();
+}
+
+export function isMcdState(fp: string): boolean {
+  return MCD_FIPS.has(fp.padStart(2, "0"));
 }
