@@ -12,12 +12,13 @@ import {
   unpackAfterAction,
   useDayBook,
   type DayCounts,
-  type DayProfile,
 } from "@/lib/day-book";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
 import { stormsNearLoop } from "@/lib/weather-match";
 import { useWeather } from "@/lib/weather-store";
 import { preKnock } from "@/lib/pocket-cards";
+import { companyOf } from "@/lib/setup-progress";
+import { useSettings } from "@/lib/settings-store";
 import { loopLabel } from "@/lib/streets-rank";
 import { suggestTomorrow, useStreets } from "@/lib/streets-store";
 
@@ -27,8 +28,7 @@ export const Route = createFileRoute("/today")({
 });
 
 export function TodayJournal() {
-  const setupDone = useDayBook((s) => s.profile.setupDone);
-  return setupDone ? <DaySheet /> : <SetupForm />;
+  return <DaySheet />;
 }
 
 const COUNTERS: { key: keyof DayCounts; label: string; hint: string }[] = [
@@ -38,83 +38,6 @@ const COUNTERS: { key: keyof DayCounts; label: string; hint: string }[] = [
   { key: "sets", label: "Appointments", hint: "On the calendar" },
 ];
 
-function SetupForm() {
-  const finishSetup = useDayBook((s) => s.finishSetup);
-  const [goBy, setGoBy] = useState("");
-  const [company, setCompany] = useState("");
-  const [counties, setCounties] = useState("");
-  const [states, setStates] = useState("");
-  const [err, setErr] = useState<string | null>(null);
-
-  function save() {
-    if (!counties.trim() || !states.trim()) {
-      setErr("Need a county and a state so we know where you work.");
-      return;
-    }
-    const patch: Partial<DayProfile> = {
-      goBy,
-      company,
-      counties,
-      states,
-    };
-    finishSetup(patch);
-  }
-
-  return (
-    <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <AppHeader title="Today" />
-      <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where do you knock?</h1>
-      <p className="mt-2 text-sm leading-relaxed text-muted">
-        Once is enough. Hours, warranty, and FAQs live in Presets. Stays on this phone.
-      </p>
-
-      <form
-        className="mt-5 flex flex-col gap-0"
-        onSubmit={(e) => {
-          e.preventDefault();
-          save();
-        }}
-      >
-        <Field label="Your first name" hint="What Roofus should call you.">
-          <input
-            className="h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
-            value={goBy}
-            onChange={(e) => setGoBy(e.target.value)}
-            autoComplete="nickname"
-          />
-        </Field>
-        <Field label="Company" hint="Optional.">
-          <input
-            className="h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
-            value={company}
-            onChange={(e) => setCompany(e.target.value)}
-          />
-        </Field>
-        <Field label="Which counties?" hint="Where you actually knock. Commas are fine.">
-          <input
-            className="h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
-            value={counties}
-            onChange={(e) => setCounties(e.target.value)}
-            required
-          />
-        </Field>
-        <Field label="Which state?" hint="PA, Ohio, whatever you cover.">
-          <input
-            className="h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
-            value={states}
-            onChange={(e) => setStates(e.target.value)}
-            required
-          />
-        </Field>
-        {err ? <p className="mt-3 text-sm text-danger">{err}</p> : null}
-        <button type="submit" className="mt-4 h-11 rounded-full bg-fg text-sm text-paper">
-          Save and go
-        </button>
-      </form>
-    </main>
-  );
-}
-
 function DaySheet() {
   const date = localDateKey();
   const stored = useDayBook((s) => s.days[date]);
@@ -122,6 +45,7 @@ function DaySheet() {
   const bump = useDayBook((s) => s.bump);
   const patchToday = useDayBook((s) => s.patchToday);
   const profile = useDayBook((s) => s.profile);
+  const companyName = useSettings((s) => s.companyName);
   const loops = useStreets((s) => s.loops);
   const ageMin = useStreets((s) => s.ageMin);
   const ageMax = useStreets((s) => s.ageMax);
@@ -166,7 +90,7 @@ function DaySheet() {
     cluster: day.cluster,
     storm: day.storm,
     goBy: profile.goBy,
-    company: profile.company,
+    company: companyOf(profile.company, companyName),
     knockWindow: profile.knockWindow,
     hardStop: profile.hardStop,
     ageMin,
@@ -177,6 +101,14 @@ function DaySheet() {
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
       <AppHeader title="Today" />
+      {!profile.counties.trim() || !profile.states.trim() ? (
+        <Link
+          to="/"
+          className="mt-3 flex min-h-12 items-center rounded-2xl border border-border px-4 text-sm text-muted"
+        >
+          Finish setup on Home — counties and a state so Streets can build zips.
+        </Link>
+      ) : null}
       <p className="mt-4 text-xs font-medium uppercase tracking-wide text-faint">{day.date}</p>
       <h1 className="mt-1 font-display text-2xl leading-tight tracking-tight">
         {profile.goBy.trim() ? `${profile.goBy.trim()}'s day` : "Today"}

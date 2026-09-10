@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useDayBook } from "@/lib/day-book";
 import { resetOnboard } from "@/lib/onboard";
+import { REMINDERS } from "@/lib/reminders";
+import { useReminders } from "@/lib/reminders-store";
 import { useSettings } from "@/lib/settings-store";
 
 export const Route = createFileRoute("/settings")({
@@ -23,7 +25,7 @@ function SettingsPage() {
 
   useEffect(() => {
     const id = hash.replace(/^#/, "");
-    if (id !== "mindset" && id !== "zips") return;
+    if (!id) return;
     document.getElementById(id)?.scrollIntoView({ block: "start" });
   }, [hash]);
 
@@ -32,7 +34,7 @@ function SettingsPage() {
       <AppHeader title="Presets" />
 
       <p className="mt-3 text-sm leading-snug text-muted">
-        Counties, hours, company, warranty. Zips. Mindset worksheets. Backup is optional.
+        Counties, hours, company, warranty. Zips. Mindset. Reminders. Backup is optional.
       </p>
 
       <button
@@ -46,7 +48,7 @@ function SettingsPage() {
         Show the question-mark tour
       </button>
 
-      <section className="mt-5 flex flex-col gap-3">
+      <section id="you" className="mt-5 flex flex-col gap-3">
         <p className="text-xs font-medium uppercase tracking-wide text-faint">You</p>
         <div className="grid grid-cols-2 gap-2">
           <div className="min-w-0">
@@ -65,7 +67,10 @@ function SettingsPage() {
               id="company"
               className="mt-1"
               value={s.companyName}
-              onChange={(e) => s.setCompanyName(e.target.value)}
+              onChange={(e) => {
+                s.setCompanyName(e.target.value);
+                patchProfile({ company: e.target.value });
+              }}
               placeholder="Roofus"
             />
           </div>
@@ -81,7 +86,7 @@ function SettingsPage() {
         </div>
       </section>
 
-      <section className="mt-5 flex flex-col gap-3">
+      <section id="territory" className="mt-5 flex flex-col gap-3">
         <p className="text-xs font-medium uppercase tracking-wide text-faint">Counties</p>
         <div className="min-w-0">
           <Label htmlFor="counties">Which counties?</Label>
@@ -119,7 +124,7 @@ function SettingsPage() {
         </Link>
       </section>
 
-      <section className="mt-5 flex flex-col gap-3">
+      <section id="hours" className="mt-5 flex flex-col gap-3">
         <p className="text-xs font-medium uppercase tracking-wide text-faint">Hours</p>
         <div className="min-w-0">
           <Label htmlFor="knockWindow">When do you knock?</Label>
@@ -153,12 +158,48 @@ function SettingsPage() {
         </div>
       </section>
 
-      <section className="mt-8">
+      <section id="mindset" className="mt-8">
         <p className="mb-3 text-xs font-medium uppercase tracking-wide text-faint">Mindset</p>
         <MindsetWorksheets />
+      </section>
+
+      <section id="reminders" className="mt-8">
+        <p className="text-xs font-medium uppercase tracking-wide text-faint">Reminders</p>
+        <p className="mt-2 text-sm leading-relaxed text-muted">
+          These nag you when you open Roofus. Lock-screen push needs the app on your Home Screen and
+          a later cron. Not yet.
+        </p>
+        <ReminderToggles />
       </section>
 
       <NotionBackup />
     </main>
   );
 }
+
+function ReminderToggles() {
+  const on = useReminders((s) => s.on);
+  const toggle = useReminders((s) => s.toggle);
+  return (
+    <ul className="mt-3 flex flex-col">
+      {REMINDERS.map((r) => (
+        <li key={r.id} className="flex min-h-14 items-center justify-between gap-3 border-b border-border last:border-0 py-3">
+          <span className="min-w-0">
+            <span className="block text-sm text-fg">{r.label}</span>
+            <span className="block text-xs text-faint">{r.when}. {r.hint}</span>
+          </span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={on[r.id]}
+            className={`h-7 w-12 shrink-0 rounded-full ${on[r.id] ? "bg-accent" : "bg-surface-2"}`}
+            onClick={() => toggle(r.id)}
+          >
+            <span className="sr-only">{on[r.id] ? "On" : "Off"}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+

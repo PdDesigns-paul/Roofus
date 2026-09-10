@@ -1,5 +1,8 @@
 import { whenCoachReady, useCoach } from "@/lib/coach-store";
 import type { CoachMode } from "@/lib/rufus-modes";
+import type { SetupRowId } from "@/lib/setup-progress";
+import { setupKickoff } from "@/lib/setup-progress";
+import { abortTalk, sendRoofus } from "@/lib/roofus-talk";
 
 export function openCoach(mode: "resume" | "new" = "resume") {
   whenCoachReady(() => {
@@ -20,5 +23,17 @@ export function openCoachThread(id: string) {
   whenCoachReady(() => {
     useCoach.getState().openThread(id);
     useCoach.getState().openSheet();
+  });
+}
+
+export function openSetup(row?: SetupRowId) {
+  whenCoachReady(() => {
+    abortTalk();
+    useCoach.getState().ensureSetup(row);
+    useCoach.getState().openSheet();
+    const line = row
+      ? setupKickoff(row)
+      : "Ask the next blank field on the Home setup bar. One question. Wait. Do not invent a zip.";
+    void sendRoofus(line, { kickoff: true }).catch(() => undefined);
   });
 }

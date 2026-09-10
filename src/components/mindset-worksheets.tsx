@@ -39,7 +39,7 @@ export function MindsetWorksheets() {
   };
 
   return (
-    <div id="mindset">
+    <div>
       <h2 className="font-display text-2xl leading-tight tracking-tight">Stay in the fight.</h2>
       <p className="mt-2 text-sm leading-snug text-muted">
         Most first-year roofers do not fail because they cannot sell. They fail because they cannot

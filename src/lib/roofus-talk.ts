@@ -10,7 +10,9 @@ import { streetsForCoach } from "@/lib/streets-store";
 import { streamCoach } from "@/lib/stream-coach";
 import { notionForCoach } from "@/lib/notion-store";
 import { applyWalkAnswer } from "@/lib/survive";
+import { applySetupAnswer, nextIncomplete, setupSnap } from "@/lib/setup-progress";
 import { surviveForCoach, useSurvive } from "@/lib/survive-store";
+import { useStreets } from "@/lib/streets-store";
 import { weatherForCoach } from "@/lib/weather-store";
 
 let liveAbort: AbortController | null = null;
@@ -44,6 +46,31 @@ export async function sendRoofus(
     if (patch?.survive) useSurvive.getState().patch(patch.survive);
     if (patch?.profile) useDayBook.getState().patchProfile(patch.profile);
   }
+  if (!opts?.kickoff && thread?.origin === "setup") {
+    const profile = useDayBook.getState().profile;
+    const settings = useSettings.getState();
+    const snap = setupSnap({
+      goBy: profile.goBy,
+      profileCompany: profile.company,
+      settingsCompany: settings.companyName,
+      counties: profile.counties,
+      states: profile.states,
+      knockWindow: profile.knockWindow,
+      paperWindow: profile.paperWindow,
+      hardStop: profile.hardStop,
+      warranty: settings.warrantyLine,
+      zipCount: useStreets.getState().loops.length,
+      survive: useSurvive.getState(),
+    });
+    const row = nextIncomplete(snap, thread.setupRow);
+    if (row) {
+      const patch = applySetupAnswer(row, content, snap, useSurvive.getState());
+      if (patch?.survive) useSurvive.getState().patch(patch.survive);
+      if (patch?.profile) useDayBook.getState().patchProfile(patch.profile);
+      if (patch?.companyName) settings.setCompanyName(patch.companyName);
+      if (patch?.warrantyLine) settings.setWarrantyLine(patch.warrantyLine);
+    }
+  }
   if (!opts?.kickoff) live.pushUser(content);
   live.setBusy(true);
   live.setStreaming("");
@@ -65,6 +92,7 @@ export async function sendRoofus(
         scene: now.scene ?? undefined,
         who: now.who ?? undefined,
         year: opts?.year,
+        origin: thread?.origin,
         companyName: settings.companyName,
         warrantyLine: settings.warrantyLine,
         imageDataUrl: opts?.imageDataUrl,

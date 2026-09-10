@@ -2,15 +2,15 @@ export const PAGE_HELP = {
   home: {
     title: "Roofus",
     body: [
-      "This is the porch. Open Today for the four counts. Inspect is the camera. Zips live in Presets.",
-      "Orange button is Roofus. Tap to pick Live, Roleplay, or Mindset — each is a new chat. Hold starts Live. History is the clock in the chat. Menu: Cards, Reference, Presets. Mindset worksheets live in Presets. First open walks the question mark.",
-      "Bottom: Today, Inspect, Home. Back shows on Cards, Reference, Presets, and Streets. Help and Menu sit above the tabs. Put the app on your Home Screen so it opens like anything else on this phone.",
+      "This is the porch. The bar is setup — name, territory, zips, hours, warranty, Why. Each row opens Presets or Ask Roofus. Tell Roofus is the pinned setup chat.",
+      "Orange button is Roofus. Tap to pick Live, Roleplay, or Mindset — each is a new chat. Hold starts Live. History is the clock in the chat. Menu: Cards, Reference, Presets. First open walks the question mark.",
+      "Bottom: Today, Inspect, Home. Back shows on Cards, Reference, Presets, and Streets. Put the app on your Home Screen so the tile says Roofus and shows the dog.",
     ],
   },
   today: {
     title: "Today",
     body: [
-      "First time: your name, which counties, which state. Hours live in Presets. Then the four counts.",
+      "First time: finish setup on Home — counties and a state. Hours live in Presets. Then the four counts.",
       "Before you knock is the zip, age band, weather you may mention, and the first door line. Pocket cards is Door, Pushback, i35, Set, Compass.",
       "Neighborhood today is the zip you’re on. After Action Report is wins first, then facts, then a plan with verbs. Ask Roofus and he’ll name tomorrow.",
     ],
@@ -57,6 +57,7 @@ export const PAGE_HELP = {
     body: [
       "First name, counties, state, when you knock, morning work, hard stop. Company name and warranty line. He uses those when he talks product.",
       "Zips (Streets) opens from this page. Rebuild after you change counties.",
+      "Reminders nag you when you open the app. Lock-screen push is later.",
       "Mindset worksheets (Why, demon, Pace, stack) live on this page. The orange fan opens the chat. After Action Report is on Today.",
       "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Connect finds the tables. Restore brings the copy onto this phone. Do not Backup from an empty phone.",
       "FAQs ship with public porch answers already filled. Edit or drop. Your office rules win.",

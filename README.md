@@ -12,7 +12,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 
 | Surface | What it is |
 | --- | --- |
-| **Porch** | First screen. Who this is. Open Today or Inspect. |
+| **Porch** | First screen. Setup bar. Tell Roofus. Open Today or Inspect. |
 | **Today** | Pre-knock strip, four counts, neighborhood, weather you may mention, After Action Report (wins / do-better / plan), tomorrow. |
 | **Streets** | Not a tab. Open from Presets. Age-band **zips** from your counties (default 17–25 year roofs). Working pinned. Maps. One weather sentence on the Working zip if a kept storm matches. Use today copies it to Today. |
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
@@ -20,7 +20,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 | **Roofus** | Orange button. Tap fans Live, Roleplay, Mindset — each is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. Hold-to-talk in Roleplay. Beats at the bottom. Score me is a button. Hear it reads his line. Practice only — do not record a homeowner. |
 | **Cards** | Five pocket cards: Door, Pushback, i35, Set, Compass. Compass is truck only. |
 | **Mindset** | Worksheets in Presets: Why (ladder), Name the demon, Pace (gear), Talent stack. Chat from the orange fan. Private. After Action Report lives on Today. |
-| **Presets** | Counties, zips (Streets), hours, company name, warranty, mindset worksheets, optional Notion backup, FAQs Roofus should remember (starters from public porch teaching). |
+| **Presets** | Counties, zips (Streets), hours, company, warranty, mindset, reminders, optional Notion backup, FAQs Roofus should remember. |
 
 Bottom bar: Today · Inspect · Home. Footer: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Menu: Cards, Reference, Presets. Streets and mindset worksheets live in Presets.
 

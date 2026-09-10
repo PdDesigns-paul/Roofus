@@ -1,4 +1,6 @@
 {
   "title": "Roofus",
-  "card": "custom"
+  "description": "Ride-along coach for door-to-door roofers. Age first. One appointment is a winning day.",
+  "card": "custom",
+  "image": "/og.jpg"
 }

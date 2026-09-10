@@ -107,6 +107,14 @@ const ROLEPLAY_BRIEF = `Mode: ROLEPLAY. You are the homeowner (or spouse) until 
 
 const MINDSET_BRIEF = `Mode: MINDSET. Truck only. Never a porch line. Never quote a book. Never put the demon, the why, or a drill on a door. One question at a time. Wait for the answer. If a worksheet line is already filled in the Mindset appendix, read it back once and skip it. After they answer, it is already in Presets — do not tell them to go type it. Why: number as if earned, by date, what the number buys, who else is on the other side, then the person/promise/version of them. If they ask you to read the why, read their recap in one breath, then ask if it still holds. Demon: one word, where it started, how that radar could help a homeowner, which attack this week (fear = first door in 10; doubt = read Why; just-one-more = stand up). Pace: hours they set, one real off-block, when the phone goes down, gear (sprint/grind/all-day/coast), what they will drop, one thing they already have. Stack: three skills this month, one tiny drill, windshield audio, a night book that is a person not work. Do not dump the whole worksheet.`;
 
+const SETUP_BRIEF = `Mode: SETUP. Pinned Home chat. You are filling THEIR book — name, company, counties, state, hours, warranty, Why, demon, Pace, stack. Same fields as Presets. One question at a time. Wait. After they answer, it is already saved — do not tell them to go type it.
+
+You may explain why a field exists (counties so Streets can build zips; Why is private and never a porch line). You may not invent a county, a zip, a company, a warranty, or a why. Zips are not typed here — send them to Presets → Streets to build.
+
+Territory (counties + state) is enough to knock. Mindset can stay blank. Never start a door script in this chat. Never become the homeowner. If they want to roleplay, tell them to tap the orange button.
+
+First blank in the row they opened. If that row is done, the next empty row on Home.`;
+
 export function hatToMode(id: string | null | undefined): CoachMode {
   if (id === "roleplay" || id === "score") return "roleplay";
   if (id === "mindset") return "mindset";
@@ -152,7 +160,9 @@ export function modeBrief(
   scene?: string | null,
   who?: string | null,
   year?: string | null,
+  origin?: string | null,
 ): string {
+  if (origin === "setup") return SETUP_BRIEF;
   const m = normalizeMode(mode);
   if (m === "live") return LIVE_BRIEF;
   if (m === "mindset") return MINDSET_BRIEF;
@@ -181,12 +191,15 @@ export function roleplayKnockLine(
 }
 
 export type ThreadTag = {
-  id: "live" | "roleplay" | "mindset" | "inspect" | "help";
+  id: "live" | "roleplay" | "mindset" | "inspect" | "help" | "setup";
   label: string;
   className: string;
 };
 
 export function threadTag(input: { origin?: string; mode?: string; hat?: string }): ThreadTag {
+  if (input.origin === "setup") {
+    return { id: "setup", label: "Setup", className: "border border-accent text-accent" };
+  }
   if (input.origin === "inspect") {
     return { id: "inspect", label: "Inspect", className: "border border-border bg-surface text-muted" };
   }

@@ -35,6 +35,7 @@ describe("ensureInspect", () => {
       scene: null,
       who: null,
       walkId: null,
+      setupRow: null,
       houseId: null,
       messages: [
         { role: "user" as const, content: "old hail question" },
@@ -131,6 +132,7 @@ describe("normalizeThread", () => {
       origin: "porch" as const,
       hat: "door",
       walkId: null,
+      setupRow: null,
       houseId: null,
       messages: [{ role: "user" as const, content: "Give me the million-dollar door script." }],
       createdAt: 1,
@@ -145,5 +147,21 @@ describe("normalizeThread", () => {
     const t = useCoach.getState().threads.t_old;
     assert.equal(t?.mode, "live");
     assert.equal(useCoach.getState().mode, "live");
+  });
+});
+
+describe("ensureSetup", () => {
+  beforeEach(reset);
+
+  it("resumes the same Setup thread", () => {
+    useCoach.getState().ensureSetup("territory");
+    const first = useCoach.getState().activeId;
+    useCoach.getState().pushUser("Dauphin");
+    useCoach.getState().ensureSetup("you");
+    const s = useCoach.getState();
+    assert.equal(s.activeId, first);
+    assert.equal(s.threads[first ?? ""]?.origin, "setup");
+    assert.equal(s.threads[first ?? ""]?.setupRow, "you");
+    assert.equal(s.threads[first ?? ""]?.messages.length, 1);
   });
 });

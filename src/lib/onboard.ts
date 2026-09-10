@@ -44,6 +44,6 @@ export const ONBOARD_STEPS = [
     id: "tabs",
     selector: "[data-tour='tabs']",
     title: "The day",
-    body: "Today. Inspect. Home. Menu hides Cards, Reference, and Presets. Zips live in Presets.",
+    body: "Today. Inspect. Home. Home holds setup — the bar, the forms in Presets, and Tell Roofus.",
   },
 ] as const;

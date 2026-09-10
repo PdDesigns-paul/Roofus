@@ -39,6 +39,7 @@ describe("threadTag", () => {
     assert.equal(threadTag({ mode: "live" }).label, "Live");
     assert.equal(threadTag({ mode: "roleplay" }).id, "roleplay");
     assert.equal(threadTag({ origin: "mindset", mode: "mindset" }).label, "Mindset");
+    assert.equal(threadTag({ origin: "setup", mode: "live" }).label, "Setup");
     assert.equal(threadTag({ origin: "inspect", mode: "live" }).label, "Inspect");
     assert.equal(threadTag({ hat: "door" }).label, "Live");
     assert.equal(threadTag({ hat: "score" }).label, "Roleplay");
@@ -50,6 +51,7 @@ describe("modeBrief", () => {
     assert.match(modeBrief("live"), /not the homeowner/i);
     assert.match(modeBrief("roleplay", "visit"), /WHOLE VISIT/);
     assert.match(modeBrief("mindset"), /Truck only/);
+    assert.match(modeBrief("live", null, null, null, "setup"), /SETUP/);
   });
 });
 

@@ -19,6 +19,7 @@ export type CoachRequest = {
   scene?: string;
   who?: string;
   year?: string;
+  origin?: string;
   hat?: string;
   companyName?: string;
   warrantyLine?: string;
@@ -66,7 +67,7 @@ export function buildXaiPayload(req: CoachRequest): {
     };
   }
 
-  const brief = modeBrief(req.mode ?? req.hat, req.scene, req.who, req.year);
+  const brief = modeBrief(req.mode ?? req.hat, req.scene, req.who, req.year, req.origin);
   const extra = [
     `\n\n${brief}`,
     KNOWLEDGE,

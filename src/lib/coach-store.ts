@@ -12,8 +12,9 @@ import {
 } from "./rufus-modes.ts";
 import type { ChatTurn } from "./stream-coach.ts";
 import type { WalkId } from "./survive.ts";
+import type { SetupRowId } from "./setup-progress.ts";
 
-export type ThreadOrigin = "porch" | "help" | "house" | "inspect" | "mindset";
+export type ThreadOrigin = "porch" | "help" | "house" | "inspect" | "mindset" | "setup";
 
 export type CoachThread = {
   id: string;
@@ -23,6 +24,7 @@ export type CoachThread = {
   scene: RoleplaySceneId | null;
   who: RoleplayWhoId | null;
   walkId: WalkId | null;
+  setupRow: SetupRowId | null;
   houseId: string | null;
   messages: ChatTurn[];
   createdAt: number;
@@ -34,6 +36,7 @@ export type StartNewOpts = {
   origin?: ThreadOrigin;
   title?: string;
   walkId?: WalkId | null;
+  setupRow?: SetupRowId | null;
   scene?: RoleplaySceneId | null;
   who?: RoleplayWhoId | null;
 };
@@ -69,6 +72,7 @@ type CoachState = {
   resume: () => void;
   startNew: (opts?: StartNewOpts) => void;
   ensureInspect: () => void;
+  ensureSetup: (row?: SetupRowId) => void;
   openThread: (id: string) => void;
   dropThread: (id: string) => void;
   pushUser: (content: string) => void;
@@ -92,6 +96,7 @@ function titleFor(
 ): string {
   if (origin === "help") return "How this page works";
   if (origin === "inspect") return "Inspect";
+  if (origin === "setup") return "Setup";
   if (origin === "mindset" || mode === "mindset") return "Mindset";
   if (mode === "roleplay") return scene ? sceneById(scene).label : "Roleplay";
   const line = first?.trim().split("\n")[0] ?? "";
@@ -111,6 +116,7 @@ function makeThread(origin: ThreadOrigin, extra?: StartNewOpts): CoachThread {
     scene,
     who,
     walkId: extra?.walkId ?? null,
+    setupRow: extra?.setupRow ?? null,
     houseId: null,
     messages: [],
     createdAt: now,
@@ -140,6 +146,7 @@ function normalizeThread(raw: RawThread): CoachThread {
     raw.origin === "house" ||
     raw.origin === "inspect" ||
     raw.origin === "mindset" ||
+    raw.origin === "setup" ||
     raw.origin === "porch"
       ? raw.origin
       : mode === "mindset"
@@ -155,6 +162,7 @@ function normalizeThread(raw: RawThread): CoachThread {
     scene,
     who,
     walkId: raw.walkId ?? null,
+    setupRow: raw.setupRow ?? null,
     houseId: raw.houseId ?? null,
     messages: raw.messages ?? [],
     createdAt: raw.createdAt ?? Date.now(),
@@ -383,6 +391,7 @@ export const useCoach = create<CoachState>()(
             mode,
             title: opts?.title,
             walkId: opts?.walkId ?? null,
+            setupRow: opts?.setupRow ?? null,
             scene: opts?.scene ?? (mode === "roleplay" ? s.lastScene : null),
             who: opts?.who ?? (mode === "roleplay" ? s.lastWho : null),
           });
@@ -404,6 +413,31 @@ export const useCoach = create<CoachState>()(
             ...activate(s, thread),
             streaming: "",
             busy: false,
+          };
+        }),
+      ensureSetup: (row) =>
+        set((s) => {
+          const existing = Object.values(s.threads).find((t) => t.origin === "setup");
+          if (existing) {
+            const thread: CoachThread = {
+              ...normalizeThread(existing),
+              setupRow: row ?? existing.setupRow ?? null,
+              title: "Setup",
+              updatedAt: Date.now(),
+            };
+            return {
+              ...activate(s, thread),
+              streaming: "",
+              busy: false,
+              historyOpen: false,
+            };
+          }
+          const thread = makeThread("setup", { mode: "live", title: "Setup", setupRow: row ?? null });
+          return {
+            ...activate(s, thread),
+            streaming: "",
+            busy: false,
+            historyOpen: false,
           };
         }),
       openThread: (id) =>

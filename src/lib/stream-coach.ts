@@ -6,6 +6,7 @@ export type StreamCoachInput = {
   scene?: string;
   who?: string;
   year?: string;
+  origin?: string;
   companyName?: string;
   warrantyLine?: string;
   imageDataUrl?: string;
