@@ -1,7 +1,7 @@
 import type { HelpPageId } from "./page-help.ts";
 
-/** Back and Home hide here — the tabs (or the porch) already are home. */
-export function showBackHome(path: string): boolean {
+/** Back only on nested pages. Home is always in the footer. */
+export function showBack(path: string): boolean {
   if (path === "/" || path === "/today") return false;
   if (path.startsWith("/streets")) return false;
   if (path.startsWith("/coach/inspect")) return false;

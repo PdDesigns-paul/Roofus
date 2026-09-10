@@ -27,7 +27,7 @@ GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at 
 
 ## Product (short)
 
-Phone-first PWA. First screen is the porch. Bottom bar: Today · Streets · Inspect. Footer above it: Back · Home · Help · Menu (Back and Home hide on those three tabs). Menu: Cards, Reference, Presets. Mindset worksheets live in Presets.
+Phone-first PWA. First screen is the porch. Bottom bar: Today · Streets · Inspect. Footer above it: Back · Home · Help · Menu. Home is always there. Back only on Cards, Reference, Presets. Menu: Cards, Reference, Presets. Mindset worksheets live in Presets.
 
 Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Inspect hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 
@@ -65,4 +65,4 @@ Do not add login, Postgres, new API keys, Codecov, Husky, or commitlint. Convent
 
 ## After a slice
 
-Push to `PdDesigns-paul/Roofus` on `main`. GitHub Action + Vercel are the gate. Do not run build, browser-smoke, or a second preview unless this slice moves chrome (tabs, FAB, header/footer, chat sheet) or they say “QA”. If a lib rule changed, run `test:app` only. One working slice per chat is enough.
+Push to `PdDesigns-paul/Roofus` on `main` as **pauldevey91@gmail.com**. Vercel blocks `paul@roofus.coach` and will not launch. GitHub Action + Vercel are the gate. Do not run build, browser-smoke, or a second preview unless this slice moves chrome (tabs, FAB, header/footer, chat sheet) or they say “QA”. If a lib rule changed, run `test:app` only. One working slice per chat is enough.

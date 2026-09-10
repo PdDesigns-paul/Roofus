@@ -22,7 +22,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 | **Mindset** | Worksheets in Presets: Why (ladder), Name the demon, Pace (gear), Talent stack. Chat from the orange fan. Private. After Action Report lives on Today. |
 | **Presets** | Counties, hours, company name, warranty, mindset worksheets, optional Notion backup, FAQs Roofus should remember (starters from public porch teaching). |
 
-Bottom bar: Today · Streets · Inspect. Footer: Back · Home · Help · Menu (Back and Home hide on the three tabs). Menu: Cards, Reference, Presets. Mindset worksheets live in Presets.
+Bottom bar: Today · Streets · Inspect. Footer: Back · Home · Help · Menu. Home is always there. Back only on Cards, Reference, Presets. Menu: Cards, Reference, Presets. Mindset worksheets live in Presets.
 
 ## Doctrine (short)
 

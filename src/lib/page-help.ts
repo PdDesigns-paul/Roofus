@@ -4,7 +4,7 @@ export const PAGE_HELP = {
     body: [
       "This is the porch. Open Today for the four counts. Streets is zips. Inspect is the camera.",
       "Orange button is Roofus. Tap to pick Live, Roleplay, or Mindset — each is a new chat. Hold starts Live. History is the clock in the chat. Menu: Cards, Reference, Presets. Mindset worksheets live in Presets. First open walks the question mark.",
-      "Bottom: Today, Streets, Inspect. Back, Home, Help, and Menu sit above those on nested pages. Put the app on your Home Screen so it opens like anything else on this phone.",
+      "Bottom: Today, Streets, Inspect. Home is always above those. Back shows on Cards, Reference, and Presets. Help and Menu sit next to Home. Put the app on your Home Screen so it opens like anything else on this phone.",
     ],
   },
   today: {

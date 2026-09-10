@@ -2,7 +2,7 @@ import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { ArrowLeft, CalendarDays, Camera, Home, Map } from "lucide-react";
 import { HelpButton } from "@/components/help-button";
 import { MoreMenu } from "@/components/more-menu";
-import { helpPageFor, showBackHome } from "@/lib/app-chrome";
+import { helpPageFor, showBack } from "@/lib/app-chrome";
 
 const TABS = [
   { to: "/today", id: "today", label: "Today", icon: CalendarDays, match: (p: string) => p === "/today" },
@@ -16,11 +16,15 @@ const TABS = [
   },
 ] as const;
 
+const slot =
+  "flex min-h-11 flex-col items-center justify-center gap-0.5 pt-1 text-[11px] font-medium text-muted hover:bg-surface-2 hover:text-fg";
+
 export function TabBar() {
   const router = useRouter();
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const nested = showBackHome(path);
+  const nested = showBack(path);
   const page = helpPageFor(path);
+  const atHome = path === "/";
 
   return (
     <div
@@ -30,28 +34,17 @@ export function TabBar() {
     >
       <div className="mx-auto grid max-w-lg grid-cols-4 border-b border-border">
         {nested ? (
-          <button
-            type="button"
-            className="inline-flex min-h-11 items-center justify-center text-muted hover:bg-surface-2 hover:text-fg"
-            aria-label="Back"
-            onClick={() => router.history.back()}
-          >
+          <button type="button" className={slot} onClick={() => router.history.back()}>
             <ArrowLeft className="size-5" />
+            Back
           </button>
         ) : (
           <span />
         )}
-        {nested ? (
-          <Link
-            to="/"
-            className="inline-flex min-h-11 items-center justify-center text-muted hover:bg-surface-2 hover:text-fg"
-            aria-label="Home"
-          >
-            <Home className="size-5" />
-          </Link>
-        ) : (
-          <span />
-        )}
+        <Link to="/" className={atHome ? `${slot} text-fg` : slot} aria-current={atHome ? "page" : undefined}>
+          <Home className="size-5" strokeWidth={atHome ? 2.2 : 1.8} />
+          Home
+        </Link>
         <div className="flex items-center justify-center">
           <HelpButton page={page} />
         </div>

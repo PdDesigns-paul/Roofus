@@ -1,19 +1,19 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { helpPageFor, showBackHome } from "./app-chrome.ts";
+import { helpPageFor, showBack } from "./app-chrome.ts";
 
-describe("showBackHome", () => {
-  it("hides Back and Home on the porch and the three tabs", () => {
-    assert.equal(showBackHome("/"), false);
-    assert.equal(showBackHome("/today"), false);
-    assert.equal(showBackHome("/streets"), false);
-    assert.equal(showBackHome("/coach/inspect"), false);
+describe("showBack", () => {
+  it("hides Back on the porch and the three tabs", () => {
+    assert.equal(showBack("/"), false);
+    assert.equal(showBack("/today"), false);
+    assert.equal(showBack("/streets"), false);
+    assert.equal(showBack("/coach/inspect"), false);
   });
 
-  it("shows them on nested pages", () => {
-    assert.equal(showBackHome("/settings"), true);
-    assert.equal(showBackHome("/coach/cards"), true);
-    assert.equal(showBackHome("/coach/reference"), true);
+  it("shows Back on nested pages", () => {
+    assert.equal(showBack("/settings"), true);
+    assert.equal(showBack("/coach/cards"), true);
+    assert.equal(showBack("/coach/reference"), true);
   });
 });
 
