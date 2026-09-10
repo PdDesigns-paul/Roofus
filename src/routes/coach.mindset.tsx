@@ -4,7 +4,7 @@ import { AppHeader } from "@/components/app-header";
 import { whenCoachReady, useCoach } from "@/lib/coach-store";
 import { useDayBook } from "@/lib/day-book";
 import { abortTalk, sendRoofus } from "@/lib/roofus-talk";
-import { COMPASS, WALKS, walkPrompt, type WalkId } from "@/lib/survive";
+import { COMPASS, WALKS, walkKickoff, type WalkId } from "@/lib/survive";
 import {
   demonFilled,
   paceFilled,
@@ -91,19 +91,19 @@ function WalkSheet({ id }: { id: WalkId }) {
 
   function walk() {
     setErr(null);
+    const sheet = WALKS.find((w) => w.id === id);
     whenCoachReady(() => {
       abortTalk();
-      useCoach.getState().startNew();
+      useCoach.getState().startNew({
+        hat: "mindset",
+        origin: "mindset",
+        walkId: id,
+        title: sheet?.title ?? "Mindset",
+      });
       useCoach.getState().openSheet();
       void (async () => {
         try {
-          await sendRoofus(
-            walkPrompt(id, useSurvive.getState(), {
-              knock: useDayBook.getState().profile.knockWindow,
-              paper: useDayBook.getState().profile.paperWindow,
-              stop: useDayBook.getState().profile.hardStop,
-            }),
-          );
+          await sendRoofus(walkKickoff(id), { kickoff: true });
         } catch (e) {
           setErr(e instanceof Error ? e.message : "Roofus missed that.");
         }

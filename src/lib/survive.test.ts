@@ -1,7 +1,7 @@
 import "./test-setup.ts";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { walkPrompt } from "./survive.ts";
+import { applyWalkAnswer, walkKickoff } from "./survive.ts";
 import { demonFilled, whyFilled, type SurviveState } from "./survive-store.ts";
 
 const blank: SurviveState = {
@@ -31,11 +31,35 @@ describe("whyFilled / demonFilled", () => {
   });
 });
 
-describe("walkPrompt", () => {
-  it("starts at the first blank and stays off the porch", () => {
-    const p = walkPrompt("why", blank, { knock: "after work", paper: "", stop: "dark" });
-    assert.match(p, /first blank/);
-    assert.match(p, /Do not use any of this at a door/);
-    assert.match(p, /\(blank\)/);
+describe("walkKickoff", () => {
+  it("stays short and off the porch", () => {
+    const p = walkKickoff("why");
+    assert.match(p, /Walk me through Why/);
+    assert.doesNotMatch(p, /I have earned/);
+    assert.match(p, /Not a door/);
+  });
+});
+
+describe("applyWalkAnswer", () => {
+  const hours = { knock: "", paper: "", stop: "" };
+
+  it("fills Why in order", () => {
+    const a = applyWalkAnswer("why", "80k", blank, hours);
+    assert.deepEqual(a, { survive: { earned: "80k" } });
+    const b = applyWalkAnswer("why", "Dec 2026", { ...blank, earned: "80k" }, hours);
+    assert.deepEqual(b, { survive: { byDate: "Dec 2026" } });
+  });
+  it("skips filled Pace hours and takes the off-block", () => {
+    const p = applyWalkAnswer("pace", "Sunday", blank, { knock: "3-7", paper: "morning", stop: "dark" });
+    assert.deepEqual(p, { survive: { offBlock: "Sunday" } });
+  });
+  it("is done when the sheet is full", () => {
+    assert.equal(
+      applyWalkAnswer("demon", "more", { ...blank, demon: "truck", origin: "dad" }, hours),
+      null,
+    );
+  });
+  it("ignores blank taps", () => {
+    assert.equal(applyWalkAnswer("why", "  ", blank, hours), null);
   });
 });

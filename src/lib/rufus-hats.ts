@@ -1,5 +1,5 @@
 /** Hats stay pinned until they change. Inspect hat is talk. Inspect page is the camera. */
-export type RufusHatId = "door" | "inspect" | "pushback" | "set" | "roleplay" | "score";
+export type RufusHatId = "door" | "inspect" | "pushback" | "set" | "roleplay" | "mindset";
 
 export type RufusHat = {
   id: RufusHatId;
@@ -70,28 +70,44 @@ Storm talk (Script A) only if a real logged storm hit that street. Do not invent
     id: "roleplay",
     label: "Roleplay",
     hint: "You be them",
-    use: "Tell him who to be, then knock. Hold the mic and say it out loud — or type it. He stays the homeowner. Short. Real. No coaching. Say “score me” when you want the grade. Hear it plays his line so you can steal the wording. Practice in the truck. Do not record a customer.",
-    starters: [
-      "Be a polite busy owner with a 2004 roof. I knock.",
-      "Be skeptical. You already had three roofers this week.",
-      "Be a spouse who is not the decision maker.",
-    ],
-    brief: `Hat: ROLEPLAY. You are the homeowner (or spouse) until he types “score me” or “break.” Stay in character. Short answers, like a real person at the door. He may knock out loud into the mic. Do not coach while in character. After “score me”: drop character, grade the knock, give one better sentence he can say out loud, then the next physical step. Never ask him to record a customer.`,
+    use: "Pick who they are, then knock. Hold the mic or type it. He stays the homeowner. Short. Real. No coaching until Score me. Hear it plays his line so you can steal the wording. Practice in the truck. Do not record a customer.",
+    starters: [],
+    brief: `Hat: ROLEPLAY. You are the homeowner (or spouse) until he types “score me” or “break,” or taps Score me. Stay in character. Short answers, like a real person at the door. He may knock out loud into the mic. Do not coach while in character. After “score me”: drop character, grade keep / cut / say instead (truth, enrollment, no invented storm, no WHY, next physical step, name even on a no). One better sentence he can say out loud, then the next physical step. Then wait — he may knock again as the same person. Never ask him to record a customer.`,
   },
   {
-    id: "score",
-    label: "Score",
-    hint: "Grade it",
-    use: "Paste what you said, or a knock you already ran. He grades keep / cut / say instead. Use after Roleplay or after a real door. Don’t use this to draft a line — that’s Door or Pushback.",
-    starters: [
-      "Score this knock: I said we were in the neighborhood doing roofs.",
-      "Score this close: I asked if they wanted to move forward today.",
-      "I used WHY in the kitchen. How bad?",
-    ],
-    brief: `Hat: SCORE. Grade what he just did. Be kind and exact. Marks: truth, enrollment (small yeses), no invented storm, no WHY, next physical step, name even on a no. Letter grade plus three bullets: keep, cut, say instead. Then one better sentence.`,
+    id: "mindset",
+    label: "Mindset",
+    hint: "Truck only",
+    use: "Why, the demon, pace, talent stack. One question at a time. Private. Never a porch line. Coach me on the Mindset page starts this hat.",
+    starters: [],
+    brief: `Hat: MINDSET. Truck only. Never a porch line. Never quote a book. Never put the demon, the why, or a drill on a door. One question at a time. Wait for the answer. If a worksheet line is already filled in the Mindset appendix, read it back once and skip it. After they answer, it is already on the Mindset page — do not tell them to go type it. Why: number as if earned, by date, why three times. Demon: one word, then where it started. Pace: hours they set, one real off-block, when the phone goes down. Stack: one skill this month, one daily drill. Do not dump the whole worksheet.`,
   },
 ];
 
+export const ROLEPLAY_WHO = [
+  { id: "busy", label: "Polite, busy", prompt: "Be a polite busy owner" },
+  { id: "skeptic", label: "Three roofers already", prompt: "Be skeptical. You already had three roofers this week" },
+  { id: "spouse", label: "Not the decision maker", prompt: "Be a spouse who is not the decision maker" },
+] as const;
+
+export type RoleplayWhoId = (typeof ROLEPLAY_WHO)[number]["id"];
+
+export function roleplayKnockLine(who: RoleplayWhoId, year: string): string {
+  const w = ROLEPLAY_WHO.find((x) => x.id === who) ?? ROLEPLAY_WHO[0];
+  const y = year.trim();
+  return y ? `${w.prompt} with a ${y} roof. I knock.` : `${w.prompt}. I knock.`;
+}
+
+/** Old Score hat is Roleplay now. */
+export function normalizeHat(id: string | null | undefined): RufusHatId {
+  if (id === "score") return "roleplay";
+  if (id === "door" || id === "inspect" || id === "pushback" || id === "set" || id === "roleplay" || id === "mindset") {
+    return id;
+  }
+  return "door";
+}
+
 export function hatById(id: string | null | undefined): RufusHat {
-  return RUFUS_HATS.find((h) => h.id === id) ?? RUFUS_HATS[0];
+  const want = normalizeHat(id);
+  return RUFUS_HATS.find((h) => h.id === want) ?? RUFUS_HATS[0];
 }

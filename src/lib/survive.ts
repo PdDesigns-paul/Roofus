@@ -47,37 +47,50 @@ export const WALKS: {
   },
 ];
 
-export function walkPrompt(id: WalkId, s: SurviveState, hours: { knock: string; paper: string; stop: string }) {
-  const common =
-    "Coach the Mindset page. One question at a time. Wait for my answer. Do not quote a book. Do not use any of this at a door. If I already filled a line, read it back once and go to the next blank.";
+/** Short kickoff for the API. Not shown as a homework dump in chat. */
+export function walkKickoff(id: WalkId): string {
+  if (id === "why") return "Walk me through Why. One question. First blank. Private. Not a door.";
+  if (id === "demon") return "Walk me through naming the demon. One question. Private. Not a door.";
+  if (id === "pace") return "Walk me through Pace. One question. First blank. Not a door.";
+  return "Walk me through talent stack. One question. First blank. Not a door.";
+}
+
+export type WalkPatch = {
+  survive?: Partial<Omit<SurviveState, "patch">>;
+  profile?: { knockWindow?: string; paperWindow?: string; hardStop?: string };
+};
+
+/** Next blank on this walk gets their chat answer. Null if the sheet is full. */
+export function applyWalkAnswer(
+  id: WalkId,
+  text: string,
+  s: SurviveState,
+  hours: { knock: string; paper: string; stop: string },
+): WalkPatch | null {
+  const value = text.trim();
+  if (!value) return null;
   if (id === "why") {
-    return `${common}
-Worksheet 1 — Why.
-I have earned: ${s.earned || "(blank)"}.
-By: ${s.byDate || "(blank)"}.
-Why that number: ${s.why1 || "(blank)"}.
-Why that matters: ${s.why2 || "(blank)"}.
-Why I care that much: ${s.why3 || "(blank)"}.
-Start at the first blank. Keep it short. Then tell me to type it on the Mindset page so it sticks.`;
+    if (!s.earned.trim()) return { survive: { earned: value } };
+    if (!s.byDate.trim()) return { survive: { byDate: value } };
+    if (!s.why1.trim()) return { survive: { why1: value } };
+    if (!s.why2.trim()) return { survive: { why2: value } };
+    if (!s.why3.trim()) return { survive: { why3: value } };
+    return null;
   }
   if (id === "demon") {
-    return `${common}
-Worksheet 2 — Name the demon. Private.
-I named it: ${s.demon || "(blank)"}.
-Where it started: ${s.origin || "(blank)"}.
-Start at the first blank. One word is enough for the name. Then how it shows up at a door (truck, scroll, “just one more”). Do not diagnose me.`;
+    if (!s.demon.trim()) return { survive: { demon: value } };
+    if (!s.origin.trim()) return { survive: { origin: value } };
+    return null;
   }
   if (id === "pace") {
-    return `${common}
-Worksheet 4 — Pace.
-Knock hours in Presets: ${hours.knock || "(blank)"}. Paper: ${hours.paper || "(blank)"}. Hard stop: ${hours.stop || "(blank)"}.
-Off-block: ${s.offBlock || "(blank)"}.
-Phone down: ${s.phoneDown || "(blank)"}.
-Help me set an all-day pace, then drop one gear. One real off-block. When the phone goes down.`;
+    if (!hours.knock.trim()) return { profile: { knockWindow: value } };
+    if (!hours.paper.trim()) return { profile: { paperWindow: value } };
+    if (!hours.stop.trim()) return { profile: { hardStop: value } };
+    if (!s.offBlock.trim()) return { survive: { offBlock: value } };
+    if (!s.phoneDown.trim()) return { survive: { phoneDown: value } };
+    return null;
   }
-  return `${common}
-Worksheet 5 — Talent stack for ${s.stackMonth || "this month"}.
-Skill: ${s.skill || "(blank)"}.
-Drill: ${s.drill || "(blank)"}.
-Pick one skill to stack this month (questions, writing, time, close). One drill I can do every day. Fundamentals, not a new job.`;
+  if (!s.skill.trim()) return { survive: { skill: value } };
+  if (!s.drill.trim()) return { survive: { drill: value } };
+  return null;
 }

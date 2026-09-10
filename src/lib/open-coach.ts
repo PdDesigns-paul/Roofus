@@ -2,7 +2,7 @@ import { whenCoachReady, useCoach } from "@/lib/coach-store";
 
 export function openCoach(mode: "resume" | "new" = "resume") {
   whenCoachReady(() => {
-    if (mode === "new") useCoach.getState().startNew();
+    if (mode === "new") useCoach.getState().startNew({ hat: "door" });
     else useCoach.getState().resume();
     useCoach.getState().openSheet();
   });

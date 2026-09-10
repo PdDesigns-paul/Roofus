@@ -255,7 +255,7 @@ Bottom bar: **Today · Streets · Inspect**. Mindset, Reference, Presets sit beh
 | **Streets** | Age-band **zips**, grouped by county. Working pinned. Maps. One weather sentence on the Working zip if a kept storm matches. **Use today** copies that sentence to Today. Last 48 hours and season log are **not** on this page. |
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. |
-| **Roofus** | Hats: Door, Inspect, Pushback, Set, Roleplay, Score. Door’s first starter is the million-dollar script (B). Hold-to-talk in Roleplay. Hear it reads his line. |
+| **Roofus** | Hats: Door, Inspect, Pushback, Set, Roleplay, Mindset. New hat = new chat. Door’s first starter is the million-dollar script (B). Roleplay: scene, then knock. Score me is a button, not a hat. Hold-to-talk in Roleplay. Hear it reads his line. Mindset hat is truck only. |
 | **Mindset** | Why, demon, Pace, Talent stack. Private. |
 | **Reference** | InterNACHI Mastering Roof Inspections cards. Name the title. Do not paste article bodies. |
 | **Presets** | Name, counties, state, hours, company, warranty, optional Notion, Memory FAQs. |

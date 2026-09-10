@@ -13,6 +13,7 @@ function ago(at: number) {
 function originLabel(origin: ThreadOrigin) {
   if (origin === "help") return "Help";
   if (origin === "inspect") return "Inspect";
+  if (origin === "mindset") return "Mindset";
   return "Porch";
 }
 
@@ -59,7 +60,7 @@ export function ChatHistory() {
               >
                 <span className="block truncate text-sm text-fg">{t.title}</span>
                 <span className="mt-0.5 block text-xs text-faint">
-                  {originLabel(t.origin)} · {ago(t.updatedAt)}
+            {originLabel(t.origin)} · {ago(t.updatedAt)}
                   {t.id === activeId ? " · open" : ""}
                 </span>
               </button>

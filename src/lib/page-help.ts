@@ -34,7 +34,7 @@ export const PAGE_HELP = {
     title: "Mindset",
     body: [
       "Four truths at the top. Then Why, Name the demon, Pace, Talent stack.",
-      "After Action Report is on Today. Coach me through this asks one question at a time. Private. Not a pitch.",
+      "After Action Report is on Today. Coach me through this pins the Mindset hat and asks one question. Answers land on this page. Private. Not a pitch.",
     ],
   },
   reference: {
@@ -56,9 +56,9 @@ export const PAGE_HELP = {
   coach: {
     title: "Roofus",
     body: [
-      "Pin a hat. Tell him what just happened. Door, Inspect, Pushback, Set, Roleplay, Score. Door’s first starter is the million-dollar script. The dog in the corner is him.",
-      "Roleplay: hold the mic and knock. Hear it plays his line. Practice only — do not record a homeowner.",
-      "Inspect hat is on-roof talk. Camera is the Inspect page. X closes him. The day is still underneath.",
+      "Pin a hat. That starts a fresh chat. Door, Inspect, Pushback, Set, Roleplay, Mindset. Door’s first starter is the million-dollar script. The dog in the corner is him.",
+      "Roleplay: pick who they are, then knock. Hold the mic. Score me grades it. Hear it plays his line. Practice only — do not record a homeowner.",
+      "Mindset is truck only. Inspect hat is on-roof talk. Camera is the Inspect page. X closes him. The day is still underneath.",
     ],
   },
 } as const;

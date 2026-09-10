@@ -10,6 +10,7 @@ function reset() {
     activeId: null,
     messages: [],
     hat: "door",
+    walkId: null,
     houseId: null,
     streaming: "",
     busy: false,
@@ -27,6 +28,7 @@ describe("ensureInspect", () => {
       title: "Inspect",
       origin: "inspect" as const,
       hat: "door" as const,
+      walkId: null,
       houseId: null,
       messages: [
         { role: "user" as const, content: "old hail question" },
@@ -55,5 +57,32 @@ describe("ensureInspect", () => {
     const first = useCoach.getState().activeId;
     useCoach.getState().ensureInspect();
     assert.equal(useCoach.getState().activeId, first);
+  });
+});
+
+describe("switchHat", () => {
+  beforeEach(reset);
+
+  it("retags an empty thread", () => {
+    useCoach.getState().startNew({ hat: "door" });
+    const first = useCoach.getState().activeId;
+    useCoach.getState().switchHat("roleplay");
+    const s = useCoach.getState();
+    assert.equal(s.activeId, first);
+    assert.equal(s.hat, "roleplay");
+    assert.deepEqual(s.messages, []);
+  });
+
+  it("starts a new chat when the current one already has lines", () => {
+    useCoach.getState().startNew({ hat: "door" });
+    const doorId = useCoach.getState().activeId;
+    useCoach.getState().pushUser("Give me the million-dollar door script.");
+    useCoach.getState().switchHat("roleplay");
+    const s = useCoach.getState();
+    assert.notEqual(s.activeId, doorId);
+    assert.equal(s.hat, "roleplay");
+    assert.deepEqual(s.messages, []);
+    assert.equal(s.threads[doorId ?? ""]?.messages.length, 1);
+    assert.equal(s.threads[doorId ?? ""]?.hat, "door");
   });
 });
