@@ -1,153 +1,153 @@
-# Prep: neighborhood loops (between zip and street)
+# Prep: neighborhood loops (Hit_List grain)
 
-Design only. Do not merge until the feature is built. Do not implement in a QoL chat.
+Design only. Do not merge until the feature is built.
 
-Working today is a **park-once loop**, not a zip. Doctrine already says clustered streets inside a zip. The zip card threw that loop away.
+Township is still too big. The Grok Backups county sheets are the grain: **one row = one park-once cluster**, not a town and not a zip.
 
-## Verdict
+## What the sheets actually are
 
-There is **no national neighborhood file** that states publish. Subdivisions (Oak Hills, the plat name) live in county recorders and paid vendors. Do not buy ATTOM. Do not use Zillow 2017 (CC-BY-NC, ~650 cities, misses rural counties). Do not scrape OSM `place=neighbourhood` as the base — coverage dies outside big cities.
+Drive folder `Grok Backups`. Files `Roof D2D – [County] PA – 2001-2009 builds.xlsx`. Schema: `TEMPLATE_SHEET_SCHEMA.md`. Cache: `NEIGHBORHOODS.md`. Archive rule (that folder’s AGENTS.md): *a neighborhood is a subdivision or tight street cluster, not a township.*
 
-What *is* public and already on the same TIGER stack we use:
+Hit_List columns we are recreating on the phone:
 
-| Layer | What it is | TIGER | Use |
-| --- | --- | --- | --- |
-| Block group | 600–3,000 people. Has year-built. No human name. | `Tracts_Blocks/MapServer/1` (already) | Size + age. Cluster these. |
-| County subdivision | PA: township / borough. Legal. People say this. | `Places_CouSub_ConCity_SubMCD/MapServer/1` | Fence + name when it is an MCD. |
-| CDP / place | Linglestown, Progress. Informal town inside a township. | same service, layer 5 (CDP), layer 4 (city) | Name when the centroid is inside one. |
-| ZCTA | Zip. Too big to walk. | already | Browse parent + storm match. |
-| Road names | Local streets in a bbox | `Transportation/MapServer/8` (already) | The loop itself. |
+| Sheet | Phone |
+| --- | --- |
+| Township_Municipality | Group / fence. Not the card. |
+| Neighborhood_Subdivision | **The card. Working today.** |
+| Key_Streets | Streets on the card (4–12). Blank if unknown — do not invent. |
+| Approx_Year_Built / Age_Today | medianYear we already have |
+| Density / Confidence | optional later, not v1 |
+| Owner_Pay_or_HOA | Skip HOA-roof. Owner-pay first. |
+| Google_Maps_Link | existing Maps on the card |
+| Status / Result | already on the loop |
+| Last_Storm | kept storms, zip/county match — not a fake neighbor |
+| Skip_List tab | status skip + doctrine skip list |
 
-We already fetch age-band block groups, their centroids, and the streets in each bbox — then **rollup every BG in a zip into one card** (`rollupZips` in `src/lib/streets-build.ts`). The neighborhood is that BG cluster **before** the rollup. Stop throwing it away. Label it from CouSub / CDP.
+Counted from the xlsx (not copied into the app):
 
-Live checks (2026 TIGERweb, point-in-polygon):
+| County | Hit_List rows | Named subdivisions | Township-fallback | Key_Streets filled |
+| --- | --- | --- | --- | --- |
+| Cumberland | 22 | 14 (Hampden Summit, Whelan Crossing, Ginger Fields, …) | 8 | 14 |
+| Dauphin | 16 | 11 (Autumn Ridge, Skyline View pockets, …) | 5 | 8 |
+| Perry | 12 | 4 | 8 | 1 |
 
-- 17050 (USPS Mechanicsburg) centroid → **Hampden township**
-- 17112 (USPS Harrisburg) → **Lower Paxton township**, and the same point is **Linglestown CDP**
-- 17068 (USPS New Bloomfield) → **Bloomfield borough**
-- Perry County CouSub list is real townships and boroughs (Wheatfield, Centre, Duncannon borough, …)
+Hampden Township is **four** Working cards on that sheet, not one. Perry often has no named sub — township-fallback is honest when density is Low.
 
-That is the name a canvasser actually uses. "Mechanicsburg · 17050" is the post office.
+Cap in the schema: **25–40 clusters per county**. That is the cardinality, not 6 zip cards and not 200 block groups.
 
-## What not to use
+## Do not paste the archive into Roofus
 
-- **Named developer subdivisions.** Doctrine and `AGENTS.project.md` already ban copying those from the Drive archive. No public API. That is a listing lookup.
-- **One card per block group.** Doctrine already bans it. Unnamed, too many, rural BGs are huge polygons.
-- **Census tract.** Unnamed (`Tract 25025010104`). ~4,000 people. Still a zip-sized walk in a suburb.
-- **Zillow neighborhoods (2017).** Non-commercial license. Big-city only.
-- **USPS carrier routes.** The real mail loop. Licensed. Not for this app.
-- **CCD names in the South/West.** "Austin CCD" is not a neighborhood. CouSub is only a *name* in MCD states.
+`AGENTS.project.md` still wins for the app:
 
-MCD states (township/town/borough is a real place): AR, CT, IL, IN, IA, KS, LA, ME, MD, MA, MI, MN, MS, MO, NE, NH, NJ, NY, NC, ND, OH, PA, RI, SD, TN, VT, VA, WV, WI.
+- Generic canvasser. No Alpha phones, PAHIC, Paul/Ari split, live storm rows.
+- Do not copy the named PA subdivision list into the repo as data.
+- Recreate the **structure**. Names on a live phone come from Census streets + optional rename, not from the Drive xlsx.
 
-CCD states (ignore CouSub **names**, still may use the polygon as a fence): AL, AZ, CA, CO, DE, FL, GA, HI, ID, KY, MT, NV, NM, OK, OR, SC, TX, UT, WA, WY.
+The sheets are the spec. They are not the database.
 
-Ship `isMcdState(fips)` next to `stateFips`. Do not special-case Pennsylvania in UI copy.
-
-## Product map
-
-Keep zip. Insert neighborhood as the **Working / Today** unit.
+## Grain (corrected)
 
 ```
-County (Presets)
-  Zip · USPS town          browse, storm match, Maps fallback
-    Neighborhood loop      Working today. Park once.
-      Streets              4–12 local roads in the age-band pocket
+County                         Presets
+  Zip · USPS town              storms, mail, Maps fallback
+    Township / borough         fence + group header
+      Cluster (the card)       Working today. Park once.
+        Key streets            3–8 local roads
 ```
 
-**Headline:** `{neighborhood} · {zip}`
+**Working today = Hit_List row**, not Hampden, not 17050.
 
-- CDP wins when the centroid is in one: `Linglestown · 17112`
-- Else borough/city CouSub, prefer the Zippopotam town if it is the same place: `New Bloomfield · 17068` not `Bloomfield · 17068`
-- Else township in MCD states: `Hampden · 17050` (not Mechanicsburg)
-- Else two street names: `Colonial Rd / Union Deposit · 17112`
-- Two loops in the same name: append the first street.
+Headline: `{cluster} · {zip}`
 
-**Working today** = one neighborhood id. Today’s picker lists neighborhood headlines, still grouped by county. Search matches neighborhood, township, CDP, town, zip, street, county.
+How we *name* a cluster without the Drive list:
 
-**Inspect / storms / Script A** stay zip-or-county. Hail is not a subdivision event.
+1. If a small CDP fully covers the pocket (Skyline View, not “Lower Paxton”): use the CDP.
+2. Else the two or three interior street names we already pull from TIGER: `Grandon Way / Creekview`.
+3. They can rename the card (“call this Hampden Summit”) — Roofus writes Presets-level fields; same idea.
+4. Never invent a developer name we did not measure.
 
-**Tomorrow order** becomes: last-48h High on a **neighborhood** they keep → Working neighborhood → next fresh neighborhood in that zip → next zip. Do not ask a newbie where to go.
+Township stays on the subline: `Hampden Twp · 17050`. Search matches township, cluster, street, zip, county.
 
-## How to build a loop (same APIs, different rollup)
+Rural: if the only age-band pocket in Wheatfield is one thin BG, one card named `Wheatfield · {zip}` is the sheet’s own fallback. Do not glue adjacent townships.
 
-Per county, we already:
+## Why Census town / CDP is not enough
 
-1. ACS B25035/B25001 on block groups (`Census Reporter` `150|05000US…`)
-2. Keep age-band BGs (`pickBands`)
-3. TIGER centroids + bbox, roads in bbox
-4. Nearest ZCTA
+Live TIGER (still true, still too big):
 
-New, instead of `rollupZips` flattening all BGs in a zip:
+- 17050 centroid → Hampden township
+- 17112 → Lower Paxton township + Linglestown CDP
+- 17068 → Bloomfield borough
 
-1. Point-in-polygon each BG centroid on TIGER CouSub layer 1 (always) and CDP layer 5 (always). Incorporated place layer 4 if CDP missed.
-2. Fence: do not merge BGs across CouSub (Hampden vs Silver Spring).
-3. Cluster remaining BGs whose centroids are within ~1 km **and** the combined bbox is still a park-once walk. Rural: if a single BG bbox is already huge and homes are thin, emit one loop and let density decide — do not glue Wheatfield to Centre because both are "close" on a county map.
-4. Target **40–200 homes** or **4–12 streets**. Split oversized township clusters (Hampden) by greedy packing on lat/lon. Join undersized BGs only inside the same CouSub.
-5. Lat/lon of the loop = centroid of member BGs, not the zip centroid — Maps should drop them in the pocket.
-6. Cap still exists (`fairCountySlice`). Neighborhoods are 2–4× zip count. Retune: ~10 per county, cap ~80, rural counties still get a row.
+Linglestown CDP is closer, still bigger than Autumn Ridge (one phase, Lentz Dr). The sheet splits Lower Paxton into Autumn Ridge / Paxtonia interior / Linglestown east / NW pockets. That is the walk.
 
-Census Reporter can also ACS-age a whole CouSub (`060|05000US42041` works — Hampden township is `06000US4204132296`). That is a **name check**, not the card. Hampden is too big to knock in a day. Age stays on the block group.
+## How to build (same APIs, tighter rollup)
 
-## Phone UI
+We already have age-band block groups + roads in each bbox, then `rollupZips` flattens them. Stop at **street-loop** size:
 
-- Streets: county groups stay. Cards are neighborhood headlines. Zip on the subline with USPS town. Streets list is the tight loop, not every age-band road in the zip.
-- Working pinned. **Use today** writes the neighborhood headline into Today.
-- Empty CouSub still shows the ghost county row.
-- Rebuild copy: "Loops are a park-once pocket inside the zip. Working from an old zip card does not carry over — pick again."
+1. Point-in-polygon CouSub (fence: never merge Hampden with Silver Spring).
+2. Optional CDP label if the whole cluster sits inside one small CDP.
+3. Cluster BGs whose centroids are within ~0.6–0.8 km **and** combined homes **40–120** **and** streets **3–8**.
+4. Split anything over ~150 homes or a bbox you cannot walk. Hampden must come out as several cards.
+5. Loop lat/lon = member BG centroid (park here), not the zip centroid.
+6. `fairCountySlice`: ~12–20 per county, cap ~80 across the market, Perry still visible.
+7. Density Low + huge BG → one township-fallback card, do not invent streets.
 
-Do not add a fourth tab. Do not add a map in this slice (that is the storm-map PR). Zip card Maps link stays; point it at the loop centroid.
+Do not ACS-age the whole township as the card. Hampden is a morning, not a loop.
 
 ## Notion
 
-Streets table is one row per **zip** today (`Name` = town · zip, `Key` = `{county}-z{zip}`, extras `Town` + `Zip`). Days already have `Neighborhood` (the Today cluster string).
-
-Rebuild as neighborhood rows. Same table, new keys, extra columns via the existing PATCH extras trick:
+Same Streets table. New row per cluster. PATCH extras:
 
 ```
-Name     title     Linglestown · 17112
-Key      rich      {countyGeoid}-z{zip}-n{cousubOrCdp}[-k{i}]
-Zip      rich      17112
-Town     rich      Harrisburg          (USPS, unchanged)
-Place    rich      Linglestown         (CDP or township basename)
-County   rich
-…
-Streets  rich      the tight loop only
+Name     title   Grandon Way / Creekview · 17050
+Key      rich    {county}-z{zip}-t{cousub}-k{i}
+Zip      rich
+Town     rich    USPS city
+Place    rich    cluster label (streets or CDP or renamed)
+Township rich    Hampden
+Streets  rich    the tight list only
+Status / Result / Year / Homes / Lat / Lon   already exist
 ```
 
-`prepareNotion` already PATCHes `STREET_EXTRAS`. Add `Place`. Do not create a second database — chunk budget is already 8 pages / 340ms.
+Days.Neighborhood already holds the Today string. Write the cluster headline there.
 
-**Migration trap:** `mergeStatus` also matches on `{county}:{zip}`. After rebuild, every new Linglestown / Paxtonia loop in 17112 would inherit the old zip’s Working flag. Match **id only** (and maybe zip+place). Old zip ids (`…-z17112`) will not collide if new ids include `-n…`. Restore from Notion: drop incoming rows whose id has no `-n` once a neighborhood build exists, or they will reappear as giant zip cards.
+**mergeStatus trap:** matching on zip alone paints every Hampden loop Working. Match id only. Old zip ids (`…-z17050`) drop once a cluster build exists.
 
-Days.Neighborhood strings like `New Bloomfield · 17068` must still match via `matchLoopCluster` (zip in the headline). Newer strings add the place.
+Do not create a second Notion database. Do not import the Alpha xlsx.
 
-## Tests to ship with the slice
+## Phone UI
 
-Pure, no live Census:
+- Streets grouped by county, then by township (accordion). Cards are clusters.
+- Working pinned. Use today copies the cluster headline.
+- Search: township, cluster, street, zip, town.
+- Rebuild note: “Each card is a park-once loop. Old zip Working does not carry over.”
+- No fourth tab. No map in this slice.
 
-- Naming: CDP beats township; township beats USPS city; borough + similar town uses the town; CCD name is ignored.
-- Cluster fence: two BGs in different CouSubs never merge.
-- Split: 400 homes in one township → more than one loop.
-- `mergeStatus`: old zip Working does not paint every child loop Working.
-- `fairCountySlice`: Perry still visible.
-- Headline parse: `Linglestown · 17112` still yields zip 17112.
+## Tests (pure, no Census, no Drive)
 
-## Chrome / doctrine (same change as the buttons)
+- CouSub fence: different townships never merge.
+- Split: 400 homes in one township → several loops, none over the homes cap.
+- Naming: CDP beats street names; street names beat township; township used only as fallback when one thin cluster remains.
+- CCD state: CouSub name ignored, street names used.
+- mergeStatus: old zip Working does not stamp child loops.
+- Headline still parses a zip.
+- Sample day: generic clusters (not Hampden Summit). Perry still has a row.
 
-When this ships, one slice updates:
+## Doctrine when this ships (same change as the buttons)
 
-- `DOCTRINE.md` — "Clustered streets inside a zip" becomes the card. Targeting years stay zip-level ("the house in front of them is the year they give you"). Tomorrow names a neighborhood.
-- `AGENTS.project.md` — Streets = neighborhood cards inside a zip, grouped by county. Still not named subdivisions. Still not one card per block group.
-- `coach-system.ts`, `page-help.ts`, `rufus-modes.ts`
+- Clustered streets inside a zip **is the card**.
+- Still not a developer-subdivision dump. Still not one card per block group.
+- Tomorrow: High on a kept cluster → Working cluster → next fresh cluster in that township → next township.
+- Targeting years stay “the house in front of them.”
 
-Auth stays OFF. No new API keys. No second Vercel project.
+Auth OFF. No new API keys. No second Vercel project. No Paul/Ari books in the UI.
 
-## Suggested build order (later chats)
+## Build order
 
-1. Types + naming helpers + cluster fence tests (no network).
-2. `streets-build.ts`: skip `rollupZips`; CouSub/CDP point queries; emit neighborhood loops. Rebuild button on Streets.
-3. Today picker + search + Working/Use today.
-4. Notion extras + merge trap + sample day (Perry borough + a township).
-5. Doctrine/help/coach copy.
+1. Types (`township`, `place`) + naming + cluster-fence tests.
+2. `streets-build.ts`: skip zip rollup; emit 40–120 home loops; CouSub fence.
+3. Streets UI grouped by township; Today picker; search.
+4. Notion extras + merge trap + generic sample day.
+5. Doctrine / help / coach copy.
 
-Do not do 2 without 1. Do not ship a township-sized Hampden as one Working card.
+Do not ship a township-sized Hampden as Working.
