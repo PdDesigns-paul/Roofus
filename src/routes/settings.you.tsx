@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { AppHeader } from "@/components/app-header";
+import { Markdown } from "@/components/markdown";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { looksLikeWebsite, normalizeWebsiteUrl, siteHost } from "@/lib/company-site";
@@ -119,7 +120,11 @@ function WebsiteField() {
           {pages.length} page{pages.length === 1 ? "" : "s"} in Reference
         </Link>
       ) : null}
-      {brief ? <p className="mt-2 text-sm leading-relaxed text-muted">{brief}</p> : null}
+      {brief ? (
+        <div className="mt-2 text-sm leading-relaxed text-muted">
+          <Markdown text={brief} />
+        </div>
+      ) : null}
     </div>
   );
 }

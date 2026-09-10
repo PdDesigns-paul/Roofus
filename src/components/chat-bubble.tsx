@@ -1,4 +1,4 @@
-import { Markdown } from "@/lib/markdown";
+import { Markdown } from "@/components/markdown";
 
 export function ChatBubble({
   role,

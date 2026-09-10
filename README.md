@@ -44,7 +44,7 @@ Everything lives in **this browser** (`localStorage` via Zustand):
 - `roofus-weather-v1` — kept / tossed storms and the 48h pulse
 - `roofus-survive-v1` — mindset worksheets
 - `roofus-notion-v1` — optional integration secret, table ids, FAQs
-- `roofus-settings` — theme, company, warranty
+- `roofus-settings` — theme, company, warranty, website, crawled pages
 - `roofus-onboard-v1` — first-run question-mark tour
 - coach threads in the coach store
 
@@ -105,7 +105,7 @@ src/lib/               stores, ranking, Notion, coach prompt
 public/roofus.png      the dog
 ```
 
-Coach context is assembled in `src/lib/roofus-talk.ts`: today’s log, streets, weather, mindset, Notion memory. The system prompt in `src/lib/coach-system.ts` is the product contract — keep it in sync with [`DOCTRINE.md`](./DOCTRINE.md) and the buttons that actually exist.
+Coach context is assembled in `src/lib/roofus-talk.ts`: today’s log, streets, weather, mindset, Notion memory, company site notes. The system prompt in `src/lib/coach-system.ts` is the product contract — keep it in sync with [`DOCTRINE.md`](./DOCTRINE.md) and the buttons that actually exist.
 
 Backup merge rules live in `src/lib/notion-merge.ts` and are unit-tested. Writes to Notion are chunked in `src/lib/notion-client.ts` so a full copy does not time out.
 
