@@ -27,7 +27,7 @@ GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at 
 
 ## Product (short)
 
-Phone-first PWA. First screen is the porch. Bottom bar: Today · Streets · Inspect. Footer above it: Back · Home · Help · Menu. Home is always there. Back only on Cards, Reference, Presets. Menu: Cards, Reference, Presets. Mindset worksheets live in Presets.
+Phone-first PWA. First screen is the porch. Bottom bar: Today · Inspect · Home. Footer above it: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Menu: Cards, Reference, Presets. Streets and mindset worksheets live in Presets.
 
 Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Inspect hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 

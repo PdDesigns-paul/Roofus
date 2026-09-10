@@ -3,14 +3,14 @@ import assert from "node:assert/strict";
 import { helpPageFor, showBack } from "./app-chrome.ts";
 
 describe("showBack", () => {
-  it("hides Back on the porch and the three tabs", () => {
+  it("hides Back on the three tabs", () => {
     assert.equal(showBack("/"), false);
     assert.equal(showBack("/today"), false);
-    assert.equal(showBack("/streets"), false);
     assert.equal(showBack("/coach/inspect"), false);
   });
 
-  it("shows Back on nested pages", () => {
+  it("shows Back on nested pages, including Streets", () => {
+    assert.equal(showBack("/streets"), true);
     assert.equal(showBack("/settings"), true);
     assert.equal(showBack("/coach/cards"), true);
     assert.equal(showBack("/coach/reference"), true);

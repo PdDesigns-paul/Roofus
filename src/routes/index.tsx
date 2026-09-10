@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarDays, Camera, Map } from "lucide-react";
+import { CalendarDays, Camera } from "lucide-react";
 import { InstallHint } from "@/components/install-hint";
 import { RoofusFace } from "@/components/roofus-mark";
 import { useDayBook } from "@/lib/day-book";
@@ -11,7 +11,6 @@ export const Route = createFileRoute("/")({
 
 const DOORS = [
   { to: "/today", label: "Today", hint: "Four counts. After Action Report.", icon: CalendarDays },
-  { to: "/streets", label: "Streets", hint: "Zips by county. Age first.", icon: Map },
   { to: "/coach/inspect", label: "Inspect", hint: "Camera walk. Then ask.", icon: Camera },
 ] as const;
 
@@ -60,7 +59,7 @@ function LandingPage() {
       </ul>
 
       <p className="mt-4 text-xs leading-relaxed text-faint">
-        Stays on this phone. No login. Backup is optional in Presets.
+        Zips live in Presets. Stays on this phone. No login. Backup is optional.
       </p>
 
       <InstallHint />

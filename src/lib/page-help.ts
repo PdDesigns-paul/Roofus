@@ -2,9 +2,9 @@ export const PAGE_HELP = {
   home: {
     title: "Roofus",
     body: [
-      "This is the porch. Open Today for the four counts. Streets is zips. Inspect is the camera.",
+      "This is the porch. Open Today for the four counts. Inspect is the camera. Zips live in Presets.",
       "Orange button is Roofus. Tap to pick Live, Roleplay, or Mindset — each is a new chat. Hold starts Live. History is the clock in the chat. Menu: Cards, Reference, Presets. Mindset worksheets live in Presets. First open walks the question mark.",
-      "Bottom: Today, Streets, Inspect. Home is always above those. Back shows on Cards, Reference, and Presets. Help and Menu sit next to Home. Put the app on your Home Screen so it opens like anything else on this phone.",
+      "Bottom: Today, Inspect, Home. Back shows on Cards, Reference, Presets, and Streets. Help and Menu sit above the tabs. Put the app on your Home Screen so it opens like anything else on this phone.",
     ],
   },
   today: {
@@ -18,7 +18,7 @@ export const PAGE_HELP = {
   streets: {
     title: "Streets",
     body: [
-      "Build from the counties in Presets. You pick the roof age — default 17–25 years. Tap Change to edit. Cards are zips. Working sits at the top. Tap a county to open the rest. Streets on a card are the age-band pockets — tap the card.",
+      "Build from the counties in Presets — this page is not a tab. You pick the roof age — default 17–25 years. Tap Change to edit. Cards are zips. Working sits at the top. Tap a county to open the rest. Streets on a card are the age-band pockets — tap the card.",
       "A Working zip shows one sentence if a kept storm actually hit it. Use today copies that sentence onto Today. Last 48 hours and the season log are not on this page.",
     ],
   },
@@ -56,6 +56,7 @@ export const PAGE_HELP = {
     title: "Presets",
     body: [
       "First name, counties, state, when you knock, morning work, hard stop. Company name and warranty line. He uses those when he talks product.",
+      "Zips (Streets) opens from this page. Rebuild after you change counties.",
       "Mindset worksheets (Why, demon, Pace, stack) live on this page. The orange fan opens the chat. After Action Report is on Today.",
       "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Connect finds the tables. Restore brings the copy onto this phone. Do not Backup from an empty phone.",
       "FAQs ship with public porch answers already filled. Edit or drop. Your office rules win.",

@@ -111,7 +111,7 @@ export function suggestTomorrow(loops: StreetLoop[]): StreetLoop | null {
 export function streetsForCoach(): string {
   const { loops, note, yearFrom, yearTo, ageMin, ageMax } = useStreets.getState();
   if (!loops.length) {
-    return `# Streets\nNo zip list yet. Send them to Streets and build from their counties (Presets). Their age band is ${ageMin}–${ageMax} years. Age first. Do not invent a zip.`;
+    return `# Streets\nNo zip list yet. Send them to Presets, then Streets, and build from their counties. Their age band is ${ageMin}–${ageMax} years. Age first. Do not invent a zip.`;
   }
   const lines = [
     "# Streets (age-band zips from Census, grouped by county. Storms are NOT why these are here.)",

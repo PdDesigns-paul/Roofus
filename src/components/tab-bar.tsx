@@ -1,12 +1,11 @@
 import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { ArrowLeft, CalendarDays, Camera, Home, Map } from "lucide-react";
+import { ArrowLeft, CalendarDays, Camera, Home } from "lucide-react";
 import { HelpButton } from "@/components/help-button";
 import { MoreMenu } from "@/components/more-menu";
 import { helpPageFor, showBack } from "@/lib/app-chrome";
 
 const TABS = [
   { to: "/today", id: "today", label: "Today", icon: CalendarDays, match: (p: string) => p === "/today" },
-  { to: "/streets", id: "streets", label: "Streets", icon: Map, match: (p: string) => p.startsWith("/streets") },
   {
     to: "/coach/inspect",
     id: "inspect",
@@ -14,6 +13,7 @@ const TABS = [
     icon: Camera,
     match: (p: string) => p.startsWith("/coach/inspect"),
   },
+  { to: "/", id: "home", label: "Home", icon: Home, match: (p: string) => p === "/" },
 ] as const;
 
 const slot =
@@ -24,7 +24,6 @@ export function TabBar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const nested = showBack(path);
   const page = helpPageFor(path);
-  const atHome = path === "/";
 
   return (
     <div
@@ -32,19 +31,13 @@ export function TabBar() {
       data-tour="tabs"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="mx-auto grid max-w-lg grid-cols-4 border-b border-border">
+      <div className={`mx-auto grid max-w-lg border-b border-border ${nested ? "grid-cols-3" : "grid-cols-2"}`}>
         {nested ? (
           <button type="button" className={slot} onClick={() => router.history.back()}>
             <ArrowLeft className="size-5" />
             Back
           </button>
-        ) : (
-          <span />
-        )}
-        <Link to="/" className={atHome ? `${slot} text-fg` : slot} aria-current={atHome ? "page" : undefined}>
-          <Home className="size-5" strokeWidth={atHome ? 2.2 : 1.8} />
-          Home
-        </Link>
+        ) : null}
         <div className="flex items-center justify-center">
           <HelpButton page={page} />
         </div>

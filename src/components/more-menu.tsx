@@ -8,7 +8,7 @@ import { Tip } from "@/components/ui/tooltip";
 const LINKS = [
   { to: "/coach/cards", label: "Cards", hint: "Door, pushback, i35, set, compass." },
   { to: "/coach/reference", label: "Reference", hint: "145 roof articles" },
-  { to: "/settings", label: "Presets", hint: "Counties, hours, warranty, mindset, backup" },
+  { to: "/settings", label: "Presets", hint: "Counties, zips, hours, warranty, mindset, backup" },
 ] as const;
 
 export function MoreMenu() {

@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { AppHeader } from "@/components/app-header";
 import { MindsetWorksheets } from "@/components/mindset-worksheets";
@@ -22,8 +22,9 @@ function SettingsPage() {
   const hash = useRouterState({ select: (st) => st.location.hash });
 
   useEffect(() => {
-    if (hash.replace(/^#/, "") !== "mindset") return;
-    document.getElementById("mindset")?.scrollIntoView({ block: "start" });
+    const id = hash.replace(/^#/, "");
+    if (id !== "mindset" && id !== "zips") return;
+    document.getElementById(id)?.scrollIntoView({ block: "start" });
   }, [hash]);
 
   return (
@@ -31,7 +32,7 @@ function SettingsPage() {
       <AppHeader title="Presets" />
 
       <p className="mt-3 text-sm leading-snug text-muted">
-        Counties, hours, company, warranty. Mindset worksheets. Backup is optional.
+        Counties, hours, company, warranty. Zips. Mindset worksheets. Backup is optional.
       </p>
 
       <button
@@ -103,8 +104,19 @@ function SettingsPage() {
           />
         </div>
         <p className="text-xs leading-snug text-faint">
-          Streets builds zips from these counties. Rebuild Streets if you change them.
+          Streets builds zips from these counties. Rebuild there if you change them.
         </p>
+      </section>
+
+      <section id="zips" className="mt-5">
+        <p className="text-xs font-medium uppercase tracking-wide text-faint">Zips</p>
+        <Link
+          to="/streets"
+          className="mt-2 flex min-h-14 flex-col justify-center border-b border-border py-3"
+        >
+          <span className="text-sm text-fg">Streets</span>
+          <span className="text-xs text-faint">Age-band zip list. Rebuild after you change counties.</span>
+        </Link>
       </section>
 
       <section className="mt-5 flex flex-col gap-3">

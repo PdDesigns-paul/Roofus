@@ -247,7 +247,7 @@ Roofus is not their lawyer.
 
 ## Product map (keep the coach prompt in sync)
 
-Bottom bar: **Today · Streets · Inspect**. Footer above it: Back · Home · Help · Menu. Home is always there. Back only on Cards, Reference, Presets. Menu: Cards, Reference, Presets. Mindset worksheets live in Presets. Roofus is the orange button — tap fans Live / Roleplay / Mindset. Hold starts Live. Inspect hides him. Not a tab.
+Bottom bar: **Today · Inspect · Home**. Footer above it: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Streets is not a tab — open it from Presets. Menu: Cards, Reference, Presets. Mindset worksheets live in Presets. Roofus is the orange button — tap fans Live / Roleplay / Mindset. Hold starts Live. Inspect hides him. Not a tab.
 
 | Surface | What it is |
 | --- | --- |
