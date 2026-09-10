@@ -1,6 +1,6 @@
 export async function compressImage(file: File): Promise<string> {
   const bitmap = await blobToImage(file);
-  const max = 1280;
+  const max = 2048;
   let w = bitmap.width;
   let h = bitmap.height;
   if (w > max || h > max) {
@@ -15,10 +15,10 @@ export async function compressImage(file: File): Promise<string> {
   if (!ctx) throw new Error("Could not read that photo.");
   ctx.drawImage(bitmap, 0, 0, w, h);
   if ("close" in bitmap && typeof bitmap.close === "function") bitmap.close();
-  let quality = 0.72;
+  let quality = 0.84;
   let url = canvas.toDataURL("image/jpeg", quality);
-  while (url.length > 900_000 && quality > 0.4) {
-    quality -= 0.1;
+  while (url.length > 900_000 && quality > 0.55) {
+    quality -= 0.08;
     url = canvas.toDataURL("image/jpeg", quality);
   }
   if (url.length > 1_100_000) throw new Error("Photo is too heavy. Back up a step and shoot again.");

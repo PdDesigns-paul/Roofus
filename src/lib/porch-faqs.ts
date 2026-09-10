@@ -74,7 +74,7 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_i35",
     q: "What is i35 after photos?",
-    a: "On the roof, after photos. Bad / Good / Worst — the good must be true. Then: Can you see this? How long / has anybody shown you? How does that make you feel? What would you like to do about it? Never WHY in the house. Do not announce findings off the ladder.",
+    a: "After photos. Bad / Good / Worst — the good must be true. Then: Can you see this? How long / has anybody shown you? How does that make you feel? What would you like to do about it? Never WHY in the house. Do not announce findings off the ladder. On Inspect, he names the slot on the shot you just took.",
   },
   {
     id: "f_seed_why",

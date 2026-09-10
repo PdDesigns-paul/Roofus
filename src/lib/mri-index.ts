@@ -272,4 +272,20 @@ export function inspectKnowledge(): string {
   }).join("\n\n");
 }
 
+/** Short card list for a photo ask — the full dump drowns the frame. */
+const SHOT_CHAPTERS = new Set(["climb", "hail", "wind", "asphalt"]);
+
+export function inspectKnowledgeForShot(): string {
+  return MRI_CHAPTERS.filter((ch) => SHOT_CHAPTERS.has(ch.id))
+    .map((ch) => {
+      const cards = ch.cards
+        .filter((c) => !/Part \d/.test(c.title))
+        .map((c) => `- ${c.title}: ${c.look}`)
+        .join("\n");
+      return `### ${ch.title}\n${cards}`;
+    })
+    .join("\n\n");
+}
+
+
 

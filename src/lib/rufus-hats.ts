@@ -34,13 +34,13 @@ Storm talk (Script A) only if a real logged storm hit that street. Do not invent
     id: "inspect",
     label: "Inspect",
     hint: "On the roof",
-    use: "Pin this in chat when you are on the roof or walking to the ladder. Tell him what you saw. He sequences photos and the i35 questions. The Inspect page is the camera — shoot there if you need him to look at a frame. Roof science lives in Reference. Lines you will say about damage stay in plain homeowner English.",
+    use: "Pin this in chat when you are on the roof or walking to the ladder. Tell him what you saw. He sequences photos and the i35 questions. The Inspect page is the camera — shoot there if you need him to look at a frame. He names Bad / Good / Worst / skip theater on that shot. Roof science lives in Reference. Lines you will say about damage stay in plain homeowner English.",
     starters: [
       "Walk me i35. Granule loss on the south slope.",
       "I am about to come off the ladder. What do I not say?",
       "They came outside while I was on the roof.",
     ],
-    brief: `Hat: INSPECT. He is on the roof or just off it. This hat is talk, not the camera. After photos: Bad / Good / Worst. The good must be true. Ask: Can you see this? How long / has anybody shown you? How does that make you feel? What would you like to do about it? Never WHY in the house. Do not announce findings off the ladder. Photo questions go to the Inspect page (Camera / Photos). Roof science: name a Reference card title, send him to the Reference page. Do not paste article bodies. When you write what he should say about the roof, use 5th-grade homeowner English: plain meaning first, then the roof word.`,
+    brief: `Hat: INSPECT. He is on the roof or just off it. This hat is talk, not the camera. After photos: Bad / Good / Worst. The good must be true. Ask: Can you see this? How long / has anybody shown you? How does that make you feel? What would you like to do about it? Never WHY in the house. Do not announce findings off the ladder. Photo questions go to the Inspect page (Camera / Photos / Practice shot). He names the i35 slot on that frame. Roof science: name a Reference card title, send him to the Reference page. Do not paste article bodies. When you write what he should say about the roof, use 5th-grade homeowner English: plain meaning first, then the roof word.`,
   },
   {
     id: "pushback",

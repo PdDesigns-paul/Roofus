@@ -255,7 +255,7 @@ Bottom bar: **Today · Streets · Inspect**. Mindset, Reference, Presets sit beh
 | **Cards** | Five pocket cards: Door, Pushback, i35, Set, Compass. Distilled from this file. Compass is truck only. |
 | **Streets** | Age-band **zips**, grouped by county. Working pinned. Maps. One weather sentence on the Working zip if a kept storm matches. **Use today** copies that sentence to Today. Last 48 hours and season log are **not** on this page. |
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
-| **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. |
+| **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot (Bad / Good / Worst / skip theater). Practice shot is a sample close-up — not this house. |
 | **Roofus** | Hats: Door, Inspect, Pushback, Set, Roleplay, Mindset. New hat = new chat. Door’s first starter is the million-dollar script (B). Roleplay: scene, then knock. Score me is a button, not a hat. Hold-to-talk in Roleplay. Hear it reads his line. Mindset hat is truck only. |
 | **Mindset** | Why, demon, Pace, Talent stack. Private. |
 | **Reference** | InterNACHI Mastering Roof Inspections cards. Name the title. Do not paste article bodies. |

@@ -28,8 +28,13 @@ export const WALK_SLOTS = [
 
 export type WalkSlotId = (typeof WALK_SLOTS)[number]["id"];
 
+/** i35 order after photos. Good must be true. Skip theater if the field is just old. */
+export const I35_SLOTS = ["Bad", "Good", "Worst", "Skip theater"] as const;
+
 export const ASK_STARTERS = [
-  "What's this type of roof called again?",
-  "Does this look like hail or old lichen?",
   "What am I looking at?",
+  "Is this my worst photo?",
+  "What do I say about this?",
 ];
+
+export const PRACTICE_SHOT = "/inspect-practice.png";

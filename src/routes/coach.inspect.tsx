@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Camera, Check, ImagePlus } from "lucide-react";
+import { Camera, Check, ImagePlus, Images } from "lucide-react";
 import { useRef, useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { ChatBubble } from "@/components/chat-bubble";
@@ -7,7 +7,7 @@ import { Tip } from "@/components/ui/tooltip";
 import { compressImage } from "@/lib/compress-image";
 import { abortTalk, sendRoofus, stopRoofus } from "@/lib/roofus-talk";
 import { useCoach } from "@/lib/coach-store";
-import { ASK_STARTERS, WALK_SLOTS, type WalkSlotId } from "@/lib/inspect-walk";
+import { ASK_STARTERS, PRACTICE_SHOT, WALK_SLOTS, type WalkSlotId } from "@/lib/inspect-walk";
 
 const EMPTY_TURNS: { role: "user" | "assistant"; content: string }[] = [];
 
@@ -22,6 +22,7 @@ function InspectPage() {
   const liveId = useRef<string | null>(null);
   const [done, setDone] = useState<Partial<Record<WalkSlotId, boolean>>>({});
   const [photo, setPhoto] = useState<string | null>(null);
+  const [practice, setPractice] = useState(false);
   const [question, setQuestion] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [, tick] = useState(0);
@@ -55,20 +56,36 @@ function InspectPage() {
     abortTalk();
     liveId.current = null;
     setPhoto(null);
+    setPractice(false);
     setQuestion("");
     setError(null);
     tick((n) => n + 1);
   }
 
-  async function onFile(file: File | undefined) {
+  async function onFile(file: File | undefined, fromPractice = false) {
     if (!file) return;
     setError(null);
     abortTalk();
     try {
       const url = await compressImage(file);
       setPhoto(url);
+      setPractice(fromPractice);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not read that photo.");
+    }
+  }
+
+  async function loadPractice() {
+    if (busy) return;
+    setError(null);
+    try {
+      const res = await fetch(PRACTICE_SHOT);
+      if (!res.ok) throw new Error("Practice shot did not load.");
+      const blob = await res.blob();
+      const file = new File([blob], "practice.png", { type: blob.type || "image/png" });
+      await onFile(file, true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Practice shot did not load.");
     }
   }
 
@@ -93,7 +110,7 @@ function InspectPage() {
         <div className="min-w-0">
           <h1 className="font-display text-xl leading-tight tracking-tight">Shoot. Then ask.</h1>
           <p className="mt-1 text-xs leading-relaxed text-muted">
-            Check the list. One shot. Don’t talk off the ladder.
+            One shot. He names the i35 slot. Don’t talk off the ladder.
           </p>
         </div>
         {photo || shown.length ? (
@@ -155,6 +172,9 @@ function InspectPage() {
         {photo ? (
           <div className="overflow-hidden rounded-2xl border border-border bg-surface">
             <img src={photo} alt="This shot" className="max-h-36 w-full object-cover" />
+            {practice ? (
+              <p className="border-t border-border px-3 py-1.5 text-[11px] text-muted">Practice. Not this house.</p>
+            ) : null}
             <div className="flex gap-2 p-2">
               <button
                 type="button"
@@ -192,6 +212,16 @@ function InspectPage() {
               >
                 <ImagePlus className="size-4 text-muted" />
                 Photos
+              </button>
+            </Tip>
+            <Tip label="A close-up off the roof. Ask him the i35 slot.">
+              <button
+                type="button"
+                onClick={() => void loadPractice()}
+                className="col-span-2 flex h-12 items-center justify-center gap-2 rounded-2xl border border-border bg-surface text-sm hover:bg-surface-2"
+              >
+                <Images className="size-4 text-muted" />
+                Practice shot
               </button>
             </Tip>
           </div>

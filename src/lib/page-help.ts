@@ -33,8 +33,8 @@ export const PAGE_HELP = {
     title: "Inspect",
     body: [
       "Photos first. Check Street, Four slopes, Close-up, Witnesses, Attic.",
-      "Then Camera or Photos. Then ask about that shot. Opening this page starts a blank ask — old inspect chats live under Roofus, hold the orange button.",
-      "The Inspect hat is talk on the roof. This page is the camera.",
+      "Then Camera, Photos, or Practice shot. Ask what you’re looking at, whether it’s the worst, or what to say. He names the i35 slot — Bad, Good, Worst, or skip theater. Practice is not this house.",
+      "Don’t announce off the ladder. Opening this page starts a blank ask — old inspect chats live under Roofus, hold the orange button.",
     ],
   },
   mindset: {

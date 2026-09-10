@@ -13,8 +13,6 @@ ${inspectKnowledge()}
 ${mindsetKnowledge()}
 `;
 
-const INSPECT_KNOWLEDGE = `# Reference knowledge base\n${inspectKnowledge()}`;
-
 export type CoachRequest = {
   messages: ChatTurn[];
   hat?: string;
@@ -45,14 +43,14 @@ export function buildXaiPayload(req: CoachRequest): {
     const last = [...history].reverse().find((m) => m.role === "user");
     const question = last?.content?.trim() || "What am I looking at?";
     const stormNote = req.dayBook?.trim()
-      ? `\n\n${req.dayBook.trim()}\nIf the photo is damage, still do not invent hail. Use the logged storm only as context for what they may later say — not as a verdict.`
+      ? `\n\nIf they logged a storm, still do not invent hail. Pattern from the photo, not the log.`
       : "";
     return {
       model: "grok-4.5",
       max_tokens: 400,
       stream: true,
       messages: [
-        { role: "system", content: `${INSPECT_SYSTEM}\n\n${INSPECT_KNOWLEDGE}` },
+        { role: "system", content: INSPECT_SYSTEM },
         {
           role: "user",
           content: [
