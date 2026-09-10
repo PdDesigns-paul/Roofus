@@ -31,4 +31,6 @@ export type StreetsBuildResponse = {
   note: string;
   yearFrom: number;
   yearTo: number;
+  missing?: string[];
+  emptyCounties?: string[];
 };

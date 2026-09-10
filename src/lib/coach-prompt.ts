@@ -1,6 +1,6 @@
 import { COACH_SYSTEM } from "@/lib/coach-system";
 import { INSPECT_SYSTEM } from "@/lib/inspect-system";
-import { inspectKnowledge } from "@/lib/mri-index";
+import { inspectKnowledge, inspectKnowledgeForShot } from "@/lib/mri-index";
 import { mindsetKnowledge } from "@/lib/mindset";
 import { modeBrief } from "@/lib/rufus-modes";
 import type { ChatTurn } from "@/lib/stream-coach";
@@ -23,6 +23,8 @@ export type CoachRequest = {
   hat?: string;
   companyName?: string;
   warrantyLine?: string;
+  companyWebsite?: string;
+  companySiteBrief?: string;
   imageDataUrl?: string;
   dayBook?: string;
 };
@@ -47,6 +49,7 @@ export function buildXaiPayload(req: CoachRequest): {
   if (req.imageDataUrl) {
     const last = [...history].reverse().find((m) => m.role === "user");
     const question = last?.content?.trim() || "What am I looking at?";
+    const extraShot = inspectKnowledgeForShot();
     const stormNote = req.dayBook?.trim()
       ? `\n\nIf they logged a storm, still do not invent hail. Pattern from the photo, not the log.`
       : "";
@@ -55,7 +58,7 @@ export function buildXaiPayload(req: CoachRequest): {
       max_tokens: 400,
       stream: true,
       messages: [
-        { role: "system", content: INSPECT_SYSTEM },
+        { role: "system", content: `${INSPECT_SYSTEM}\n\n${extraShot}` },
         {
           role: "user",
           content: [
@@ -75,6 +78,12 @@ export function buildXaiPayload(req: CoachRequest): {
     req.warrantyLine?.trim()
       ? `Warranty line from Presets (this wins over the default): ${req.warrantyLine.trim()}`
       : "",
+    req.companyWebsite?.trim() ? `Company website they gave you: ${req.companyWebsite.trim()}` : "",
+    req.companySiteBrief?.trim()
+      ? `What you already read on that site (do not invent past this):\n${req.companySiteBrief.trim()}`
+      : req.companyWebsite?.trim()
+        ? "They gave a website but you have not read it yet. Ask them to tap Read the site in Presets, or wait until a brief is saved. Do not invent product claims from the URL."
+        : "",
     req.dayBook?.trim() ? req.dayBook.trim() : "",
   ]
     .filter(Boolean)

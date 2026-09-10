@@ -15,6 +15,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StreetsRouteImport } from './routes/streets'
 import { Route as TodayRouteImport } from './routes/today'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
+import { Route as ApiCompanySiteRouteImport } from './routes/api/company-site'
 import { Route as ApiNotionSetupRouteImport } from './routes/api/notion-setup'
 import { Route as ApiNotionSyncRouteImport } from './routes/api/notion-sync'
 import { Route as ApiSpeechRouteImport } from './routes/api/speech'
@@ -56,6 +57,11 @@ const TodayRoute = TodayRouteImport.update({
 const ApiCoachRoute = ApiCoachRouteImport.update({
   id: '/api/coach',
   path: '/api/coach',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCompanySiteRoute = ApiCompanySiteRouteImport.update({
+  id: '/api/company-site',
+  path: '/api/company-site',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiNotionSetupRoute = ApiNotionSetupRouteImport.update({
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/streets': typeof StreetsRoute
   '/today': typeof TodayRoute
   '/api/coach': typeof ApiCoachRoute
+  '/api/company-site': typeof ApiCompanySiteRoute
   '/api/notion-setup': typeof ApiNotionSetupRoute
   '/api/notion-sync': typeof ApiNotionSyncRoute
   '/api/speech': typeof ApiSpeechRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/streets': typeof StreetsRoute
   '/today': typeof TodayRoute
   '/api/coach': typeof ApiCoachRoute
+  '/api/company-site': typeof ApiCompanySiteRoute
   '/api/notion-setup': typeof ApiNotionSetupRoute
   '/api/notion-sync': typeof ApiNotionSyncRoute
   '/api/speech': typeof ApiSpeechRoute
@@ -166,6 +174,7 @@ export interface FileRoutesById {
   '/streets': typeof StreetsRoute
   '/today': typeof TodayRoute
   '/api/coach': typeof ApiCoachRoute
+  '/api/company-site': typeof ApiCompanySiteRoute
   '/api/notion-setup': typeof ApiNotionSetupRoute
   '/api/notion-sync': typeof ApiNotionSyncRoute
   '/api/speech': typeof ApiSpeechRoute
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/streets'
     | '/today'
     | '/api/coach'
+    | '/api/company-site'
     | '/api/notion-setup'
     | '/api/notion-sync'
     | '/api/speech'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/streets'
     | '/today'
     | '/api/coach'
+    | '/api/company-site'
     | '/api/notion-setup'
     | '/api/notion-sync'
     | '/api/speech'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/streets'
     | '/today'
     | '/api/coach'
+    | '/api/company-site'
     | '/api/notion-setup'
     | '/api/notion-sync'
     | '/api/speech'
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   StreetsRoute: typeof StreetsRoute
   TodayRoute: typeof TodayRoute
   ApiCoachRoute: typeof ApiCoachRoute
+  ApiCompanySiteRoute: typeof ApiCompanySiteRoute
   ApiNotionSetupRoute: typeof ApiNotionSetupRoute
   ApiNotionSyncRoute: typeof ApiNotionSyncRoute
   ApiSpeechRoute: typeof ApiSpeechRoute
@@ -299,6 +312,13 @@ declare module '@tanstack/react-router' {
       path: '/api/coach'
       fullPath: '/api/coach'
       preLoaderRoute: typeof ApiCoachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/company-site': {
+      id: '/api/company-site'
+      path: '/api/company-site'
+      fullPath: '/api/company-site'
+      preLoaderRoute: typeof ApiCompanySiteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/notion-setup': {
@@ -413,6 +433,7 @@ const rootRouteChildren: RootRouteChildren = {
   StreetsRoute: StreetsRoute,
   TodayRoute: TodayRoute,
   ApiCoachRoute: ApiCoachRoute,
+  ApiCompanySiteRoute: ApiCompanySiteRoute,
   ApiNotionSetupRoute: ApiNotionSetupRoute,
   ApiNotionSyncRoute: ApiNotionSyncRoute,
   ApiSpeechRoute: ApiSpeechRoute,

@@ -19,7 +19,7 @@ import { useWeather } from "@/lib/weather-store";
 import { preKnock } from "@/lib/pocket-cards";
 import { companyOf } from "@/lib/setup-progress";
 import { useSettings } from "@/lib/settings-store";
-import { loopHeadline, loopLabel } from "@/lib/streets-rank";
+import { groupLoopsByCounty, loopHeadline, loopLabel, matchLoopCluster } from "@/lib/streets-rank";
 import { suggestTomorrow, useStreets } from "@/lib/streets-store";
 
 export const Route = createFileRoute("/today")({
@@ -52,7 +52,7 @@ function DaySheet() {
   const kept = useWeather((s) => s.kept);
   const busy = useCoach((s) => s.busy);
   const [askErr, setAskErr] = useState<string | null>(null);
-  const selected = loops.find((l) => loopLabel(l) === day.cluster) ?? null;
+  const selected = loops.find((l) => matchLoopCluster(l, day.cluster)) ?? null;
   const nearby = selected ? stormsNearLoop(kept, selected) : [];
 
   useEffect(() => {
@@ -188,27 +188,51 @@ function DaySheet() {
         label="Neighborhood today"
         hint={
           loops.length
-            ? "Pick from your Streets list, or type."
-            : "Build Streets from your counties, or type a zip."
+            ? "Town · zip from Streets. Pick or type."
+            : "Build Streets from your counties, or type a town · zip."
         }
       >
+        {loops.length ? (
+          <select
+            className="mt-2 h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
+            value={selected ? loopHeadline(selected) : ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              patchToday({ cluster: value });
+              const hit = loops.find((l) => matchLoopCluster(l, value));
+              if (hit) useStreets.getState().setStatus(hit.id, "working");
+            }}
+          >
+            <option value="">Pick a town · zip</option>
+            {groupLoopsByCounty(loops).map((g) => (
+              <optgroup key={g.county} label={g.county}>
+                {g.loops.map((l) => (
+                  <option key={l.id} value={loopHeadline(l)}>
+                    {loopHeadline(l)}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        ) : null}
         <input
           className="mt-2 h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
           value={day.cluster}
           onChange={(e) => {
             const value = e.target.value;
             patchToday({ cluster: value });
-            const hit = loops.find((l) => loopLabel(l) === value);
-            if (hit) useStreets.getState().setStatus(hit.id, "working");
+            const hit = loops.find((l) => matchLoopCluster(l, value));
+            if (hit) {
+              useStreets.getState().setStatus(hit.id, "working");
+              if (/^\d{5}$/.test(value.trim())) patchToday({ cluster: loopHeadline(hit) });
+            }
           }}
-          placeholder="Zip or a street"
+          placeholder="Town · zip, or type"
           list="street-loops"
         />
         <datalist id="street-loops">
           {loops.map((l) => (
-            <option key={l.id} value={loopLabel(l)}>
-              {loopHeadline(l)}
-            </option>
+            <option key={l.id} value={loopHeadline(l)} />
           ))}
         </datalist>
       </Field>

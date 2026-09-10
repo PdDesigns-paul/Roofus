@@ -64,6 +64,7 @@ function tableItems(table: NotionTable): unknown[] {
         ageMax: streets.ageMax,
         companyName: set.companyName,
         warrantyLine: set.warrantyLine,
+        companyWebsite: set.companyWebsite,
       }),
     );
   }
@@ -191,5 +192,8 @@ function applyRestore(pulled: {
   }
   if (unpacked.warrantyLine && settings.warrantyLine === "See the actual Owens Corning warranty.") {
     settings.setWarrantyLine(unpacked.warrantyLine);
+  }
+  if (unpacked.companyWebsite && !settings.companyWebsite.trim()) {
+    settings.setCompanyWebsite(unpacked.companyWebsite);
   }
 }

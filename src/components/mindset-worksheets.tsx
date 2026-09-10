@@ -263,7 +263,7 @@ function DemonFields({ s }: { s: SurviveState }) {
           <button
             key={a.id}
             type="button"
-            onClick={() => s.patch({ attack: a.id as AttackId })}
+            onClick={() => s.patch({ attack: (s.attack === a.id ? "" : a.id) as AttackId | "" })}
             className={
               s.attack === a.id
                 ? "min-h-11 rounded-full bg-fg px-3 text-sm text-paper"

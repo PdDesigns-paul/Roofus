@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { CalendarDays, Camera } from "lucide-react";
+import { CalendarDays, Camera, MapPin } from "lucide-react";
 import { InstallHint } from "@/components/install-hint";
 import { RoofusFace } from "@/components/roofus-mark";
 import { SetupChecklist } from "@/components/setup-checklist";
 import { blankDay, localDateKey, useDayBook } from "@/lib/day-book";
+import { loadDemo } from "@/lib/demo-data";
 import { useSettings } from "@/lib/settings-store";
 import { setupSnap } from "@/lib/setup-progress";
 import { useStreets } from "@/lib/streets-store";
@@ -19,7 +20,8 @@ export const Route = createFileRoute("/")({
 
 const DOORS = [
   { to: "/today", label: "Today", hint: "Four counts. After Action Report.", icon: CalendarDays },
-  { to: "/coach/inspect", label: "Inspect", hint: "Camera walk. Then ask.", icon: Camera },
+  { to: "/coach/inspect", label: "Inspect", hint: "Walk the house. Then the shot.", icon: Camera },
+  { to: "/streets", label: "Streets", hint: "Town · zip. Grouped by county.", icon: MapPin },
 ] as const;
 
 function LandingPage() {
@@ -34,6 +36,8 @@ function LandingPage() {
   const survive = useSurvive();
   const fetchedAt = useWeather((s) => s.fetchedAt);
   const goBy = profile.goBy.trim();
+  const navigate = useNavigate();
+  const emptyPhone = !profile.counties.trim() && zipCount === 0;
 
   useEffect(() => {
     const leftover = profile.company.trim();
@@ -89,6 +93,18 @@ function LandingPage() {
         >
           Tell Roofus
         </button>
+        {emptyPhone ? (
+          <button
+            type="button"
+            className="flex h-12 items-center justify-center rounded-full border border-border text-sm text-muted"
+            onClick={() => {
+              loadDemo();
+              void navigate({ to: "/today" });
+            }}
+          >
+            Load a sample day
+          </button>
+        ) : null}
       </div>
 
       <ul className="mt-4 flex flex-col">

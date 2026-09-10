@@ -1,5 +1,6 @@
 /** Home checklist. Forms and the Setup chat write the same fields. */
 import { applyWalkAnswer, type WalkPatch } from "./survive.ts";
+import { looksLikeWebsite, normalizeWebsiteUrl } from "./company-site.ts";
 import type { SurviveState } from "./survive-store.ts";
 import { demonFilled, paceFilled, stackFilled, whyFilled } from "./survive-store.ts";
 
@@ -7,9 +8,9 @@ export const SETUP_ROWS = [
   {
     id: "you",
     label: "You",
-    hint: "First name and company",
+    hint: "First name, company, website",
     hash: "you",
-    ask: "Ask me my first name, then the company on the truck. One at a time. Explain that you use those on the porch, not a fake name.",
+    ask: "Ask me my first name, then the company on the truck, then the company website if we have one. One at a time. Website is optional. You use name and company on the porch. You may read the website for product talk — you do not invent a URL.",
   },
   {
     id: "territory",
@@ -160,6 +161,7 @@ export type SetupPatch = {
   }>;
   companyName?: string;
   warrantyLine?: string;
+  companyWebsite?: string;
 };
 
 export function applySetupAnswer(
@@ -172,8 +174,14 @@ export function applySetupAnswer(
   if (!value) return null;
   if (id === "zips") return null;
   if (id === "you") {
+    if (looksLikeWebsite(value)) {
+      const url = normalizeWebsiteUrl(value);
+      return url ? { companyWebsite: url } : null;
+    }
     if (!snap.goBy) return { profile: { goBy: value } };
     if (!snap.company) return { companyName: value, profile: { company: value } };
+    const url = normalizeWebsiteUrl(value);
+    if (url) return { companyWebsite: url };
     return null;
   }
   if (id === "territory") {

@@ -6,6 +6,7 @@ import { mapsLabel, mapsUrl } from "@/lib/maps-url";
 import { loopAge, loopHeadline, loopLabel, loopZip, groupLoopsByCounty, splitWorking } from "@/lib/streets-rank";
 import { marketKey, useStreets } from "@/lib/streets-store";
 import type { LoopResult, LoopStatus, StreetLoop, StreetsBuildResponse } from "@/lib/streets-types";
+import { parseList, countyBasename } from "@/lib/us-state-fips";
 import { mentionOnStreet } from "@/lib/weather-match";
 import { useWeather } from "@/lib/weather-store";
 
@@ -47,11 +48,34 @@ function StreetsPage() {
   const [err, setErr] = useState<string | null>(null);
   const [ageOpen, setAgeOpen] = useState(false);
   const [openCounty, setOpenCounty] = useState<string | null | undefined>(undefined);
+  const [q, setQ] = useState("");
+  const [emptyCounties, setEmptyCounties] = useState<string[]>([]);
   const key = marketKey(profile.counties, profile.states, ageMin, ageMax);
   const stale = Boolean(loops.length && builtFor && builtFor !== key);
   const autoBuild = useRef(false);
   const { working, rest } = splitWorking(loops);
-  const groups = groupLoopsByCounty(rest).filter((g) => g.loops.length);
+  const needle = q.trim().toLowerCase();
+  const visible = needle
+    ? rest.filter(
+        (l) =>
+          loopHeadline(l).toLowerCase().includes(needle) ||
+          l.county.toLowerCase().includes(needle) ||
+          l.streets.some((s) => s.toLowerCase().includes(needle)),
+      )
+    : rest;
+  const groups = groupLoopsByCounty(visible);
+  const asked = parseList(profile.counties);
+  const have = new Set(loops.map((l) => countyBasename(l.county).toLowerCase()));
+  const ghostCounties = [
+    ...new Set(
+      [...emptyCounties, ...asked.filter((c) => loops.length && !have.has(countyBasename(c).toLowerCase()))].map(
+        (c) => c.trim(),
+      ),
+    ),
+  ].filter((c) => {
+    if (!needle) return true;
+    return c.toLowerCase().includes(needle);
+  });
   const defaultCounty = working.length ? null : (groups[0]?.county ?? null);
   const shownCounty = openCounty === undefined ? defaultCounty : openCounty;
 
@@ -83,6 +107,7 @@ function StreetsPage() {
         yearTo: data.yearTo,
         builtFor: key,
       });
+      setEmptyCounties(data.emptyCounties ?? []);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Could not build streets.");
     } finally {
@@ -221,6 +246,15 @@ function StreetsPage() {
         </p>
       ) : null}
 
+      {loops.length ? (
+        <input
+          className="mt-4 h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Find a town, zip, street, or county"
+        />
+      ) : null}
+
       {busy ? (
         <p className="mt-6 text-sm text-muted">
           Reading housing years. This can take half a minute. Stay on this page.
@@ -269,6 +303,14 @@ function StreetsPage() {
             </li>
           );
         })}
+        {ghostCounties.map((county) => (
+          <li key={`empty-${county}`}>
+            <div className="flex min-h-11 w-full items-center justify-between rounded-2xl border border-dashed border-border px-4">
+              <span className="text-xs font-medium uppercase tracking-wide">{county}</span>
+              <span className="text-xs text-muted">No age-band zips yet</span>
+            </div>
+          </li>
+        ))}
       </ul>
     </main>
   );
@@ -313,7 +355,7 @@ function LoopCard({ loop }: { loop: StreetLoop }) {
               <button
                 key={s.id}
                 type="button"
-                onClick={() => setStatus(loop.id, s.id)}
+                onClick={() => setStatus(loop.id, loop.status === s.id ? "fresh" : s.id)}
                 className={`h-11 rounded-full px-3 text-sm ${
                   loop.status === s.id ? "bg-fg text-paper" : "border border-border"
                 }`}
@@ -327,7 +369,7 @@ function LoopCard({ loop }: { loop: StreetLoop }) {
               <button
                 key={r.id}
                 type="button"
-                onClick={() => setResult(loop.id, r.id)}
+                onClick={() => setResult(loop.id, loop.lastResult === r.id ? "" : r.id)}
                 className={`h-11 rounded-full px-3 text-sm ${
                   loop.lastResult === r.id ? "bg-fg text-paper" : "border border-border"
                 }`}
@@ -341,7 +383,7 @@ function LoopCard({ loop }: { loop: StreetLoop }) {
             className="mt-3 h-11 w-full rounded-full border border-border text-sm"
             onClick={() => {
               setStatus(loop.id, "working");
-              patchToday({ cluster: zip, storm: mentionOnStreet(kept, loop) });
+              patchToday({ cluster: loopHeadline(loop), storm: mentionOnStreet(kept, loop) });
             }}
           >
             Use today

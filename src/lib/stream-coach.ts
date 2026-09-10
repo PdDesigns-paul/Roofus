@@ -9,6 +9,8 @@ export type StreamCoachInput = {
   origin?: string;
   companyName?: string;
   warrantyLine?: string;
+  companyWebsite?: string;
+  companySiteBrief?: string;
   imageDataUrl?: string;
   dayBook?: string;
 };

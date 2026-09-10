@@ -3,7 +3,7 @@
  * Whole-zip median year is too coarse — we keep streets whose block groups
  * sit in the years they set, then show one card per zip, grouped by county.
  */
-import { nearestZip } from "@/lib/streets-rank";
+import { fairCountySlice, nearestZip } from "@/lib/streets-rank";
 import { countyBasename, parseList, stateFips } from "@/lib/us-state-fips";
 import type { StreetLoop, StreetsBuildRequest, StreetsBuildResponse } from "@/lib/streets-types";
 
@@ -138,11 +138,13 @@ async function blockGroups(county: CountyHit): Promise<BgYear[]> {
 }
 
 function pickBands(rows: BgYear[], yearFrom: number, yearTo: number): BgYear[] {
-  const core = rows.filter((r) => r.medianYear >= yearFrom && r.medianYear <= yearTo && r.homes >= 120);
+  const inBand = (minHomes: number, from: number, to: number) =>
+    rows.filter((r) => r.medianYear >= from && r.medianYear <= to && r.homes >= minHomes);
+  let core = inBand(120, yearFrom, yearTo);
+  if (core.length < 3) core = inBand(40, yearFrom, yearTo);
+  if (core.length < 2) core = inBand(20, yearFrom - 5, yearTo + 5);
   const target = Math.round((yearFrom + yearTo) / 2);
-  const scored = (
-    core.length >= 8 ? core : rows.filter((r) => r.homes >= 120 && r.medianYear >= yearFrom - 5 && r.medianYear <= yearTo + 5)
-  ).slice();
+  const scored = core.slice();
   scored.sort((a, b) => {
     const da = Math.abs(a.medianYear - target) - Math.abs(b.medianYear - target);
     if (da) return da;
@@ -365,21 +367,31 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
     return b.homes - a.homes;
   });
 
+  const sliced = fairCountySlice(loops, countyNames, 48, 6);
+  const towns = await lookupTowns(sliced.map((l) => l.zip));
+  for (const l of sliced) {
+    const town = towns[l.zip];
+    if (town) l.town = town;
+  }
+
+  const foundKeys = new Set(sliced.map((l) => countyBasename(l.county).toLowerCase()));
+  const emptyCounties = counties
+    .map((c) => c.name)
+    .filter((name) => !foundKeys.has(countyBasename(name).toLowerCase()));
+
   const noteParts = [
     `Roofs about ${ageMin}–${ageMax} years old (built ${yearFrom}–${yearTo}). One card per zip, grouped by county.`,
     "Streets are the age-band pockets inside the zip — not every house in the zip. Census median year, not a house-by-house assessor.",
     "Storms are not in this list.",
   ];
   if (missing.length) noteParts.push(`Skipped (not found): ${missing.join(", ")}.`);
-  if (!loops.length) {
-    noteParts.push("No zips in that age band. Try a wider year range.");
+  if (emptyCounties.length) {
+    noteParts.push(
+      `${emptyCounties.join(", ")}: found the county, no age-band zips yet. Try a wider year range.`,
+    );
   }
-
-  const sliced = loops.slice(0, 40);
-  const towns = await lookupTowns(sliced.map((l) => l.zip));
-  for (const l of sliced) {
-    const town = towns[l.zip];
-    if (town) l.town = town;
+  if (!sliced.length) {
+    noteParts.push("No zips in that age band. Try a wider year range.");
   }
 
   return {
@@ -387,6 +399,8 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
     note: noteParts.join(" "),
     yearFrom,
     yearTo,
+    missing,
+    emptyCounties,
   };
 }
 

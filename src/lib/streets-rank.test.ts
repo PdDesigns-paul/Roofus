@@ -1,6 +1,17 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { groupLoopsByCounty, loopAge, loopHeadline, loopLabel, nearestZip, splitWorking } from "./streets-rank.ts";
+import {
+  fairCountySlice,
+  groupLoopsByCounty,
+  loopAge,
+  loopHeadline,
+  loopLabel,
+  matchLoopCluster,
+  nearestZip,
+  splitWorking,
+  townFromHeadline,
+  zipFromHeadline,
+} from "./streets-rank.ts";
 import type { StreetLoop } from "./streets-types.ts";
 
 function loop(p: Partial<StreetLoop> = {}): StreetLoop {
@@ -42,7 +53,27 @@ describe("loopHeadline", () => {
     assert.equal(loopHeadline(loop({ zip: "17050", town: "Mechanicsburg" })), "Mechanicsburg · 17050");
   });
   it("falls back to the zip when the town is blank", () => {
-    assert.equal(loopHeadline(loop({ zip: "17050", town: "" })), "17050");
+    assert.equal(loopHeadline(loop({ zip: "17050", town: " " })), "17050");
+  });
+});
+
+describe("matchLoopCluster", () => {
+  const l = loop({ zip: "17068", town: "New Bloomfield", title: "17068" });
+  it("matches zip, headline, or town", () => {
+    assert.equal(matchLoopCluster(l, "17068"), true);
+    assert.equal(matchLoopCluster(l, "New Bloomfield · 17068"), true);
+    assert.equal(matchLoopCluster(l, "New Bloomfield"), true);
+  });
+  it("does not match a different zip", () => {
+    assert.equal(matchLoopCluster(l, "17050"), false);
+  });
+});
+
+describe("zipFromHeadline / townFromHeadline", () => {
+  it("splits town · zip", () => {
+    assert.equal(zipFromHeadline("New Bloomfield · 17068"), "17068");
+    assert.equal(townFromHeadline("New Bloomfield · 17068"), "New Bloomfield");
+    assert.equal(zipFromHeadline("17068"), "17068");
   });
 });
 
@@ -82,6 +113,22 @@ describe("groupLoopsByCounty", () => {
         ["York", ["b"]],
       ],
     );
+  });
+});
+
+describe("fairCountySlice", () => {
+  it("keeps Perry when Dauphin would eat a 40 cap", () => {
+    const loops: StreetLoop[] = [];
+    for (let i = 0; i < 30; i++) {
+      loops.push(loop({ id: `d${i}`, zip: `171${String(i).padStart(2, "0")}`, county: "Dauphin County", homes: 400 }));
+    }
+    for (let i = 0; i < 4; i++) {
+      loops.push(loop({ id: `p${i}`, zip: `1706${i}`, county: "Perry County", homes: 50 }));
+    }
+    const sliced = fairCountySlice(loops, ["Dauphin", "Perry"], 40, 6);
+    const perry = sliced.filter((l) => /perry/i.test(l.county));
+    assert.ok(perry.length >= 4);
+    assert.ok(sliced.some((l) => /dauphin/i.test(l.county)));
   });
 });
 

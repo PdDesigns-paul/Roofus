@@ -86,7 +86,11 @@ export function SetupChecklist({
               const done = rowDone(row.id, snap);
               return (
                 <li key={row.id} className="flex items-stretch gap-2 border-b border-border last:border-0">
-                  <Link to="/settings" hash={row.hash} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 py-3">
+                  <Link
+                    to={row.id === "zips" ? "/streets" : "/settings"}
+                    hash={row.id === "zips" ? undefined : row.hash}
+                    className="flex min-h-14 min-w-0 flex-1 items-center gap-3 py-3"
+                  >
                     <span
                       className={`flex size-5 shrink-0 items-center justify-center rounded-full border text-[11px] ${
                         done ? "border-accent bg-accent text-paper" : "border-border text-faint"

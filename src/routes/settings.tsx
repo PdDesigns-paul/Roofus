@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { MindsetWorksheets } from "@/components/mindset-worksheets";
 import { NotionBackup } from "@/components/notion-backup";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useDayBook } from "@/lib/day-book";
+import { loadDemo } from "@/lib/demo-data";
 import { resetOnboard } from "@/lib/onboard";
 import { REMINDERS } from "@/lib/reminders";
 import { useReminders } from "@/lib/reminders-store";
@@ -47,6 +48,7 @@ function SettingsPage() {
       >
         Show the question-mark tour
       </button>
+      <LoadSample />
 
       <section id="you" className="mt-5 flex flex-col gap-3">
         <p className="text-xs font-medium uppercase tracking-wide text-faint">You</p>
@@ -84,6 +86,7 @@ function SettingsPage() {
             onChange={(e) => s.setWarrantyLine(e.target.value)}
           />
         </div>
+        <WebsiteField />
       </section>
 
       <section id="territory" className="mt-5 flex flex-col gap-3">
@@ -174,6 +177,83 @@ function SettingsPage() {
 
       <NotionBackup />
     </main>
+  );
+}
+
+function LoadSample() {
+  const counties = useDayBook((s) => s.profile.counties);
+  const navigate = useNavigate();
+  if (counties.trim()) return null;
+  return (
+    <button
+      type="button"
+      className="mt-2 h-11 w-full rounded-full border border-border text-sm"
+      onClick={() => {
+        loadDemo();
+        void navigate({ to: "/streets" });
+      }}
+    >
+      Load a sample day
+    </button>
+  );
+}
+
+function WebsiteField() {
+  const url = useSettings((s) => s.companyWebsite);
+  const brief = useSettings((s) => s.companySiteBrief);
+  const setWebsite = useSettings((s) => s.setCompanyWebsite);
+  const setBrief = useSettings((s) => s.setCompanySiteBrief);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function readSite() {
+    if (!url.trim() || busy) return;
+    setBusy(true);
+    setErr(null);
+    try {
+      const res = await fetch("/api/company-site", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      const data = (await res.json()) as { brief?: string; url?: string; error?: string };
+      if (!res.ok) throw new Error(data.error || "Could not read that site.");
+      if (data.url && data.url !== url) setWebsite(data.url);
+      setBrief(data.brief ?? "");
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Could not read that site.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="min-w-0">
+      <Label htmlFor="website">Company website</Label>
+      <Input
+        id="website"
+        className="mt-1"
+        value={url}
+        onChange={(e) => setWebsite(e.target.value)}
+        placeholder="https://…"
+        inputMode="url"
+      />
+      <p className="mt-1 text-xs leading-snug text-faint">
+        Optional. He reads what you advertise — he does not invent a URL.
+      </p>
+      {url.trim() ? (
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => void readSite()}
+          className="mt-2 h-11 w-full rounded-full border border-border text-sm disabled:opacity-40"
+        >
+          {busy ? "Reading the site…" : brief ? "Read the site again" : "Read the site"}
+        </button>
+      ) : null}
+      {err ? <p className="mt-2 text-sm text-danger">{err}</p> : null}
+      {brief ? <p className="mt-2 text-sm leading-relaxed text-muted">{brief}</p> : null}
+    </div>
   );
 }
 

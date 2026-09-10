@@ -8,10 +8,14 @@ type SettingsState = {
   theme: ThemeMode;
   companyName: string;
   warrantyLine: string;
+  companyWebsite: string;
+  companySiteBrief: string;
   setTheme: (theme: ThemeMode) => void;
   toggleTheme: () => void;
   setCompanyName: (v: string) => void;
   setWarrantyLine: (v: string) => void;
+  setCompanyWebsite: (v: string) => void;
+  setCompanySiteBrief: (v: string) => void;
 };
 
 export function applyTheme(theme: ThemeMode) {
@@ -28,6 +32,8 @@ export const useSettings = create<SettingsState>()(
       theme: "dark",
       companyName: "Roofus",
       warrantyLine: "See the actual Owens Corning warranty.",
+      companyWebsite: "",
+      companySiteBrief: "",
       setTheme: (theme) => {
         applyTheme(theme);
         set({ theme });
@@ -39,6 +45,8 @@ export const useSettings = create<SettingsState>()(
       },
       setCompanyName: (companyName) => set({ companyName }),
       setWarrantyLine: (warrantyLine) => set({ warrantyLine }),
+      setCompanyWebsite: (companyWebsite) => set({ companyWebsite }),
+      setCompanySiteBrief: (companySiteBrief) => set({ companySiteBrief }),
     }),
     {
       name: "roofus-settings",
@@ -46,6 +54,8 @@ export const useSettings = create<SettingsState>()(
         theme: s.theme,
         companyName: s.companyName,
         warrantyLine: s.warrantyLine,
+        companyWebsite: s.companyWebsite,
+        companySiteBrief: s.companySiteBrief,
       }),
       onRehydrateStorage: () => (state) => {
         if (typeof window !== "undefined" && !localStorage.getItem("roofus-dark-v2")) {

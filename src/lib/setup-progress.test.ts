@@ -105,4 +105,10 @@ describe("applySetupAnswer", () => {
   it("does not invent zips in chat", () => {
     assert.equal(applySetupAnswer("zips", "17050", snap(), blankSurvive), null);
   });
+
+  it("saves a website on the You row without treating it as a name", () => {
+    const a = applySetupAnswer("you", "https://northridge.example", snap(), blankSurvive);
+    assert.equal(a?.companyWebsite, "https://northridge.example/");
+    assert.equal(a?.profile?.goBy, undefined);
+  });
 });

@@ -10,7 +10,8 @@ import { streetsForCoach } from "@/lib/streets-store";
 import { streamCoach } from "@/lib/stream-coach";
 import { notionForCoach } from "@/lib/notion-store";
 import { applyWalkAnswer } from "@/lib/survive";
-import { applySetupAnswer, nextIncomplete, setupSnap } from "@/lib/setup-progress";
+import { applyCoachWrite } from "@/lib/coach-write";
+import { nextIncomplete, setupSnap } from "@/lib/setup-progress";
 import { surviveForCoach, useSurvive } from "@/lib/survive-store";
 import { useStreets } from "@/lib/streets-store";
 import { weatherForCoach } from "@/lib/weather-store";
@@ -46,7 +47,9 @@ export async function sendRoofus(
     if (patch?.survive) useSurvive.getState().patch(patch.survive);
     if (patch?.profile) useDayBook.getState().patchProfile(patch.profile);
   }
-  if (!opts?.kickoff && thread?.origin === "setup") {
+  const liveNow = useCoach.getState();
+  const liveThread = liveNow.activeId ? liveNow.threads[liveNow.activeId] : thread;
+  if (!opts?.kickoff && liveThread && (liveThread.origin === "setup" || liveThread.mode === "live")) {
     const profile = useDayBook.getState().profile;
     const settings = useSettings.getState();
     const snap = setupSnap({
@@ -62,14 +65,13 @@ export async function sendRoofus(
       zipCount: useStreets.getState().loops.length,
       survive: useSurvive.getState(),
     });
-    const row = nextIncomplete(snap, thread.setupRow);
-    if (row) {
-      const patch = applySetupAnswer(row, content, snap, useSurvive.getState());
-      if (patch?.survive) useSurvive.getState().patch(patch.survive);
-      if (patch?.profile) useDayBook.getState().patchProfile(patch.profile);
-      if (patch?.companyName) settings.setCompanyName(patch.companyName);
-      if (patch?.warrantyLine) settings.setWarrantyLine(patch.warrantyLine);
-    }
+    const row = liveThread.origin === "setup" ? nextIncomplete(snap, liveThread.setupRow) : null;
+    const patch = applyCoachWrite(content, snap, useSurvive.getState(), row);
+    if (patch?.survive) useSurvive.getState().patch(patch.survive);
+    if (patch?.profile) useDayBook.getState().patchProfile(patch.profile);
+    if (patch?.companyName) settings.setCompanyName(patch.companyName);
+    if (patch?.warrantyLine) settings.setWarrantyLine(patch.warrantyLine);
+    if (patch?.companyWebsite) settings.setCompanyWebsite(patch.companyWebsite);
   }
   if (!opts?.kickoff) live.pushUser(content);
   live.setBusy(true);
@@ -95,6 +97,8 @@ export async function sendRoofus(
         origin: thread?.origin,
         companyName: settings.companyName,
         warrantyLine: settings.warrantyLine,
+        companyWebsite: settings.companyWebsite,
+        companySiteBrief: settings.companySiteBrief,
         imageDataUrl: opts?.imageDataUrl,
         dayBook: [
           dayBookForCoach(),

@@ -7,6 +7,7 @@
 import { parseNotionId, type NotionFaq, type NotionIds, type NotionTable } from "@/lib/notion-ids";
 import type { DayEntry } from "@/lib/day-book";
 import type { StreetLoop } from "@/lib/streets-types";
+import { loopHeadline, townFromHeadline, zipFromHeadline } from "@/lib/streets-rank";
 import type { StormEvent } from "@/lib/weather-types";
 import type { MindsetRow } from "@/lib/notion-merge";
 import { sanitizeLoop, sanitizeStorm, loopWorthKeeping } from "@/lib/notion-merge";
@@ -173,6 +174,11 @@ const DAY_PROPS = {
   Tomorrow: { rich_text: {} },
 };
 
+const STREET_EXTRAS = {
+  Town: { rich_text: {} },
+  Zip: { rich_text: {} },
+};
+
 const STREET_PROPS = {
   Name: { title: {} },
   Key: { rich_text: {} },
@@ -185,6 +191,7 @@ const STREET_PROPS = {
   Lat: { number: {} },
   Lon: { number: {} },
   Streets: { rich_text: {} },
+  ...STREET_EXTRAS,
 };
 
 const STORM_EXTRAS = {
@@ -250,6 +257,11 @@ export async function prepareNotion(token: string, ids: NotionIds) {
   await call(token, `/databases/${ids.stormsDb}`, {
     method: "PATCH",
     body: JSON.stringify({ properties: STORM_EXTRAS }),
+  });
+  await sleep(RATE_MS);
+  await call(token, `/databases/${ids.streetsDb}`, {
+    method: "PATCH",
+    body: JSON.stringify({ properties: STREET_EXTRAS }),
   });
 }
 
@@ -322,8 +334,10 @@ function dayProps(d: DayEntry): Record<string, NotionProp> {
 
 function streetProps(l: StreetLoop): Record<string, NotionProp> {
   return {
-    Name: title(l.zip.trim() || l.title.trim() || l.streets[0] || l.id),
+    Name: title(loopHeadline(l)),
     Key: rich(l.id),
+    Zip: rich(l.zip),
+    Town: rich(l.town),
     County: rich(l.county),
     State: rich(l.state),
     Status: sel(l.status || "fresh"),
@@ -456,11 +470,15 @@ export async function pullSnapshot(token: string, ids: NotionIds): Promise<Notio
 
   const streetRaw = await queryAll(token, ids.streetsDb);
   const loops: StreetLoop[] = streetRaw
-    .map((p) =>
-      sanitizeLoop({
+    .map((p) => {
+      const title = readTitle(p);
+      const zip = readRich(p, "Zip") || zipFromHeadline(title);
+      const town = readRich(p, "Town") || townFromHeadline(title);
+      return sanitizeLoop({
         id: readRich(p, "Key") || String(p.id),
-        title: readTitle(p),
-        zip: /^\d{5}$/.test(readTitle(p).trim()) ? readTitle(p).trim() : "",
+        title,
+        zip,
+        town,
         streets: readRich(p, "Streets")
           .split(",")
           .map((s) => s.trim())
@@ -473,8 +491,8 @@ export async function pullSnapshot(token: string, ids: NotionIds): Promise<Notio
         lon: readNum(p, "Lon"),
         status: readSel(p, "Status") as StreetLoop["status"],
         lastResult: readRich(p, "Result") as StreetLoop["lastResult"],
-      }),
-    )
+      });
+    })
     .filter(loopWorthKeeping);
 
   const stormRaw = await queryAll(token, ids.stormsDb);

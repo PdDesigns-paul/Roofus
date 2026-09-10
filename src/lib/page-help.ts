@@ -3,7 +3,7 @@ export const PAGE_HELP = {
     title: "Roofus",
     body: [
       "This is the porch. The bar is setup — name, territory, zips, hours, warranty, Why. Each row opens Presets or Ask Roofus. Tell Roofus is the pinned setup chat.",
-      "Orange button is Roofus. Tap to pick Live, Roleplay, or Mindset — each is a new chat. Hold starts Live. History is the clock in the chat. Menu: Cards, Reference, Presets. First open walks the question mark.",
+      "Orange button is Roofus. Tap to pick Live, Roleplay, or Mindset — each is a new chat. Hold starts Live. History is the clock in the chat. Menu: Cards, Reference, Streets, Presets. First open walks the question mark.",
       "Bottom: Today, Inspect, Home. Back shows on Cards, Reference, Presets, and Streets. Put the app on your Home Screen so the tile says Roofus and shows the dog.",
     ],
   },
@@ -12,13 +12,13 @@ export const PAGE_HELP = {
     body: [
       "First time: finish setup on Home — counties and a state. Hours live in Presets. Then the four counts.",
       "Before you knock is the zip, age band, weather you may mention, and the first door line. Pocket cards is Door, Pushback, i35, Set, Compass.",
-      "Neighborhood today is the zip you’re on. After Action Report is wins first, then facts, then a plan with verbs. Ask Roofus and he’ll name tomorrow.",
+      "Neighborhood today is town · zip from Streets. Open Streets from More, Home, or that line. After Action Report is wins first, then facts, then a plan with verbs. Ask Roofus and he’ll name tomorrow.",
     ],
   },
   streets: {
     title: "Streets",
     body: [
-      "Build from the counties in Presets — this page is not a tab. You pick the roof age — default 17–25 years. Tap Change to edit. Cards are town · zip, not a list of numbers. Working sits at the top. Tap a county to open the rest. Streets on a card are the age-band pockets — tap the card.",
+      "Build from the counties in Presets. Open from More, Home, Today, or Presets. You pick the roof age — default 17–25 years. Tap Change to edit. Cards are town · zip, not a list of numbers. Working sits at the top. Tap a county to open the rest. Search the list. A rural county still gets a row even if Census found no age-band zips yet.",
       "A Working zip shows one sentence if a kept storm actually hit it. Use today copies that sentence onto Today. Last 48 hours and the season log are not on this page.",
     ],
   },
@@ -32,8 +32,8 @@ export const PAGE_HELP = {
   inspect: {
     title: "Inspect",
     body: [
-      "Photos first. Check Street, Four slopes, Close-up, Witnesses, Attic. Ticks are working memory for this house — they don’t save and they’re not a report.",
-      "Then Camera, Photos, or Practice shot. Ask what you’re looking at, whether it’s the worst, or what to say. He names the i35 slot — Bad, Good, Worst, or skip theater. Practice is not this house.",
+      "Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic — tap a row for what to shoot. Ticks are this house. They don’t save. Not a report.",
+      "This shot: Camera, Photos, or Practice. Ask what you’re looking at, whether it’s the worst, or what to say. He names the i35 slot — Bad, Good, Worst, or skip theater. Practice is not this house.",
       "Don’t announce off the ladder. Opening this page starts a blank ask — old inspect chats live under Roofus history.",
     ],
   },
@@ -55,7 +55,7 @@ export const PAGE_HELP = {
   settings: {
     title: "Presets",
     body: [
-      "First name, counties, state, when you knock, morning work, hard stop. Company name and warranty line. He uses those when he talks product.",
+      "First name, counties, state, when you knock, morning work, hard stop. Company name, website, warranty line. He reads the site when you tap Read the site. He uses those when he talks product.",
       "Zips (Streets) opens from this page. Rebuild after you change counties.",
       "Reminders nag you when you open the app. Morning: storm report if it is empty. Evening: After Action Report if it is blank. Sundays: pace. The 1st: talent stack. Did it dismisses that nag for today.",
       "Mindset worksheets (Why, demon, Pace, stack) live on this page. The orange fan opens the chat. After Action Report is on Today.",

@@ -11,6 +11,12 @@ describe("WALK_SLOTS", () => {
       ["street", "slopes", "close", "witness", "attic"],
     );
   });
+  it("has a description and sub-shots for each slot", () => {
+    for (const s of WALK_SLOTS) {
+      assert.ok(s.blurb.length > 8);
+      assert.ok(s.checks.length >= 3);
+    }
+  });
 });
 
 describe("I35_SLOTS", () => {
@@ -49,7 +55,8 @@ describe("INSPECT_SYSTEM", () => {
     assert.match(INSPECT_SYSTEM, /i35 slot/);
     assert.match(INSPECT_SYSTEM, /Skip theater/);
     assert.match(INSPECT_SYSTEM, /Do not call hail or wind a claim verdict/);
-    assert.match(INSPECT_SYSTEM, /Practice shot/);
+    assert.match(INSPECT_SYSTEM, /Walk this house/);
+    assert.match(INSPECT_SYSTEM, /This shot/);
     assert.match(INSPECT_SYSTEM, /Name missing tabs/);
     assert.match(INSPECT_SYSTEM, /Do not say insurance will pay/);
   });

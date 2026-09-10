@@ -46,6 +46,7 @@ export type RestoreMindset = {
   ageMax?: number;
   companyName?: string;
   warrantyLine?: string;
+  companyWebsite?: string;
 };
 
 function emptyDay(date: string): DayEntry {
@@ -236,7 +237,7 @@ export function mergeFaqs(current: NotionFaq[], incoming: NotionFaq[]): NotionFa
 export function packMindset(
   survive: SurviveFields,
   profile: DayProfile,
-  extra: { ageMin: number; ageMax: number; companyName: string; warrantyLine: string },
+  extra: { ageMin: number; ageMax: number; companyName: string; warrantyLine: string; companyWebsite?: string },
 ): MindsetRow[] {
   return [
     {
@@ -306,6 +307,7 @@ export function packMindset(
           extra.warrantyLine.trim() === "See the actual Owens Corning warranty."
             ? ""
             : extra.warrantyLine,
+        companyWebsite: extra.companyWebsite?.trim() ?? "",
       }),
     },
   ];
@@ -390,6 +392,7 @@ export function unpackMindset(rows: Record<string, string>): RestoreMindset {
   const company = unpackLabeled(rows.Company ?? "");
   if (company.companyName) out.companyName = company.companyName;
   if (company.warrantyLine) out.warrantyLine = company.warrantyLine;
+  if (company.companyWebsite) out.companyWebsite = company.companyWebsite;
 
   return out;
 }
