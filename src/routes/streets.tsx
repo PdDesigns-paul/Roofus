@@ -55,7 +55,7 @@ function StreetsPage() {
   const defaultCounty = working.length ? null : (groups[0]?.county ?? null);
   const shownCounty = openCounty === undefined ? defaultCounty : openCounty;
 
-  async function build() {
+  async function build(force = false) {
     if (!profile.counties.trim() || !profile.states.trim()) {
       setErr("Fill county and state in Presets first.");
       return;
@@ -75,6 +75,8 @@ function StreetsPage() {
       });
       const data = (await res.json()) as StreetsBuildResponse & { error?: string };
       if (!res.ok) throw new Error(data.error || "Could not build streets.");
+      // Restore may land while Census is still reading. Don't blow it away.
+      if (!force && useStreets.getState().loops.length) return;
       replace(data.loops, {
         note: data.note,
         yearFrom: data.yearFrom,
@@ -185,7 +187,7 @@ function StreetsPage() {
       <button
         type="button"
         disabled={busy}
-        onClick={() => void build()}
+        onClick={() => void build(true)}
         className="mt-4 h-12 w-full rounded-full bg-fg text-sm text-paper disabled:opacity-40"
       >
         {busy ? "Building zips…" : loops.length ? "Rebuild from my counties" : "Build zips from my counties"}

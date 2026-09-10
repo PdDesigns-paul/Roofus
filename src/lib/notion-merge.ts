@@ -250,9 +250,13 @@ export function packMindset(
     {
       name: "Stack",
       body: packLabeled({
-        stackMonth: survive.stackMonth,
-        skill: survive.skill,
-        drill: survive.drill,
+        ...(survive.skill.trim() || survive.drill.trim()
+          ? {
+              stackMonth: survive.stackMonth,
+              skill: survive.skill,
+              drill: survive.drill,
+            }
+          : {}),
       }),
     },
     {
@@ -265,15 +269,19 @@ export function packMindset(
         knockWindow: profile.knockWindow,
         paperWindow: profile.paperWindow,
         hardStop: profile.hardStop,
-        ageMin: extra.ageMin,
-        ageMax: extra.ageMax,
+        ...(profile.goBy.trim() || profile.counties.trim() || profile.states.trim()
+          ? { ageMin: extra.ageMin, ageMax: extra.ageMax }
+          : {}),
       }),
     },
     {
       name: "Company",
       body: packLabeled({
-        companyName: extra.companyName,
-        warrantyLine: extra.warrantyLine,
+        companyName: extra.companyName.trim() === "Roofus" ? "" : extra.companyName,
+        warrantyLine:
+          extra.warrantyLine.trim() === "See the actual Owens Corning warranty."
+            ? ""
+            : extra.warrantyLine,
       }),
     },
   ];
@@ -352,6 +360,40 @@ export function unpackMindset(rows: Record<string, string>): RestoreMindset {
   if (company.warrantyLine) out.warrantyLine = company.warrantyLine;
 
   return out;
+}
+
+export function rowsWithBody(rows: MindsetRow[]): MindsetRow[] {
+  return rows.filter((r) => r.body.trim());
+}
+
+/** A zip with no coords is still a zip. Do not drop it on restore. */
+export function loopWorthKeeping(l: StreetLoop): boolean {
+  return Boolean(l.id && (l.zip.trim() || l.title.trim() || l.streets.length));
+}
+
+export function restoreTally(pulled: {
+  days: DayEntry[];
+  loops: StreetLoop[];
+  storms: StormEvent[];
+  mindset: Record<string, string>;
+  faqs: NotionFaq[];
+}): string {
+  const bits: string[] = [];
+  if (pulled.days.length) {
+    bits.push(`${pulled.days.length} day${pulled.days.length === 1 ? "" : "s"}`);
+  }
+  if (pulled.loops.length) {
+    bits.push(`${pulled.loops.length} zip${pulled.loops.length === 1 ? "" : "s"}`);
+  }
+  if (pulled.storms.length) {
+    bits.push(`${pulled.storms.length} storm${pulled.storms.length === 1 ? "" : "s"}`);
+  }
+  if (Object.values(pulled.mindset).some((v) => v.trim())) bits.push("mindset");
+  if (pulled.faqs.length) bits.push("memory");
+  if (!bits.length) {
+    return "Notion had nothing to copy onto this phone. Backup from the phone that has the day, then Restore here.";
+  }
+  return `Brought back ${bits.join(", ")}.`;
 }
 
 export function fillSurvive(cur: SurviveFields, incoming: Partial<SurviveFields>): Partial<SurviveFields> {

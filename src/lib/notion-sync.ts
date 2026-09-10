@@ -7,12 +7,15 @@ import { type NotionFaq, type NotionTable } from "@/lib/notion-ids";
 import {
   fillProfile,
   fillSurvive,
+  loopWorthKeeping,
   MAX_BACKUP_STREETS,
   mergeDays,
   mergeFaqs,
   mergeLoops,
   mergeStorms,
   packMindset,
+  restoreTally,
+  rowsWithBody,
   unpackMindset,
 } from "@/lib/notion-merge";
 import { useNotion } from "@/lib/notion-store";
@@ -55,12 +58,14 @@ function tableItems(table: NotionTable): unknown[] {
     const p = useDayBook.getState().profile;
     const streets = useStreets.getState();
     const set = useSettings.getState();
-    return packMindset(s, p, {
-      ageMin: streets.ageMin,
-      ageMax: streets.ageMax,
-      companyName: set.companyName,
-      warrantyLine: set.warrantyLine,
-    });
+    return rowsWithBody(
+      packMindset(s, p, {
+        ageMin: streets.ageMin,
+        ageMax: streets.ageMax,
+        companyName: set.companyName,
+        warrantyLine: set.warrantyLine,
+      }),
+    );
   }
   return useNotion.getState().faqs;
 }
@@ -73,17 +78,30 @@ const LABELS: Record<NotionTable, string> = {
   memory: "memory",
 };
 
+function whenHydrated(store: {
+  persist: { hasHydrated: () => boolean; onFinishHydration: (cb: () => void) => () => void };
+}): Promise<void> {
+  if (store.persist.hasHydrated()) return Promise.resolve();
+  return new Promise((resolve) => {
+    const unsub = store.persist.onFinishHydration(() => {
+      unsub();
+      resolve();
+    });
+    window.setTimeout(resolve, 400);
+  });
+}
+
 export async function connectNotion(onProgress?: Progress) {
   const { token, pageUrl, setIds, setError } = useNotion.getState();
   setError("");
-  onProgress?.("Building tables…");
+  onProgress?.("Finding tables…");
   const res = await fetch("/api/notion-setup", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ token, pageUrl }),
   });
   const data = (await res.json()) as { ids?: ReturnType<typeof useNotion.getState>["ids"]; error?: string };
-  if (!res.ok || !data.ids) throw new Error(data.error || "Could not build the tables.");
+  if (!res.ok || !data.ids) throw new Error(data.error || "Could not find the tables.");
   setIds(data.ids);
 }
 
@@ -120,12 +138,25 @@ export async function restoreNotion(onProgress?: Progress) {
   const { token, ids, setError, setFaqs, markSync } = useNotion.getState();
   if (!token || !ids) throw new Error("Connect Notion in Presets first.");
   setError("");
+  await Promise.all([
+    whenHydrated(useDayBook),
+    whenHydrated(useStreets),
+    whenHydrated(useWeather),
+    whenHydrated(useSurvive),
+    whenHydrated(useNotion),
+    whenHydrated(useSettings),
+  ]);
   onProgress?.("Restoring…");
   const data = await postSync({ token, ids, mode: "pull" });
   if (!data.pulled) throw new Error("Restore missed.");
-  applyRestore(data.pulled);
-  setFaqs(mergeFaqs(useNotion.getState().faqs, data.pulled.faqs));
+  const pulled = {
+    ...data.pulled,
+    loops: data.pulled.loops.filter(loopWorthKeeping),
+  };
+  applyRestore(pulled);
+  setFaqs(mergeFaqs(useNotion.getState().faqs, pulled.faqs));
   markSync(new Date().toISOString());
+  return restoreTally(pulled);
 }
 
 function applyRestore(pulled: {
@@ -134,14 +165,13 @@ function applyRestore(pulled: {
   storms: StormEvent[];
   mindset: Record<string, string>;
 }) {
-  const book = useDayBook.getState();
-  useDayBook.setState({ days: mergeDays(book.days, pulled.days) });
+  useDayBook.setState((s) => ({ days: mergeDays(s.days, pulled.days) }));
 
   if (pulled.loops.length) {
-    useStreets.setState({ loops: mergeLoops(useStreets.getState().loops, pulled.loops) });
+    useStreets.setState((s) => ({ loops: mergeLoops(s.loops, pulled.loops) }));
   }
   if (pulled.storms.length) {
-    useWeather.setState({ kept: mergeStorms(useWeather.getState().kept, pulled.storms) });
+    useWeather.setState((s) => ({ kept: mergeStorms(s.kept, pulled.storms) }));
   }
 
   const unpacked = unpackMindset(pulled.mindset);
@@ -151,11 +181,7 @@ function applyRestore(pulled: {
   const nextProfile = fillProfile(useDayBook.getState().profile, unpacked.profile);
   useDayBook.setState({ profile: nextProfile });
 
-  if (
-    unpacked.ageMin &&
-    unpacked.ageMax &&
-    !useStreets.getState().builtFor
-  ) {
+  if (unpacked.ageMin && unpacked.ageMax && !useStreets.getState().builtFor) {
     useStreets.getState().setAge(unpacked.ageMin, unpacked.ageMax);
   }
 
@@ -163,10 +189,7 @@ function applyRestore(pulled: {
   if (unpacked.companyName && (!settings.companyName.trim() || settings.companyName === "Roofus")) {
     settings.setCompanyName(unpacked.companyName);
   }
-  if (
-    unpacked.warrantyLine &&
-    settings.warrantyLine === "See the actual Owens Corning warranty."
-  ) {
+  if (unpacked.warrantyLine && settings.warrantyLine === "See the actual Owens Corning warranty.") {
     settings.setWarrantyLine(unpacked.warrantyLine);
   }
 }

@@ -19,6 +19,7 @@ export function NotionBackup() {
   const disconnect = useNotion((s) => s.disconnect);
   const setError = useNotion((s) => s.setError);
   const [busy, setBusy] = useState<string | null>(null);
+  const [ok, setOk] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const [a, setA] = useState("");
 
@@ -30,11 +31,13 @@ export function NotionBackup() {
     document.querySelector("[data-notion-error]")?.scrollIntoView({ block: "nearest" });
   }, [lastError]);
 
-  async function run(label: string, fn: (onProgress: (s: string) => void) => Promise<void>) {
+  async function run(label: string, fn: (onProgress: (s: string) => void) => Promise<string | void>) {
     setBusy(label);
+    setOk(null);
     setError("");
     try {
-      await fn(setBusy);
+      const msg = await fn(setBusy);
+      if (typeof msg === "string" && msg.trim()) setOk(msg);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Notion missed that.");
     } finally {
@@ -50,7 +53,9 @@ export function NotionBackup() {
         streets, storms, mindset, and things Roofus should remember. Recommended. Not required.
       </p>
       <p className="mt-2 text-sm leading-relaxed text-muted">
-        The secret stays on this phone. We only send it to Notion when you tap Connect or Backup.
+        The secret stays on this phone. We only send it to Notion when you tap Connect, Backup, or
+        Restore. Connect finds the tables. Backup copies this phone. Restore brings the copy here.
+        Do not Backup from an empty phone — that can overwrite the copy.
       </p>
 
       <ol className="mt-4 flex list-decimal flex-col gap-2 pl-5 text-sm leading-relaxed text-muted">
@@ -96,20 +101,15 @@ export function NotionBackup() {
         <button
           type="button"
           disabled={Boolean(busy) || !canConnect}
-          onClick={() =>
-            void run("Building tables…", async (p) => {
-              await connectNotion(p);
-              await backupNotion(p);
-            })
-          }
+          onClick={() => void run("Finding tables…", connectNotion)}
           className="mt-4 h-12 w-full rounded-full bg-fg text-sm text-paper disabled:opacity-40"
         >
-          {busy ?? "Connect and copy"}
+          {busy ?? "Connect"}
         </button>
       ) : (
         <div className="mt-4 flex flex-col gap-2">
           <p className="text-xs text-faint">
-            {lastSyncAt ? `Last copy ${lastSyncAt.slice(0, 10)}` : "Connected. Has not copied yet."}
+            {lastSyncAt ? `Last copy ${lastSyncAt.slice(0, 10)}` : "Connected. Backup this phone, or Restore the copy here."}
           </p>
           <button
             type="button"
@@ -117,7 +117,7 @@ export function NotionBackup() {
             onClick={() => void run("Copying…", backupNotion)}
             className="h-12 rounded-full bg-fg text-sm text-paper disabled:opacity-40"
           >
-            {busy && !busy.startsWith("Restor") ? busy : "Backup now"}
+            {busy && !busy.startsWith("Restor") && busy !== "Finding tables…" ? busy : "Backup now"}
           </button>
           <button
             type="button"
@@ -135,6 +135,7 @@ export function NotionBackup() {
           </button>
         </div>
       )}
+      {ok ? <p className="mt-2 text-sm leading-relaxed">{ok}</p> : null}
       {lastError ? (
         <p data-notion-error className="mt-2 text-sm text-danger">
           {lastError}

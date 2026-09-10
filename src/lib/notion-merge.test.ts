@@ -10,6 +10,9 @@ import {
   mergeStorms,
   packLabeled,
   packMindset,
+  restoreTally,
+  rowsWithBody,
+  loopWorthKeeping,
   unpackLabeled,
   unpackMindset,
   sanitizeLoop,
@@ -239,6 +242,58 @@ describe("sanitizeLoop zip", () => {
       lastResult: "",
     });
     assert.equal(fromTitle.zip, "17055");
+  });
+});
+
+describe("restore helpers", () => {
+  it("does not push blank mindset rows", () => {
+    const packed = packMindset(emptySurvive(), {
+      setupDone: false,
+      goBy: "",
+      company: "",
+      counties: "",
+      states: "",
+      knockWindow: "",
+      paperWindow: "",
+      hardStop: "",
+    }, { ageMin: 17, ageMax: 25, companyName: "Roofus", warrantyLine: "" });
+    assert.equal(rowsWithBody(packed).length, 0);
+  });
+
+  it("keeps a zip with no coords", () => {
+    const l = sanitizeLoop({
+      id: "z1",
+      title: "",
+      zip: "17050",
+      streets: ["Oak"],
+      county: "Cumberland",
+      state: "PA",
+      medianYear: 2005,
+      homes: 10,
+      lat: 0,
+      lon: 0,
+      status: "fresh",
+      lastResult: "",
+    });
+    assert.equal(loopWorthKeeping(l), true);
+    assert.equal(loopWorthKeeping(sanitizeLoop({ id: "x", title: "", zip: "", streets: [], county: "", state: "", medianYear: 0, homes: 0, lat: 0, lon: 0, status: "fresh", lastResult: "" })), false);
+  });
+
+  it("says when Notion had nothing", () => {
+    assert.equal(
+      restoreTally({ days: [], loops: [], storms: [], mindset: { Why: "" }, faqs: [] }).startsWith("Notion had nothing"),
+      true,
+    );
+    assert.equal(
+      restoreTally({
+        days: [day("2026-09-10")],
+        loops: [],
+        storms: [],
+        mindset: {},
+        faqs: [],
+      }),
+      "Brought back 1 day.",
+    );
   });
 });
 

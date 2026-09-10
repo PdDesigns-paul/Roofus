@@ -48,7 +48,7 @@ export const PAGE_HELP = {
     title: "Presets",
     body: [
       "First name, counties, state, when you knock, morning work, hard stop. Company name and warranty line. He uses those when he talks product.",
-      "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Free account. Recommended so a dead phone is not a dead year.",
+      "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Connect finds the tables. Restore brings the copy onto this phone. Do not Backup from an empty phone.",
       "FAQs ship with public porch answers already filled. Edit or drop. Your office rules win.",
       "Show the question-mark tour plays the first-open walk again.",
     ],

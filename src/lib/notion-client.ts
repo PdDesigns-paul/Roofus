@@ -9,7 +9,7 @@ import type { DayEntry } from "@/lib/day-book";
 import type { StreetLoop } from "@/lib/streets-types";
 import type { StormEvent } from "@/lib/weather-types";
 import type { MindsetRow } from "@/lib/notion-merge";
-import { sanitizeLoop, sanitizeStorm } from "@/lib/notion-merge";
+import { sanitizeLoop, sanitizeStorm, loopWorthKeeping } from "@/lib/notion-merge";
 
 const VER = "2022-06-28";
 export const NOTION_CHUNK = 8;
@@ -127,13 +127,19 @@ async function findOrCreateDb(
   existing: Record<string, unknown>[],
   name: string,
   properties: Record<string, unknown>,
+  titles: Map<string, string>,
 ) {
-  const hit = existing.find((b) => {
-    if (b.type !== "child_database") return false;
-    const t = (b.child_database as { title?: string } | undefined)?.title ?? "";
-    return t.trim().toLowerCase() === name.toLowerCase();
-  });
-  if (hit?.id) return String(hit.id);
+  const want = name.toLowerCase();
+  for (const b of existing) {
+    if (b.type !== "child_database" || !b.id) continue;
+    const id = String(b.id);
+    let t = ((b.child_database as { title?: string } | undefined)?.title ?? "").trim();
+    if (!t) {
+      if (!titles.has(id)) titles.set(id, await databaseTitle(token, id));
+      t = titles.get(id) ?? "";
+    }
+    if (t.toLowerCase() === want) return id;
+  }
   const created = await call(token, "/databases", {
     method: "POST",
     body: JSON.stringify({
@@ -143,6 +149,16 @@ async function findOrCreateDb(
     }),
   });
   return String(created.id);
+}
+
+async function databaseTitle(token: string, id: string) {
+  try {
+    const db = await call(token, `/databases/${id}`);
+    const title = db.title as { plain_text?: string }[] | undefined;
+    return title?.map((t) => t.plain_text ?? "").join("").trim() ?? "";
+  } catch {
+    return "";
+  }
 }
 
 const DAY_PROPS = {
@@ -215,15 +231,16 @@ export async function setupNotion(token: string, pageUrl: string): Promise<Notio
   if (!parentPageId) throw new Error("Need the Notion page link. Open the page → Share → Copy link.");
   await call(token, `/pages/${parentPageId}`);
   const kids = await listChildren(token, parentPageId);
-  const daysDb = await findOrCreateDb(token, parentPageId, kids, "Days", DAY_PROPS);
+  const titles = new Map<string, string>();
+  const daysDb = await findOrCreateDb(token, parentPageId, kids, "Days", DAY_PROPS, titles);
   await sleep(RATE_MS);
-  const streetsDb = await findOrCreateDb(token, parentPageId, kids, "Streets", STREET_PROPS);
+  const streetsDb = await findOrCreateDb(token, parentPageId, kids, "Streets", STREET_PROPS, titles);
   await sleep(RATE_MS);
-  const stormsDb = await findOrCreateDb(token, parentPageId, kids, "Storms", STORM_PROPS);
+  const stormsDb = await findOrCreateDb(token, parentPageId, kids, "Storms", STORM_PROPS, titles);
   await sleep(RATE_MS);
-  const mindsetDb = await findOrCreateDb(token, parentPageId, kids, "Mindset", MIND_PROPS);
+  const mindsetDb = await findOrCreateDb(token, parentPageId, kids, "Mindset", MIND_PROPS, titles);
   await sleep(RATE_MS);
-  const memoryDb = await findOrCreateDb(token, parentPageId, kids, "Memory", MEM_PROPS);
+  const memoryDb = await findOrCreateDb(token, parentPageId, kids, "Memory", MEM_PROPS, titles);
   const ids = { parentPageId, daysDb, streetsDb, stormsDb, mindsetDb, memoryDb };
   await prepareNotion(token, ids);
   return ids;
@@ -403,7 +420,7 @@ export async function pushChunk(
       if (s) await upsert(token, db, map, s.id, stormProps(s));
     } else if (table === "mindset") {
       const m = asMind(item);
-      if (m) await upsert(token, db, map, m.name, mindProps(m));
+      if (m?.body.trim()) await upsert(token, db, map, m.name, mindProps(m));
     } else {
       const f = asFaq(item);
       if (f) await upsert(token, db, map, f.id, faqProps(f));
@@ -458,7 +475,7 @@ export async function pullSnapshot(token: string, ids: NotionIds): Promise<Notio
         lastResult: readRich(p, "Result") as StreetLoop["lastResult"],
       }),
     )
-    .filter((l) => l.id && l.lat && l.lon);
+    .filter(loopWorthKeeping);
 
   const stormRaw = await queryAll(token, ids.stormsDb);
   const storms: StormEvent[] = stormRaw
