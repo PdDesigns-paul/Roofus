@@ -217,12 +217,8 @@ export const useCoach = create<CoachState>()(
       ensureInspect: () =>
         set((s) => {
           const active = s.activeId ? s.threads[s.activeId] : null;
-          if (active?.origin === "inspect") {
+          if (active?.origin === "inspect" && active.messages.length === 0) {
             return { hat: active.hat, houseId: active.houseId, messages: active.messages };
-          }
-          const last = s.order.map((id) => s.threads[id]).find((t) => t?.origin === "inspect");
-          if (last) {
-            return { ...activate(s, last) };
           }
           const thread = makeThread("inspect");
           return {

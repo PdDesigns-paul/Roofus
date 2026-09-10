@@ -25,7 +25,14 @@
     color: var(--color-fg);
     font-family: var(--font-sans);
     overscroll-behavior: none;
+    overflow-x: clip;
     -webkit-tap-highlight-color: transparent;
+  }
+  input,
+  textarea,
+  select {
+    max-width: 100%;
+    min-width: 0;
   }
   button,
   a,

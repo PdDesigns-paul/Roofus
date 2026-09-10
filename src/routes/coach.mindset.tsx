@@ -31,16 +31,16 @@ function MindsetPage() {
   };
 
   return (
-    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-tab pt-4">
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
       <AppHeader title="Mindset" page="mindset" />
-      <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">Stay in the fight.</h1>
-      <p className="mt-3 text-sm leading-relaxed text-muted">
+      <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Stay in the fight.</h1>
+      <p className="mt-2 text-sm leading-snug text-muted">
         Most first-year roofers do not fail because they cannot sell. They fail because they cannot
         stand themselves when it gets hard. This page is that fight. After Action Report lives on
         Today.
       </p>
 
-      <section className="mt-8 rounded-2xl border border-border px-4 py-4">
+      <section className="mt-4 rounded-2xl border border-border px-3 py-3">
         <p className="text-xs font-medium uppercase tracking-wide text-faint">Compass</p>
         <ul className="mt-3 flex flex-col gap-2">
           {COMPASS.map((line) => (
@@ -151,17 +151,17 @@ function Field({
   area?: boolean;
 }) {
   return (
-    <label className="mt-3 block">
+    <label className="mt-2 block min-w-0">
       <span className="text-xs text-muted">{label}</span>
       {area ? (
         <textarea
-          className="mt-1 min-h-20 w-full rounded-xl border border-border bg-surface px-3 py-2 text-base leading-relaxed"
+          className="mt-1 min-h-16 w-full min-w-0 rounded-xl border border-border bg-surface px-3 py-2 text-base leading-relaxed"
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />
       ) : (
         <input
-          className="mt-1 h-11 w-full rounded-xl border border-border bg-surface px-3 text-base"
+          className="mt-1 h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />

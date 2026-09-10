@@ -9,7 +9,7 @@ export function AppErrorComponent({ error }: ErrorComponentProps) {
       </span>
       <h1 className="font-display text-2xl">Something broke</h1>
       <p className="max-w-md text-sm break-words text-paper/60">
-        {error.message || "Reload and try again."}
+        {(error instanceof Error && error.message) || "Reload and try again."}
       </p>
       <a
         href="/"

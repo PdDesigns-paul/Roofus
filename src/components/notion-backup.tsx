@@ -43,7 +43,7 @@ export function NotionBackup() {
   }
 
   return (
-    <section className="mt-10">
+    <section className="mt-6 min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-faint">Backup (optional)</p>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         Your day lives on this phone. A free Notion account keeps a copy if this phone dies — days,

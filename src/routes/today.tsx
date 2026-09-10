@@ -59,15 +59,15 @@ function SetupForm() {
   }
 
   return (
-    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-tab pt-4">
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
       <AppHeader title="Today" page="today" home />
-      <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">Where do you knock?</h1>
-      <p className="mt-3 text-sm leading-relaxed text-muted">
+      <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where do you knock?</h1>
+      <p className="mt-2 text-sm leading-relaxed text-muted">
         Once is enough. Hours, warranty, and FAQs live in Presets. Stays on this phone.
       </p>
 
       <form
-        className="mt-8 flex flex-col gap-5"
+        className="mt-5 flex flex-col gap-0"
         onSubmit={(e) => {
           e.preventDefault();
           save();
@@ -75,7 +75,7 @@ function SetupForm() {
       >
         <Field label="Your first name" hint="What Roofus should call you.">
           <input
-            className="h-12 w-full rounded-xl border border-border bg-surface px-4 text-base"
+            className="h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
             value={goBy}
             onChange={(e) => setGoBy(e.target.value)}
             autoComplete="nickname"
@@ -83,14 +83,14 @@ function SetupForm() {
         </Field>
         <Field label="Company" hint="Optional.">
           <input
-            className="h-12 w-full rounded-xl border border-border bg-surface px-4 text-base"
+            className="h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
             value={company}
             onChange={(e) => setCompany(e.target.value)}
           />
         </Field>
         <Field label="Which counties?" hint="Where you actually knock. Commas are fine.">
           <input
-            className="h-12 w-full rounded-xl border border-border bg-surface px-4 text-base"
+            className="h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
             value={counties}
             onChange={(e) => setCounties(e.target.value)}
             required
@@ -98,14 +98,14 @@ function SetupForm() {
         </Field>
         <Field label="Which state?" hint="PA, Ohio, whatever you cover.">
           <input
-            className="h-12 w-full rounded-xl border border-border bg-surface px-4 text-base"
+            className="h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
             value={states}
             onChange={(e) => setStates(e.target.value)}
             required
           />
         </Field>
-        {err ? <p className="text-sm text-danger">{err}</p> : null}
-        <button type="submit" className="h-12 rounded-full bg-fg text-sm text-paper">
+        {err ? <p className="mt-3 text-sm text-danger">{err}</p> : null}
+        <button type="submit" className="mt-4 h-11 rounded-full bg-fg text-sm text-paper">
           Save and go
         </button>
       </form>
@@ -159,10 +159,10 @@ function DaySheet() {
   const market = [profile.counties, profile.states].filter(Boolean).join(", ");
 
   return (
-    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-tab pt-4">
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
       <AppHeader title="Today" page="today" home />
-      <p className="mt-8 text-xs font-medium uppercase tracking-wide text-faint">{day.date}</p>
-      <h1 className="mt-1 font-display text-3xl leading-tight tracking-tight">
+      <p className="mt-4 text-xs font-medium uppercase tracking-wide text-faint">{day.date}</p>
+      <h1 className="mt-1 font-display text-2xl leading-tight tracking-tight">
         {profile.goBy.trim() ? `${profile.goBy.trim()}'s day` : "Today"}
       </h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
@@ -185,15 +185,15 @@ function DaySheet() {
         )}
       </p>
 
-      <section className="mt-8">
+      <section className="mt-4">
         <p className="text-xs font-medium uppercase tracking-wide text-faint">Tap to count</p>
-        <ul className="mt-3 grid grid-cols-2 gap-2">
+        <ul className="mt-2 grid grid-cols-2 gap-2">
           {COUNTERS.map((c) => (
-            <li key={c.key} className="rounded-2xl border border-border bg-surface px-3 py-3">
+            <li key={c.key} className="min-w-0 rounded-2xl border border-border bg-surface px-3 py-2.5">
               <p className="text-[11px] uppercase tracking-wide text-faint">{c.label}</p>
-              <p className="mt-1 font-display text-3xl tabular-nums leading-none">{day[c.key]}</p>
-              <p className="mt-1 text-xs text-muted">{c.hint}</p>
-              <div className="mt-3 flex gap-2">
+              <p className="mt-0.5 font-display text-2xl tabular-nums leading-none">{day[c.key]}</p>
+              <p className="mt-0.5 text-xs text-muted">{c.hint}</p>
+              <div className="mt-2 flex gap-2">
                 <button
                   type="button"
                   aria-label={`Minus ${c.label}`}
@@ -225,7 +225,7 @@ function DaySheet() {
         }
       >
         <input
-          className="mt-3 h-12 w-full rounded-xl border border-border bg-surface px-4 text-base"
+          className="mt-2 h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
           value={day.cluster}
           onChange={(e) => {
             const value = e.target.value;
@@ -261,7 +261,7 @@ function DaySheet() {
         hint="Filled from storms you kept, only if they match this loop. Edit freely. Age first."
       >
         <textarea
-          className="mt-3 min-h-24 w-full rounded-xl border border-border bg-surface px-4 py-3 text-base leading-relaxed"
+          className="mt-2 min-h-16 w-full min-w-0 rounded-xl border border-border bg-surface px-3 py-2 text-base leading-relaxed"
           value={day.storm}
           onChange={(e) => patchToday({ storm: e.target.value })}
           placeholder="Yesterday’s cell, 1 inch hail in Hampden — only if that’s true."
@@ -270,7 +270,7 @@ function DaySheet() {
 
       <Field label="After Action Report" hint="Wins first. Then what you’ll do different. A plan with verbs, not try harder.">
         <textarea
-          className="mt-3 min-h-32 w-full rounded-xl border border-border bg-surface px-4 py-3 text-base leading-relaxed"
+          className="mt-2 min-h-20 w-full min-w-0 rounded-xl border border-border bg-surface px-3 py-2 text-base leading-relaxed"
           value={day.afterAction}
           onChange={(e) => patchToday({ afterAction: e.target.value })}
         />
@@ -278,7 +278,7 @@ function DaySheet() {
 
       <Field label="Tomorrow I start at">
         <input
-          className="mt-3 h-12 w-full rounded-xl border border-border bg-surface px-4 text-base"
+          className="mt-2 h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
           value={day.tomorrowStreet}
           onChange={(e) => patchToday({ tomorrowStreet: e.target.value })}
         />
@@ -288,7 +288,7 @@ function DaySheet() {
         type="button"
         disabled={busy}
         onClick={askAboutToday}
-        className="mt-8 h-12 rounded-full bg-fg text-sm text-paper disabled:opacity-40"
+        className="mt-5 h-11 rounded-full bg-fg text-sm text-paper disabled:opacity-40"
       >
         Ask Roofus how today went
       </button>
@@ -336,9 +336,9 @@ function Field({
   children: ReactNode;
 }) {
   return (
-    <label className="mt-8 block">
+    <label className="mt-4 block min-w-0">
       <span className="text-xs font-medium uppercase tracking-wide text-faint">{label}</span>
-      {hint ? <span className="mt-1 block text-xs leading-relaxed text-muted">{hint}</span> : null}
+      {hint ? <span className="mt-0.5 block text-xs leading-snug text-muted">{hint}</span> : null}
       {children}
     </label>
   );

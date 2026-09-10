@@ -16,8 +16,8 @@ export function ChatBubble({
     <div
       className={
         role === "user"
-          ? "ml-10 whitespace-pre-wrap rounded-2xl bg-fg px-4 py-3 text-sm leading-relaxed text-paper"
-          : "mr-6 rounded-2xl border border-border bg-surface px-4 py-3 text-sm leading-relaxed text-fg"
+          ? "ml-8 min-w-0 break-words whitespace-pre-wrap rounded-2xl bg-fg px-3 py-2.5 text-sm leading-relaxed text-paper"
+          : "mr-4 min-w-0 break-words rounded-2xl border border-border bg-surface px-3 py-2.5 text-sm leading-relaxed text-fg"
       }
     >
       {role === "assistant" ? (

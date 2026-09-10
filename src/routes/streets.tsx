@@ -85,9 +85,9 @@ function StreetsPage() {
 
   if (!profile.setupDone) {
     return (
-      <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-tab pt-4">
+      <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
         <AppHeader title="Streets" page="streets" />
-        <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">Where you knock.</h1>
+        <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where you knock.</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted">
           Presets needs a county and a state first. Then we build zips from roofs in the age
           band — not from hail.
@@ -103,15 +103,15 @@ function StreetsPage() {
   }
 
   return (
-    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-tab pt-4">
+    <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
       <AppHeader title="Streets" page="streets" />
-      <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">Where you knock.</h1>
+      <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where you knock.</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">
         {profile.counties.trim()}, {profile.states.trim()}. One card per zip, grouped by county.
         You set the years. Streets on a card are the age-band pockets — not the whole zip.
       </p>
 
-      <p className="mt-6 text-xs font-medium uppercase tracking-wide text-faint">
+      <p className="mt-4 text-xs font-medium uppercase tracking-wide text-faint">
         Roofs about this old
       </p>
       <div className="mt-2 flex flex-wrap gap-2">
@@ -138,7 +138,7 @@ function StreetsPage() {
             max={40}
             value={ageMin}
             onChange={(e) => setAge(Number(e.target.value) || 10, ageMax)}
-            className="h-11 w-full rounded-xl border border-border bg-surface px-3 text-base text-fg"
+            className="h-11 min-w-0 w-full rounded-xl border border-border bg-surface px-3 text-base text-fg"
           />
         </label>
         <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-muted">
@@ -150,7 +150,7 @@ function StreetsPage() {
             max={45}
             value={ageMax}
             onChange={(e) => setAge(ageMin, Number(e.target.value) || ageMin)}
-            className="h-11 w-full rounded-xl border border-border bg-surface px-3 text-base text-fg"
+            className="h-11 min-w-0 w-full rounded-xl border border-border bg-surface px-3 text-base text-fg"
           />
         </label>
       </div>
@@ -162,7 +162,7 @@ function StreetsPage() {
         type="button"
         disabled={busy}
         onClick={() => void build()}
-        className="mt-6 h-12 rounded-full bg-fg text-sm text-paper disabled:opacity-40"
+        className="mt-4 h-11 rounded-full bg-fg text-sm text-paper disabled:opacity-40"
       >
         {busy ? "Building zips…" : loops.length ? "Rebuild from my counties" : "Build zips from my counties"}
       </button>
@@ -194,7 +194,7 @@ function StreetsPage() {
         </>
       ) : null}
 
-      <ul className="mt-8 flex flex-col gap-8">
+      <ul className="mt-5 flex flex-col gap-5">
         {groupLoopsByCounty(loops).map((group) => (
           <li key={group.county}>
             <p className="text-xs font-medium uppercase tracking-wide text-faint">{group.county}</p>
@@ -359,7 +359,7 @@ function PulsePanel({
   }
 
   return (
-    <section className="mt-10">
+    <section className="mt-6 min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-faint">Last 48 hours</p>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         NWS first, then local news and X with your counties pinned. High on a zip you keep jumps
@@ -460,7 +460,7 @@ function WeatherPanel({ counties, states }: { counties: string; states: string }
   }, [key]);
 
   return (
-    <section className="mt-10">
+    <section className="mt-6 min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-faint">Season log</p>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         Last six months of NWS reports. Keep what you will actually say. This does not pick

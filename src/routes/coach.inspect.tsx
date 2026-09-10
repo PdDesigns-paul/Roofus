@@ -19,26 +19,46 @@ export const Route = createFileRoute("/coach/inspect")({
 function InspectPage() {
   const cameraRef = useRef<HTMLInputElement>(null);
   const rollRef = useRef<HTMLInputElement>(null);
+  const liveId = useRef<string | null>(null);
   const [done, setDone] = useState<Partial<Record<WalkSlotId, boolean>>>({});
   const [photo, setPhoto] = useState<string | null>(null);
   const [question, setQuestion] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [, tick] = useState(0);
   const ensureInspect = useCoach((s) => s.ensureInspect);
+  const openThread = useCoach((s) => s.openThread);
   const inspectTurns = useCoach((s) => {
-    const active = s.activeId ? s.threads[s.activeId] : null;
-    if (active?.origin === "inspect") return active.messages;
-    const last = s.order.map((id) => s.threads[id]).find((t) => t?.origin === "inspect");
-    return last?.messages ?? EMPTY_TURNS;
+    const id = liveId.current;
+    if (!id) return EMPTY_TURNS;
+    return s.threads[id]?.messages ?? EMPTY_TURNS;
   });
   const streaming = useCoach((s) => s.streaming);
   const busy = useCoach((s) => s.busy);
-  const activeOrigin = useCoach((s) =>
-    s.activeId ? s.threads[s.activeId]?.origin ?? null : null,
-  );
-  const looking = busy && activeOrigin === "inspect";
+  const looking = Boolean(liveId.current) && busy;
   const shown = looking
     ? [...inspectTurns, { role: "assistant" as const, content: streaming }]
     : inspectTurns;
+
+  function beginShot() {
+    if (liveId.current && useCoach.getState().threads[liveId.current]) {
+      if (useCoach.getState().activeId !== liveId.current) {
+        openThread(liveId.current);
+      }
+      return;
+    }
+    ensureInspect();
+    liveId.current = useCoach.getState().activeId;
+    tick((n) => n + 1);
+  }
+
+  function newShot() {
+    abortTalk();
+    liveId.current = null;
+    setPhoto(null);
+    setQuestion("");
+    setError(null);
+    tick((n) => n + 1);
+  }
 
   async function onFile(file: File | undefined) {
     if (!file) return;
@@ -57,7 +77,7 @@ function InspectPage() {
     if (!q || !photo || busy) return;
     setQuestion("");
     setError(null);
-    ensureInspect();
+    beginShot();
     try {
       await sendRoofus(q, { imageDataUrl: photo });
     } catch (e) {
@@ -66,48 +86,51 @@ function InspectPage() {
   }
 
   return (
-    <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col px-5 pb-tab pt-4">
+    <main className="relative z-10 mx-auto flex h-dvh w-full min-w-0 max-w-lg flex-col overflow-hidden px-4 pt-3">
       <AppHeader title="Inspect" page="inspect" />
 
-      <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">Shoot. Then ask.</h1>
-      <p className="mt-3 text-sm leading-relaxed text-muted">
-        Photos first. Check the list. Then one shot and a question. Don’t talk off the ladder.
-      </p>
+      <div className="mt-3 flex items-end justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="font-display text-xl leading-tight tracking-tight">Shoot. Then ask.</h1>
+          <p className="mt-1 text-xs leading-relaxed text-muted">
+            Check the list. One shot. Don’t talk off the ladder.
+          </p>
+        </div>
+        {photo || shown.length ? (
+          <button type="button" onClick={newShot} className="h-10 shrink-0 rounded-full border border-border px-3 text-xs">
+            New shot
+          </button>
+        ) : null}
+      </div>
 
-      <section className="mt-8">
-        <p className="text-xs font-medium uppercase tracking-wide text-faint">Shots</p>
-        <ul className="mt-3 flex flex-col gap-2">
+      <section className="mt-3 shrink-0">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-faint">Shots</p>
+        <ul className="mt-2 flex flex-wrap gap-1.5">
           {WALK_SLOTS.map((s) => {
             const on = Boolean(done[s.id]);
             return (
               <li key={s.id}>
-                <button
-                  type="button"
-                  onClick={() => setDone((d) => ({ ...d, [s.id]: !d[s.id] }))}
-                  className="flex w-full min-h-12 items-start gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-left hover:bg-surface-2"
-                >
-                  <span
+                <Tip label={s.hint} side="bottom">
+                  <button
+                    type="button"
+                    onClick={() => setDone((d) => ({ ...d, [s.id]: !d[s.id] }))}
                     className={
                       on
-                        ? "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-fg text-paper"
-                        : "mt-0.5 size-5 shrink-0 rounded-full border border-border"
+                        ? "inline-flex h-10 items-center gap-1.5 rounded-full bg-fg px-3 text-sm text-paper"
+                        : "inline-flex h-10 items-center gap-1.5 rounded-full border border-border bg-surface px-3 text-sm"
                     }
                   >
-                    {on ? <Check className="size-3" /> : null}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-sm text-fg">{s.title}</span>
-                    <span className="mt-0.5 block text-xs leading-relaxed text-muted">{s.hint}</span>
-                  </span>
-                </button>
+                    {on ? <Check className="size-3.5" /> : null}
+                    {s.title}
+                  </button>
+                </Tip>
               </li>
             );
           })}
         </ul>
       </section>
 
-      <section className="mt-8">
-        <p className="text-xs font-medium uppercase tracking-wide text-faint">This shot</p>
+      <section className="mt-3 shrink-0">
         <input
           ref={cameraRef}
           type="file"
@@ -130,19 +153,19 @@ function InspectPage() {
           }}
         />
         {photo ? (
-          <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-surface">
-            <img src={photo} alt="This shot" className="max-h-64 w-full object-cover" />
-            <div className="flex gap-2 p-3">
+          <div className="overflow-hidden rounded-2xl border border-border bg-surface">
+            <img src={photo} alt="This shot" className="max-h-36 w-full object-cover" />
+            <div className="flex gap-2 p-2">
               <button
                 type="button"
-                className="h-11 flex-1 rounded-full bg-fg text-sm text-paper"
+                className="h-10 flex-1 rounded-full bg-fg text-sm text-paper"
                 onClick={() => cameraRef.current?.click()}
               >
                 Retake
               </button>
               <button
                 type="button"
-                className="h-11 flex-1 rounded-full border border-border text-sm"
+                className="h-10 flex-1 rounded-full border border-border text-sm"
                 onClick={() => rollRef.current?.click()}
               >
                 Other photo
@@ -150,14 +173,14 @@ function InspectPage() {
             </div>
           </div>
         ) : (
-          <div className="mt-3 grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <Tip label="Take a photo on the roof">
               <button
                 type="button"
                 onClick={() => cameraRef.current?.click()}
-                className="flex min-h-28 flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-surface text-sm hover:bg-surface-2"
+                className="flex h-16 flex-col items-center justify-center gap-1 rounded-2xl border border-border bg-surface text-sm hover:bg-surface-2"
               >
-                <Camera className="size-5 text-muted" />
+                <Camera className="size-4 text-muted" />
                 Camera
               </button>
             </Tip>
@@ -165,9 +188,9 @@ function InspectPage() {
               <button
                 type="button"
                 onClick={() => rollRef.current?.click()}
-                className="flex min-h-28 flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-surface text-sm hover:bg-surface-2"
+                className="flex h-16 flex-col items-center justify-center gap-1 rounded-2xl border border-border bg-surface text-sm hover:bg-surface-2"
               >
-                <ImagePlus className="size-5 text-muted" />
+                <ImagePlus className="size-4 text-muted" />
                 Photos
               </button>
             </Tip>
@@ -175,69 +198,70 @@ function InspectPage() {
         )}
       </section>
 
-      <section className="mt-8">
-        <p className="text-xs font-medium uppercase tracking-wide text-faint">Ask</p>
-        {shown.length > 0 ? (
-          <div className="mt-3 flex flex-col gap-3">
-            {shown.map((m, i) => (
-              <ChatBubble
-                key={`${m.role}-${i}`}
-                role={m.role}
-                streaming={looking && i === shown.length - 1 && m.role === "assistant"}
-                waitLabel="Looking at the shot…"
-              >
-                {m.content}
-              </ChatBubble>
-            ))}
-          </div>
-        ) : (
-          <div className="mt-3 flex flex-col gap-2">
-            {ASK_STARTERS.map((s) => (
-              <button
-                key={s}
-                type="button"
-                disabled={!photo || busy}
-                className="min-h-11 rounded-2xl border border-border bg-surface px-4 py-3 text-left text-sm leading-relaxed disabled:opacity-40"
-                onClick={() => void ask(s)}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
+      <section className="mt-3 flex min-h-0 min-w-0 flex-1 flex-col">
+        <p className="shrink-0 text-[11px] font-medium uppercase tracking-wide text-faint">Ask</p>
+        <div className="mt-2 min-h-0 flex-1 overflow-y-auto">
+          {shown.length > 0 ? (
+            <div className="flex flex-col gap-2 pb-2">
+              {shown.map((m, i) => (
+                <ChatBubble
+                  key={`${m.role}-${i}`}
+                  role={m.role}
+                  streaming={looking && i === shown.length - 1 && m.role === "assistant"}
+                  waitLabel="Looking at the shot…"
+                >
+                  {m.content}
+                </ChatBubble>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1.5">
+              {ASK_STARTERS.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  disabled={!photo || busy}
+                  className="min-h-10 rounded-xl border border-border bg-surface px-3 py-2 text-left text-sm leading-snug disabled:opacity-40"
+                  onClick={() => void ask(s)}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         <form
-          className="mt-3 flex gap-2"
+          className="shrink-0 border-t border-border/70 bg-paper pt-2"
+          style={{ paddingBottom: "calc(4.75rem + env(safe-area-inset-bottom))" }}
           onSubmit={(e) => {
             e.preventDefault();
             void ask();
           }}
         >
-          <input
-            className="h-12 flex-1 rounded-full border border-border bg-surface px-4 text-base"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder={photo ? "Ask about this shot…" : "Shoot first, then ask"}
-            disabled={!photo || busy}
-          />
-          {busy ? (
-            <button
-              type="button"
-              onClick={() => stopRoofus()}
-              className="h-12 rounded-full border border-border px-5 text-sm"
-            >
-              Stop
-            </button>
-          ) : (
-            <button
-              type="submit"
-              disabled={!photo || !question.trim()}
-              className="h-12 rounded-full bg-fg px-5 text-sm text-paper disabled:opacity-40"
-            >
-              Ask
-            </button>
-          )}
+          <div className="flex min-w-0 gap-2">
+            <input
+              className="h-11 min-w-0 flex-1 rounded-full border border-border bg-surface px-4 text-base"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder={photo ? "Ask about this shot…" : "Shoot first, then ask"}
+              disabled={!photo || busy}
+            />
+            {busy ? (
+              <button type="button" onClick={() => stopRoofus()} className="h-11 shrink-0 rounded-full border border-border px-4 text-sm">
+                Stop
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!photo || !question.trim()}
+                className="h-11 shrink-0 rounded-full bg-fg px-4 text-sm text-paper disabled:opacity-40"
+              >
+                Ask
+              </button>
+            )}
+          </div>
+          {error ? <p className="mt-2 text-sm text-danger">{error}</p> : null}
         </form>
-        {error ? <p className="mt-3 text-sm text-danger">{error}</p> : null}
       </section>
     </main>
   );

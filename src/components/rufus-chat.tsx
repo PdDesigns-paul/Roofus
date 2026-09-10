@@ -55,7 +55,7 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
       className={
         embedded
           ? "flex min-h-0 flex-1 flex-col"
-          : "relative z-10 mx-auto flex min-h-dvh w-full max-w-lg flex-col bg-paper"
+          : "relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col bg-paper"
       }
     >
       <header className="shrink-0 border-b border-border/70 px-4 pt-1">
@@ -179,7 +179,7 @@ export function RufusChat({ embedded = false }: { embedded?: boolean }) {
             />
           ) : null}
           <input
-            className="h-12 flex-1 rounded-full border border-border bg-surface px-4 text-base"
+            className="h-12 min-w-0 flex-1 rounded-full border border-border bg-surface px-4 text-base"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder={hat.id === "roleplay" ? "Hold the mic and knock, or type it." : "What just happened?"}

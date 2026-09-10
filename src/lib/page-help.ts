@@ -27,7 +27,7 @@ export const PAGE_HELP = {
     title: "Inspect",
     body: [
       "Photos first. Check Street, Four slopes, Close-up, Witnesses, Attic.",
-      "Then Camera or Photos. Then ask about that shot. He names what it looks like and the next shot. CompanyCam is the report.",
+      "Then Camera or Photos. Then ask about that shot. Opening this page starts a blank ask — old inspect chats live under Roofus, hold the orange button.",
       "The Inspect hat is talk on the roof. This page is the camera.",
     ],
   },
