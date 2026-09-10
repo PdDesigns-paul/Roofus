@@ -7,7 +7,7 @@ import { useSettings } from "./settings-store.ts";
 import { marketKey, useStreets } from "./streets-store.ts";
 import { useWeather } from "./weather-store.ts";
 
-export { DEMO_COUNTIES, DEMO_LOOPS, DEMO_STATES, demoHasPerry } from "./demo-loops.ts";
+export { DEMO_COUNTIES, DEMO_LOOPS, DEMO_STATES, demoCountiesPresent } from "./demo-loops.ts";
 
 export function loadDemo(): void {
   const date = localDateKey();
@@ -43,7 +43,7 @@ export function loadDemo(): void {
   useSettings.getState().setCompanyName("North Ridge Roofing");
   useSettings.getState().setWarrantyLine("See the actual Owens Corning warranty.");
   useStreets.getState().replace(DEMO_LOOPS, {
-    note: "Sample loops. Includes Perry County so a rural county is not buried. Rebuild from Presets when this is your real market.",
+    note: "Sample loops. Every county in Presets gets a group — a thin one is not dropped. Rebuild from Presets when this is your real market.",
     yearFrom: new Date().getFullYear() - 25,
     yearTo: new Date().getFullYear() - 17,
     builtFor: marketKey(DEMO_COUNTIES, DEMO_STATES, 17, 25),

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { useDayBook } from "@/lib/day-book";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
-import { loopAge, loopHeadline, loopMatchesQuery, loopPlace, loopZip, groupLoopsByTownship, splitWorking } from "@/lib/streets-rank";
+import { loopAge, loopHeadline, loopPlace, loopZip, groupLoopsByTownship, searchStreetLoops } from "@/lib/streets-rank";
 import { marketKey, useStreets } from "@/lib/streets-store";
 import type { LoopResult, LoopStatus, StreetLoop, StreetsBuildResponse } from "@/lib/streets-types";
 import { parseList, countyBasename } from "@/lib/us-state-fips";
@@ -53,10 +53,8 @@ function StreetsPage() {
   const key = marketKey(profile.counties, profile.states, ageMin, ageMax);
   const stale = Boolean(loops.length && builtFor && builtFor !== key);
   const autoBuild = useRef(false);
-  const { working, rest } = splitWorking(loops);
-  const needle = q.trim().toLowerCase();
-  const visible = needle ? rest.filter((l) => loopMatchesQuery(l, needle)) : rest;
-  const groups = groupLoopsByTownship(visible);
+  const { working, rest, searching } = searchStreetLoops(loops, q);
+  const groups = groupLoopsByTownship(rest);
   const asked = parseList(profile.counties);
   const have = new Set(loops.map((l) => countyBasename(l.county).toLowerCase()));
   const ghostCounties = [
@@ -66,8 +64,8 @@ function StreetsPage() {
       ),
     ),
   ].filter((c) => {
-    if (!needle) return true;
-    return c.toLowerCase().includes(needle);
+    if (!searching) return true;
+    return c.toLowerCase().includes(q.trim().toLowerCase());
   });
   const defaultCounty = working.length ? null : (groups[0]?.county ?? null);
   const shownCounty = openCounty === undefined ? defaultCounty : openCounty;
@@ -273,7 +271,7 @@ function StreetsPage() {
 
       <ul className="mt-5 flex flex-col gap-2">
         {groups.map((group) => {
-          const open = shownCounty === group.county;
+          const open = searching || shownCounty === group.county;
           const n = group.townships.reduce((sum, t) => sum + t.loops.length, 0);
           return (
             <li key={group.county}>

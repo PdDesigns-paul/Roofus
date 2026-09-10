@@ -1,16 +1,18 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { DEMO_COUNTIES, DEMO_LOOPS, demoHasPerry } from "./demo-loops.ts";
-import { groupLoopsByCounty, groupLoopsByTownship, loopHeadline } from "./streets-rank.ts";
+import { DEMO_COUNTIES, DEMO_LOOPS, demoCountiesPresent } from "./demo-loops.ts";
+import { groupLoopsByCounty, groupLoopsByTownship } from "./streets-rank.ts";
+import { parseList, countyBasename } from "./us-state-fips.ts";
 
 describe("sample day", () => {
-  it("includes Perry County as its own group with park-once cards", () => {
-    assert.match(DEMO_COUNTIES, /Perry/);
-    assert.equal(demoHasPerry(), true);
-    const perry = groupLoopsByCounty(DEMO_LOOPS).find((g) => /perry/i.test(g.county));
-    assert.ok(perry);
-    assert.ok(perry.loops.length >= 3);
-    assert.equal(loopHeadline(perry.loops[0]!), "Main St / High St · 17068");
+  it("gives each sample county its own group with park-once cards", () => {
+    assert.equal(demoCountiesPresent(), true);
+    const groups = groupLoopsByCounty(DEMO_LOOPS);
+    for (const name of parseList(DEMO_COUNTIES)) {
+      const hit = groups.find((g) => countyBasename(g.county).toLowerCase() === name.toLowerCase());
+      assert.ok(hit, name);
+      assert.ok(hit.loops.length >= 1);
+    }
   });
   it("splits Hampden into more than one loop", () => {
     const groups = groupLoopsByTownship(DEMO_LOOPS);

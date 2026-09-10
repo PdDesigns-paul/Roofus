@@ -1,6 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
+  searchStreetLoops,
   fairCountySlice,
   groupLoopsByCounty,
   groupLoopsByTownship,
@@ -145,18 +146,18 @@ describe("groupLoopsByTownship", () => {
 });
 
 describe("fairCountySlice", () => {
-  it("keeps Perry when Dauphin would eat a 40 cap", () => {
+  it("keeps a thin county when a dense one would eat a 40 cap", () => {
     const loops: StreetLoop[] = [];
     for (let i = 0; i < 30; i++) {
-      loops.push(loop({ id: `d${i}`, zip: `171${String(i).padStart(2, "0")}`, county: "Dauphin County", homes: 400 }));
+      loops.push(loop({ id: `d${i}`, zip: `171${String(i).padStart(2, "0")}`, county: "Dense County", homes: 400 }));
     }
     for (let i = 0; i < 4; i++) {
-      loops.push(loop({ id: `p${i}`, zip: `1706${i}`, county: "Perry County", homes: 50 }));
+      loops.push(loop({ id: `t${i}`, zip: `1706${i}`, county: "Thin County", homes: 50 }));
     }
-    const sliced = fairCountySlice(loops, ["Dauphin", "Perry"], 40, 6);
-    const perry = sliced.filter((l) => /perry/i.test(l.county));
-    assert.ok(perry.length >= 4);
-    assert.ok(sliced.some((l) => /dauphin/i.test(l.county)));
+    const sliced = fairCountySlice(loops, ["Dense", "Thin"], 40, 6);
+    const thin = sliced.filter((l) => /thin/i.test(l.county));
+    assert.ok(thin.length >= 4);
+    assert.ok(sliced.some((l) => /dense/i.test(l.county)));
   });
 });
 
@@ -219,16 +220,35 @@ describe("nextFreshInTownship", () => {
 });
 
 describe("loopMatchesQuery", () => {
-  it("finds township, cluster, street, or zip", () => {
+  it("finds township, cluster, street, zip, or county", () => {
     const l = loop({
       zip: "17050",
       place: "Creekview Dr / Mill Rd",
       township: "Hampden",
+      county: "Cumberland County",
       streets: ["Creekview Dr", "Mill Rd"],
     });
     assert.equal(loopMatchesQuery(l, "hampden"), true);
     assert.equal(loopMatchesQuery(l, "creekview"), true);
     assert.equal(loopMatchesQuery(l, "17050"), true);
+    assert.equal(loopMatchesQuery(l, "cumberland"), true);
     assert.equal(loopMatchesQuery(l, "york"), false);
+  });
+});
+
+describe("searchStreetLoops", () => {
+  it("opens a thin county by name even when Working is a dense one", () => {
+    const loops = [
+      loop({ id: "w", county: "Dense County", place: "Oak St / Pine St", zip: "17112", status: "working" }),
+      loop({ id: "a", county: "Thin County", place: "Main St / High St", zip: "17068", status: "fresh" }),
+      loop({ id: "b", county: "Thin County", place: "Market St / Second St", zip: "17074", status: "fresh" }),
+    ];
+    const { working, rest, searching } = searchStreetLoops(loops, "thin");
+    assert.equal(searching, true);
+    assert.equal(working.length, 0);
+    assert.deepEqual(
+      rest.map((l) => l.id),
+      ["a", "b"],
+    );
   });
 });

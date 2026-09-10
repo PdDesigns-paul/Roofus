@@ -101,9 +101,25 @@ export function loopMatchesQuery(
   if ((loop.township ?? "").toLowerCase().includes(q)) return true;
   if ((loop.town ?? "").toLowerCase().includes(q)) return true;
   if (loop.county.toLowerCase().includes(q)) return true;
+  if (countyBasename(loop.county).toLowerCase().includes(q)) return true;
   if (loop.zip.includes(q)) return true;
   if (loop.streets.some((s) => s.toLowerCase().includes(q))) return true;
   return false;
+}
+
+/** Search opens every matching county. Working is filtered too. */
+export function searchStreetLoops(
+  loops: StreetLoop[],
+  raw: string,
+): { working: StreetLoop[]; rest: StreetLoop[]; searching: boolean } {
+  const { working, rest } = splitWorking(loops);
+  const q = raw.trim();
+  if (!q) return { working, rest, searching: false };
+  return {
+    working: working.filter((l) => loopMatchesQuery(l, q)),
+    rest: rest.filter((l) => loopMatchesQuery(l, q)),
+    searching: true,
+  };
 }
 
 export function loopAge(loop: Pick<StreetLoop, "medianYear">, now = new Date().getFullYear()): number {
@@ -178,7 +194,7 @@ function groupKeyFor(name: string, groups: Map<string, StreetLoop[]>): string | 
 
 /**
  * Don't let dense counties eat the whole loop budget.
- * Perry stays visible next to Dauphin.
+ * A thin county they typed in Presets still gets a share.
  */
 export function fairCountySlice(loops: StreetLoop[], countyOrder: string[], cap = 80, minPer = 12): StreetLoop[] {
   if (!loops.length) return [];

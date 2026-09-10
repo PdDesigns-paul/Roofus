@@ -142,7 +142,10 @@ function pickBands(rows: BgYear[], yearFrom: number, yearTo: number): BgYear[] {
     rows.filter((r) => r.medianYear >= from && r.medianYear <= to && r.homes >= minHomes);
   let core = inBand(40, yearFrom, yearTo);
   if (core.length < 8) core = inBand(20, yearFrom, yearTo);
-  if (core.length < 4) core = inBand(10, yearFrom - 5, yearTo + 5);
+  if (core.length < 2) {
+    const loose = rows.filter((r) => r.medianYear >= yearFrom - 8 && r.medianYear <= yearTo + 8);
+    if (loose.length) core = loose;
+  }
   const target = Math.round((yearFrom + yearTo) / 2);
   const scored = core.slice();
   scored.sort((a, b) => {
@@ -372,9 +375,14 @@ async function clusterCounty(
     const hit = streetCache.get(key);
     if (hit) return hit;
     const box = unionBbox(members.map((m) => m.bbox));
-    const streets = box ? await roadsIn(box) : [];
-    streetCache.set(key, streets);
-    return streets;
+    try {
+      const streets = box ? await roadsIn(box) : [];
+      streetCache.set(key, streets);
+      return streets;
+    } catch {
+      streetCache.set(key, []);
+      return [];
+    }
   }
 
   const fetched = new Map<string, string[]>();
@@ -426,9 +434,14 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
   }
 
   const loops: StreetLoop[] = [];
+  const failed: string[] = [];
 
   for (const county of counties) {
-    loops.push(...(await clusterCounty(county, yearFrom, yearTo)));
+    try {
+      loops.push(...(await clusterCounty(county, yearFrom, yearTo)));
+    } catch {
+      failed.push(county.name);
+    }
   }
 
   loops.sort((a, b) => {
@@ -448,8 +461,7 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
   }
 
   const foundKeys = new Set(sliced.map((l) => countyBasename(l.county).toLowerCase()));
-  const emptyCounties = counties
-    .map((c) => c.name)
+  const emptyCounties = [...new Set([...counties.map((c) => c.name), ...failed])]
     .filter((name) => !foundKeys.has(countyBasename(name).toLowerCase()));
 
   const noteParts = [

@@ -1,4 +1,4 @@
-/** Sample park-once loops. Generic canvasser. Perry is here so a rural county is not buried. */
+/** Sample park-once loops. Generic canvasser. A thin county stays in the list so density does not bury it. */
 import type { StreetLoop } from "./streets-types.ts";
 
 export const DEMO_COUNTIES = "Dauphin, Perry, Cumberland";
@@ -144,6 +144,8 @@ export const DEMO_LOOPS: StreetLoop[] = [
   }),
 ];
 
-export function demoHasPerry(loops: StreetLoop[] = DEMO_LOOPS): boolean {
-  return loops.some((l) => /perry/i.test(l.county));
+export function demoCountiesPresent(loops: StreetLoop[] = DEMO_LOOPS): boolean {
+  const want = DEMO_COUNTIES.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+  const have = new Set(loops.map((l) => l.county.toLowerCase()));
+  return want.every((name) => [...have].some((c) => c.includes(name)));
 }
