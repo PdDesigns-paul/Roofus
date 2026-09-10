@@ -48,7 +48,7 @@ export const PAGE_HELP = {
   reference: {
     title: "Reference",
     body: [
-      "Search. Open a chapter. Tap a card to open the InterNACHI article.",
+      "Search. Open a chapter. Tap a card to open the InterNACHI article. If they pasted a company site in Presets, that chapter sits on top with direct links.",
       "Ask Roofus for the card title if you don’t want to read. He will not paste the article.",
     ],
   },
@@ -56,7 +56,7 @@ export const PAGE_HELP = {
     title: "Presets",
     body: [
       "Presets is a list of pages. You, Territory, Hours, Mindset, Reminders, Backup. Streets is its own page. Back on every sub page. Tour and sample day stay on this list.",
-      "You: first name, company, website, warranty. He reads the site when you tap Read the site. He uses those when he talks product.",
+      "You: first name, company, website, warranty. Paste a URL — we crawl it in the background. Pages land in Reference. He uses those notes when he talks product.",
       "Territory: counties and a state. Rebuild Streets after you change them. Hours: when you knock, morning work, hard stop.",
       "Reminders nag you when you open the app. Morning: storm report if it is empty. Evening: After Action Report if it is blank. Sundays: pace. The 1st: talent stack. Did it dismisses that nag for today.",
       "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report is on Today.",

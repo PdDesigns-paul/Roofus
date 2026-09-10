@@ -11,6 +11,7 @@ import { streamCoach } from "@/lib/stream-coach";
 import { notionForCoach } from "@/lib/notion-store";
 import { applyWalkAnswer } from "@/lib/survive";
 import { applyCoachWrite } from "@/lib/coach-write";
+import { readCompanySite } from "@/lib/company-site-read";
 import { nextIncomplete, setupSnap } from "@/lib/setup-progress";
 import { surviveForCoach, useSurvive } from "@/lib/survive-store";
 import { useStreets } from "@/lib/streets-store";
@@ -71,7 +72,10 @@ export async function sendRoofus(
     if (patch?.profile) useDayBook.getState().patchProfile(patch.profile);
     if (patch?.companyName) settings.setCompanyName(patch.companyName);
     if (patch?.warrantyLine) settings.setWarrantyLine(patch.warrantyLine);
-    if (patch?.companyWebsite) settings.setCompanyWebsite(patch.companyWebsite);
+    if (patch?.companyWebsite) {
+      settings.setCompanyWebsite(patch.companyWebsite);
+      void readCompanySite(patch.companyWebsite);
+    }
   }
   if (!opts?.kickoff) live.pushUser(content);
   live.setBusy(true);
@@ -99,6 +103,7 @@ export async function sendRoofus(
         warrantyLine: settings.warrantyLine,
         companyWebsite: settings.companyWebsite,
         companySiteBrief: settings.companySiteBrief,
+        companySitePages: settings.companySitePages,
         imageDataUrl: opts?.imageDataUrl,
         dayBook: [
           dayBookForCoach(),

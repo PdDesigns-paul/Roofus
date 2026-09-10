@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { siteHost, type CompanyPage } from "./company-site.ts";
 
 export type ThemeMode = "light" | "dark";
 
@@ -10,12 +11,18 @@ type SettingsState = {
   warrantyLine: string;
   companyWebsite: string;
   companySiteBrief: string;
+  companySitePages: CompanyPage[];
+  companySiteReading: boolean;
+  companySiteError: string;
   setTheme: (theme: ThemeMode) => void;
   toggleTheme: () => void;
   setCompanyName: (v: string) => void;
   setWarrantyLine: (v: string) => void;
   setCompanyWebsite: (v: string) => void;
   setCompanySiteBrief: (v: string) => void;
+  setCompanySiteReading: (v: boolean) => void;
+  setCompanySiteError: (v: string) => void;
+  setCompanySiteRead: (v: { url: string; brief: string; pages: CompanyPage[] }) => void;
 };
 
 export function applyTheme(theme: ThemeMode) {
@@ -34,6 +41,9 @@ export const useSettings = create<SettingsState>()(
       warrantyLine: "See the actual Owens Corning warranty.",
       companyWebsite: "",
       companySiteBrief: "",
+      companySitePages: [],
+      companySiteReading: false,
+      companySiteError: "",
       setTheme: (theme) => {
         applyTheme(theme);
         set({ theme });
@@ -45,8 +55,41 @@ export const useSettings = create<SettingsState>()(
       },
       setCompanyName: (companyName) => set({ companyName }),
       setWarrantyLine: (warrantyLine) => set({ warrantyLine }),
-      setCompanyWebsite: (companyWebsite) => set({ companyWebsite }),
+      setCompanyWebsite: (companyWebsite) => {
+        const next = companyWebsite;
+        if (!next.trim()) {
+          set({
+            companyWebsite: "",
+            companySiteBrief: "",
+            companySitePages: [],
+            companySiteError: "",
+          });
+          return;
+        }
+        const prevHost = siteHost(get().companyWebsite);
+        const nextHost = siteHost(next);
+        if (prevHost && nextHost && prevHost !== nextHost) {
+          set({
+            companyWebsite: next,
+            companySiteBrief: "",
+            companySitePages: [],
+            companySiteError: "",
+          });
+          return;
+        }
+        set({ companyWebsite: next });
+      },
       setCompanySiteBrief: (companySiteBrief) => set({ companySiteBrief }),
+      setCompanySiteReading: (companySiteReading) => set({ companySiteReading, companySiteError: companySiteReading ? "" : get().companySiteError }),
+      setCompanySiteError: (companySiteError) => set({ companySiteError, companySiteReading: false }),
+      setCompanySiteRead: ({ url, brief, pages }) =>
+        set({
+          companyWebsite: url || get().companyWebsite,
+          companySiteBrief: brief,
+          companySitePages: pages,
+          companySiteReading: false,
+          companySiteError: "",
+        }),
     }),
     {
       name: "roofus-settings",
@@ -56,6 +99,7 @@ export const useSettings = create<SettingsState>()(
         warrantyLine: s.warrantyLine,
         companyWebsite: s.companyWebsite,
         companySiteBrief: s.companySiteBrief,
+        companySitePages: s.companySitePages,
       }),
       onRehydrateStorage: () => (state) => {
         if (typeof window !== "undefined" && !localStorage.getItem("roofus-dark-v2")) {

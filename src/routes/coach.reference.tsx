@@ -1,9 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { Input } from "@/components/ui/input";
-import { MRI_CHAPTERS, MRI_COUNT, mriSearchHay } from "@/lib/mri-index";
+import { companyChapter } from "@/lib/company-site";
+import { MRI_CHAPTERS, MRI_COUNT, mriSearchHay, type MriChapter } from "@/lib/mri-index";
+import { useSettings } from "@/lib/settings-store";
 
 export const Route = createFileRoute("/coach/reference")({
   codeSplitGroupings: [],
@@ -13,18 +15,28 @@ export const Route = createFileRoute("/coach/reference")({
 function ReferencePage() {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  const hash = useRouterState({ select: (st) => st.location.hash.replace(/^#/, "") });
+  const pages = useSettings((s) => s.companySitePages);
+  const companyName = useSettings((s) => s.companyName);
   const needle = q.trim().toLowerCase();
+  const library = useMemo<MriChapter[]>(() => {
+    if (!pages.length) return MRI_CHAPTERS;
+    return [companyChapter(companyName, pages), ...MRI_CHAPTERS];
+  }, [pages, companyName]);
   const chapters = useMemo(() => {
-    if (!needle) return MRI_CHAPTERS;
-    return MRI_CHAPTERS.map((ch) => ({
-      ...ch,
-      cards: ch.cards.filter((c) => mriSearchHay(ch, c).includes(needle)),
-    })).filter((ch) => ch.cards.length > 0);
-  }, [needle]);
+    if (!needle) return library;
+    return library
+      .map((ch) => ({
+        ...ch,
+        cards: ch.cards.filter((c) => mriSearchHay(ch, c).includes(needle)),
+      }))
+      .filter((ch) => ch.cards.length > 0);
+  }, [needle, library]);
 
   function isOpen(id: string) {
     if (needle) return true;
-    return Boolean(open[id]);
+    if (open[id] !== undefined) return Boolean(open[id]);
+    return id === "company" && hash === "company";
   }
 
   return (
@@ -33,7 +45,9 @@ function ReferencePage() {
 
       <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">The library.</h1>
       <p className="mt-2 text-sm leading-snug text-muted">
-        {MRI_COUNT} InterNACHI articles. Search, open a chapter. Roofus has the same list.
+        {MRI_COUNT} InterNACHI articles
+        {pages.length ? ` plus ${pages.length} from their site` : ""}. Search, open a chapter.
+        Roofus has the same list.
       </p>
 
       <Input
@@ -56,7 +70,7 @@ function ReferencePage() {
                 <button
                   type="button"
                   className="flex w-full min-h-12 items-center justify-between gap-3 px-4 py-3 text-left"
-                  onClick={() => setOpen((s) => ({ ...s, [ch.id]: !s[ch.id] }))}
+                  onClick={() => setOpen((s) => ({ ...s, [ch.id]: !isOpen(ch.id) }))}
                   aria-expanded={expanded}
                 >
                   <span className="min-w-0">

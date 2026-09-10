@@ -63,7 +63,7 @@ Tests live in `src/lib/*.test.ts` (`node:test`). Pure functions: labels, hail gr
 
 Do not add login, Postgres, new API keys, Codecov, Husky, or commitlint. Conventional-commit prefixes are optional; a sentence that says what the phone does is better.
 
-Coach context is today’s log + streets + weather + mindset + Memory FAQs + MRI titles. Do not add RAG / RAPTOR until a real backend (Prep to Launch). If a field is on the phone, Roofus may write it when they clearly set it.
+Coach context is today’s log + streets + weather + mindset + Memory FAQs + MRI titles + company site notes. Do not add RAG / RAPTOR until a real backend (Prep to Launch). If a field is on the phone, Roofus may write it when they clearly set it.
 
 ## After a slice
 

@@ -258,8 +258,8 @@ Bottom bar: **Today · Inspect · Home**. Home is the porch: setup bar, Tell Roo
 | **Inspect** | Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic (what to shoot). Then This shot: Camera, Photos, or Practice. Ask about that frame. He names the i35 slot (Bad / Good / Worst / skip theater). Practice shot is a sample close-up — not this house. |
 | **Roofus** | Tap fans Live, Roleplay, Mindset. Each pick is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. New Live lives on the History sheet. Live’s first starter is the million-dollar script (B). Roleplay beats at the bottom: Walk-up, They push, After photos (talk only), The set, Whole visit. Score me is a button. Hold-to-talk in Roleplay. Hear it reads his line. Mindset is truck only. |
 | **Mindset** | Worksheets in Presets → Mindset: Why, demon, Pace, Talent stack. Chat from the orange fan. Private. Why is a ladder. Demon names the attack. Pace drops a gear. Stack is three skills. |
-| **Reference** | InterNACHI Mastering Roof Inspections cards. Name the title. Do not paste article bodies. |
-| **Presets** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. Streets is its own page. Name, counties, state, hours, company, website, warranty, mindset worksheets, optional Notion, Memory FAQs. He can write these when they clearly set them. |
+| **Reference** | InterNACHI Mastering Roof Inspections cards, plus a Company chapter when they pasted their website. Name the title. Do not paste article bodies. |
+| **Presets** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. Streets is its own page. Name, counties, state, hours, company, website (crawled into Reference), warranty, mindset worksheets, optional Notion, Memory FAQs. He can write these when they clearly set them. |
 
 Tomorrow, in order: last-48h **High** on a loop they keep → Working → next fresh loop in that township → next township. Do not ask a newbie where to go. Do not invent hail.
 

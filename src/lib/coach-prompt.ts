@@ -3,6 +3,7 @@ import { INSPECT_SYSTEM } from "@/lib/inspect-system";
 import { inspectKnowledge, inspectKnowledgeForShot } from "@/lib/mri-index";
 import { mindsetKnowledge } from "@/lib/mindset";
 import { modeBrief } from "@/lib/rufus-modes";
+import { companyPagesKnowledge, type CompanyPage } from "@/lib/company-site";
 import type { ChatTurn } from "@/lib/stream-coach";
 
 const KNOWLEDGE = `
@@ -25,6 +26,7 @@ export type CoachRequest = {
   warrantyLine?: string;
   companyWebsite?: string;
   companySiteBrief?: string;
+  companySitePages?: Pick<CompanyPage, "title" | "look" | "url">[];
   imageDataUrl?: string;
   dayBook?: string;
 };
@@ -82,8 +84,9 @@ export function buildXaiPayload(req: CoachRequest): {
     req.companySiteBrief?.trim()
       ? `What you already read on that site (do not invent past this):\n${req.companySiteBrief.trim()}`
       : req.companyWebsite?.trim()
-        ? "They gave a website but you have not read it yet. Ask them to tap Read the site in Presets, or wait until a brief is saved. Do not invent product claims from the URL."
+        ? "They gave a website but you have not read it yet. Do not invent product claims from the URL."
         : "",
+    companyPagesKnowledge(req.companySitePages ?? []),
     req.dayBook?.trim() ? req.dayBook.trim() : "",
   ]
     .filter(Boolean)

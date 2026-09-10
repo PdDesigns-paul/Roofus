@@ -11,6 +11,7 @@ export type StreamCoachInput = {
   warrantyLine?: string;
   companyWebsite?: string;
   companySiteBrief?: string;
+  companySitePages?: { title: string; look: string; url: string }[];
   imageDataUrl?: string;
   dayBook?: string;
 };
