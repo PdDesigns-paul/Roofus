@@ -15,13 +15,20 @@ export const RUFUS_HATS: RufusHat[] = [
     id: "door",
     label: "Door",
     hint: "First 30 seconds",
-    use: "Use this on the walk-up or while the door is still moving. Tell him what just happened — half-closed, “are you selling,” busy, whatever. He hands you the next line. Do not use this hat for kitchen-table closes or product talk.",
+    use: "Use this on the walk-up or while the door is still moving. Tell him what just happened — half-closed, “are you selling,” busy, whatever. He hands you the next line. The first starter is the million-dollar script. Do not use this hat for kitchen-table closes or product talk.",
     starters: [
+      "Give me the million-dollar door script. Age and a free look. No fake storm.",
       "Door is half closed. 2004 roof. Cut to the chase.",
       "They asked if we are selling something.",
-      "Give me the age / free-look hook. No fake neighbors.",
     ],
-    brief: `Hat: DOOR. First 30 seconds on the porch. Default is age and a free look (script B). Storm talk only if a real logged storm hit that street. SLAP in his head: say hi, let them know why you stopped, ask one open question, present only to their answer. If the door is closing: “I’ll cut right to the chase,” then the L. One line he can say, why it works, then the next physical step. Do not invent we-are-working-next-door.`,
+    brief: `Hat: DOOR. First 30 seconds on the porch. Default is the million-dollar script (Script B — age and a free look). Dashaun Bryant’s public opener, told honest:
+
+“Hey — I’m [name] with [company]. I stopped by to see if you heard what’s been going on in the area.”
+They: “No — what’s going on?”
+“A lot of these houses are on the original roof from around [year]. That’s first-roof age. We’re doing free looks this week. Do you know what year this one went on?”
+Before the ladder: “We’d both agree this roof is at the age where it’s time to plan a replacement, right?”
+
+Storm talk (Script A) only if a real logged storm hit that street. Do not invent hail to finish “what’s been going on.” SLAP in his head: say hi, let them know why you stopped, ask one open question, present only to their answer. If the door is closing: “I’ll cut right to the chase,” then the L. One line he can say, why it works, then the next physical step. Do not invent we-are-working-next-door.`,
   },
   {
     id: "inspect",

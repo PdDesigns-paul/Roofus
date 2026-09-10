@@ -25,11 +25,17 @@ type StreetsState = {
 
 function mergeStatus(incoming: StreetLoop[], previous: StreetLoop[]): StreetLoop[] {
   const byId = new Map(previous.map((l) => [l.id, l]));
+  const byZip = new Map(
+    previous.filter((l) => l.zip).map((l) => [`${l.county}:${l.zip}`, l]),
+  );
   const byTitle = new Map(
     previous.filter((l) => l.title).map((l) => [`${l.county}:${l.title.toLowerCase()}`, l]),
   );
   return incoming.map((l) => {
-    const old = byId.get(l.id) ?? (l.title ? byTitle.get(`${l.county}:${l.title.toLowerCase()}`) : undefined);
+    const old =
+      byId.get(l.id) ??
+      (l.zip ? byZip.get(`${l.county}:${l.zip}`) : undefined) ??
+      (l.title ? byTitle.get(`${l.county}:${l.title.toLowerCase()}`) : undefined);
     if (!old) return l;
     return { ...l, status: old.status, lastResult: old.lastResult };
   });
@@ -105,10 +111,10 @@ export function suggestTomorrow(loops: StreetLoop[]): StreetLoop | null {
 export function streetsForCoach(): string {
   const { loops, note, yearFrom, yearTo, ageMin, ageMax } = useStreets.getState();
   if (!loops.length) {
-    return `# Streets\nNo street list yet. Send them to Streets and build from their counties. Their age band is ${ageMin}–${ageMax} years. Age first. Do not invent a subdivision.`;
+    return `# Streets\nNo zip list yet. Send them to Streets and build from their counties (Presets). Their age band is ${ageMin}–${ageMax} years. Age first. Do not invent a zip.`;
   }
   const lines = [
-    "# Streets (age-band loops from Census + road names. Storms are NOT why these are here.)",
+    "# Streets (age-band zips from Census, grouped by county. Storms are NOT why these are here.)",
     note || `They set roofs about ${ageMin}–${ageMax} years old (built ${yearFrom}–${yearTo}).`,
     "Pick tomorrow: a 48h High on a loop they keep jumps Working (restoration). Then Working. Then the next fresh age-band loop. M/L do not pick the day. Do not ask a newbie where to go. Do not rank the whole list by hail.",
   ];

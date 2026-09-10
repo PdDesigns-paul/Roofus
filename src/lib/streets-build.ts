@@ -1,14 +1,15 @@
 /**
- * Slice 2: age-band street loops from Census + TIGER roads.
- * Slice 7 (later): revamp UI and audit this stack so it does not ship as a Jenga tower.
+ * Age-band zips from Census block groups, rolled up to ZCTA.
+ * Whole-zip median year is too coarse — we keep streets whose block groups
+ * sit in the years they set, then show one card per zip, grouped by county.
  */
+import { nearestZip } from "@/lib/streets-rank";
 import { countyBasename, parseList, stateFips } from "@/lib/us-state-fips";
 import type { StreetLoop, StreetsBuildRequest, StreetsBuildResponse } from "@/lib/streets-types";
 
 const UA = "RoofusCoach/1.0 (https://roofus.coach; D2D street loops)";
 const TIGER = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb";
 const REPORTER = "https://api.censusreporter.org/1.0/data/show/latest";
-const NOMINATIM = "https://nominatim.openstreetmap.org/reverse";
 
 const SKIP_ROAD =
   /^(i|ih|us|sr|st|pa|oh|md|nj|va|wv|ny|nc|sc|interstate|highway|hwy|route|rte|co rd|county road|cr)[-.\s]?\d/i;
@@ -139,7 +140,9 @@ async function blockGroups(county: CountyHit): Promise<BgYear[]> {
 function pickBands(rows: BgYear[], yearFrom: number, yearTo: number): BgYear[] {
   const core = rows.filter((r) => r.medianYear >= yearFrom && r.medianYear <= yearTo && r.homes >= 120);
   const target = Math.round((yearFrom + yearTo) / 2);
-  const scored = (core.length >= 8 ? core : rows.filter((r) => r.homes >= 120 && r.medianYear >= yearFrom - 5 && r.medianYear <= yearTo + 5)).slice();
+  const scored = (
+    core.length >= 8 ? core : rows.filter((r) => r.homes >= 120 && r.medianYear >= yearFrom - 5 && r.medianYear <= yearTo + 5)
+  ).slice();
   scored.sort((a, b) => {
     const da = Math.abs(a.medianYear - target) - Math.abs(b.medianYear - target);
     if (da) return da;
@@ -193,28 +196,102 @@ async function roadsIn(bbox: [number, number, number, number]): Promise<string[]
   return uniqueStreets(rows.map((f) => String(f.attributes.NAME ?? "")));
 }
 
-async function placeName(lat: number, lon: number): Promise<string> {
-  try {
-    const qs = new URLSearchParams({
-      lat: String(lat),
-      lon: String(lon),
-      zoom: "18",
-      format: "json",
-      addressdetails: "1",
+type ZipMeta = { zip: string; lat: number; lon: number };
+
+async function zipsForCounty(county: CountyHit): Promise<ZipMeta[]> {
+  const geo = `860|05000US${county.geoid}`;
+  const url = `${REPORTER}?table_ids=B25001&geo_ids=${encodeURIComponent(geo)}`;
+  const data = (await getJson(url, "Zips", 30_000)) as { data?: Record<string, unknown> };
+  const ids = Object.keys(data.data ?? {})
+    .map((id) => id.replace(/^86000US/, ""))
+    .filter((z) => /^\d{5}$/.test(z));
+  if (!ids.length) return [];
+  const chunks: string[][] = [];
+  for (let i = 0; i < ids.length; i += 40) chunks.push(ids.slice(i, i + 40));
+  const out: ZipMeta[] = [];
+  for (const chunk of chunks) {
+    const where = `ZCTA5 IN (${chunk.map((z) => `'${z}'`).join(",")})`;
+    const rows = await tigerQuery("PUMA_TAD_TAZ_UGA_ZCTA/MapServer/1", {
+      where,
+      outFields: "ZCTA5,CENTLAT,CENTLON",
+      returnGeometry: "false",
+      resultRecordCount: String(chunk.length),
     });
-    const data = (await getJson(`${NOMINATIM}?${qs}`, "Place name", 8_000)) as {
-      address?: Record<string, string>;
-    };
-    const a = data.address ?? {};
-    return (a.neighbourhood || a.suburb || a.quarter || a.city_district || "").trim();
+    for (const f of rows) {
+      const zip = String(f.attributes.ZCTA5 ?? "");
+      const lat = Number(f.attributes.CENTLAT);
+      const lon = Number(f.attributes.CENTLON);
+      if (!/^\d{5}$/.test(zip) || !Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+      out.push({ zip, lat, lon });
+    }
+  }
+  return out;
+}
+
+async function zipAt(lat: number, lon: number): Promise<ZipMeta | null> {
+  try {
+    const rows = await tigerQuery(
+      "PUMA_TAD_TAZ_UGA_ZCTA/MapServer/1",
+      {
+        geometry: `${lon},${lat}`,
+        geometryType: "esriGeometryPoint",
+        inSR: "4326",
+        spatialRel: "esriSpatialRelIntersects",
+        outFields: "ZCTA5,CENTLAT,CENTLON",
+        returnGeometry: "false",
+        resultRecordCount: "1",
+      },
+      12_000,
+    );
+    const a = rows[0]?.attributes;
+    const zip = String(a?.ZCTA5 ?? "");
+    const zlat = Number(a?.CENTLAT);
+    const zlon = Number(a?.CENTLON);
+    if (!/^\d{5}$/.test(zip) || !Number.isFinite(zlat) || !Number.isFinite(zlon)) return null;
+    return { zip, lat: zlat, lon: zlon };
   } catch {
-    return "";
+    return null;
   }
 }
 
-function loopId(county: CountyHit, geoid: string, title: string, street: string) {
-  const slug = (title || street || geoid).toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40);
-  return `${county.geoid}-${geoid}-${slug}`;
+type BgReady = { bg: BgYear; streets: string[]; lat: number; lon: number };
+
+function rollupZips(county: CountyHit, rows: BgReady[], zips: ZipMeta[]): StreetLoop[] {
+  const buckets = new Map<string, BgReady[]>();
+  const extra = new Map<string, ZipMeta>();
+  for (const z of zips) extra.set(z.zip, z);
+  for (const row of rows) {
+    const zip = nearestZip(row.lat, row.lon, zips);
+    if (!zip) continue;
+    const list = buckets.get(zip) ?? [];
+    list.push(row);
+    buckets.set(zip, list);
+  }
+  const loops: StreetLoop[] = [];
+  for (const [zip, parts] of buckets) {
+    const streets = uniqueStreets(parts.flatMap((p) => p.streets));
+    if (streets.length < 2) continue;
+    const homes = parts.reduce((n, p) => n + p.bg.homes, 0);
+    const medianYear = Math.round(
+      parts.reduce((n, p) => n + p.bg.medianYear * Math.max(1, p.bg.homes), 0) / Math.max(1, homes),
+    );
+    const meta = extra.get(zip);
+    loops.push({
+      id: `${county.geoid}-z${zip}`,
+      title: zip,
+      zip,
+      streets,
+      county: county.name,
+      state: county.stateFp,
+      medianYear,
+      homes,
+      lat: meta?.lat ?? parts[0]!.lat,
+      lon: meta?.lon ?? parts[0]!.lon,
+      status: "fresh",
+      lastResult: "",
+    });
+  }
+  return loops;
 }
 
 export async function buildStreetLoops(req: StreetsBuildRequest): Promise<StreetsBuildResponse> {
@@ -228,7 +305,7 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
   const stateNames = parseList(req.states);
   const stateFps = [...new Set(stateNames.map(stateFips).filter((x): x is string => Boolean(x)))];
   if (!countyNames.length || !stateFps.length) {
-    throw new Error("Need a county and a state first — fill those on Today.");
+    throw new Error("Need a county and a state first — fill those in Presets.");
   }
 
   const counties: CountyHit[] = [];
@@ -245,75 +322,56 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
   if (!counties.length) {
     throw new Error(
       missing.length
-        ? `Could not find ${missing.join(", ")} as a US county. Check the spelling on Today.`
+        ? `Could not find ${missing.join(", ")} as a US county. Check the spelling in Presets.`
         : "Could not find those counties.",
     );
   }
 
   const loops: StreetLoop[] = [];
-  const merge = new Map<string, StreetLoop>();
 
   for (const county of counties) {
     const bgs = pickBands(await blockGroups(county), yearFrom, yearTo);
-    const centers = await bgCenters(bgs.map((b) => b.geoid));
+    const [centers, zipList] = await Promise.all([
+      bgCenters(bgs.map((b) => b.geoid)),
+      zipsForCounty(county),
+    ]);
     const roadLists = await Promise.all(
       bgs.map(async (bg) => {
         const c = centers.get(bg.geoid);
-        if (!c) return { bg, streets: [] as string[], c: null };
+        if (!c) return null;
         const streets = await roadsIn(c.bbox);
-        return { bg, streets, c };
+        return { bg, streets, lat: c.lat, lon: c.lon };
       }),
     );
-
-    const nominatimBudget = Date.now() + 12_000;
-    for (const { bg, streets, c } of roadLists) {
-      if (!c || streets.length < 2) continue;
-      let title = "";
-      if (Date.now() < nominatimBudget) {
-        title = await placeName(c.lat, c.lon);
-        await new Promise((r) => setTimeout(r, 1100));
+    const ready: BgReady[] = [];
+    const zips = [...zipList];
+    for (const row of roadLists) {
+      if (!row || row.streets.length < 2) continue;
+      ready.push(row);
+      if (!zips.length) {
+        const hit = await zipAt(row.lat, row.lon);
+        if (hit && !zips.some((z) => z.zip === hit.zip)) zips.push(hit);
       }
-      const key = (title || bg.geoid).toLowerCase();
-      const existing = merge.get(key);
-      if (existing && title) {
-        const set = new Set(existing.streets);
-        for (const s of streets) set.add(s);
-        existing.streets = uniqueStreets([...set]);
-        existing.homes += bg.homes;
-        continue;
-      }
-      const loop: StreetLoop = {
-        id: loopId(county, bg.geoid, title, streets[0] ?? ""),
-        title,
-        streets,
-        county: county.name,
-        state: county.stateFp,
-        medianYear: bg.medianYear,
-        homes: bg.homes,
-        lat: c.lat,
-        lon: c.lon,
-        status: "fresh",
-        lastResult: "",
-      };
-      merge.set(key, loop);
-      loops.push(loop);
     }
+    loops.push(...rollupZips(county, ready, zips));
   }
 
   loops.sort((a, b) => {
     const target = Math.round((yearFrom + yearTo) / 2);
     const da = Math.abs(a.medianYear - target) - Math.abs(b.medianYear - target);
     if (da) return da;
+    if (a.county !== b.county) return a.county.localeCompare(b.county);
     return b.homes - a.homes;
   });
 
   const noteParts = [
-    `Roofs about ${ageMin}–${ageMax} years old (built ${yearFrom}–${yearTo}). Census median year, not a house-by-house assessor.`,
-    "A name only if the map has a subdivision. Storms are not in this list.",
+    `Roofs about ${ageMin}–${ageMax} years old (built ${yearFrom}–${yearTo}). One card per zip, grouped by county.`,
+    "Streets are the age-band pockets inside the zip — not every house in the zip. Census median year, not a house-by-house assessor.",
+    "Storms are not in this list.",
   ];
   if (missing.length) noteParts.push(`Skipped (not found): ${missing.join(", ")}.`);
   if (!loops.length) {
-    noteParts.push("No street loops in that age band. Try a wider year range.");
+    noteParts.push("No zips in that age band. Try a wider year range.");
   }
 
   return {
@@ -323,5 +381,3 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
     yearTo,
   };
 }
-
-

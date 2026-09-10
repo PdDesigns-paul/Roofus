@@ -12,10 +12,12 @@ import {
   packMindset,
   unpackLabeled,
   unpackMindset,
+  sanitizeLoop,
   type SurviveFields,
 } from "./notion-merge.ts";
 import type { DayEntry } from "./day-book.ts";
 import type { StreetLoop } from "./streets-types.ts";
+import { DEFAULT_FAQS } from "./porch-faqs.ts";
 
 function day(date: string, extra: Partial<DayEntry> = {}): DayEntry {
   return {
@@ -80,6 +82,7 @@ describe("mergeLoops / storms / faqs", () => {
       {
         id: "a",
         title: "Oak",
+        zip: "",
         streets: ["Oak"],
         county: "Cumberland",
         state: "PA",
@@ -202,5 +205,48 @@ describe("packLabeled", () => {
   it("skips empty and flattens newlines", () => {
     assert.equal(packLabeled({ a: "x", b: "" }), "a: x");
     assert.equal(unpackLabeled("origin: line1 · line2").origin, "line1\nline2");
+  });
+});
+
+describe("sanitizeLoop zip", () => {
+  it("reads zip from the field or a 5-digit title", () => {
+    const fromField = sanitizeLoop({
+      id: "a",
+      title: "Oak",
+      zip: "17050",
+      streets: [],
+      county: "Cumberland",
+      state: "PA",
+      medianYear: 2004,
+      homes: 10,
+      lat: 40,
+      lon: -77,
+      status: "fresh",
+      lastResult: "",
+    });
+    assert.equal(fromField.zip, "17050");
+    const fromTitle = sanitizeLoop({
+      id: "b",
+      title: "17055",
+      streets: [],
+      county: "Cumberland",
+      state: "PA",
+      medianYear: 2004,
+      homes: 10,
+      lat: 40,
+      lon: -77,
+      status: "fresh",
+      lastResult: "",
+    });
+    assert.equal(fromTitle.zip, "17055");
+  });
+});
+
+describe("starter FAQs", () => {
+  it("has unique ids and a million-dollar script", () => {
+    const ids = DEFAULT_FAQS.map((f) => f.id);
+    assert.equal(ids.length, new Set(ids).size);
+    assert.ok(DEFAULT_FAQS.some((f) => /million-dollar/i.test(f.q)));
+    assert.ok(DEFAULT_FAQS.length >= 12);
   });
 });

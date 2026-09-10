@@ -88,7 +88,7 @@ export async function buildWeatherLog(req: WeatherBuildRequest): Promise<Weather
   const countyNames = parseList(req.counties).map(countyBasename).filter(Boolean);
   const states = [...new Set(parseList(req.states).map(stateAbbr).filter((x): x is string => Boolean(x)))];
   if (!countyNames.length || !states.length) {
-    throw new Error("Need a county and a state on Today first.");
+    throw new Error("Need a county and a state in Presets first.");
   }
   const days = req.days && req.days > 0 ? Math.min(Math.round(req.days), 200) : 183;
   const countySet = new Set(countyNames.map((c) => c.toLowerCase()));

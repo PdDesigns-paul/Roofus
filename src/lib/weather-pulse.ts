@@ -43,6 +43,7 @@ function matchLoop(hint: string, loops: StreetLoop[]): StreetLoop | null {
   if (!h) return null;
   return (
     loops.find((l) => loopLabel(l).toLowerCase() === h) ??
+    loops.find((l) => l.zip && l.zip === h) ??
     loops.find((l) => l.title && l.title.toLowerCase() === h) ??
     loops.find((l) => l.streets.some((s) => h.includes(s.toLowerCase()))) ??
     null
@@ -74,7 +75,7 @@ Last 48 hours (${fromDate} to ${toDate}).
 NWS LSR spine (already fetched):
 ${iemNote}
 
-Their street loops (age-band, owner-pay targeting). Only name a subdivision if it is on this list:
+Their zip list (age-band, owner-pay targeting). Only name a zip if it is on this list:
 ${loopLines.join("\n") || "(none built yet)"}
 
 Search:
@@ -83,12 +84,12 @@ Search:
 
 Rules:
 - Do not invent hail size, a named cell, or "everyone filed."
-- If a place is not on the loop list, set loopHint empty and say "township only."
+- If a place is not on the zip list, set loopHint empty and say "township only."
 - Grade H only if a loop on the list is hit AND (personal damage language, photo, or multi-source). M = township/county damage, no loop. L = weak/distant.
 - Quiet day if nothing usable.
 
 Return ONLY JSON:
-{"quiet":boolean,"summary":"one short sentence","leads":[{"grade":"H"|"M"|"L","kind":"hail"|"wind","county":"","places":["string"],"say":"one door line they can Keep","loopHint":"exact loop title or empty","why":"short","sources":["local news"|"X"|"NWS"]}]}`;
+{"quiet":boolean,"summary":"one short sentence","leads":[{"grade":"H"|"M"|"L","kind":"hail"|"wind","county":"","places":["string"],"say":"one door line they can Keep","loopHint":"exact zip or empty","why":"short","sources":["local news"|"X"|"NWS"]}]}`;
 
   const res = await fetch("https://api.x.ai/v1/responses", {
     method: "POST",
@@ -143,6 +144,7 @@ export async function runWeatherPulse(req: WeatherPulseRequest): Promise<PulseRe
   const loops = (req.loops ?? []).map((l) => ({
     id: l.id,
     title: l.title,
+    zip: l.zip ?? (/^\d{5}$/.test(l.title) ? l.title : ""),
     streets: l.streets,
     county: l.county,
     state: "",

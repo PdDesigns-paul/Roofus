@@ -8,7 +8,7 @@ import { Tip } from "@/components/ui/tooltip";
 const LINKS = [
   { to: "/coach/mindset", label: "Mindset", hint: "Why you stay. What scares you. Hours. Skills." },
   { to: "/coach/reference", label: "Reference", hint: "145 roof articles" },
-  { to: "/settings", label: "Presets", hint: "Company name, warranty, Notion backup" },
+  { to: "/settings", label: "Presets", hint: "Counties, hours, warranty, FAQs, backup" },
 ] as const;
 
 export function MoreMenu() {

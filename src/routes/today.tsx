@@ -42,9 +42,6 @@ function SetupForm() {
   const [company, setCompany] = useState("");
   const [counties, setCounties] = useState("");
   const [states, setStates] = useState("");
-  const [knockWindow, setKnockWindow] = useState("");
-  const [paperWindow, setPaperWindow] = useState("");
-  const [hardStop, setHardStop] = useState("");
   const [err, setErr] = useState<string | null>(null);
 
   function save() {
@@ -57,9 +54,6 @@ function SetupForm() {
       company,
       counties,
       states,
-      knockWindow,
-      paperWindow,
-      hardStop,
     };
     finishSetup(patch);
   }
@@ -69,7 +63,7 @@ function SetupForm() {
       <AppHeader title="Today" page="today" home />
       <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">Where do you knock?</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">
-        Once is enough. You can change it later. Stays on this phone.
+        Once is enough. Hours, warranty, and FAQs live in Presets. Stays on this phone.
       </p>
 
       <form
@@ -110,29 +104,6 @@ function SetupForm() {
             required
           />
         </Field>
-        <Field label="When do you knock?" hint="Your words. After work, Saturdays, 4 to 7…">
-          <input
-            className="h-12 w-full rounded-xl border border-border bg-surface px-4 text-base"
-            value={knockWindow}
-            onChange={(e) => setKnockWindow(e.target.value)}
-            placeholder="After work, 3–4 hours"
-          />
-        </Field>
-        <Field label="Morning work" hint="Optional. Calls and paperwork — not porches.">
-          <input
-            className="h-12 w-full rounded-xl border border-border bg-surface px-4 text-base"
-            value={paperWindow}
-            onChange={(e) => setPaperWindow(e.target.value)}
-          />
-        </Field>
-        <Field label="When do you stop?" hint="Dark, a set number of hours, or both.">
-          <input
-            className="h-12 w-full rounded-xl border border-border bg-surface px-4 text-base"
-            value={hardStop}
-            onChange={(e) => setHardStop(e.target.value)}
-            placeholder="When it gets dark"
-          />
-        </Field>
         {err ? <p className="text-sm text-danger">{err}</p> : null}
         <button type="submit" className="h-12 rounded-full bg-fg text-sm text-paper">
           Save and go
@@ -149,11 +120,9 @@ function DaySheet() {
   const bump = useDayBook((s) => s.bump);
   const patchToday = useDayBook((s) => s.patchToday);
   const profile = useDayBook((s) => s.profile);
-  const patchProfile = useDayBook((s) => s.patchProfile);
   const loops = useStreets((s) => s.loops);
   const kept = useWeather((s) => s.kept);
   const busy = useCoach((s) => s.busy);
-  const [editOpen, setEditOpen] = useState(false);
   const [askErr, setAskErr] = useState<string | null>(null);
   const selected = loops.find((l) => loopLabel(l) === day.cluster) ?? null;
   const nearby = selected ? stormsNearLoop(kept, selected) : [];
@@ -178,7 +147,7 @@ function DaySheet() {
       void (async () => {
         try {
           await sendRoofus(
-            "Read today's log, the street list, and the 48-hour weather pulse. Tell me what the numbers say. Then name tomorrow: a High lead on a loop I keep jumps Working. Then Working. Then the next age-band loop. Medium and Low do not pick the day. Don't invent weather. Keep is what I may say on the porch.",
+            "Read today's log, the zip list, and the 48-hour weather pulse. Tell me what the numbers say. Then name tomorrow: a High lead on a zip I keep jumps Working. Then Working. Then the next age-band zip. Medium and Low do not pick the day. Don't invent weather. Keep is what I may say on the porch.",
           );
         } catch (e) {
           setAskErr(e instanceof Error ? e.message : "Roofus missed that.");
@@ -197,8 +166,23 @@ function DaySheet() {
         {profile.goBy.trim() ? `${profile.goBy.trim()}'s day` : "Today"}
       </h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
-        {market || "Add your counties under Counties and hours."}
-        {profile.knockWindow.trim() ? ` · ${profile.knockWindow.trim()}` : ""}
+        {market ? (
+          <>
+            {market}
+            {profile.knockWindow.trim() ? ` · ${profile.knockWindow.trim()}` : ""}{" "}
+            <Link to="/settings" className="underline-offset-4 hover:text-fg hover:underline">
+              Presets
+            </Link>
+          </>
+        ) : (
+          <>
+            Set counties in{" "}
+            <Link to="/settings" className="underline-offset-4 hover:text-fg hover:underline">
+              Presets
+            </Link>
+            .
+          </>
+        )}
       </p>
 
       <section className="mt-8">
@@ -237,7 +221,7 @@ function DaySheet() {
         hint={
           loops.length
             ? "Pick from your Streets list, or type."
-            : "Build Streets from your counties, or type a loop."
+            : "Build Streets from your counties, or type a zip."
         }
       >
         <input
@@ -249,7 +233,7 @@ function DaySheet() {
             const hit = loops.find((l) => loopLabel(l) === value);
             if (hit) useStreets.getState().setStatus(hit.id, "working");
           }}
-          placeholder="Streets or a subdivision"
+          placeholder="Zip or a street"
           list="street-loops"
         />
         <datalist id="street-loops">
@@ -259,7 +243,7 @@ function DaySheet() {
         </datalist>
       </Field>
       <Link to="/streets" className="mt-2 text-sm text-muted underline-offset-4 hover:text-fg hover:underline">
-        {loops.length ? "Open Streets" : "Build Streets from my counties"}
+        {loops.length ? "Open Streets" : "Build zips from my counties"}
       </Link>
       {selected ? (
         <a
@@ -312,63 +296,6 @@ function DaySheet() {
 
       <InstallHint />
       <NotionHint />
-
-      <button
-        type="button"
-        className="mt-8 text-left text-sm text-muted"
-        onClick={() => setEditOpen((o) => !o)}
-      >
-        {editOpen ? "Hide counties and hours" : "Counties and hours"}
-      </button>
-      {editOpen ? (
-        <div className="mt-3 flex flex-col gap-3">
-          <input
-            className="h-11 rounded-xl border border-border bg-surface px-4 text-sm"
-            value={profile.goBy}
-            onChange={(e) => patchProfile({ goBy: e.target.value })}
-            placeholder="First name"
-          />
-          <input
-            className="h-11 rounded-xl border border-border bg-surface px-4 text-sm"
-            value={profile.company}
-            onChange={(e) => patchProfile({ company: e.target.value })}
-            placeholder="Company"
-          />
-          <input
-            className="h-11 rounded-xl border border-border bg-surface px-4 text-sm"
-            value={profile.counties}
-            onChange={(e) => patchProfile({ counties: e.target.value })}
-            placeholder="Counties"
-          />
-          <input
-            className="h-11 rounded-xl border border-border bg-surface px-4 text-sm"
-            value={profile.states}
-            onChange={(e) => patchProfile({ states: e.target.value })}
-            placeholder="State"
-          />
-          <input
-            className="h-11 rounded-xl border border-border bg-surface px-4 text-sm"
-            value={profile.knockWindow}
-            onChange={(e) => patchProfile({ knockWindow: e.target.value })}
-            placeholder="When I knock"
-          />
-          <input
-            className="h-11 rounded-xl border border-border bg-surface px-4 text-sm"
-            value={profile.paperWindow}
-            onChange={(e) => patchProfile({ paperWindow: e.target.value })}
-            placeholder="Morning work"
-          />
-          <input
-            className="h-11 rounded-xl border border-border bg-surface px-4 text-sm"
-            value={profile.hardStop}
-            onChange={(e) => patchProfile({ hardStop: e.target.value })}
-            placeholder="When I stop"
-          />
-          <Link to="/settings" className="text-sm text-muted underline-offset-4 hover:text-fg hover:underline">
-            Warranty line is in Presets
-          </Link>
-        </div>
-      ) : null}
     </main>
   );
 }

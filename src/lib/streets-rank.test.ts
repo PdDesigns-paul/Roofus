@@ -1,12 +1,13 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { loopAge, loopLabel } from "./streets-rank.ts";
+import { groupLoopsByCounty, loopAge, loopLabel, nearestZip } from "./streets-rank.ts";
 import type { StreetLoop } from "./streets-types.ts";
 
 function loop(p: Partial<StreetLoop> = {}): StreetLoop {
   return {
     id: "l1",
     title: "Oak Hills",
+    zip: "",
     streets: ["Oak St"],
     county: "Cumberland",
     state: "PA",
@@ -21,8 +22,11 @@ function loop(p: Partial<StreetLoop> = {}): StreetLoop {
 }
 
 describe("loopLabel", () => {
-  it("prefers a real subdivision name", () => {
-    assert.equal(loopLabel(loop()), "Oak Hills");
+  it("prefers a zip over a leftover subdivision name", () => {
+    assert.equal(loopLabel(loop({ zip: "17050", title: "Oak Hills" })), "17050");
+  });
+  it("reads a zip stored as the title", () => {
+    assert.equal(loopLabel(loop({ zip: "", title: "17055" })), "17055");
   });
   it("falls back to the first road, not a fake title", () => {
     assert.equal(loopLabel(loop({ title: "  ", streets: ["Maple Ave"] })), "Near Maple Ave");
@@ -38,5 +42,35 @@ describe("loopAge", () => {
   });
   it("does not go negative", () => {
     assert.equal(loopAge(loop({ medianYear: 2030 }), 2026), 0);
+  });
+});
+
+describe("nearestZip", () => {
+  const zips = [
+    { zip: "17050", lat: 40.25, lon: -77.03 },
+    { zip: "17011", lat: 40.24, lon: -76.93 },
+  ];
+  it("picks the closer centroid", () => {
+    assert.equal(nearestZip(40.24, -76.92, zips), "17011");
+  });
+  it("returns empty when there are no zips", () => {
+    assert.equal(nearestZip(40, -77, []), "");
+  });
+});
+
+describe("groupLoopsByCounty", () => {
+  it("keeps county order and groups zips under each", () => {
+    const groups = groupLoopsByCounty([
+      loop({ id: "a", zip: "17050", county: "Cumberland" }),
+      loop({ id: "b", zip: "17404", county: "York" }),
+      loop({ id: "c", zip: "17055", county: "Cumberland" }),
+    ]);
+    assert.deepEqual(
+      groups.map((g) => [g.county, g.loops.map((l) => l.id)]),
+      [
+        ["Cumberland", ["a", "c"]],
+        ["York", ["b"]],
+      ],
+    );
   });
 });

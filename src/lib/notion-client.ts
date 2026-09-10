@@ -305,7 +305,7 @@ function dayProps(d: DayEntry): Record<string, NotionProp> {
 
 function streetProps(l: StreetLoop): Record<string, NotionProp> {
   return {
-    Name: title(l.title.trim() || l.streets[0] || l.id),
+    Name: title(l.zip.trim() || l.title.trim() || l.streets[0] || l.id),
     Key: rich(l.id),
     County: rich(l.county),
     State: rich(l.state),
@@ -443,6 +443,7 @@ export async function pullSnapshot(token: string, ids: NotionIds): Promise<Notio
       sanitizeLoop({
         id: readRich(p, "Key") || String(p.id),
         title: readTitle(p),
+        zip: /^\d{5}$/.test(readTitle(p).trim()) ? readTitle(p).trim() : "",
         streets: readRich(p, "Streets")
           .split(",")
           .map((s) => s.trim())

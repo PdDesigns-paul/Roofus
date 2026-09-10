@@ -138,9 +138,12 @@ export function sanitizeLoop(raw: Partial<StreetLoop> & { id: string }): StreetL
   const streets = Array.isArray(raw.streets)
     ? raw.streets.map((x) => String(x).trim()).filter(Boolean)
     : [];
+  const title = s(raw.title);
+  const zip = s(raw.zip) || (/^\d{5}$/.test(title) ? title : "");
   return {
     id: raw.id,
-    title: s(raw.title),
+    title,
+    zip,
     streets,
     county: s(raw.county),
     state: s(raw.state),

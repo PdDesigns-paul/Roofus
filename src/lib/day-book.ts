@@ -102,7 +102,14 @@ export const useDayBook = create<DayBookState>()(
         const date = localDateKey();
         return get().days[date] ?? blankDay(date);
       },
-      patchProfile: (patch) => set((s) => ({ profile: { ...s.profile, ...patch } })),
+      patchProfile: (patch) =>
+        set((s) => {
+          const profile = { ...s.profile, ...patch };
+          if (!profile.setupDone && profile.counties.trim() && profile.states.trim()) {
+            profile.setupDone = true;
+          }
+          return { profile };
+        }),
       finishSetup: (patch) =>
         set((s) => {
           const date = localDateKey();
@@ -160,7 +167,7 @@ export function dayBookForCoach(): string {
   if (day.afterAction.trim()) lines.push(`After Action Report:\n${day.afterAction.trim()}`);
   if (day.tomorrowStreet.trim()) lines.push(`Tomorrow they start at: ${day.tomorrowStreet.trim()}`);
   if (!profile.setupDone) {
-    lines.push("They have not filled Today yet. If you need their county, send them to Today.");
+    lines.push("They have not filled counties yet. If you need their county, send them to Presets.");
   }
   lines.push("Do not assume a 3:30 start, a named town, or a specific employer.");
   return lines.join("\n");

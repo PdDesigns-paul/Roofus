@@ -70,7 +70,7 @@ Start at the first blank. One word is enough for the name. Then how it shows up 
   if (id === "pace") {
     return `${common}
 Worksheet 4 — Pace.
-Knock hours on Today: ${hours.knock || "(blank)"}. Paper: ${hours.paper || "(blank)"}. Hard stop: ${hours.stop || "(blank)"}.
+Knock hours in Presets: ${hours.knock || "(blank)"}. Paper: ${hours.paper || "(blank)"}. Hard stop: ${hours.stop || "(blank)"}.
 Off-block: ${s.offBlock || "(blank)"}.
 Phone down: ${s.phoneDown || "(blank)"}.
 Help me set an all-day pace, then drop one gear. One real off-block. When the phone goes down.`;

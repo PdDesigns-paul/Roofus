@@ -143,7 +143,9 @@ export function NotionBackup() {
 
       <p className="mt-8 text-xs font-medium uppercase tracking-wide text-faint">Things Roofus should remember</p>
       <p className="mt-2 text-sm leading-relaxed text-muted">
-        FAQs, office rules, warranty quirks. He reads these in chat. They copy to Notion on backup.
+        Starter answers from public porch teaching — Dashaun Bryant (Roof Hustler) and Adam Bensman
+        (Roof Strategist). He reads these in chat. Edit or drop any of them. Your office rules win.
+        They copy to Notion on backup.
       </p>
       <Input
         className="mt-3"

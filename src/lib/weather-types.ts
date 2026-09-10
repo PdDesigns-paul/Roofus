@@ -61,6 +61,7 @@ export type WeatherPulseRequest = {
   loops: {
     id: string;
     title: string;
+    zip?: string;
     streets: string[];
     county: string;
     lat: number;

@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { mergeFaqs } from "@/lib/notion-merge";
 import type { NotionFaq, NotionIds } from "@/lib/notion-ids";
+import { DEFAULT_FAQS } from "@/lib/porch-faqs";
 
 export type { NotionFaq, NotionIds };
 
@@ -9,6 +11,7 @@ type NotionState = {
   pageUrl: string;
   ids: NotionIds | null;
   faqs: NotionFaq[];
+  faqsSeeded: boolean;
   lastSyncAt: string;
   lastError: string;
   hintHidden: boolean;
@@ -24,13 +27,19 @@ type NotionState = {
   disconnect: () => void;
 };
 
+function seedFaqs(existing: NotionFaq[] | undefined, seeded: boolean | undefined) {
+  if (seeded) return { faqs: existing ?? [], faqsSeeded: true };
+  return { faqs: mergeFaqs(existing ?? [], DEFAULT_FAQS), faqsSeeded: true };
+}
+
 export const useNotion = create<NotionState>()(
   persist(
     (set, get) => ({
       token: "",
       pageUrl: "",
       ids: null,
-      faqs: [],
+      faqs: DEFAULT_FAQS,
+      faqsSeeded: false,
       lastSyncAt: "",
       lastError: "",
       hintHidden: false,
@@ -66,9 +75,19 @@ export const useNotion = create<NotionState>()(
         pageUrl: s.pageUrl,
         ids: s.ids,
         faqs: s.faqs,
+        faqsSeeded: s.faqsSeeded,
         lastSyncAt: s.lastSyncAt,
         hintHidden: s.hintHidden,
       }),
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<NotionState>;
+        const seeded = seedFaqs(p.faqs, p.faqsSeeded);
+        return {
+          ...current,
+          ...p,
+          ...seeded,
+        };
+      },
     },
   ),
 );
@@ -89,7 +108,7 @@ export function notionForCoach(): string {
     return "# Memory (Notion). No FAQs saved yet.";
   }
   const lines = ["# Memory (from Notion / this phone). Treat as their long-term notes. Not porch fiction."];
-  for (const f of s.faqs.slice(0, 20)) {
+  for (const f of s.faqs.slice(0, 24)) {
     lines.push(`Q: ${f.q}\nA: ${f.a}`);
   }
   if (s.lastSyncAt) lines.push(`Last Notion backup: ${s.lastSyncAt.slice(0, 10)}`);

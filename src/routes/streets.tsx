@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { useDayBook } from "@/lib/day-book";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
-import { loopAge, loopLabel } from "@/lib/streets-rank";
+import { loopAge, loopLabel, groupLoopsByCounty } from "@/lib/streets-rank";
 import { marketKey, useStreets } from "@/lib/streets-store";
 import type { LoopResult, LoopStatus, StreetLoop, StreetsBuildResponse } from "@/lib/streets-types";
 import { stormsNearLoop } from "@/lib/weather-match";
@@ -52,7 +52,7 @@ function StreetsPage() {
 
   async function build() {
     if (!profile.counties.trim() || !profile.states.trim()) {
-      setErr("Fill county and state on Today first.");
+      setErr("Fill county and state in Presets first.");
       return;
     }
     setBusy(true);
@@ -89,14 +89,14 @@ function StreetsPage() {
         <AppHeader title="Streets" page="streets" />
         <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">Where you knock.</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted">
-          Today needs a county and a state first. Then we build street loops from roofs in the age
+          Presets needs a county and a state first. Then we build zips from roofs in the age
           band — not from hail.
         </p>
         <Link
-          to="/"
+          to="/settings"
           className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-fg text-sm text-paper"
         >
-          Open Today
+          Open Presets
         </Link>
       </main>
     );
@@ -107,8 +107,8 @@ function StreetsPage() {
       <AppHeader title="Streets" page="streets" />
       <h1 className="mt-8 font-display text-3xl leading-tight tracking-tight">Where you knock.</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">
-        {profile.counties.trim()}, {profile.states.trim()}. Age first — you set the years. A
-        subdivision name only if the map has one.
+        {profile.counties.trim()}, {profile.states.trim()}. One card per zip, grouped by county.
+        You set the years. Streets on a card are the age-band pockets — not the whole zip.
       </p>
 
       <p className="mt-6 text-xs font-medium uppercase tracking-wide text-faint">
@@ -164,7 +164,7 @@ function StreetsPage() {
         onClick={() => void build()}
         className="mt-6 h-12 rounded-full bg-fg text-sm text-paper disabled:opacity-40"
       >
-        {busy ? "Building streets…" : loops.length ? "Rebuild from my counties" : "Build streets from my counties"}
+        {busy ? "Building zips…" : loops.length ? "Rebuild from my counties" : "Build zips from my counties"}
       </button>
       {stale ? (
         <p className="mt-2 text-sm text-muted">Counties or age band changed. Rebuild to match.</p>
@@ -174,14 +174,16 @@ function StreetsPage() {
 
       {busy ? (
         <p className="mt-8 text-sm text-muted">
-          Reading housing years and street names. This can take half a minute. Stay on this page.
+          Reading housing years and rolling them into zips. This can take half a minute. Stay on
+          this page.
         </p>
       ) : null}
 
       {!busy && !loops.length ? (
         <p className="mt-8 text-sm leading-relaxed text-muted">
-          Empty until you build. We use Census median year (same idea as the old assessor filter) and
-          public road names. Storms do not pick these loops.
+          Empty until you build. One card per zip, grouped by county. We use Census years on the
+          streets that sit in your age band — not the median of the whole zip. Storms do not pick
+          these cards.
         </p>
       ) : null}
 
@@ -192,9 +194,16 @@ function StreetsPage() {
         </>
       ) : null}
 
-      <ul className="mt-8 flex flex-col gap-3">
-        {loops.map((loop) => (
-          <LoopCard key={loop.id} loop={loop} />
+      <ul className="mt-8 flex flex-col gap-8">
+        {groupLoopsByCounty(loops).map((group) => (
+          <li key={group.county}>
+            <p className="text-xs font-medium uppercase tracking-wide text-faint">{group.county}</p>
+            <ul className="mt-3 flex flex-col gap-3">
+              {group.loops.map((loop) => (
+                <LoopCard key={loop.id} loop={loop} />
+              ))}
+            </ul>
+          </li>
         ))}
       </ul>
     </main>
@@ -225,7 +234,7 @@ function LoopCard({ loop }: { loop: StreetLoop }) {
         ) : null}
         <p className="mt-1 text-xs text-muted">
           {loop.county} · roofs around {age} years
-          {loop.title ? "" : " · no subdivision name"}
+          {loop.homes ? ` · ~${loop.homes.toLocaleString()} houses in the band` : ""}
           {loop.status !== "fresh" ? ` · ${loop.status}` : ""}
         </p>
         <p className="mt-2 text-sm leading-relaxed text-muted">
@@ -315,7 +324,7 @@ function PulsePanel({
 
   async function run() {
     if (!counties.trim() || !states.trim()) {
-      setErr("Fill county and state on Today first.");
+      setErr("Fill county and state in Presets first.");
       return;
     }
     setBusy(true);
@@ -330,6 +339,7 @@ function PulsePanel({
           loops: loops.map((l) => ({
             id: l.id,
             title: l.title,
+            zip: l.zip,
             streets: l.streets,
             county: l.county,
             lat: l.lat,
@@ -352,7 +362,7 @@ function PulsePanel({
     <section className="mt-10">
       <p className="text-xs font-medium uppercase tracking-wide text-faint">Last 48 hours</p>
       <p className="mt-2 text-sm leading-relaxed text-muted">
-        NWS first, then local news and X with your counties pinned. High on a loop you keep jumps
+        NWS first, then local news and X with your counties pinned. High on a zip you keep jumps
         tomorrow. Keep is still what you may say on the porch. Medium and Low do not pick the day.
       </p>
       <button
@@ -418,7 +428,7 @@ function WeatherPanel({ counties, states }: { counties: string; states: string }
 
   async function check() {
     if (!counties.trim() || !states.trim()) {
-      setErr("Fill county and state on Today first.");
+      setErr("Fill county and state in Presets first.");
       return;
     }
     setBusy(true);

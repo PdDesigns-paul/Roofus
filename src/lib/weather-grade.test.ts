@@ -8,6 +8,7 @@ function loop(p: Partial<StreetLoop> = {}): StreetLoop {
   return {
     id: "oak",
     title: "Oak Hills",
+    zip: "",
     streets: ["Oak St"],
     county: "Cumberland",
     state: "PA",

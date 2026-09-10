@@ -3,8 +3,9 @@ export type LoopResult = "" | "no-answer" | "not-now" | "callback" | "appointmen
 
 export type StreetLoop = {
   id: string;
-  /** Real subdivision / neighbourhood name. Empty if the map has none. */
+  /** Zip when we have one. Old saves may still hold a subdivision name. */
   title: string;
+  zip: string;
   streets: string[];
   county: string;
   state: string;
