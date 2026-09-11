@@ -106,17 +106,3 @@ export function leadToStorm(lead: PulseLead): StormEvent {
     remark: lead.remark,
   };
 }
-
-/** Pulse rows they have not Keep / Toss yet. Kept say is enough — ids differ after Keep. */
-export function openPulseLeads(leads: PulseLead[], kept: StormEvent[], tossed: string[]): PulseLead[] {
-  const tossedSet = new Set(tossed);
-  const keptIds = new Set(kept.map((k) => k.id));
-  const keptSay = new Set(kept.map((k) => k.say.trim().toLowerCase()).filter(Boolean));
-  return leads.filter((l) => {
-    if (tossedSet.has(l.id)) return false;
-    if (keptIds.has(l.id) || keptIds.has(l.id.replace(/^p-/, "k-"))) return false;
-    if (l.say.trim() && keptSay.has(l.say.trim().toLowerCase())) return false;
-    return true;
-  });
-}
-

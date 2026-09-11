@@ -257,7 +257,7 @@ function DaySheet() {
 
       <Field
         label="Weather you can mention"
-        hint="From a storm you Keep. Use today copies it if this box is empty. Age first."
+        hint="Copied from Streets when you tap Use today. Edit freely. Age first."
       >
         <textarea
           className="mt-2 min-h-16 w-full min-w-0 rounded-xl border border-border bg-surface px-3 py-2 text-base leading-relaxed"
@@ -266,9 +266,6 @@ function DaySheet() {
           placeholder="Yesterday’s cell, 1 inch hail in Hampden — only if that’s true."
         />
       </Field>
-      <Link to="/storms" className="mt-2 text-sm text-muted underline-offset-4 hover:text-fg hover:underline">
-        Storms
-      </Link>
 
       <AarFields value={day.afterAction} onChange={(v) => patchToday({ afterAction: v })} />
 

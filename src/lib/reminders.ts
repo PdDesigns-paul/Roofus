@@ -15,7 +15,7 @@ export const REMINDERS = [
     label: "Storm report",
     when: "Morning",
     hint: "Last 48 hours. Only if you open before noon and it is empty.",
-    to: "/storms",
+    to: "/today",
   },
   {
     id: "journal",

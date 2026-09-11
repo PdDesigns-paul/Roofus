@@ -3,8 +3,8 @@ export const PAGE_HELP = {
     title: "Roofus",
     body: [
       "This is the porch. The bar is setup — name, territory, zips, hours, warranty, Why. Each row opens that Presets page or Ask Roofus. Tell Roofus is the pinned setup chat.",
-      "Orange button is Roofus. Tap to pick Live, Roleplay, or Mindset — each is a new chat. Hold starts Live. History is the clock in the chat. Menu: Cards, Reference, Streets, Storms, Presets. First open walks the question mark.",
-      "Bottom: Today, Inspect, Home. Back shows on Cards, Reference, Presets, Streets, and Storms. Put the app on your Home Screen so the tile says Roofus and shows the dog.",
+      "Orange button is Roofus. Tap to pick Live, Roleplay, or Mindset — each is a new chat. Hold starts Live. History is the clock in the chat. Menu: Cards, Reference, Streets, Presets. First open walks the question mark.",
+      "Bottom: Today, Inspect, Home. Back shows on Cards, Reference, Presets, and Streets. Put the app on your Home Screen so the tile says Roofus and shows the dog.",
     ],
   },
   today: {
@@ -19,14 +19,7 @@ export const PAGE_HELP = {
     title: "Streets",
     body: [
       "Build from the counties in Presets. Open from More, Home, Today, or Presets. You pick the roof age — default 17–25 years. Tap Change to edit. Each card is a park-once loop (Census streets or a small CDP). Township is the folder. Working sits at the top. Tap a county to open the rest. Search township, loop, street, or zip. A rural county still gets a row even if Census found no age-band loops yet.",
-      "A Working loop shows one sentence if a kept storm actually hit it. Use today adds that loop to Today’s plan and copies the sentence if the weather box is empty. Last 48 hours lives on Storms, not here. Rebuild does not copy old zip Working onto the new loops.",
-    ],
-  },
-  storms: {
-    title: "Storms",
-    body: [
-      "Not a tab. Open from Menu, Presets, or the morning nag. Satellite map. Pins are storms you Keep — a pointer, not a house. Pending last-48h sits under the map with Keep / Toss. Tossed never become porch weather.",
-      "Look up last 48 hours only when you tap. Pins only move when you Keep. Empty is valid: age first, nothing kept is nothing to say. Use today copies the kept sentence onto Today. Do not invent hail.",
+      "A Working loop shows one sentence if a kept storm actually hit it. Use today adds that loop to Today’s plan and copies the sentence if the weather box is empty. Last 48 hours and the season log are not on this page. Rebuild does not copy old zip Working onto the new loops.",
     ],
   },
   cards: {
@@ -62,10 +55,10 @@ export const PAGE_HELP = {
   settings: {
     title: "Presets",
     body: [
-      "Presets is a list of pages. You, Territory, Hours, Mindset, Reminders, Backup. Streets and Storms are their own pages. Back on every sub page. Tour and sample day stay on this list.",
+      "Presets is a list of pages. You, Territory, Hours, Mindset, Reminders, Backup. Streets is its own page. Back on every sub page. Tour and sample day stay on this list.",
       "You: first name, company, website, warranty. Paste a URL — we crawl it in the background. Pages land in Reference. He uses those notes when he talks product.",
       "Territory: counties and a state. Rebuild Streets after you change them. Hours: when you knock, morning work, hard stop.",
-      "Reminders nag you when you open the app. Morning: storm report if it is empty — opens Storms. Evening: After Action Report if it is blank. Sundays: pace. The 1st: talent stack. Did it dismisses that nag for today.",
+      "Reminders nag you when you open the app. Morning: storm report if it is empty. Evening: After Action Report if it is blank. Sundays: pace. The 1st: talent stack. Did it dismisses that nag for today.",
       "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report is on Today.",
       "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Do not Restore onto a full phone. Do not Backup from an empty one.",
       "Show the question-mark tour plays the first-open walk again.",

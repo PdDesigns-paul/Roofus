@@ -18,8 +18,6 @@ type WeatherState = {
   keepAll: () => void;
   tossAll: () => void;
   keepLead: (lead: PulseLead) => void;
-  dropKept: (id: string) => void;
-  tossLead: (id: string) => void;
 };
 
 export const useWeather = create<WeatherState>()(
@@ -72,27 +70,13 @@ export const useWeather = create<WeatherState>()(
           pending: [],
           tossed: [...s.tossed, ...s.pending.map((p) => p.id)],
         })),
-      setPulse: (pulse) =>
-        set({
-          pulse,
-          fetchedAt: pulse.at || new Date().toISOString(),
-          fetchedFor: pulse.fetchedFor || get().fetchedFor,
-        }),
+      setPulse: (pulse) => set({ pulse }),
       keepLead: (lead) =>
         set((s) => {
           const storm = leadToStorm(lead);
           if (s.kept.some((k) => k.id === storm.id || k.say === storm.say)) return s;
           return { kept: [...s.kept, storm] };
         }),
-      dropKept: (id) =>
-        set((s) => ({
-          kept: s.kept.filter((k) => k.id !== id),
-          tossed: s.tossed.includes(id) ? s.tossed : [...s.tossed, id],
-        })),
-      tossLead: (id) =>
-        set((s) => ({
-          tossed: s.tossed.includes(id) ? s.tossed : [...s.tossed, id],
-        })),
     }),
     {
       name: "roofus-weather-v1",

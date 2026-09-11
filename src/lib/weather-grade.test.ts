@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { applyCrawlUpgrade, gradeStormAgainstLoops, hOverrideLoop, openPulseLeads, pulseIsFresh } from "./weather-grade.ts";
+import { applyCrawlUpgrade, gradeStormAgainstLoops, hOverrideLoop, pulseIsFresh } from "./weather-grade.ts";
 import type { StreetLoop } from "./streets-types.ts";
 import type { PulseLead, StormEvent } from "./weather-types.ts";
 
@@ -126,35 +126,3 @@ describe("applyCrawlUpgrade", () => {
     assert.ok(up.sources.includes("local news"));
   });
 });
-
-describe("openPulseLeads", () => {
-  const lead: PulseLead = {
-    id: "p-s1",
-    grade: "H",
-    kind: "hail",
-    date: "2026-09-08",
-    county: "Cumberland",
-    state: "PA",
-    places: ["Camp Hill"],
-    say: "1 inch hail in Camp Hill",
-    why: "",
-    sources: ["NWS"],
-    loopId: "oak",
-    loopLabel: "Oak Hills",
-    lat: 40.24,
-    lon: -76.92,
-    remark: "",
-  };
-
-  it("hides a lead they Tossed", () => {
-    assert.equal(openPulseLeads([lead], [], ["p-s1"]).length, 0);
-  });
-  it("hides a lead they already Kept, even when the id changed", () => {
-    const kept = storm({ id: "k-s1", say: "1 inch hail in Camp Hill" });
-    assert.equal(openPulseLeads([lead], [kept], []).length, 0);
-  });
-  it("leaves a new lead open until Keep", () => {
-    assert.equal(openPulseLeads([lead], [], []).length, 1);
-  });
-});
-

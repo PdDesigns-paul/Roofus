@@ -13,7 +13,6 @@ const PAGES = [
   { to: "/settings/you", label: "You", hint: "First name, company, website, warranty" },
   { to: "/settings/territory", label: "Territory", hint: "Counties and state" },
   { to: "/streets", label: "Streets", hint: "Park-once loops from those counties" },
-  { to: "/storms", label: "Storms", hint: "Kept pins. Last 48 hours. Age first." },
   { to: "/settings/hours", label: "Hours", hint: "When you knock" },
   { to: "/settings/mindset", label: "Mindset", hint: "Why, demon, Pace, stack" },
   { to: "/settings/reminders", label: "Reminders", hint: "The four nags" },
@@ -28,7 +27,7 @@ function SettingsIndex() {
       <AppHeader title="Presets" />
 
       <p className="mt-3 text-sm leading-snug text-muted">
-        You, territory, hours. Streets. Storms. Mindset. Reminders. Backup is optional.
+        You, territory, hours. Streets. Mindset. Reminders. Backup is optional.
       </p>
 
       <button

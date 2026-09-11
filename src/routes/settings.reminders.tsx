@@ -13,7 +13,7 @@ function RemindersPage() {
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
       <AppHeader title="Reminders" />
       <p className="mt-5 text-sm leading-relaxed text-muted">
-        When you open Roofus. Morning: storm report if it is empty — opens Storms. Evening: After Action Report if
+        When you open Roofus. Morning: storm report if it is empty. Evening: After Action Report if
         it is blank. Sundays: pace. The 1st: talent stack.
       </p>
       <ReminderToggles />

@@ -10,7 +10,6 @@ export function showBack(path: string): boolean {
 export function helpPageFor(path: string): HelpPageId {
   if (path.startsWith("/today")) return "today";
   if (path.startsWith("/streets")) return "streets";
-  if (path.startsWith("/storms")) return "storms";
   if (path.startsWith("/coach/inspect")) return "inspect";
   if (path.startsWith("/coach/cards")) return "cards";
   if (path.startsWith("/coach/mindset")) return "mindset";
