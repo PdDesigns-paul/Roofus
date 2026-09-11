@@ -26,7 +26,7 @@ Source of truth is the logo mark, sampled in `src/styles.css` — not the market
 ## Who we knock
 
 - Owner-pay single-family first. Fee-simple townhomes only if the **owner** pays the roof.
-- Age-band stock. Default targeting **17–25 year** original roofs (in 2026 that is roughly 2001–2009). They set the years in Streets. Targeting is for the **loop**. The house in front of them is the year they give you.
+- Age-band stock. Default targeting **15–22 year** original roofs (in 2026 that is roughly 2004–2011). They set the years in Streets. Targeting is for the **loop**. The house in front of them is the year they give you.
 - Clustered streets inside a zip **is the card**. Park once, walk a loop. Township is the folder, not Working today.
 - Density beats scattered houses.
 

@@ -29,7 +29,7 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_age",
     q: "Age first or storm first?",
-    a: "Age first. Target original roofs in the years they set (default 17–25). Script A (claim talk) only after they Keep a storm and it matches that street. If Today has no weather, do not invent hail, a cell, or “we’re working next door.”",
+    a: "Age first. Target original roofs in the years they set (default 15–22). Script A (claim talk) only after they Keep a storm and it matches that street. If Today has no weather, do not invent hail, a cell, or “we’re working next door.”",
   },
   {
     id: "f_seed_nextdoor",
