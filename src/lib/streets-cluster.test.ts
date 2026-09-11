@@ -4,7 +4,9 @@ import {
   CLUSTER_MAX_HOMES,
   clusterName,
   clusterSeeds,
+  dropMilitarySeeds,
   finishLoop,
+  isMilitaryPlace,
   kmBetween,
   loopsFromClusters,
   pointInPolygon,
@@ -35,6 +37,48 @@ describe("townshipLabel", () => {
     assert.equal(townshipLabel("Hampden township"), "Hampden");
     assert.equal(townshipLabel("Bloomfield borough"), "Bloomfield");
     assert.equal(townshipLabel("Skyline View CDP"), "Skyline View");
+  });
+});
+
+describe("isMilitaryPlace", () => {
+  it("drops Cumberland PA bases by name", () => {
+    assert.equal(isMilitaryPlace("Carlisle Barracks"), true);
+    assert.equal(isMilitaryPlace("Naval Support Activity Mechanicsburg"), true);
+    assert.equal(isMilitaryPlace("Defense Distribution Depot Susquehanna"), true);
+    assert.equal(isMilitaryPlace("NSA Mechanicsburg"), true);
+  });
+  it("keeps the towns next to those bases", () => {
+    assert.equal(isMilitaryPlace("Carlisle"), false);
+    assert.equal(isMilitaryPlace("Mechanicsburg"), false);
+    assert.equal(isMilitaryPlace("New Cumberland"), false);
+    assert.equal(isMilitaryPlace("Hampden"), false);
+    assert.equal(isMilitaryPlace("Fort Washington"), false);
+  });
+});
+
+describe("dropMilitarySeeds", () => {
+  const barracks = [
+    [
+      [-77.18, 40.2],
+      [-77.16, 40.2],
+      [-77.16, 40.22],
+      [-77.18, 40.22],
+      [-77.18, 40.2],
+    ],
+  ];
+  it("drops a pin on the installation and keeps Hampden", () => {
+    const kept = dropMilitarySeeds(
+      [
+        seed({ geoid: "base", lat: 40.2076, lon: -77.1691, cdp: "Carlisle Barracks", township: "Middlesex" }),
+        seed({ geoid: "hampden", lat: 40.24, lon: -76.98, cdp: "", township: "Hampden" }),
+        seed({ geoid: "onpoly", lat: 40.21, lon: -77.17, cdp: "", township: "Middlesex" }),
+      ],
+      [{ rings: barracks }],
+    );
+    assert.deepEqual(
+      kept.map((s) => s.geoid),
+      ["hampden"],
+    );
   });
 });
 

@@ -18,7 +18,7 @@ export const PAGE_HELP = {
   streets: {
     title: "Streets",
     body: [
-      "Build from the counties in Presets. Open from Menu, Home, Today, or Presets. You pick the roof age — default 17–25 years. Tap Change to edit. Each card is a park-once loop (Census streets or a small CDP). Township is the folder. Working sits at the top. Tap a county to open the rest. Search township, loop, street, or zip. Near me is a chip — it sorts loops you already built. Empty book does not invent a zip. A rural county still gets a row even if Census found no age-band loops yet.",
+      "Build from the counties in Presets. Open from Menu, Home, Today, or Presets. You pick the roof age — default 17–25 years. Tap Change to edit. Each card is a park-once loop (Census streets or a small CDP). Township is the folder. Working sits at the top. Tap a county to open the rest. Search township, loop, street, or zip. Near me is a chip — it sorts loops you already built. Empty book does not invent a zip. A rural county still gets a row even if Census found no age-band loops yet. Military bases (barracks, NSA, depots) are dropped — rebuild to take them off a list you already have.",
       "When a scout card exists, the loop shows a muted ageBand / stormBand / why. That is not porch copy. A Working loop shows one sentence if a kept storm actually hit it. Use today is a chip — it adds that loop to Today’s plan and copies the sentence if the weather box is empty. Skip is still a chip you tap. Last 48 hours and the season log are not on this page. Rebuild does not copy old zip Working onto the new loops.",
     ],
   },

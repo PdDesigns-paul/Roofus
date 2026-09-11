@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { phoneError } from "@/lib/read-json";
 import { runWeatherPulse } from "@/lib/weather-pulse";
 import type { WeatherPulseRequest } from "@/lib/weather-types";
 
@@ -20,8 +21,7 @@ async function handlePost({ request }: { request: Request }) {
     const result = await runWeatherPulse(req);
     return json(result);
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Could not check the last 48 hours.";
-    return json({ error: message }, 422);
+    return json({ error: phoneError(e, "Could not check the last 48 hours.") }, 422);
   }
 }
 

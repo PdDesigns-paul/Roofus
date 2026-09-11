@@ -14,7 +14,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 | --- | --- |
 | **Porch** | First screen. One setup card. Tell Roofus. Open Today. |
 | **Today** | Pre-knock strip, four counts, neighborhood (several park-once loops), weather you may mention, After Action Report (wins / do-better / plan), tomorrow. |
-| **Streets** | Not a tab. Open from Menu or Presets. Age-band **park-once loops** named from Census streets, grouped by township (default 17–25 year roofs). Working pinned. Near me sorts loops already built. Maps parks on the loop. Muted hunt tag when a scout card exists. One weather sentence on the Working loop if a kept storm matches. Use today is a chip on the card. |
+| **Streets** | Not a tab. Open from Menu or Presets. Age-band **park-once loops** named from Census streets, grouped by township (default 17–25 year roofs). Working pinned. Near me sorts loops already built. Maps parks on the loop. Muted hunt tag when a scout card exists. One weather sentence on the Working loop if a kept storm matches. Use today is a chip on the card. Military bases are dropped. |
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot. Practice shot is off the roof. CompanyCam is the report. |
 | **Roofus** | Orange button. Tap fans Live, Roleplay, Mindset — each is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. Hold-to-talk in Roleplay. Beats at the bottom. Score me is a button. Hear it reads his line. Practice only — do not record a homeowner. |
@@ -30,7 +30,7 @@ Bottom bar: Today · Inspect · Home. Help and Menu live in the header. Menu: Ca
 Full book: [`DOCTRINE.md`](./DOCTRINE.md). Tap-clues: [`SIGNIFIERS.md`](./SIGNIFIERS.md).
 
 - Age first. Storms are a footnote unless you **Keep** them and they match that street.
-- Owner-pay houses. Clustered streets. Skip apartments, HOA-paid roofs, renters (card for the owner only).
+- Owner-pay houses. Clustered streets. Skip apartments, HOA-paid roofs, renters (card for the owner only), military bases.
 - **Million-dollar door script** = Script B (age / free look). Live’s first starter. Script A (claim talk) only after Keep, and only on matching zips.
 - One appointment from a day of knocking is a winning day.
 - Homeowner lines: 5th-grade, plain meaning first. Coach talk can sound like a closer.

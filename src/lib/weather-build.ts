@@ -3,6 +3,7 @@
  * Slice 7 (later): revamp UI and audit this stack so it does not ship as a Jenga tower.
  */
 // Relative so the sidecar CLI can reuse this without Vite `@/` aliases.
+import { parseJson } from "./read-json.ts";
 import { countyBasename, parseList, stateAbbr } from "./us-state-fips.ts";
 import type { StormEvent, WeatherBuildRequest, WeatherBuildResponse } from "./weather-types.ts";
 
@@ -101,10 +102,13 @@ export async function buildWeatherLog(req: WeatherBuildRequest): Promise<Weather
     const url = `${IEM}?states=${encodeURIComponent(st)}&sts=${encodeURIComponent(sts)}&ets=${encodeURIComponent(ets)}`;
     const res = await fetch(url, {
       headers: { Accept: "application/json", "User-Agent": UA },
-      signal: AbortSignal.timeout(40_000),
+      signal: AbortSignal.timeout(15_000),
     });
-    if (!res.ok) throw new Error(`Storm archive missed that (${res.status}).`);
-    const data = (await res.json()) as { features?: { properties: LsrProps; geometry?: { coordinates?: number[] } }[] };
+    if (!res.ok) throw new Error("Storm archive missed that.");
+    const data = parseJson(await res.text()) as {
+      features?: { properties: LsrProps; geometry?: { coordinates?: number[] } }[];
+    } | null;
+    if (!data) throw new Error("Storm archive missed that.");
     features.push(...(data.features ?? []));
   }
 

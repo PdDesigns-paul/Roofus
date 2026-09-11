@@ -4,6 +4,7 @@ import { AppHeader } from "@/components/app-header";
 import { Chip } from "@/components/ui/chip";
 import { useDayBook } from "@/lib/day-book";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
+import { phoneError, readJson } from "@/lib/read-json";
 import { useScout } from "@/lib/scout-store";
 import { formatMiles, loopHasPin, milesBetween, nearMeList, streetsScoutTag } from "@/lib/streets-near";
 import {
@@ -107,8 +108,9 @@ function StreetsPage() {
           ageMax,
         }),
       });
-      const data = (await res.json()) as StreetsBuildResponse & { error?: string };
-      if (!res.ok) throw new Error(data.error || "Could not build streets.");
+      const data = (await readJson(res)) as (StreetsBuildResponse & { error?: string }) | null;
+      if (!data) throw new Error("Could not build streets.");
+      if (!res.ok) throw new Error(phoneError(data.error, "Could not build streets."));
       // Restore may land while Census is still reading. Don't blow it away.
       if (!force && useStreets.getState().loops.length) return;
       replace(data.loops, {
@@ -119,7 +121,7 @@ function StreetsPage() {
       });
       setEmptyCounties(data.emptyCounties ?? []);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Could not build streets.");
+      setErr(phoneError(e, "Could not build streets."));
     } finally {
       setBusy(false);
     }
