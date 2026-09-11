@@ -2,8 +2,9 @@
  * Slice 3: last-6-month NWS Local Storm Reports (IEM archive).
  * Slice 7 (later): revamp UI and audit this stack so it does not ship as a Jenga tower.
  */
-import { countyBasename, parseList, stateAbbr } from "@/lib/us-state-fips";
-import type { StormEvent, WeatherBuildRequest, WeatherBuildResponse } from "@/lib/weather-types";
+// Relative so the sidecar CLI can reuse this without Vite `@/` aliases.
+import { countyBasename, parseList, stateAbbr } from "./us-state-fips.ts";
+import type { StormEvent, WeatherBuildRequest, WeatherBuildResponse } from "./weather-types.ts";
 
 const UA = "RoofusCoach/1.0 (https://roofus.coach; NWS LSR weather log)";
 const IEM = "https://mesonet.agron.iastate.edu/geojson/lsr.geojson";
