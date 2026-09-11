@@ -83,6 +83,15 @@ npm run dev
 
 Maps open Google Maps search links. No Maps API key. Streets come from Census TIGERweb. Weather is NWS. Notion secret is pasted in Presets and stays on the phone.
 
+Loop research (WFO recap, local news, GIS clickers) is a **sidecar**, not a Streets tap. Vercel Hobby cannot run Chromium:
+
+```bash
+node --experimental-strip-types scripts/scout-loop.mjs --demo
+# writes artifacts/scout/<loopId>.json and .md
+```
+
+`--demo` uses a generic Cumberland County park-once loop. Missing `XAI_API_KEY` is IEM-only and still success. `--playwright` is only when that feed is mute (one adapter, one loop). Captcha or login → unknown, not a guessed year or hail size. Do not add this to CI. Do not import it from `src/routes`.
+
 Do not commit a `.env`. Do not put keys in the client.
 
 ### Scripts
@@ -93,6 +102,8 @@ npm run build        # Vite production build (no database)
 npm run typecheck
 npm run test:app     # Roofus lib tests (what CI runs)
 npm test             # includes Grok platform script tests — not CI
+npm run scout:loop -- --demo
+                     # sidecar: one loop scout card (IEM). Not the phone. Not CI.
 ```
 
 ## Layout
@@ -105,6 +116,7 @@ PLATFORM.md            Grok auth/db leftover — do not call from product code
 src/routes/            pages + /api/* proxies
 src/components/        phone chrome (tabs, chat sheet, FAB)
 src/lib/               stores, ranking, Notion, coach prompt
+scripts/scout-loop.mjs sidecar scout — one loop, not the phone, not CI
 public/roofus.png      the dog
 ```
 
