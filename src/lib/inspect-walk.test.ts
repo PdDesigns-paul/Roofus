@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { ASK_STARTERS, I35_SLOTS, PRACTICE_SHOT, WALK_SLOTS } from "./inspect-walk.ts";
+import { ASK_STARTERS, I35_SLOTS, PRACTICE_SHOT, WALK_SLOTS, restoreWalk, serializeWalk } from "./inspect-walk.ts";
 import { INSPECT_SYSTEM } from "./inspect-system.ts";
 import { inspectKnowledgeForShot } from "./mri-index.ts";
 
@@ -59,5 +59,36 @@ describe("INSPECT_SYSTEM", () => {
     assert.match(INSPECT_SYSTEM, /This shot/);
     assert.match(INSPECT_SYSTEM, /Name missing tabs/);
     assert.match(INSPECT_SYSTEM, /Do not say insurance will pay/);
+  });
+});
+
+describe("serializeWalk / restoreWalk", () => {
+  it("roundtrips ticks and the open station through JSON", () => {
+    const snap = serializeWalk({
+      done: { street: true, slopes: true },
+      checks: { "street-0": true, "street-1": true, "slopes-0": true },
+      openSlot: "slopes",
+    });
+    const out = restoreWalk(JSON.parse(JSON.stringify(snap)));
+    assert.equal(out.done.street, true);
+    assert.equal(out.done.slopes, true);
+    assert.equal(out.checks["street-0"], true);
+    assert.equal(out.checks["slopes-0"], true);
+    assert.equal(out.openSlot, "slopes");
+  });
+  it("drops unknown slots and a missing blob is empty", () => {
+    const out = restoreWalk({
+      done: { nope: true, street: true, attic: false },
+      checks: { "street-0": true, "nope-0": true, "street-99": true },
+      openSlot: "nope",
+    });
+    assert.equal(out.done.street, true);
+    assert.equal((out.done as Record<string, boolean>).nope, undefined);
+    assert.equal(out.done.attic, undefined);
+    assert.equal(out.checks["street-0"], true);
+    assert.equal(out.checks["nope-0"], undefined);
+    assert.equal(out.checks["street-99"], undefined);
+    assert.equal(out.openSlot, null);
+    assert.deepEqual(restoreWalk(undefined), { done: {}, checks: {}, openSlot: null });
   });
 });

@@ -5,6 +5,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { clusterPlanLabel } from "./streets-rank.ts";
+import { emptyWalk, restoreWalk, serializeWalk, type InspectWalkProgress } from "./inspect-walk.ts";
 
 export type DayCounts = {
   knocks: number;
@@ -102,12 +103,15 @@ export function blankDay(date: string): DayEntry {
 type DayBookState = {
   profile: DayProfile;
   days: Record<string, DayEntry>;
+  inspectWalk: InspectWalkProgress;
   ensureToday: () => DayEntry;
   today: () => DayEntry;
   patchProfile: (patch: Partial<DayProfile>) => void;
   finishSetup: (profile: Partial<DayProfile>) => void;
   bump: (key: keyof DayCounts, delta: number) => void;
   patchToday: (patch: Partial<Omit<DayEntry, "date">>) => void;
+  patchInspectWalk: (patch: Partial<InspectWalkProgress>) => void;
+  resetInspectWalk: () => void;
 };
 
 function prune(days: Record<string, DayEntry>, keep: string) {
@@ -136,6 +140,7 @@ export const useDayBook = create<DayBookState>()(
         hardStop: "",
       },
       days: {},
+      inspectWalk: emptyWalk(),
       ensureToday: () => {
         const date = localDateKey();
         const existing = get().days[date];
@@ -175,10 +180,27 @@ export const useDayBook = create<DayBookState>()(
           const cur = s.days[date] ?? blankDay(date);
           return { days: prune({ ...s.days, [date]: { ...cur, ...patch } }, date) };
         }),
+      patchInspectWalk: (patch) =>
+        set((s) => ({
+          inspectWalk: serializeWalk({ ...s.inspectWalk, ...patch }),
+        })),
+      resetInspectWalk: () => set({ inspectWalk: emptyWalk() }),
     }),
     {
       name: "roofus-day-v1",
-      partialize: (s) => ({ profile: s.profile, days: s.days }),
+      partialize: (s) => ({ profile: s.profile, days: s.days, inspectWalk: s.inspectWalk }),
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<{
+          profile: DayProfile;
+          days: Record<string, DayEntry>;
+          inspectWalk: unknown;
+        }>;
+        return {
+          ...current,
+          ...p,
+          inspectWalk: restoreWalk(p.inspectWalk),
+        };
+      },
     },
   ),
 );

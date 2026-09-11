@@ -48,3 +48,48 @@ export const ASK_STARTERS = [
 ];
 
 export const PRACTICE_SHOT = "/inspect-practice.png";
+
+export type InspectWalkProgress = {
+  done: Partial<Record<WalkSlotId, boolean>>;
+  checks: Partial<Record<string, boolean>>;
+  openSlot: WalkSlotId | null;
+};
+
+const SLOT_IDS = new Set<string>(WALK_SLOTS.map((s) => s.id));
+const CHECK_KEYS = new Set(WALK_SLOTS.flatMap((s) => s.checks.map((_, i) => `${s.id}-${i}`)));
+
+function isSlot(id: unknown): id is WalkSlotId {
+  return typeof id === "string" && SLOT_IDS.has(id);
+}
+
+export function emptyWalk(): InspectWalkProgress {
+  return { done: {}, checks: {}, openSlot: null };
+}
+
+/** Drop unknown slots so an old or junk blob cannot tick a station that is not on the walk. */
+export function restoreWalk(raw: unknown): InspectWalkProgress {
+  if (!raw || typeof raw !== "object") return emptyWalk();
+  const o = raw as Record<string, unknown>;
+  const done: InspectWalkProgress["done"] = {};
+  if (o.done && typeof o.done === "object") {
+    for (const [k, v] of Object.entries(o.done as Record<string, unknown>)) {
+      if (isSlot(k) && v === true) done[k] = true;
+    }
+  }
+  const checks: InspectWalkProgress["checks"] = {};
+  if (o.checks && typeof o.checks === "object") {
+    for (const [k, v] of Object.entries(o.checks as Record<string, unknown>)) {
+      if (CHECK_KEYS.has(k) && v === true) checks[k] = true;
+    }
+  }
+  return {
+    done,
+    checks,
+    openSlot: isSlot(o.openSlot) ? o.openSlot : null,
+  };
+}
+
+export function serializeWalk(progress: InspectWalkProgress): InspectWalkProgress {
+  return restoreWalk(progress);
+}
+

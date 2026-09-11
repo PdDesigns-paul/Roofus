@@ -32,7 +32,7 @@ export const PAGE_HELP = {
   inspect: {
     title: "Inspect",
     body: [
-      "Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic — tap a row for what to shoot. Ticks are this house. They don’t save. Not a report.",
+      "Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic — tap a row for what to shoot. Ticks are this house. They stay until Reset. Not a report.",
       "This shot: Camera, Photos, or Practice. Ask what you’re looking at, whether it’s the worst, or what to say. He names the i35 slot — Bad, Good, Worst, or skip theater. Practice is not this house.",
       "Don’t announce off the ladder. Opening this page starts a blank ask — old inspect chats live under Roofus history.",
     ],

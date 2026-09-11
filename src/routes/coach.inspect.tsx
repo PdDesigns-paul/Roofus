@@ -8,6 +8,7 @@ import { compressImage } from "@/lib/compress-image";
 import { abortTalk, sendRoofus, stopRoofus } from "@/lib/roofus-talk";
 import { useCoach } from "@/lib/coach-store";
 import { ASK_STARTERS, PRACTICE_SHOT, WALK_SLOTS, type WalkSlotId } from "@/lib/inspect-walk";
+import { useDayBook } from "@/lib/day-book";
 
 const EMPTY_TURNS: { role: "user" | "assistant"; content: string }[] = [];
 
@@ -20,9 +21,6 @@ function InspectPage() {
   const cameraRef = useRef<HTMLInputElement>(null);
   const rollRef = useRef<HTMLInputElement>(null);
   const liveId = useRef<string | null>(null);
-  const [done, setDone] = useState<Partial<Record<WalkSlotId, boolean>>>({});
-  const [checks, setChecks] = useState<Partial<Record<string, boolean>>>({});
-  const [openSlot, setOpenSlot] = useState<WalkSlotId | null>(null);
   const [panel, setPanel] = useState<"walk" | "shot">("walk");
   const [photo, setPhoto] = useState<string | null>(null);
   const [practice, setPractice] = useState(false);
@@ -38,6 +36,12 @@ function InspectPage() {
   });
   const streaming = useCoach((s) => s.streaming);
   const busy = useCoach((s) => s.busy);
+  const walk = useDayBook((s) => s.inspectWalk);
+  const patchInspectWalk = useDayBook((s) => s.patchInspectWalk);
+  const resetInspectWalk = useDayBook((s) => s.resetInspectWalk);
+  const done = walk.done;
+  const checks = walk.checks;
+  const openSlot = walk.openSlot;
   const looking = Boolean(liveId.current) && busy;
   const shown = looking
     ? [...inspectTurns, { role: "assistant" as const, content: streaming }]
@@ -107,19 +111,14 @@ function InspectPage() {
   }
 
   function toggleSlot(id: WalkSlotId) {
-    setDone((d) => ({ ...d, [id]: !d[id] }));
+    patchInspectWalk({ done: { ...done, [id]: !done[id] } });
   }
 
   function toggleCheck(key: string, slot: WalkSlotId) {
-    setChecks((c) => {
-      const next = { ...c, [key]: !c[key] };
-      const slotDef = WALK_SLOTS.find((s) => s.id === slot);
-      if (slotDef) {
-        const all = slotDef.checks.every((_, i) => next[`${slot}-${i}`]);
-        setDone((d) => ({ ...d, [slot]: all }));
-      }
-      return next;
-    });
+    const next = { ...checks, [key]: !checks[key] };
+    const slotDef = WALK_SLOTS.find((s) => s.id === slot);
+    const all = slotDef ? slotDef.checks.every((_, i) => next[`${slot}-${i}`]) : false;
+    patchInspectWalk({ checks: next, done: { ...done, [slot]: all } });
   }
 
   return (
@@ -130,10 +129,14 @@ function InspectPage() {
         <div className="min-w-0">
           <h1 className="font-display text-xl leading-tight tracking-tight">Walk. Then the shot.</h1>
           <p className="mt-1 text-xs leading-relaxed text-muted">
-            Checklist is this house — it doesn’t save. The shot is i35. Don’t talk off the ladder.
+            Checklist is this house — it stays until Reset. The shot is i35. Don’t talk off the ladder.
           </p>
         </div>
-        {photo || shown.length ? (
+        {panel === "walk" ? (
+          <button type="button" onClick={() => resetInspectWalk()} className="h-10 shrink-0 rounded-full border border-border px-3 text-xs">
+            Reset
+          </button>
+        ) : photo || shown.length ? (
           <button type="button" onClick={newShot} className="h-10 shrink-0 rounded-full border border-border px-3 text-xs">
             New shot
           </button>
@@ -179,7 +182,7 @@ function InspectPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setOpenSlot(open ? null : s.id)}
+                      onClick={() => patchInspectWalk({ openSlot: open ? null : s.id })}
                       className="min-w-0 flex-1 px-3 py-2.5 text-left"
                     >
                       <p className="text-sm font-medium">{s.title}</p>
