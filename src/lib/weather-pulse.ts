@@ -4,9 +4,13 @@
  */
 import { loopHeadline, loopLabel, matchLoopCluster } from "@/lib/streets-rank";
 import type { StreetLoop } from "@/lib/streets-types";
+import { parseNwsAlertAreas, tagLoops, type AlertArea } from "@/lib/storm-footprint";
+import { parseList, stateAbbr } from "@/lib/us-state-fips";
 import { buildWeatherLog } from "@/lib/weather-build";
 import { applyCrawlUpgrade, gradeStormAgainstLoops } from "@/lib/weather-grade";
 import type { PulseLead, PulseReport, WeatherPulseRequest } from "@/lib/weather-types";
+
+const UA = "RoofusCoach/1.0 (https://roofus.coach; NWS alerts)";
 
 function outputText(body: {
   output?: { type?: string; content?: { type?: string; text?: string }[] }[];
@@ -47,6 +51,21 @@ function matchLoop(hint: string, loops: StreetLoop[]): StreetLoop | null {
     loops.find((l) => l.streets.some((s) => h.toLowerCase().includes(s.toLowerCase()))) ??
     null
   );
+}
+
+async function loadAlertAreas(states: string): Promise<AlertArea[]> {
+  const st = [...new Set(parseList(states).map(stateAbbr).filter((x): x is string => Boolean(x)))];
+  const out: AlertArea[] = [];
+  for (const s of st) {
+    const res = await fetch(`https://api.weather.gov/alerts/active?area=${encodeURIComponent(s)}`, {
+      headers: { Accept: "application/geo+json", "User-Agent": UA },
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (!res.ok) continue;
+    const body = (await res.json()) as { features?: { properties?: { event?: string; areaDesc?: string } }[] };
+    out.push(...parseNwsAlertAreas(body, s));
+  }
+  return out;
 }
 
 async function crawlNews(
@@ -141,6 +160,8 @@ Return ONLY JSON:
 }
 
 export async function runWeatherPulse(req: WeatherPulseRequest): Promise<PulseReport> {
+  const marketState =
+    [...new Set(parseList(req.states).map(stateAbbr).filter((x): x is string => Boolean(x)))][0] ?? "";
   const loops = (req.loops ?? []).map((l) => ({
     id: l.id,
     title: l.title,
@@ -150,7 +171,7 @@ export async function runWeatherPulse(req: WeatherPulseRequest): Promise<PulseRe
     township: "",
     streets: l.streets,
     county: l.county,
-    state: "",
+    state: marketState,
     medianYear: 0,
     homes: 0,
     lat: l.lat,
@@ -186,6 +207,14 @@ export async function runWeatherPulse(req: WeatherPulseRequest): Promise<PulseRe
     crawled = false;
   }
 
+  let alerts: AlertArea[] = [];
+  try {
+    alerts = await loadAlertAreas(req.states);
+  } catch {
+    alerts = [];
+  }
+  const footprints = tagLoops(loops, iem.storms, { alerts });
+
   const order = { H: 0, M: 1, L: 2 };
   leads.sort((a, b) => order[a.grade] - order[b.grade] || (a.date < b.date ? 1 : -1));
   const usable = leads.filter((l) => l.grade !== "L" || l.loopId);
@@ -203,5 +232,6 @@ export async function runWeatherPulse(req: WeatherPulseRequest): Promise<PulseRe
     crawled,
     at: new Date().toISOString(),
     fetchedFor: `${req.counties}|${req.states}`.toLowerCase(),
+    footprints,
   };
 }

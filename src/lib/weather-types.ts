@@ -35,6 +35,16 @@ export type PulseLead = {
   remark: string;
 };
 
+export type PulseFootprint = {
+  loopId: string;
+  lsrCount: number;
+  alertHit: boolean;
+  meshMm?: number;
+  stormBand: PulseGrade | "quiet";
+  stormSay: string;
+  sources: string[];
+};
+
 export type PulseReport = {
   quiet: boolean;
   summary: string;
@@ -42,6 +52,7 @@ export type PulseReport = {
   crawled: boolean;
   at: string;
   fetchedFor: string;
+  footprints?: PulseFootprint[];
 };
 
 export type WeatherBuildRequest = {
