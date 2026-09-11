@@ -39,6 +39,8 @@ Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold star
 - Auth OFF. Database OFF. localStorage / Zustand only. Notion is optional backup in **their** workspace.
 - No CRM, takeoff, listing lookup, notes app, or apartment flow.
 
+The product path is this phone’s journal. Do not wire `better-auth`, `src/lib/db.ts`, or `src/lib/auth/*` into routes; `AuthProvider` in the root is a Grok-host passthrough. `npm run build` is Vite only — never chain `db:migrate`. What stayed for the host, and why: [`PLATFORM.md`](./PLATFORM.md).
+
 ## Signifiers (short)
 
 Full book: [`SIGNIFIERS.md`](./SIGNIFIERS.md). Five types. No sixth.

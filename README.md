@@ -89,7 +89,7 @@ Do not commit a `.env`. Do not put keys in the client.
 
 ```bash
 npm run dev          # local app
-npm run build        # production build
+npm run build        # Vite production build (no database)
 npm run typecheck
 npm run test:app     # Roofus lib tests (what CI runs)
 npm test             # includes Grok platform script tests — not CI
@@ -101,6 +101,7 @@ npm test             # includes Grok platform script tests — not CI
 DOCTRINE.md            porch + product book (source of truth)
 SIGNIFIERS.md          tap-clues + chrome plan (source of truth for controls)
 AGENTS.project.md      instructions for any agent (Grok, Cursor, Copilot)
+PLATFORM.md            Grok auth/db leftover — do not call from product code
 src/routes/            pages + /api/* proxies
 src/components/        phone chrome (tabs, chat sheet, FAB)
 src/lib/               stores, ranking, Notion, coach prompt
