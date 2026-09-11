@@ -2,24 +2,25 @@
 
 You are editing **an existing app**. Never scaffold a blank one. Never rebrand it. Never add login or a database.
 
-This file is for any agent (Grok Build, Cursor, Copilot). Porch doctrine is [`DOCTRINE.md`](./DOCTRINE.md). That file wins over Drive, chat history, and summaries. If you also see `AGENTS.md`, that is Grok sandbox chrome (ports, preview, platform plugins) — do not grow Roofus rules there.
+This file is for any agent (Grok Build, Cursor, Copilot). Porch doctrine is [`DOCTRINE.md`](./DOCTRINE.md). Phone chrome and tap-clues are [`SIGNIFIERS.md`](./SIGNIFIERS.md). Those files win over Drive, chat history, and summaries. If you also see `AGENTS.md`, that is Grok sandbox chrome (ports, preview, platform plugins) — do not grow Roofus rules there.
 
 ## One source of truth
 
 | Live | Dead |
 | --- | --- |
-| This repo (`DOCTRINE.md`, this file, `README.md`, the code) | Google Drive “Alpha Exteriors” / Sept 2026 zip |
+| This repo (`DOCTRINE.md`, `SIGNIFIERS.md`, this file, `README.md`, the code) | Google Drive “Alpha Exteriors” / Sept 2026 zip |
 | Presets + Today on **their** phone | Anything you assume about Paul, Alpha, West Shore, or a 3:30 start |
 | Storms they **Keep** in the app | `STORM_LOG.md` from the archive |
 
 The Drive folder is a research archive. Do not copy Alpha phones, PAHIC numbers, Paul/Ari territory, named subdivisions, or live storm rows into the app. Generic canvasser. Name / company / counties / hours come from Presets.
 
 If `DOCTRINE.md` and a button disagree, fix both in the same change.
+If `SIGNIFIERS.md` and a control disagree after a chrome slice, fix both in the same change.
 
 ## Resume (fresh Build chat)
 
 1. This workspace may already have the app. If it looks like a blank template, **pull** [PdDesigns-paul/Roofus](https://github.com/PdDesigns-paul/Roofus) before you write code.
-2. Read `DOCTRINE.md` only when the slice touches porch words. Do not reread the coach prompt “just in case.”
+2. Read `DOCTRINE.md` only when the slice touches porch words. Read `SIGNIFIERS.md` when the slice touches tabs, the FAB, Home, Today actions, setup rows, or `src/components/ui/`. Do not reread the coach prompt “just in case.”
 3. Do only the slice they asked. Push back to that repo when it works.
 4. Do not paste the old chat. Do not dump the archive playbooks into new files.
 
@@ -27,7 +28,9 @@ GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at 
 
 ## Product (short)
 
-Phone-first PWA. First screen is the porch. Bottom bar: Today · Inspect · Home. Home holds setup (bar + Tell Roofus + Presets links). Footer above it: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Menu: Cards, Reference, Presets. Streets, mindset, and reminders live in Presets. Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. No lock-screen.
+Phone-first PWA. First screen is the porch. Bottom bar: Today · Inspect · Home. **Target chrome** (see `SIGNIFIERS.md`): Help and Menu live in the header; one tab bar; Back only on Cards, Reference, Presets, and Streets. **Live phone still has Help / Menu in a footer rail** until the chrome slice ships. Do not invent a third layout.
+
+Home holds setup (bar + Tell Roofus). Streets, mindset, and reminders live in Presets. Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. No lock-screen.
 
 Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Inspect hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 
@@ -35,6 +38,24 @@ Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold star
 - Door / Live first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.
 - Auth OFF. Database OFF. localStorage / Zustand only. Notion is optional backup in **their** workspace.
 - No CRM, takeoff, listing lookup, notes app, or apartment flow.
+
+## Signifiers (short)
+
+Full book: [`SIGNIFIERS.md`](./SIGNIFIERS.md). Five types. No sixth.
+
+| Type | Promise |
+| --- | --- |
+| **Place** | Tab. I am in a place. Today · Inspect · Home. |
+| **Do** | Pill, 48–56px. Something happens here. One filled primary per screen. |
+| **Toggle a token** | Chip. Outline off, accent fill on. |
+| **Go** | Underlined text, or a row with a chevron. Leaves this screen. |
+| **Talk** | Orange FAB. Dog face. Fan for mode. Hold starts Live. |
+
+Buttons do. Links go. Chips fork the current task. Ban ghost text (`Ask`, `Did it`, `Pocket cards` as 12px muted captions) in content. Always underline Go links — `hover:underline` is a desktop lie.
+
+Do not add a design-token package or 19 button variants. Do not make everything orange. Do not restyle a page before the kit in Slice 1 exists.
+
+Squint test: blur the screenshot. If the action disappears, it was never signified.
 
 ## Hard no
 
@@ -44,6 +65,8 @@ Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold star
 - High-pressure one-call close as the default
 - “This phone is the book” jargon in UI copy — say After Action Report, Today, Presets
 - Changing doctrine in the coach prompt without changing `DOCTRINE.md` (and the other way around)
+- A new control type that is not Place / Do / Chip / Go / Talk
+- Growing Roofus chrome rules in `AGENTS.md`
 
 ## Keep in sync when you touch porch words
 
@@ -52,6 +75,16 @@ Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold star
 - `src/lib/rufus-modes.ts`
 - `src/lib/porch-faqs.ts`
 - `src/lib/page-help.ts`
+
+## Keep in sync when you touch chrome or tap-clues
+
+- `SIGNIFIERS.md`
+- `DOCTRINE.md` product map
+- this file
+- `src/lib/page-help.ts`
+- `src/lib/coach-system.ts` (only if the coach names a button that moved)
+
+Follow the slice order in `SIGNIFIERS.md`. One slice per chat. Do not implement the whole plan because you read the file.
 
 ## How we write code
 
