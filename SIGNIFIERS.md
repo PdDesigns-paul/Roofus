@@ -1,0 +1,157 @@
+# Signifiers — phone chrome book
+
+**This file is the UI contract.** Porch words stay in [`DOCTRINE.md`](./DOCTRINE.md). How a canvasser *sees* what to tap lives here.
+
+This PR does **not** change the running app. The live phone at roofus.coach still has the two-row footer, ghost verbs, and the full setup list on Home. After the implementation slices below, this file and the UI must agree. Do not leave them split.
+
+Agents: read this before you touch tabs, the FAB, Home, Today links, setup rows, or `src/components/ui/`. Do not invent a sixth control type.
+
+---
+
+## Diagnosis (why the phone feels blah)
+
+The facets work. The voice works. The actions already exist. What is missing is the **signifier** — the clue that says *this thing can be used, here, like this.*
+
+On a screen every pixel already affords a tap. Fill, edge, size, underline, and the dog are how we advertise the tap. Right now almost every control is drawn with the same pencil: `text-sm`, `text-muted`, `text-faint`, 1px `border-border`, underline only on hover. Hover never fires on a thumb.
+
+False signifiers on the live phone:
+
+- `Ask`, `Did it`, `Pocket cards`, `Open Streets`, `Presets` look like captions and act like buttons or links.
+- Setup rows are links *and* carry a second ghost verb.
+- Home lists Today / Inspect / Streets under the fold *and* those same places live in the tab bar and Menu.
+- Help and Menu sit in a second bottom rail and read as extra tabs.
+- Accent orange is a sticker (FAB + 2px bar), not a system.
+- Selected tab is “stroke 2.2 vs 1.8.” People do not notice degree changes in a driveway.
+
+Score of the idea: fine. Score of “what do I tap”: the actual bug.
+
+---
+
+## Vocabulary — five types, no sixth
+
+One shape, one promise. If you cannot name the type, the user cannot either.
+
+| Type | Shape | Promise | Use for | Do not use for |
+| --- | --- | --- | --- | --- |
+| **Place** | Bottom tab. Selected = accent mark + `text-fg`. Idle = `text-faint`. | I am *in* a place. | Today · Inspect · Home | Help, Back, Menu, Streets |
+| **Do** | Pill, 48–56px. Primary = filled (`bg-fg text-paper`, or `bg-accent` when the verb is talk to Roofus). Secondary = outlined on a solid surface, same height. | One tap, something happens *here*. | Open Today, +, Ask how today went, Got it, Tell Roofus, −, Load sample, Not now | Navigation a tab or Menu already owns |
+| **Toggle a token** | Chip. Idle = outline + `text-fg`. Selected / done = `bg-accent text-paper`. | A token I can snap on or dismiss. | Did it, Ask (if it survives), Use today, loop on the plan, Live / Roleplay / Mindset fan | The screen’s primary close |
+| **Go** | Always-underlined text, **or** a 56px row with title + hint + chevron. | I will *leave this screen*. | Open Streets, maps label, Presets, setup rows that open a page | Anything that writes today’s log |
+| **Talk** | Orange FAB. Dog face (`RoofusFace`), not a generic chat bubble. Tap fans three chips. Hold starts Live. Hidden on Inspect and while the sheet is open. | The coach. | Live / Roleplay / Mindset | A second FAB |
+
+Buttons **do**. Links **go**. Chips **fork the current task**. Tabs **are places**. The FAB **is Roofus**.
+
+Ban ghost text as an action in content. Text-only controls belong in a header toolbar after the tour has named them — not in a paragraph.
+
+---
+
+## Map — one door per room
+
+Destinations live in four places today. Pick this rule and stop adding a fifth.
+
+- **Day work** = tabs (Today, Inspect, Home).
+- **Kit** = Menu (Cards, Reference, Streets, Presets).
+- **Coach** = orange FAB only.
+- **Help and Back** = header. Back only on Cards, Reference, Presets, Streets. Not a second bottom rail.
+
+If a screen needs a fourth way in, the first three already failed.
+
+Home after this plan is not a directory. Tabs already are Today / Inspect. Streets lives in Menu. Do not also list them as a third stack of rows.
+
+---
+
+## How to exaggerate (on purpose)
+
+- One filled control above the fold. A second filled pill at the same size means zero primaries.
+- Selected state changes **category**, not degree. Outline → fill. Faint → accent mark. Not 1.8 vs 2.2 stroke.
+- Fill beats stroke in sun and in dark mode. 1px `#2c2a26` dies in a driveway.
+- Tap target is the *visible* body, 48–56px. Padding around 12px “Ask” does not count — the eye reads the glyph.
+- Count tiles: the tile is the control. Tap the body to +1. Tiny − in the corner. Number in Fraunces, large.
+- Group by container. Connected track = pick one. Separate chips = pick many.
+- Motion only when it explains a relationship (FAB → three modes). No bounce on every pill.
+- Hold-to-talk must look like a hold plate at rest, not a text field that also records.
+- Empty circle, empty weather box, “Pick a zip on Streets” — absence is a clue. Do not also whisper a second muted sentence.
+
+Do not make everything orange. Then you are back to blah, just warmer.
+
+---
+
+## Tests (no Playwright suite — look at the phone)
+
+1. **Squint.** Blur the screenshot. Whatever still has a body is a control. If Ask / Did it / Pocket cards vanish and only the FAB and a white + remain, those strings were never signified.
+2. **Grayscale.** The primary action must still be the darkest or largest object.
+3. **Thumb + sun.** Bottom third of the screen, bright light. Stroke-only controls fail this. That is the real environment.
+
+`npm run test:app` does not catch this. The live phone does.
+
+---
+
+## Implementation plan (later slices — not this PR)
+
+Do these in order. One working slice per chat. Push to `main` when that slice is on the phone. Update `src/lib/page-help.ts` and `src/lib/coach-system.ts` in the **same** slice that changes a button that help or the coach names.
+
+### Slice 1 — the kit
+
+- Add `Chip` next to `src/components/ui/button.tsx`. Two states only: idle outline, selected accent fill. Height 44–48px. No third variant.
+- Extend `Button`: keep `default` / `outline`. Do not add a content-level `ghost` / text variant. Header icon buttons may stay icon-only.
+- Links that **go**: always `underline` (not `hover:underline`).
+- No other files unless a type error forces it.
+
+### Slice 2 — chrome
+
+- Move Help (`?`) and Menu (`⋮`) into the header next to the title. One bottom bar: Today · Inspect · Home.
+- Selected tab gets an accent tick or filled icon plus `text-fg`. Idle stays faint.
+- FAB uses `RoofusFace`. Fan stays three chips. Hold still starts Live. Still hidden on Inspect.
+- Back stays a header control on nested pages, not a fourth tab.
+- Update `app-chrome.ts` tests if the back rule changes. Update Home / Today / coach help copy that says “footer above the tabs.”
+
+### Slice 3 — Home
+
+- Collapse setup to one card: “Counties first · 0 of 8” (or “Ready to knock”). Tap expands the rows.
+- Each expanded row is **Go** (chevron). Drop trailing `Ask`, *or* make Ask a chip and make the row inert. Not both.
+- Reminders: one banner, one verb, one Did-it chip. Not two caption rows.
+- Primary stack above the fold: Open Today (filled), Tell Roofus (outline). Sample day only on an empty phone.
+- Delete the Today / Inspect / Streets directory list. Tabs and Menu already own those doors.
+- Install hint stays a card. “Not now” is an outlined pill.
+
+### Slice 4 — Today
+
+- Count tiles: tap the card to +1. − is a small control. Number bigger.
+- `Pocket cards` becomes a Go link (underlined) or a chip — not a muted sentence.
+- `Open Streets` and maps labels are underlined Go links.
+- Empty-setup banner is a tappable ticket (filled or accent outline), not a hollow paragraph box.
+- “Ask Roofus how today went” stays the one filled Do at the bottom of the log.
+
+### Slice 5 — sweep
+
+- Cards “Ask Roofus” is already an outlined pill — keep it. Do not demote it to text.
+- Presets index: rows get chevrons. “Show the question-mark tour” and “Load a sample day” stay secondary outlined pills, below the list, not dressed as the page’s primary.
+- Streets “Use today” is a chip or a filled Do on the card — not muted text.
+- Kill any leftover `hover:underline` on phone actions.
+- Help copy and coach prompt name the controls that actually exist after slices 1–4.
+
+Out of scope for this plan: new facets, login, a design-token package, Playwright, restyling every page a different way.
+
+---
+
+## What not to do
+
+- Do not add a 19-variant button system.
+- Do not restyle pages before Slice 1 ships the kit.
+- Do not hide setup behind a longer tour. The tour exists because the page is not self-explaining. Fix the page.
+- Do not grow these rules in `AGENTS.md`. That file is Grok sandbox chrome. Project rules live here and in `AGENTS.project.md`.
+- Do not change porch scripts, Script A/B, or mindset worksheets in a chrome slice.
+
+---
+
+## Keep in sync
+
+When a slice ships a control the coach or Help names:
+
+- this file
+- `DOCTRINE.md` product map
+- `AGENTS.project.md`
+- `src/lib/page-help.ts`
+- `src/lib/coach-system.ts`
+
+README points here. It does not repeat the kit.
