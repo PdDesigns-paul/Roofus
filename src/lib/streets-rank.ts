@@ -90,6 +90,104 @@ export function matchLoopCluster(
   return false;
 }
 
+/** Today stores several headlines in one Notion string, one per line. */
+export const MAX_TODAY_LOOPS = 8;
+
+export function clusterLines(raw: string): string[] {
+  return raw
+    .split(/\n/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+export function clusterPlanLabel(raw: string): string {
+  return clusterLines(raw).join("; ");
+}
+
+export function addCluster(raw: string, headline: string): string {
+  const next = headline.trim();
+  if (!next) return clusterLines(raw).join("\n");
+  const lines = clusterLines(raw);
+  if (lines.some((l) => l.toLowerCase() === next.toLowerCase())) return lines.join("\n");
+  if (lines.length >= MAX_TODAY_LOOPS) return lines.join("\n");
+  return [...lines, next].join("\n");
+}
+
+export function dropCluster(raw: string, headline: string): string {
+  const want = headline.trim().toLowerCase();
+  if (!want) return clusterLines(raw).join("\n");
+  return clusterLines(raw)
+    .filter((l) => l.toLowerCase() !== want)
+    .join("\n");
+}
+
+export function addLoopToPlan(
+  raw: string,
+  loop: {
+    zip?: string;
+    title?: string;
+    town?: string;
+    place?: string;
+    township?: string;
+    streets?: string[];
+  },
+): string {
+  const headline = loopHeadline(loop);
+  const lines = clusterLines(raw);
+  if (lines.some((l) => matchLoopCluster(loop, l))) {
+    return lines.map((l) => (matchLoopCluster(loop, l) ? headline : l)).join("\n");
+  }
+  return addCluster(raw, headline);
+}
+
+export function dropLoopFromPlan(
+  raw: string,
+  loop: {
+    zip?: string;
+    title?: string;
+    town?: string;
+    place?: string;
+    township?: string;
+    streets?: string[];
+  },
+): string {
+  return clusterLines(raw)
+    .filter((l) => !matchLoopCluster(loop, l))
+    .join("\n");
+}
+
+export function loopInPlan(
+  loop: {
+    zip?: string;
+    title?: string;
+    town?: string;
+    place?: string;
+    township?: string;
+    streets?: string[];
+  },
+  raw: string,
+): boolean {
+  return clusterLines(raw).some((l) => matchLoopCluster(loop, l));
+}
+
+export function loopsInPlan(loops: StreetLoop[], raw: string): StreetLoop[] {
+  const out: StreetLoop[] = [];
+  const seen = new Set<string>();
+  for (const line of clusterLines(raw)) {
+    const hit = loops.find((l) => matchLoopCluster(l, line));
+    if (!hit || seen.has(hit.id)) continue;
+    seen.add(hit.id);
+    out.push(hit);
+  }
+  return out;
+}
+
+/** First loop in the plan that is not done or skipped. Backups stay off Working. */
+export function firstRemainingInPlan(loops: StreetLoop[], raw: string): StreetLoop | null {
+  const plan = loopsInPlan(loops, raw);
+  return plan.find((l) => l.status !== "done" && l.status !== "skip") ?? plan[0] ?? null;
+}
+
 export function loopMatchesQuery(
   loop: StreetLoop,
   needle: string,

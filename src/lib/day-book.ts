@@ -4,6 +4,7 @@
  */
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { clusterPlanLabel } from "./streets-rank.ts";
 
 export type DayCounts = {
   knocks: number;
@@ -202,7 +203,7 @@ export function dayBookForCoach(): string {
   lines.push(
     `Today (${day.date}): ${day.knocks} doors, ${day.talks} conversations, ${day.looks} roofs, ${day.sets} appointments.`,
   );
-  if (day.cluster.trim()) lines.push(`Neighborhood today: ${day.cluster.trim()}`);
+  if (day.cluster.trim()) lines.push(`Neighborhood today: ${clusterPlanLabel(day.cluster)}`);
   if (day.storm.trim()) {
     lines.push(`Weather they wrote down (only use this; do not invent):\n${day.storm.trim()}`);
     lines.push("Storm / claim talk only if that weather matches the street they are on. Age first.");

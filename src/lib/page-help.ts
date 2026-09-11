@@ -12,14 +12,14 @@ export const PAGE_HELP = {
     body: [
       "First time: finish setup on Home — counties and a state. Hours live in Presets. Then the four counts.",
       "Before you knock is the loop, age band, weather you may mention, and the first door line. Pocket cards is Door, Pushback, i35, Set, Compass.",
-      "Neighborhood today is the park-once loop from Streets. Open Streets from More, Home, or that line. After Action Report is wins first, then facts, then a plan with verbs. Ask Roofus and he’ll name tomorrow.",
+      "Neighborhood today is one or more park-once loops from Streets. Check backups in case a loop is picked over — first remaining is Working. Open Streets from More, Home, or that line. After Action Report is wins first, then facts, then a plan with verbs. Ask Roofus and he’ll name tomorrow.",
     ],
   },
   streets: {
     title: "Streets",
     body: [
       "Build from the counties in Presets. Open from More, Home, Today, or Presets. You pick the roof age — default 17–25 years. Tap Change to edit. Each card is a park-once loop (Census streets or a small CDP). Township is the folder. Working sits at the top. Tap a county to open the rest. Search township, loop, street, or zip. A rural county still gets a row even if Census found no age-band loops yet.",
-      "A Working loop shows one sentence if a kept storm actually hit it. Use today copies that sentence onto Today. Last 48 hours and the season log are not on this page. Rebuild does not copy old zip Working onto the new loops.",
+      "A Working loop shows one sentence if a kept storm actually hit it. Use today adds that loop to Today’s plan and copies the sentence if the weather box is empty. Last 48 hours and the season log are not on this page. Rebuild does not copy old zip Working onto the new loops.",
     ],
   },
   cards: {

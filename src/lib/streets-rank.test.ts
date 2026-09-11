@@ -1,18 +1,28 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
-  searchStreetLoops,
+  addCluster,
+  addLoopToPlan,
+  clusterLines,
+  clusterPlanLabel,
+  dropCluster,
+  dropLoopFromPlan,
   fairCountySlice,
+  firstRemainingInPlan,
   groupLoopsByCounty,
   groupLoopsByTownship,
   loopAge,
   loopHeadline,
+  loopInPlan,
   loopLabel,
   loopMatchesQuery,
+  loopsInPlan,
   matchLoopCluster,
+  MAX_TODAY_LOOPS,
   mergeStatus,
   nearestZip,
   nextFreshInTownship,
+  searchStreetLoops,
   splitWorking,
   townFromHeadline,
   zipFromHeadline,
@@ -81,6 +91,61 @@ describe("matchLoopCluster", () => {
   });
   it("does not match a different zip", () => {
     assert.equal(matchLoopCluster(l, "17050"), false);
+  });
+});
+
+describe("today plan", () => {
+  const a = loop({ id: "a", zip: "17068", place: "Main St / High St", status: "fresh" });
+  const b = loop({ id: "b", zip: "17050", place: "Creekview Dr / Mill Rd", status: "fresh" });
+  const c = loop({ id: "c", zip: "17055", place: "Front St / Walnut", status: "done" });
+
+  it("splits headlines on newlines and ignores blanks", () => {
+    assert.deepEqual(clusterLines("Main St / High St · 17068\n\nCreekview Dr / Mill Rd · 17050\n"), [
+      "Main St / High St · 17068",
+      "Creekview Dr / Mill Rd · 17050",
+    ]);
+  });
+
+  it("joins the plan for the coach with semicolons", () => {
+    assert.equal(
+      clusterPlanLabel("Main St / High St · 17068\nCreekview Dr / Mill Rd · 17050"),
+      "Main St / High St · 17068; Creekview Dr / Mill Rd · 17050",
+    );
+  });
+
+  it("appends, skips a duplicate, and caps at 8", () => {
+    const one = addCluster("", "Main St / High St · 17068");
+    const two = addCluster(one, "Creekview Dr / Mill Rd · 17050");
+    assert.equal(two, "Main St / High St · 17068\nCreekview Dr / Mill Rd · 17050");
+    assert.equal(addCluster(two, "main st / high st · 17068"), two);
+    let raw = "";
+    for (let i = 0; i < MAX_TODAY_LOOPS + 2; i++) raw = addCluster(raw, `Loop ${i} · 1700${i}`);
+    assert.equal(clusterLines(raw).length, MAX_TODAY_LOOPS);
+  });
+
+  it("drops a typed line without touching the others", () => {
+    const raw = "Main St / High St · 17068\nCreekview Dr / Mill Rd · 17050";
+    assert.equal(dropCluster(raw, "Main St / High St · 17068"), "Creekview Dr / Mill Rd · 17050");
+  });
+
+  it("upgrades a leftover zip to the headline and does not double it", () => {
+    const next = addLoopToPlan("17068", a);
+    assert.equal(next, "Main St / High St · 17068");
+    assert.equal(addLoopToPlan(next, a), next);
+  });
+
+  it("unchecking drops a leftover zip line", () => {
+    assert.equal(dropLoopFromPlan("17068\nCreekview Dr / Mill Rd · 17050", a), "Creekview Dr / Mill Rd · 17050");
+  });
+
+  it("keeps plan order and skips a done loop when naming Working", () => {
+    const raw = addLoopToPlan(addLoopToPlan(addLoopToPlan("", c), a), b);
+    assert.deepEqual(
+      loopsInPlan([c, a, b], raw).map((l) => l.id),
+      ["c", "a", "b"],
+    );
+    assert.equal(loopInPlan(a, "17068"), true);
+    assert.equal(firstRemainingInPlan([c, a, b], raw)?.id, "a");
   });
 });
 

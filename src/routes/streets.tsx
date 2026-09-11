@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { useDayBook } from "@/lib/day-book";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
-import { loopAge, loopHeadline, loopPlace, loopZip, groupLoopsByTownship, searchStreetLoops } from "@/lib/streets-rank";
+import { addLoopToPlan, loopAge, loopHeadline, loopPlace, loopZip, groupLoopsByTownship, searchStreetLoops } from "@/lib/streets-rank";
 import { marketKey, useStreets } from "@/lib/streets-store";
 import type { LoopResult, LoopStatus, StreetLoop, StreetsBuildResponse } from "@/lib/streets-types";
 import { parseList, countyBasename } from "@/lib/us-state-fips";
@@ -383,7 +383,11 @@ function LoopCard({ loop }: { loop: StreetLoop }) {
             className="mt-3 h-11 w-full rounded-full border border-border text-sm"
             onClick={() => {
               setStatus(loop.id, "working");
-              patchToday({ cluster: loopHeadline(loop), storm: mentionOnStreet(kept, loop) });
+              const cur = useDayBook.getState().today();
+              patchToday({
+                cluster: addLoopToPlan(cur.cluster, loop),
+                storm: cur.storm.trim() || mentionOnStreet(kept, loop),
+              });
             }}
           >
             Use today
