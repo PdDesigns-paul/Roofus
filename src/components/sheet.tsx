@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 export function Sheet({
   open,
@@ -29,7 +30,7 @@ export function Sheet({
 
   if (!open) return null;
 
-  return (
+  const node = (
     <div
       className="fixed inset-0 flex items-end justify-center bg-fg/40"
       style={{ zIndex: z }}
@@ -52,4 +53,7 @@ export function Sheet({
       </div>
     </div>
   );
+
+  // Pages use relative z-10. Without a portal the sheet loses to the tab bar and the FAB.
+  return typeof document === "undefined" ? node : createPortal(node, document.body);
 }

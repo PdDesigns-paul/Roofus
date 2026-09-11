@@ -28,7 +28,10 @@ export function MoreMenu() {
         </button>
       </Tip>
       <Sheet open={open} onClose={() => setOpen(false)} z={60}>
-        <h2 className="mt-3 font-display text-2xl">More</h2>
+        <div className="mt-3 flex items-center justify-between gap-2">
+          <h2 className="font-display text-2xl">More</h2>
+          <ThemeToggle />
+        </div>
         <ul className="mt-4 flex flex-col">
           {LINKS.map((l) => (
             <li key={l.to} className="border-b border-border last:border-0">
@@ -43,10 +46,6 @@ export function MoreMenu() {
             </li>
           ))}
         </ul>
-        <div className="mt-4 flex items-center justify-between">
-          <span className="text-sm text-muted">Light / dark</span>
-          <ThemeToggle />
-        </div>
       </Sheet>
     </>
   );
