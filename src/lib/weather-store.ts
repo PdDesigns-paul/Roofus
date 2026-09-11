@@ -129,10 +129,14 @@ export const useWeather = create<WeatherState>()(
       }),
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<WeatherState>;
+        const pulse = p.pulse
+          ? { ...p.pulse, footprints: Array.isArray(p.pulse.footprints) ? p.pulse.footprints : [] }
+          : p.pulse ?? current.pulse;
         return {
           ...current,
           ...p,
           keptStorms: Array.isArray(p.keptStorms) ? p.keptStorms : [],
+          pulse,
         };
       },
     },
