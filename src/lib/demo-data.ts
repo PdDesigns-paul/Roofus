@@ -51,6 +51,7 @@ export function loadDemo(): void {
     pending: [],
     kept: [],
     tossed: [],
+    keptStorms: [],
     note: "Sample phone. No real storm is kept — age first.",
     fetchedFor: `${DEMO_COUNTIES}|${DEMO_STATES}`.toLowerCase(),
     fetchedAt: "",

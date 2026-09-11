@@ -12,6 +12,7 @@ import { useSettings } from "@/lib/settings-store";
 import { setupSnap } from "@/lib/setup-progress";
 import { useStreets } from "@/lib/streets-store";
 import { useSurvive } from "@/lib/survive-store";
+import { freshKeptSentence } from "@/lib/kept-storm";
 import { useWeather } from "@/lib/weather-store";
 
 export const Route = createFileRoute("/")({
@@ -28,6 +29,7 @@ function LandingPage() {
   const zipCount = useStreets((s) => s.loops.length);
   const survive = useSurvive();
   const fetchedAt = useWeather((s) => s.fetchedAt);
+  const keptLine = freshKeptSentence(useWeather((s) => s.keptStorms));
   const goBy = profile.goBy.trim();
   const navigate = useNavigate();
   const emptyPhone = !profile.counties.trim() && zipCount === 0;
@@ -67,6 +69,8 @@ function LandingPage() {
         stormFetchedOn={fetchedAt.slice(0, 10)}
         stackMonth={survive.stackMonth}
       />
+
+      {keptLine ? <p className="mt-4 text-sm leading-relaxed">{keptLine}</p> : null}
 
       <div className="mt-5 flex flex-col gap-2">
         <Button asChild size="lg" className="w-full">

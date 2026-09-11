@@ -11,7 +11,7 @@ export const PAGE_HELP = {
     title: "Today",
     body: [
       "First time: counties and a state on Home. Hours live in Presets. Then the four counts. Tap a count tile to add one. Minus is the small control.",
-      "Before you knock is the loop, age band, weather you may mention, and the first door line. Pocket cards is Door, Pushback, i35, Set, Compass.",
+      "Before you knock is the loop, age band, weather you may mention, and the first door line. Keep a last-48h lead and Home/Today show that sentence for 48 hours. Toss or Skip does not. Pocket cards is Door, Pushback, i35, Set, Compass.",
       "Neighborhood today is one or more park-once loops from Streets. Check backups in case a loop is picked over — first remaining is Working. Open Streets from More, Home, or that line. After Action Report is wins first, then facts, then a plan with verbs. Ask Roofus and he’ll name tomorrow.",
     ],
   },

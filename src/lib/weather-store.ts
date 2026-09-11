@@ -1,5 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import {
+  dropKept,
+  freshKeptSentence,
+  keptFromLead,
+  keptFromStorm,
+  type KeptStorm,
+  upsertKept,
+} from "@/lib/kept-storm";
 import { leadToStorm } from "@/lib/weather-grade";
 import type { PulseLead, PulseReport, StormEvent } from "@/lib/weather-types";
 
@@ -7,6 +15,7 @@ type WeatherState = {
   pending: StormEvent[];
   kept: StormEvent[];
   tossed: string[];
+  keptStorms: KeptStorm[];
   note: string;
   fetchedFor: string;
   fetchedAt: string;
@@ -18,6 +27,8 @@ type WeatherState = {
   keepAll: () => void;
   tossAll: () => void;
   keepLead: (lead: PulseLead) => void;
+  tossLead: (lead: PulseLead) => void;
+  skipLead: (lead: PulseLead) => void;
 };
 
 export const useWeather = create<WeatherState>()(
@@ -26,6 +37,7 @@ export const useWeather = create<WeatherState>()(
       pending: [],
       kept: [],
       tossed: [],
+      keptStorms: [],
       note: "",
       fetchedFor: "",
       fetchedAt: "",
@@ -53,13 +65,19 @@ export const useWeather = create<WeatherState>()(
           return {
             pending: s.pending.filter((x) => x.id !== id),
             kept: s.kept.some((x) => x.id === id) ? s.kept : [...s.kept, hit],
+            keptStorms: upsertKept(s.keptStorms, keptFromStorm(hit)),
+            tossed: s.tossed.filter((t) => t !== id),
           };
         }),
       toss: (id) =>
-        set((s) => ({
-          pending: s.pending.filter((x) => x.id !== id),
-          tossed: s.tossed.includes(id) ? s.tossed : [...s.tossed, id],
-        })),
+        set((s) => {
+          const hit = s.pending.find((x) => x.id === id) ?? s.kept.find((x) => x.id === id);
+          return {
+            pending: s.pending.filter((x) => x.id !== id),
+            tossed: s.tossed.includes(id) ? s.tossed : [...s.tossed, id],
+            keptStorms: hit ? dropKept(s.keptStorms, { loopId: "", say: hit.say }) : s.keptStorms,
+          };
+        }),
       keepAll: () =>
         set((s) => ({
           pending: [],
@@ -70,13 +88,32 @@ export const useWeather = create<WeatherState>()(
           pending: [],
           tossed: [...s.tossed, ...s.pending.map((p) => p.id)],
         })),
-      setPulse: (pulse) => set({ pulse }),
+      setPulse: (pulse) => set({ pulse, fetchedAt: pulse.at || new Date().toISOString() }),
       keepLead: (lead) =>
         set((s) => {
           const storm = leadToStorm(lead);
-          if (s.kept.some((k) => k.id === storm.id || k.say === storm.say)) return s;
-          return { kept: [...s.kept, storm] };
+          if (s.kept.some((k) => k.id === storm.id || k.say === storm.say)) {
+            return {
+              keptStorms: upsertKept(s.keptStorms, keptFromLead(lead)),
+              tossed: s.tossed.filter((t) => t !== lead.id),
+            };
+          }
+          return {
+            kept: [...s.kept, storm],
+            keptStorms: upsertKept(s.keptStorms, keptFromLead(lead)),
+            tossed: s.tossed.filter((t) => t !== lead.id),
+          };
         }),
+      tossLead: (lead) =>
+        set((s) => ({
+          tossed: s.tossed.includes(lead.id) ? s.tossed : [...s.tossed, lead.id],
+          keptStorms: dropKept(s.keptStorms, { loopId: lead.loopId, say: lead.say.trim() }),
+        })),
+      skipLead: (lead) =>
+        set((s) => ({
+          tossed: s.tossed.includes(lead.id) ? s.tossed : [...s.tossed, lead.id],
+          keptStorms: dropKept(s.keptStorms, { loopId: lead.loopId, say: lead.say.trim() }),
+        })),
     }),
     {
       name: "roofus-weather-v1",
@@ -84,11 +121,20 @@ export const useWeather = create<WeatherState>()(
         pending: s.pending,
         kept: s.kept,
         tossed: s.tossed,
+        keptStorms: s.keptStorms,
         note: s.note,
         fetchedFor: s.fetchedFor,
         fetchedAt: s.fetchedAt,
         pulse: s.pulse,
       }),
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<WeatherState>;
+        return {
+          ...current,
+          ...p,
+          keptStorms: Array.isArray(p.keptStorms) ? p.keptStorms : [],
+        };
+      },
     },
   ),
 );
@@ -102,7 +148,7 @@ export function weatherMarketKey(counties: string, states: string) {
 }
 
 export function weatherForCoach(): string {
-  const { kept, pending, note, pulse } = useWeather.getState();
+  const { kept, pending, note, pulse, keptStorms } = useWeather.getState();
   const lines = [
     "# Weather (NWS log they confirmed = porch language. 48h High = where they drive tomorrow.)",
   ];
@@ -121,6 +167,13 @@ export function weatherForCoach(): string {
     if (m.length) {
       lines.push("M/L are tertiary. Do not send them there. Footnote only if they are already on that street.");
     }
+  }
+  const keptLine = freshKeptSentence(keptStorms);
+  if (keptLine) {
+    lines.push(`Kept row (Home/Today, 48h): ${keptLine}`);
+    lines.push(
+      "Script A (claim questions) only if that kept storm matches Working / today's loop — same county, within ~10 miles (stormsNearLoop / mentionOnStreet). If Streets does not put this storm on that loop, stay on Script B. Do not invent hail.",
+    );
   }
   if (note) lines.push(note);
   if (pending.length) lines.push(`${pending.length} season reports waiting for Keep / Toss. Do not use those yet.`);
