@@ -18,6 +18,7 @@ import {
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
 import { freshKeptSentence } from "@/lib/kept-storm";
 import { applyPulseFootprints } from "@/lib/scout-store";
+import { phoneError, readJson } from "@/lib/read-json";
 import { stormsNearLoop } from "@/lib/weather-match";
 import { useWeather } from "@/lib/weather-store";
 import type { PulseLead, PulseReport, StormEvent } from "@/lib/weather-types";
@@ -553,13 +554,14 @@ function Last48Hours({
           })),
         }),
       });
-      const data = (await res.json()) as PulseReport & { error?: string };
-      if (!res.ok) throw new Error(data.error || "Could not check the last 48 hours.");
+      const data = (await readJson(res)) as (PulseReport & { error?: string }) | null;
+      if (!data) throw new Error("Could not check the last 48 hours.");
+      if (!res.ok) throw new Error(phoneError(data.error, "Could not check the last 48 hours."));
       useWeather.getState().setPulse(data);
       const { ageMin, ageMax } = useStreets.getState();
       applyPulseFootprints(data.footprints ?? [], loops, ageMin, ageMax, data.at);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Could not check the last 48 hours.");
+      setErr(phoneError(e, "Could not check the last 48 hours."));
     } finally {
       setBusy(false);
     }

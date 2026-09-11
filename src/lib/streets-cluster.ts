@@ -29,6 +29,36 @@ export function townshipLabel(name: string): string {
     .trim();
 }
 
+/** Place / CDP / township — not a street named Depot Rd. */
+const MILITARY_PLACE =
+  /\b(barracks|naval support|naval air|naval station|nsa|air force|afb|army depot|army base|army post|marine corps|coast guard base|coast guard station|defense depot|defense distribution|defense logistics|proving ground|weapons station|ammunition plant|ordnance|arsenal|military reservation|military base|military installation)\b/i;
+
+export function isMilitaryPlace(name: string): boolean {
+  return MILITARY_PLACE.test(name.trim());
+}
+
+export function onMilitaryLand(
+  lon: number,
+  lat: number,
+  bases: { rings?: number[][][] }[],
+): boolean {
+  return bases.some((b) => pointInPolygon(lon, lat, b.rings));
+}
+
+export function dropMilitarySeeds<T extends { lat: number; lon: number; cdp?: string; township?: string }>(
+  seeds: T[],
+  bases: { rings?: number[][][] }[],
+): T[] {
+  return seeds.filter((s) => {
+    if (isMilitaryPlace(s.cdp ?? "") || isMilitaryPlace(s.township ?? "")) return false;
+    return !onMilitaryLand(s.lon, s.lat, bases);
+  });
+}
+
+export function isMilitaryLoop(loop: { place?: string; township?: string; title?: string }): boolean {
+  return isMilitaryPlace(loop.place ?? "") || isMilitaryPlace(loop.township ?? "") || isMilitaryPlace(loop.title ?? "");
+}
+
 export function kmBetween(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const toRad = (d: number) => (d * Math.PI) / 180;
   const dLat = toRad(lat2 - lat1);

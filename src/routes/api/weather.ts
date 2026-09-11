@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { phoneError } from "@/lib/read-json";
 import { buildWeatherLog } from "@/lib/weather-build";
 import type { WeatherBuildRequest } from "@/lib/weather-types";
 
@@ -20,7 +21,7 @@ async function handlePost({ request }: { request: Request }) {
     const result = await buildWeatherLog(req);
     return json(result);
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Could not read storms.";
+    const message = phoneError(e, "Could not read storms.");
     return json({ error: message }, 422);
   }
 }

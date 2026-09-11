@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { phoneError } from "@/lib/read-json";
 import { buildStreetLoops, lookupTowns } from "@/lib/streets-build";
 import type { StreetsBuildRequest } from "@/lib/streets-types";
 
@@ -30,7 +31,7 @@ async function handlePost({ request }: { request: Request }) {
     const result = await buildStreetLoops(req);
     return json(result);
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Could not build streets.";
+    const message = phoneError(e, "Could not build streets.");
     return json({ error: message }, 422);
   }
 }

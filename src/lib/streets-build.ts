@@ -2,7 +2,8 @@
  * Age-band block groups, clustered into park-once loops.
  * Township is a fence. The card is 40–150 homes / a handful of streets.
  */
-import { clusterSeeds, loopsFromClusters, pointInPolygon, townshipLabel, unionBbox, type ClusterSeed } from "@/lib/streets-cluster";
+import { clusterSeeds, dropMilitarySeeds, isMilitaryLoop, loopsFromClusters, pointInPolygon, townshipLabel, unionBbox, type ClusterSeed } from "@/lib/streets-cluster";
+import { parseJson } from "@/lib/read-json";
 import { fairCountySlice, nearestZip } from "@/lib/streets-rank";
 import { countyBasename, isMcdState, parseList, stateFips } from "@/lib/us-state-fips";
 import type { StreetLoop, StreetsBuildRequest, StreetsBuildResponse } from "@/lib/streets-types";
@@ -16,9 +17,11 @@ const SKIP_ROAD =
 const SKIP_ROAD_WORD = /\b(interstate|freeway|turnpike|ramp)\b/i;
 const SKIP_SUFFIX = /\b(aly|alley)\s*$/i;
 
-function json(res: Response, label: string) {
+function json(res: Response, label: string, text: string) {
   if (!res.ok) throw new Error(`${label} (${res.status})`);
-  return res.json();
+  const data = parseJson(text);
+  if (data == null) throw new Error(`${label} missed.`);
+  return data;
 }
 
 async function getJson(url: string, label: string, ms = 20_000): Promise<unknown> {
@@ -26,7 +29,7 @@ async function getJson(url: string, label: string, ms = 20_000): Promise<unknown
     headers: { Accept: "application/json", "User-Agent": UA },
     signal: AbortSignal.timeout(ms),
   });
-  return json(res, label);
+  return json(res, label, await res.text());
 }
 
 type TigerFeature = {
@@ -261,6 +264,44 @@ async function zipAt(lat: number, lon: number): Promise<ZipMeta | null> {
 
 type PlacePoly = { name: string; id: string; rings?: number[][][]; statistical: boolean };
 
+type MilitaryPoly = { name: string; rings?: number[][][] };
+
+function envelopeOf(points: { lat: number; lon: number }[], pad = 0.08): string {
+  if (!points.length) return "";
+  const lats = points.map((p) => p.lat);
+  const lons = points.map((p) => p.lon);
+  return `${Math.min(...lons) - pad},${Math.min(...lats) - pad},${Math.max(...lons) + pad},${Math.max(...lats) + pad}`;
+}
+
+async function militaryIn(points: { lat: number; lon: number }[]): Promise<MilitaryPoly[]> {
+  const envelope = envelopeOf(points);
+  if (!envelope) return [];
+  try {
+    const rows = await tigerQuery(
+      "Special_Land_Use_Areas/MapServer/3",
+      {
+        where: "1=1",
+        geometry: envelope,
+        geometryType: "esriGeometryEnvelope",
+        inSR: "4326",
+        spatialRel: "esriSpatialRelIntersects",
+        outFields: "NAME,BASENAME",
+        returnGeometry: "true",
+        resultRecordCount: "20",
+      },
+      12_000,
+    );
+    return rows
+      .map((f) => ({
+        name: String(f.attributes.BASENAME ?? f.attributes.NAME ?? ""),
+        rings: f.geometry?.rings,
+      }))
+      .filter((p) => p.rings?.[0]?.length);
+  } catch {
+    return [];
+  }
+}
+
 async function couSubsForCounty(county: CountyHit): Promise<PlacePoly[]> {
   const rows = await tigerQuery(
     "Places_CouSub_ConCity_SubMCD/MapServer/1",
@@ -336,6 +377,10 @@ async function clusterCounty(
   ]);
   const zips = [...zipList];
   const cdps = await cdpsForCounty(county, zips);
+  const bases = await militaryIn([
+    ...zips,
+    ...[...centers.values()].map((c) => ({ lat: c.lat, lon: c.lon })),
+  ]);
   const ccdState = !isMcdState(county.stateFp);
   const seeds: ClusterSeed[] = [];
 
@@ -368,7 +413,9 @@ async function clusterCounty(
     });
   }
 
-  const groups = clusterSeeds(seeds);
+  const civil = dropMilitarySeeds(seeds, bases);
+
+  const groups = clusterSeeds(civil);
   const streetCache = new Map<string, string[]>();
   async function streetsFor(members: ClusterSeed[]): Promise<string[]> {
     const key = members.map((m) => m.geoid).sort().join(",");
@@ -397,7 +444,7 @@ async function clusterCounty(
     groups,
     (members) => fetched.get(members.map((m) => m.geoid).sort().join(",")) ?? [],
     { name: county.name, geoid: county.geoid, stateFp: county.stateFp },
-  );
+  ).filter((l) => !isMilitaryLoop(l));
 }
 
 export async function buildStreetLoops(req: StreetsBuildRequest): Promise<StreetsBuildResponse> {
@@ -467,6 +514,7 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
   const noteParts = [
     `Roofs about ${ageMin}–${ageMax} years old (built ${yearFrom}–${yearTo}). Each card is a park-once loop. Township is the folder.`,
     "Streets are Census names in that pocket — not a developer list, not every house in the zip. Old zip Working does not carry over.",
+    "Military bases are not in this list.",
     "Storms are not in this list.",
   ];
   if (missing.length) noteParts.push(`Skipped (not found): ${missing.join(", ")}.`);

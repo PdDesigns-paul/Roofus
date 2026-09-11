@@ -2,13 +2,14 @@
  * Slice 3: last 48h pulse — IEM spine + on-demand Grok web/X crawl.
  * H on a Streets loop overrides tomorrow's Working. Keep still gates the porch.
  */
+import { parseJson as asJson } from "@/lib/read-json";
 import { loopHeadline, loopLabel, matchLoopCluster } from "@/lib/streets-rank";
 import type { StreetLoop } from "@/lib/streets-types";
 import { parseNwsAlertAreas, tagLoops, type AlertArea } from "@/lib/storm-footprint";
 import { parseList, stateAbbr } from "@/lib/us-state-fips";
 import { buildWeatherLog } from "@/lib/weather-build";
 import { applyCrawlUpgrade, gradeStormAgainstLoops } from "@/lib/weather-grade";
-import type { PulseLead, PulseReport, WeatherPulseRequest } from "@/lib/weather-types";
+import type { PulseLead, PulseReport, WeatherBuildResponse, WeatherPulseRequest } from "@/lib/weather-types";
 
 const UA = "RoofusCoach/1.0 (https://roofus.coach; NWS alerts)";
 
@@ -62,7 +63,8 @@ async function loadAlertAreas(states: string): Promise<AlertArea[]> {
       signal: AbortSignal.timeout(8_000),
     });
     if (!res.ok) continue;
-    const body = (await res.json()) as { features?: { properties?: { event?: string; areaDesc?: string } }[] };
+    const body = asJson(await res.text()) as { features?: { properties?: { event?: string; areaDesc?: string } }[] } | null;
+    if (!body) continue;
     out.push(...parseNwsAlertAreas(body, s));
   }
   return out;
@@ -125,10 +127,11 @@ Return ONLY JSON:
       ],
       max_output_tokens: 1800,
     }),
-    signal: AbortSignal.timeout(90_000),
+    signal: AbortSignal.timeout(25_000),
   });
   if (!res.ok) return null;
-  const body = (await res.json()) as Parameters<typeof outputText>[0];
+  const body = asJson(await res.text()) as Parameters<typeof outputText>[0] | null;
+  if (!body) return null;
   const parsed = parseJson(outputText(body));
   if (!parsed) return null;
   const leads: PulseLead[] = [];
@@ -159,6 +162,16 @@ Return ONLY JSON:
   return { leads, summary: String(parsed.summary ?? "") };
 }
 
+async function loadIem(req: WeatherPulseRequest): Promise<WeatherBuildResponse> {
+  try {
+    return await buildWeatherLog({ counties: req.counties, states: req.states, days: 2 });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "";
+    if (/Need a county/.test(message)) throw e;
+    return { storms: [], note: "Storm archive missed that window. Age first — do not invent weather." };
+  }
+}
+
 export async function runWeatherPulse(req: WeatherPulseRequest): Promise<PulseReport> {
   const marketState =
     [...new Set(parseList(req.states).map(stateAbbr).filter((x): x is string => Boolean(x)))][0] ?? "";
@@ -179,7 +192,7 @@ export async function runWeatherPulse(req: WeatherPulseRequest): Promise<PulseRe
     status: (l.status === "skip" || l.status === "done" || l.status === "working" ? l.status : "fresh") as StreetLoop["status"],
     lastResult: "" as const,
   }));
-  const iem = await buildWeatherLog({ counties: req.counties, states: req.states, days: 2 });
+  const iem = await loadIem(req);
   let leads = iem.storms.map((s) => gradeStormAgainstLoops(s, loops));
 
   let crawled = false;
