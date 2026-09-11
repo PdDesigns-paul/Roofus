@@ -1,4 +1,4 @@
-/** Three chat modes. Old Door/Inspect/Pushback/Set hats are Roleplay beats now. */
+/** Three chat modes. Formerly rufus-modes. Old Door/Inspect/Pushback/Set hats are Roleplay beats now. */
 
 export type CoachMode = "live" | "roleplay" | "mindset";
 

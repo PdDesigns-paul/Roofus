@@ -1,5 +1,5 @@
 import { whenCoachReady, useCoach } from "@/lib/coach-store";
-import type { CoachMode } from "@/lib/rufus-modes";
+import type { CoachMode } from "@/lib/coach-modes";
 import type { SetupRowId } from "@/lib/setup-progress";
 import { setupKickoff } from "@/lib/setup-progress";
 import { abortTalk, sendRoofus } from "@/lib/roofus-talk";

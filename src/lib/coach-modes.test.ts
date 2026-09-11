@@ -7,7 +7,7 @@ import {
   normalizeMode,
   roleplayKnockLine,
   threadTag,
-} from "./rufus-modes.ts";
+} from "./coach-modes.ts";
 
 describe("normalizeMode", () => {
   it("maps old hats onto three modes", () => {

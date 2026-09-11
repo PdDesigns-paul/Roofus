@@ -73,10 +73,12 @@ Squint test: blur the screenshot. If the action disappears, it was never signifi
 ## Keep in sync when you touch porch words
 
 - `DOCTRINE.md`
-- `src/lib/coach-system.ts`
-- `src/lib/rufus-modes.ts`
+- `src/lib/coach-prompt.ts`
+- `src/lib/coach-modes.ts`
 - `src/lib/porch-faqs.ts`
 - `src/lib/page-help.ts`
+
+The long coach prompt lives in `src/lib/coach-prompt.ts` — edit there, not `coach-system.ts`.
 
 ## Keep in sync when you touch chrome or tap-clues
 
@@ -84,7 +86,7 @@ Squint test: blur the screenshot. If the action disappears, it was never signifi
 - `DOCTRINE.md` product map
 - this file
 - `src/lib/page-help.ts`
-- `src/lib/coach-system.ts` (only if the coach names a button that moved)
+- `src/lib/coach-prompt.ts` (only if the coach names a button that moved)
 
 Follow the slice order in `SIGNIFIERS.md`. One slice per chat. Do not implement the whole plan because you read the file.
 

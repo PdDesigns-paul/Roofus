@@ -1,7 +1,7 @@
 import { Sheet } from "@/components/sheet";
 import { openCoach, openCoachThread } from "@/lib/open-coach";
 import { useCoach, type CoachThread } from "@/lib/coach-store";
-import { threadTag } from "@/lib/rufus-modes";
+import { threadTag } from "@/lib/coach-modes";
 
 function ago(at: number) {
   const s = Math.max(0, Math.round((Date.now() - at) / 1000));

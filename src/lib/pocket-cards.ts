@@ -1,5 +1,5 @@
 /** Five pocket cards. Distilled from /DOCTRINE.md. Not a Drive dump. */
-import type { CoachMode, RoleplaySceneId } from "./rufus-modes.ts";
+import type { CoachMode, RoleplaySceneId } from "./coach-modes.ts";
 import { COMPASS } from "./survive.ts";
 
 export type PocketLine = { say?: string; note?: string };

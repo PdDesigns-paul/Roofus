@@ -16,10 +16,10 @@ import {
   roleplayKnockLine,
   type RoleplaySceneId,
   type RoleplayWhoId,
-} from "@/lib/rufus-modes";
+} from "@/lib/coach-modes";
 import { WALKS, walkKickoff, type WalkId } from "@/lib/survive";
 
-export function RufusChat({ embedded = false }: { embedded?: boolean }) {
+export function CoachChat({ embedded = false }: { embedded?: boolean }) {
   const messages = useCoach((s) => s.messages);
   const modeId = useCoach((s) => s.mode);
   const scene = useCoach((s) => s.scene);

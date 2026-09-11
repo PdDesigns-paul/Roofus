@@ -4,7 +4,7 @@ import { RoofusFace } from "@/components/roofus-mark";
 import { Tip } from "@/components/ui/tooltip";
 import { useCoach } from "@/lib/coach-store";
 import { openCoachMode } from "@/lib/open-coach";
-import { COACH_MODES, threadTag, type CoachMode } from "@/lib/rufus-modes";
+import { COACH_MODES, threadTag, type CoachMode } from "@/lib/coach-modes";
 
 export function AskFab() {
   const path = useRouterState({ select: (s) => s.location.pathname });

@@ -1,4 +1,4 @@
-import { RufusChat } from "@/components/rufus-chat";
+import { CoachChat } from "@/components/coach-chat";
 import { Sheet } from "@/components/sheet";
 import { useCoach } from "@/lib/coach-store";
 
@@ -8,7 +8,7 @@ export function ChatSheet() {
 
   return (
     <Sheet open={open} onClose={closeSheet} height="full" z={50}>
-      <RufusChat embedded />
+      <CoachChat embedded />
     </Sheet>
   );
 }

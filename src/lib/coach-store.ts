@@ -9,7 +9,7 @@ import {
   type CoachMode,
   type RoleplaySceneId,
   type RoleplayWhoId,
-} from "./rufus-modes.ts";
+} from "./coach-modes.ts";
 import type { ChatTurn } from "./stream-coach.ts";
 import type { WalkId } from "./survive.ts";
 import type { SetupRowId } from "./setup-progress.ts";
