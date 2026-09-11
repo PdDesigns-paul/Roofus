@@ -6,6 +6,8 @@ Older Alpha Exteriors work-folder files (playbooks, storm log, county sheets, pa
 
 If this file and the UI disagree, fix the UI or fix this file in the same change. Do not leave them split.
 
+How a control looks like a control lives in [`SIGNIFIERS.md`](./SIGNIFIERS.md). Porch words stay here. Tap-clues stay there. The live phone may lag the target chrome until a signifier slice ships. After that slice, do not leave `SIGNIFIERS.md` and the UI split either.
+
 ---
 
 ## What Roofus is
@@ -247,7 +249,13 @@ Roofus is not their lawyer.
 
 ## Product map (keep the coach prompt in sync)
 
-Bottom bar: **Today · Inspect · Home**. Home is the porch: setup bar, Tell Roofus (pinned Setup chat), links into Presets. Footer above it: Back · Help · Menu. Back only on Cards, Reference, Presets, and Streets. Streets is not a tab — open it from Menu, Home, Today, or Presets. Menu: Cards, Reference, Streets, Presets. Mindset worksheets live in Presets → Mindset. Reminders nag on open (morning storm, evening journal, Sundays pace, the 1st stack) if that box is empty. Roofus is the orange button — tap fans Live / Roleplay / Mindset. Hold starts Live. Inspect hides him. Not a tab.
+Bottom bar: **Today · Inspect · Home**. Those are places. Home is the porch: setup and Tell Roofus (pinned Setup chat). Streets is not a tab — open it from Menu, Home, Today, or Presets. Menu: Cards, Reference, Streets, Presets. Mindset worksheets live in Presets → Mindset. Reminders nag on open (morning storm, evening journal, Sundays pace, the 1st stack) if that box is empty. Roofus is the orange button — tap fans Live / Roleplay / Mindset. Hold starts Live. Inspect hides him. Not a tab.
+
+**Live phone (until the chrome slice):** Help and Menu sit in a footer rail above the tabs. Back is in that rail on Cards, Reference, Presets, and Streets. Home still dumps the full setup list and a second directory of Today / Inspect / Streets.
+
+**Target chrome:** Help (`?`) and Menu (`⋮`) live in the header. Back is a header control on those nested pages. One bottom bar. Setup on Home is one card (“Counties first · 0 of 8”) that expands. No directory list that duplicates the tabs. Count tiles on Today are the control — tap the tile to add one.
+
+Control types — Place, Do, Chip, Go, Talk. Buttons do. Links go. Chips fork the current task. Ghost captions are not actions. Kit, tests, and slice order: [`SIGNIFIERS.md`](./SIGNIFIERS.md). Do not add a sixth type.
 
 | Surface | What it is |
 | --- | --- |
@@ -263,7 +271,7 @@ Bottom bar: **Today · Inspect · Home**. Home is the porch: setup bar, Tell Roo
 
 Tomorrow, in order: last-48h **High** on a loop they keep → Working → next fresh loop in that township → next township. Do not ask a newbie where to go. Do not invent hail.
 
-Starter FAQs in `src/lib/porch-faqs.ts` must match this file. Coach prompt in `src/lib/coach-system.ts` must match this file **and** the buttons that exist.
+Starter FAQs in `src/lib/porch-faqs.ts` must match this file. Coach prompt in `src/lib/coach-system.ts` must match this file **and** the buttons that exist. Help copy in `src/lib/page-help.ts` must name the chrome that is on the phone after a slice, not the chrome we wish were there.
 
 ---
 
