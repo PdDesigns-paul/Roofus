@@ -2,7 +2,15 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useScout } from "@/lib/scout-store";
 import { streetsScoutLine } from "@/lib/streets-near";
-import type { LoopResult, LoopStatus, StreetLoop } from "@/lib/streets-types";
+import {
+  clampAgeBand,
+  DEFAULT_AGE_MAX,
+  DEFAULT_AGE_MIN,
+  isLegacyAgeDefault,
+  type LoopResult,
+  type LoopStatus,
+  type StreetLoop,
+} from "@/lib/streets-types";
 import { loopHeadline, mergeStatus, nextFreshInTownship } from "@/lib/streets-rank";
 import { hOverrideLoop, pulseIsFresh } from "@/lib/weather-grade";
 import { useWeather } from "@/lib/weather-store";
@@ -33,8 +41,8 @@ export const useStreets = create<StreetsState>()(
       note: "",
       yearFrom: 0,
       yearTo: 0,
-      ageMin: 17,
-      ageMax: 25,
+      ageMin: DEFAULT_AGE_MIN,
+      ageMax: DEFAULT_AGE_MAX,
       builtFor: "",
       builtAt: "",
       replace: (loops, meta) =>
@@ -47,9 +55,8 @@ export const useStreets = create<StreetsState>()(
           builtAt: new Date().toISOString(),
         }),
       setAge: (ageMin, ageMax) => {
-        const min = Math.min(40, Math.max(10, Math.round(ageMin)));
-        const max = Math.min(45, Math.max(min, Math.round(ageMax)));
-        set({ ageMin: min, ageMax: max });
+        const next = clampAgeBand(ageMin, ageMax);
+        set({ ageMin: next.ageMin, ageMax: next.ageMax });
       },
       setStatus: (id, status) =>
         set((s) => ({ loops: s.loops.map((l) => (l.id === id ? { ...l, status } : l)) })),
@@ -72,6 +79,14 @@ export const useStreets = create<StreetsState>()(
     }),
     {
       name: "roofus-streets-v1",
+      version: 2,
+      migrate: (persisted, from) => {
+        const p = persisted as { ageMin?: number; ageMax?: number };
+        if (from < 2 && isLegacyAgeDefault(Number(p.ageMin), Number(p.ageMax))) {
+          return { ...p, ageMin: DEFAULT_AGE_MIN, ageMax: DEFAULT_AGE_MAX };
+        }
+        return p;
+      },
       partialize: (s) => ({
         loops: s.loops,
         note: s.note,

@@ -30,8 +30,8 @@ function loop(p: Partial<StreetLoop> = {}): StreetLoop {
 }
 
 const NOW = 2026;
-/** Default Presets 17–25 in 2026 → built 2001–2009. */
-const BAND = targetYearsFromAge(17, 25, NOW);
+/** Default Streets 15–22 in 2026 → built 2004–2011. */
+const BAND = targetYearsFromAge(15, 22, NOW);
 
 function card(p: Partial<ScoutCard> = {}): ScoutCard {
   return {
@@ -60,21 +60,21 @@ function card(p: Partial<ScoutCard> = {}): ScoutCard {
 }
 
 describe("targetYearsFromAge", () => {
-  it("maps Presets 17–25 in 2026 to 2001–2009", () => {
-    assert.deepEqual(BAND, { from: 2001, to: 2009 });
+  it("maps Streets 15–22 in 2026 to 2004–2011", () => {
+    assert.deepEqual(BAND, { from: 2004, to: 2011 });
   });
 });
 
 describe("ageBand", () => {
   it("in-band → celebrate", () => {
     assert.equal(ageBand(loop({ medianYear: 2005 }), BAND, NOW), "celebrate");
-    assert.equal(ageBand(loop({ medianYear: 2001 }), BAND, NOW), "celebrate");
-    assert.equal(ageBand(loop({ medianYear: 2009 }), BAND, NOW), "celebrate");
+    assert.equal(ageBand(loop({ medianYear: 2004 }), BAND, NOW), "celebrate");
+    assert.equal(ageBand(loop({ medianYear: 2011 }), BAND, NOW), "celebrate");
   });
 
   it("too new → veto or tolerate", () => {
     assert.equal(ageBand(loop({ medianYear: 2012 }), BAND, NOW), "tolerate");
-    assert.equal(ageBand(loop({ medianYear: 2018 }), BAND, NOW), "veto");
+    assert.equal(ageBand(loop({ medianYear: 2018 }), BAND, NOW), "tolerate");
     assert.equal(ageBand(loop({ medianYear: 2024 }), BAND, NOW), "veto");
   });
 
@@ -89,6 +89,7 @@ describe("ageBand", () => {
   });
 
   it("a little older than the band is ok; way older is tolerate; pre-1960 is veto", () => {
+    assert.equal(ageBand(loop({ medianYear: 2001 }), BAND, NOW), "ok");
     assert.equal(ageBand(loop({ medianYear: 1996 }), BAND, NOW), "ok");
     assert.equal(ageBand(loop({ medianYear: 1985 }), BAND, NOW), "tolerate");
     assert.equal(ageBand(loop({ medianYear: 1950 }), BAND, NOW), "veto");

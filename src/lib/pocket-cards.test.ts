@@ -41,15 +41,15 @@ describe("preKnock", () => {
     company: "",
     knockWindow: "",
     hardStop: "",
-    ageMin: 17,
-    ageMax: 25,
+    ageMin: 15,
+    ageMax: 22,
     workingZip: "",
   };
 
   it("is age-only with placeholders when the day is empty", () => {
     const k = preKnock(base);
     assert.equal(k.zip, "Pick a zip on Streets");
-    assert.equal(k.age, "Roofs 17–25");
+    assert.equal(k.age, "Roofs 15–22");
     assert.match(k.weather, /Age only/);
     assert.match(k.script, /Million-dollar script/);
     assert.match(k.opener, /\[your name\]/);

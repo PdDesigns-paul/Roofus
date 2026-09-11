@@ -6,7 +6,14 @@ import { clusterSeeds, dropMilitarySeeds, isMilitaryLoop, loopsFromClusters, poi
 import { parseJson } from "@/lib/read-json";
 import { fairCountySlice, nearestZip } from "@/lib/streets-rank";
 import { countyBasename, isMcdState, parseList, stateFips } from "@/lib/us-state-fips";
-import type { StreetLoop, StreetsBuildRequest, StreetsBuildResponse } from "@/lib/streets-types";
+import {
+  clampAgeBand,
+  DEFAULT_AGE_MAX,
+  DEFAULT_AGE_MIN,
+  type StreetLoop,
+  type StreetsBuildRequest,
+  type StreetsBuildResponse,
+} from "@/lib/streets-types";
 
 const UA = "RoofusCoach/1.0 (https://roofus.coach; D2D street loops)";
 const TIGER = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb";
@@ -449,8 +456,10 @@ async function clusterCounty(
 
 export async function buildStreetLoops(req: StreetsBuildRequest): Promise<StreetsBuildResponse> {
   const now = new Date().getFullYear();
-  const ageMin = req.ageMin && req.ageMin > 0 ? req.ageMin : 17;
-  const ageMax = req.ageMax && req.ageMax >= ageMin ? req.ageMax : 25;
+  const { ageMin, ageMax } = clampAgeBand(
+    req.ageMin && req.ageMin > 0 ? req.ageMin : DEFAULT_AGE_MIN,
+    req.ageMax && req.ageMax > 0 ? req.ageMax : DEFAULT_AGE_MAX,
+  );
   const yearFrom = now - ageMax;
   const yearTo = now - ageMin;
 

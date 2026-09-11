@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { Chip } from "@/components/ui/chip";
+import { Input } from "@/components/ui/input";
 import { useDayBook } from "@/lib/day-book";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
 import { phoneError, readJson } from "@/lib/read-json";
@@ -19,7 +20,15 @@ import {
   searchStreetLoops,
 } from "@/lib/streets-rank";
 import { marketKey, useStreets } from "@/lib/streets-store";
-import type { LoopResult, LoopStatus, StreetLoop, StreetsBuildResponse } from "@/lib/streets-types";
+import {
+  DEFAULT_AGE_MAX,
+  DEFAULT_AGE_MIN,
+  parseAgeDraft,
+  type LoopResult,
+  type LoopStatus,
+  type StreetLoop,
+  type StreetsBuildResponse,
+} from "@/lib/streets-types";
 import { parseList, countyBasename } from "@/lib/us-state-fips";
 import { mentionOnStreet } from "@/lib/weather-match";
 import { useWeather } from "@/lib/weather-store";
@@ -45,7 +54,7 @@ const STATUSES: { id: LoopStatus; label: string }[] = [
 
 const PRESETS: { min: number; max: number; label: string }[] = [
   { min: 15, max: 20, label: "15–20" },
-  { min: 17, max: 25, label: "17–25" },
+  { min: DEFAULT_AGE_MIN, max: DEFAULT_AGE_MAX, label: "15–22" },
   { min: 20, max: 30, label: "20–30" },
 ];
 
@@ -61,6 +70,8 @@ function StreetsPage() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [ageOpen, setAgeOpen] = useState(false);
+  const [draftMin, setDraftMin] = useState(() => String(ageMin));
+  const [draftMax, setDraftMax] = useState(() => String(ageMax));
   const [openCounty, setOpenCounty] = useState<string | null | undefined>(undefined);
   const [q, setQ] = useState("");
   const [nearMe, setNearMe] = useState(false);
@@ -89,6 +100,18 @@ function StreetsPage() {
   });
   const defaultCounty = working.length ? null : (groups[0]?.county ?? null);
   const shownCounty = openCounty === undefined ? defaultCounty : openCounty;
+  const noSearchHits =
+    searching &&
+    !working.length &&
+    (nearMe ? !nearRest.length : !groups.length && !ghostCounties.length);
+
+  function commitAge() {
+    setAge(parseAgeDraft(draftMin, ageMin), parseAgeDraft(draftMax, ageMax));
+  }
+
+  function typeAge(raw: string, write: (next: string) => void) {
+    write(raw.replace(/\D/g, "").slice(0, 2));
+  }
 
   async function build(force = false) {
     if (!profile.counties.trim() || !profile.states.trim()) {
@@ -162,6 +185,11 @@ function StreetsPage() {
   }
 
   useEffect(() => {
+    setDraftMin(String(ageMin));
+    setDraftMax(String(ageMax));
+  }, [ageMin, ageMax]);
+
+  useEffect(() => {
     if (autoBuild.current) return;
     if (!profile.setupDone) return;
     if (!profile.counties.trim() || !profile.states.trim()) return;
@@ -230,41 +258,48 @@ function StreetsPage() {
         <div className="mt-3">
           <div className="flex flex-wrap gap-2">
             {PRESETS.map((p) => (
-              <button
+              <Chip
                 key={p.label}
-                type="button"
+                selected={ageMin === p.min && ageMax === p.max}
                 onClick={() => setAge(p.min, p.max)}
-                className={`h-11 rounded-full px-3 text-sm ${
-                  ageMin === p.min && ageMax === p.max ? "bg-fg text-paper" : "border border-border"
-                }`}
               >
                 {p.label}
-              </button>
+              </Chip>
             ))}
           </div>
           <div className="mt-3 flex items-center gap-2">
             <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-muted">
               From
-              <input
-                type="number"
+              <Input
+                type="text"
                 inputMode="numeric"
-                min={10}
-                max={40}
-                value={ageMin}
-                onChange={(e) => setAge(Number(e.target.value) || 10, ageMax)}
-                className="h-11 min-w-0 w-full rounded-xl border border-border bg-surface px-3 text-base text-fg"
+                pattern="[0-9]*"
+                maxLength={2}
+                value={draftMin}
+                onChange={(e) => typeAge(e.target.value, setDraftMin)}
+                onBlur={commitAge}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") e.currentTarget.blur();
+                }}
+                className="mt-0"
+                aria-label="Roof age from"
               />
             </label>
             <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-muted">
               To
-              <input
-                type="number"
+              <Input
+                type="text"
                 inputMode="numeric"
-                min={10}
-                max={45}
-                value={ageMax}
-                onChange={(e) => setAge(ageMin, Number(e.target.value) || ageMin)}
-                className="h-11 min-w-0 w-full rounded-xl border border-border bg-surface px-3 text-base text-fg"
+                pattern="[0-9]*"
+                maxLength={2}
+                value={draftMax}
+                onChange={(e) => typeAge(e.target.value, setDraftMax)}
+                onBlur={commitAge}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") e.currentTarget.blur();
+                }}
+                className="mt-0"
+                aria-label="Roof age to"
               />
             </label>
           </div>
@@ -306,6 +341,11 @@ function StreetsPage() {
             </Chip>
           </div>
           {nearErr ? <p className="text-sm leading-relaxed text-muted">{nearErr}</p> : null}
+          {noSearchHits ? (
+            <p className="text-sm leading-relaxed text-muted">
+              No loops match that. Clear the box to see the county folders.
+            </p>
+          ) : null}
         </div>
       ) : null}
 
