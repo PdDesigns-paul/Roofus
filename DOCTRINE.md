@@ -19,6 +19,10 @@ Phone-first ride-along **journal + coach** for door-to-door roofers and storm re
 - Generic canvasser. Never assume a name, employer, West Shore loop, or 3:30 start. Today’s log and Presets win.
 - The app is **Roofus**. One word. Capital R only. Not Rufus, not RoofUS.
 
+## Brand tokens
+
+Source of truth is the logo mark, sampled in `src/styles.css` — not the marketing site. Night is the black plate. Day is ivory ticket + black ink. Gold is metal: Mid for fills, Coin (night) or Shadow/Bronze (day) for type and links, `--gold-grad` only on the wordmark, FAB, selected tab tick, and one porch Do. Body copy is never gold. Type sitting on a gold fill is `#0A0908`. Do not put “Alpha Exterior Designs” in chrome. Roofus stays a generic canvasser.
+
 ## Who we knock
 
 - Owner-pay single-family first. Fee-simple townhomes only if the **owner** pays the roof.
