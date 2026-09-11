@@ -253,11 +253,9 @@ Roofus is not their lawyer.
 
 ## Product map (keep the coach prompt in sync)
 
-Bottom bar: **Today · Inspect · Home**. Those are places. Home is the porch: setup and Tell Roofus (pinned Setup chat). Streets is not a tab — open it from Menu, Home, Today, or Presets. Menu: Cards, Reference, Streets, Presets. Mindset worksheets live in Presets → Mindset. Reminders nag on open (morning storm, evening journal, Sundays pace, the 1st stack) if that box is empty. Roofus is the orange button — tap fans Live / Roleplay / Mindset. Hold starts Live. Inspect hides him. Not a tab.
+Bottom bar: **Today · Inspect · Home**. Those are places. Home is the porch: one setup card and Tell Roofus (pinned Setup chat). Streets is not a tab — open it from Menu, Today, or Presets. Menu: Cards, Reference, Streets, Presets. Mindset worksheets live in Presets → Mindset. Reminders nag on open (morning storm, evening journal, Sundays pace, the 1st stack) if that box is empty — finish-setup is the card, not a nag. Roofus is the gold button with the dog face — tap fans Live / Roleplay / Mindset. Hold starts Live. Inspect hides him. Not a tab.
 
-**Live phone (until the chrome slice):** Help and Menu sit in a footer rail above the tabs. Back is in that rail on Cards, Reference, Presets, and Streets. Home still dumps the full setup list and a second directory of Today / Inspect / Streets.
-
-**Target chrome:** Help (`?`) and Menu (`⋮`) live in the header. Back is a header control on those nested pages. One bottom bar. Setup on Home is one card (“Counties first · 0 of 8”) that expands. No directory list that duplicates the tabs. Count tiles on Today are the control — tap the tile to add one.
+Help (`?`) and Menu (`⋮`) live in the header. Back is a header control on Cards, Reference, Presets, and Streets. One bottom bar. Setup on Home is one card (“Counties first · 0 of 8”) that expands. Empty book: name, company, counties/state on that card. No directory list that duplicates the tabs. Count tiles on Today are the control — tap the tile to add one. The question-mark tour does not auto-play; replay lives in Presets.
 
 Control types — Place, Do, Chip, Go, Talk. Buttons do. Links go. Chips fork the current task. Ghost captions are not actions. Kit, tests, and slice order: [`SIGNIFIERS.md`](./SIGNIFIERS.md). Do not add a sixth type.
 

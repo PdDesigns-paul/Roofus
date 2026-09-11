@@ -10,8 +10,8 @@ function clock(over: Partial<RemindClock> = {}): RemindClock {
 }
 
 describe("reminderDue", () => {
-  it("nags setup any hour until counties are in", () => {
-    assert.equal(reminderDue("setup", prefs, "2026-09-10", false, extra, clock({ hour: 15 })), true);
+  it("does not nag setup — the Home card is the nag", () => {
+    assert.equal(reminderDue("setup", prefs, "2026-09-10", false, extra, clock({ hour: 15 })), false);
     assert.equal(reminderDue("setup", prefs, "2026-09-10", true, extra, clock()), false);
   });
 

@@ -5,6 +5,7 @@ import { AppHeader } from "@/components/app-header";
 import { Input } from "@/components/ui/input";
 import { companyChapter } from "@/lib/company-site";
 import { MRI_CHAPTERS, MRI_COUNT, mriSearchHay, type MriChapter } from "@/lib/mri-index";
+import { useDayBook } from "@/lib/day-book";
 import { useSettings } from "@/lib/settings-store";
 
 export const Route = createFileRoute("/coach/reference")({
@@ -17,7 +18,7 @@ function ReferencePage() {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const hash = useRouterState({ select: (st) => st.location.hash.replace(/^#/, "") });
   const pages = useSettings((s) => s.companySitePages);
-  const companyName = useSettings((s) => s.companyName);
+  const companyName = useDayBook((s) => s.profile.company);
   const needle = q.trim().toLowerCase();
   const library = useMemo<MriChapter[]>(() => {
     if (!pages.length) return MRI_CHAPTERS;

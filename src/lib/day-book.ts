@@ -185,6 +185,9 @@ export const useDayBook = create<DayBookState>()(
 
 if (typeof window !== "undefined") {
   void useDayBook.persist.rehydrate();
+  useDayBook.persist.onFinishHydration(() => {
+    void import("./adopt-company.ts").then((m) => m.adoptWhenStoresReady());
+  });
 }
 
 export function dayBookForCoach(): string {

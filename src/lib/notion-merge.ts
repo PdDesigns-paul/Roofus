@@ -306,7 +306,7 @@ export function packMindset(
     {
       name: "Company",
       body: packLabeled({
-        companyName: extra.companyName.trim() === "Roofus" ? "" : extra.companyName,
+        companyName: profile.company.trim() || (extra.companyName.trim() === "Roofus" ? "" : extra.companyName),
         warrantyLine:
           extra.warrantyLine.trim() === "See the actual Owens Corning warranty."
             ? ""
@@ -394,7 +394,10 @@ export function unpackMindset(rows: Record<string, string>): RestoreMindset {
   if (prof.ageMax) out.ageMax = n(prof.ageMax);
 
   const company = unpackLabeled(rows.Company ?? "");
-  if (company.companyName) out.companyName = company.companyName;
+  if (company.companyName) {
+    out.companyName = company.companyName;
+    if (!profile.company) profile.company = company.companyName;
+  }
   if (company.warrantyLine) out.warrantyLine = company.warrantyLine;
   if (company.companyWebsite) out.companyWebsite = company.companyWebsite;
 

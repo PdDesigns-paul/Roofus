@@ -44,7 +44,7 @@ export function applyCoachWrite(
   const company = COMPANY.exec(value);
   if (company?.[1]) {
     const c = company[1].trim();
-    return { companyName: c, profile: { company: c } };
+    return { profile: { company: c } };
   }
 
   const counties = COUNTIES.exec(value);

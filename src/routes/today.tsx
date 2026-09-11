@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { AppHeader } from "@/components/app-header";
 import { InstallHint } from "@/components/install-hint";
+import { Button } from "@/components/ui/button";
+import { Chip } from "@/components/ui/chip";
 import { whenCoachReady, useCoach } from "@/lib/coach-store";
 import { useNotion } from "@/lib/notion-store";
 import { abortTalk, sendRoofus } from "@/lib/roofus-talk";
@@ -19,7 +21,6 @@ import { useWeather } from "@/lib/weather-store";
 import type { StormEvent } from "@/lib/weather-types";
 import { preKnock } from "@/lib/pocket-cards";
 import { companyOf } from "@/lib/setup-progress";
-import { useSettings } from "@/lib/settings-store";
 import {
   addCluster,
   addLoopToPlan,
@@ -74,7 +75,6 @@ function DaySheet() {
   const bump = useDayBook((s) => s.bump);
   const patchToday = useDayBook((s) => s.patchToday);
   const profile = useDayBook((s) => s.profile);
-  const companyName = useSettings((s) => s.companyName);
   const loops = useStreets((s) => s.loops);
   const ageMin = useStreets((s) => s.ageMin);
   const ageMax = useStreets((s) => s.ageMax);
@@ -127,7 +127,7 @@ function DaySheet() {
     cluster: clusterLines(day.cluster)[0] ?? "",
     storm: day.storm,
     goBy: profile.goBy,
-    company: companyOf(profile.company, companyName),
+    company: companyOf(profile.company),
     knockWindow: profile.knockWindow,
     hardStop: profile.hardStop,
     ageMin,
@@ -141,9 +141,9 @@ function DaySheet() {
       {!profile.counties.trim() || !profile.states.trim() ? (
         <Link
           to="/"
-          className="mt-3 flex min-h-12 items-center rounded-2xl border border-border px-4 text-sm text-muted"
+          className="mt-3 flex min-h-12 items-center rounded-2xl border-2 border-accent px-4 text-sm text-fg"
         >
-          Finish setup on Home — counties and a state so Streets can build loops.
+          Counties and a state on Home — then Streets can build loops.
         </Link>
       ) : null}
       <p className="mt-4 text-xs font-medium uppercase tracking-wide text-faint">{day.date}</p>
@@ -155,14 +155,14 @@ function DaySheet() {
           <>
             {market}
             {profile.knockWindow.trim() ? ` · ${profile.knockWindow.trim()}` : ""}{" "}
-            <Link to="/settings/hours" className="underline-offset-4 hover:text-fg hover:underline">
+            <Link to="/settings/hours" className="text-fg underline underline-offset-4">
               Presets
             </Link>
           </>
         ) : (
           <>
             Set counties in{" "}
-            <Link to="/settings/territory" className="underline-offset-4 hover:text-fg hover:underline">
+            <Link to="/settings/territory" className="text-fg underline underline-offset-4">
               Presets
             </Link>
             .
@@ -183,10 +183,7 @@ function DaySheet() {
         <p className="mt-2 text-sm leading-relaxed">{knock.weather}</p>
         <p className="mt-2 text-xs leading-relaxed text-muted">{knock.script}</p>
         <p className="mt-3 text-sm leading-relaxed">{knock.opener}</p>
-        <Link
-          to="/coach/cards"
-          className="mt-3 inline-flex h-11 items-center text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
-        >
+        <Link to="/coach/cards" className="mt-3 inline-flex h-11 items-center text-sm text-fg underline underline-offset-4">
           Pocket cards
         </Link>
       </section>
@@ -195,28 +192,25 @@ function DaySheet() {
         <p className="text-xs font-medium uppercase tracking-wide text-faint">Tap to count</p>
         <ul className="mt-2 grid grid-cols-2 gap-2">
           {COUNTERS.map((c) => (
-            <li key={c.key} className="min-w-0 rounded-2xl border border-border bg-surface px-3 py-2.5">
-              <p className="text-[11px] uppercase tracking-wide text-faint">{c.label}</p>
-              <p className="mt-0.5 font-display text-2xl tabular-nums leading-none">{day[c.key]}</p>
-              <p className="mt-0.5 text-xs text-muted">{c.hint}</p>
-              <div className="mt-2 flex gap-2">
-                <button
-                  type="button"
-                  aria-label={`Minus ${c.label}`}
-                  className="h-10 flex-1 rounded-full border border-border text-sm"
-                  onClick={() => bump(c.key, -1)}
-                >
-                  −
-                </button>
-                <button
-                  type="button"
-                  aria-label={`Plus ${c.label}`}
-                  className="h-10 flex-1 rounded-full bg-fg text-sm text-paper"
-                  onClick={() => bump(c.key, 1)}
-                >
-                  +
-                </button>
-              </div>
+            <li key={c.key} className="relative min-w-0 rounded-2xl border border-border bg-surface">
+              <button
+                type="button"
+                aria-label={`Plus ${c.label}`}
+                className="flex min-h-24 w-full flex-col items-start px-3 py-3 pr-12 pb-12 text-left"
+                onClick={() => bump(c.key, 1)}
+              >
+                <p className="text-[11px] uppercase tracking-wide text-faint">{c.label}</p>
+                <p className="mt-1 font-display text-4xl tabular-nums leading-none">{day[c.key]}</p>
+                <p className="mt-1 text-xs text-muted">{c.hint}</p>
+              </button>
+              <button
+                type="button"
+                aria-label={`Minus ${c.label}`}
+                className="absolute bottom-1 right-1 inline-flex size-11 items-center justify-center rounded-full border border-border text-sm"
+                onClick={() => bump(c.key, -1)}
+              >
+                −
+              </button>
             </li>
           ))}
         </ul>
@@ -240,7 +234,7 @@ function DaySheet() {
           />
         )}
       </section>
-      <Link to="/streets" className="mt-2 text-sm text-muted underline-offset-4 hover:text-fg hover:underline">
+      <Link to="/streets" className="mt-2 text-sm text-fg underline underline-offset-4">
         {loops.length ? "Open Streets" : "Build loops from my counties"}
       </Link>
       {plan.map((l) => (
@@ -249,7 +243,7 @@ function DaySheet() {
           href={mapsUrl(l)}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
+          className="mt-2 text-sm text-fg underline underline-offset-4"
         >
           {mapsLabel(l)}
         </a>
@@ -277,14 +271,9 @@ function DaySheet() {
         />
       </Field>
 
-      <button
-        type="button"
-        disabled={busy}
-        onClick={askAboutToday}
-        className="mt-5 h-11 rounded-full bg-fg text-sm text-paper disabled:opacity-40"
-      >
+      <Button type="button" size="lg" className="mt-5 w-full" disabled={busy} onClick={askAboutToday}>
         Ask Roofus how today went
-      </button>
+      </Button>
       {askErr ? <p className="mt-2 text-sm text-danger">{askErr}</p> : null}
 
       <InstallHint />
@@ -334,13 +323,7 @@ function LoopPlan({
               className="flex min-h-11 items-center justify-between gap-2 rounded-xl border border-border px-3"
             >
               <span className="min-w-0 truncate text-sm">{line}</span>
-              <button
-                type="button"
-                className="shrink-0 text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
-                onClick={() => onPlan(dropCluster(cluster, line))}
-              >
-                Remove
-              </button>
+              <Chip onClick={() => onPlan(dropCluster(cluster, line))}>Remove</Chip>
             </li>
           ))}
         </ul>
@@ -366,26 +349,24 @@ function LoopPlan({
                     {hasPick ? `${t.loops.filter((l) => loopInPlan(l, cluster)).length} on` : `${t.loops.length}`}
                   </span>
                 </button>
-                {shown
-                  ? t.loops.map((l) => {
+                {shown ? (
+                  <div className="flex flex-col gap-2 border-t border-border px-3 py-2">
+                    {t.loops.map((l) => {
                       const on = loopInPlan(l, cluster);
                       return (
-                        <label
+                        <Chip
                           key={l.id}
-                          className="flex min-h-11 items-center gap-3 border-t border-border px-3 text-sm"
+                          selected={on}
+                          disabled={!on && atCap}
+                          className="w-full justify-start"
+                          onClick={() => toggle(l)}
                         >
-                          <input
-                            type="checkbox"
-                            className="h-5 w-5 shrink-0"
-                            checked={on}
-                            disabled={!on && atCap}
-                            onChange={() => toggle(l)}
-                          />
-                          <span className="min-w-0 leading-snug">{loopHeadline(l)}</span>
-                        </label>
+                          {loopHeadline(l)}
+                        </Chip>
                       );
-                    })
-                  : null}
+                    })}
+                  </div>
+                ) : null}
               </div>
             );
           }),
@@ -435,15 +416,12 @@ function NotionHint() {
         Copy your days to a free Notion so a dead phone is not a dead year. Optional. Presets.
       </p>
       <div className="mt-3 flex gap-2">
-        <Link
-          to="/settings/backup"
-          className="inline-flex h-11 flex-1 items-center justify-center rounded-full bg-fg text-sm text-paper"
-        >
-          Set up backup
-        </Link>
-        <button type="button" className="h-11 flex-1 rounded-full border border-border text-sm" onClick={hide}>
+        <Button asChild className="flex-1">
+          <Link to="/settings/backup">Set up backup</Link>
+        </Button>
+        <Button type="button" variant="outline" className="flex-1" onClick={hide}>
           Not now
-        </button>
+        </Button>
       </div>
     </div>
   );

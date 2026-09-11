@@ -62,7 +62,7 @@
     font-family: var(--font-display);
   }
   .pb-tab {
-    padding-bottom: calc(9.5rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
   }
 }
 

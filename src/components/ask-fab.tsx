@@ -1,6 +1,6 @@
 import { useRouterState } from "@tanstack/react-router";
-import { MessageSquare } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { RoofusFace } from "@/components/roofus-mark";
 import { Tip } from "@/components/ui/tooltip";
 import { useCoach } from "@/lib/coach-store";
 import { openCoachMode } from "@/lib/open-coach";
@@ -64,8 +64,8 @@ export function AskFab() {
 
   if (onInspect || sheetOpen) return null;
 
-  const fabBottom = "calc(8rem + env(safe-area-inset-bottom))";
-  const fanBottom = "calc(12rem + env(safe-area-inset-bottom))";
+  const fabBottom = "calc(5.5rem + env(safe-area-inset-bottom))";
+  const fanBottom = "calc(9.5rem + env(safe-area-inset-bottom))";
 
   return (
     <div ref={root}>
@@ -99,7 +99,7 @@ export function AskFab() {
           aria-haspopup="menu"
           aria-expanded={fan}
           data-tour="roofus"
-          className="fixed right-4 z-40 flex size-14 items-center justify-center rounded-full bg-accent text-paper shadow-lg ring-2 ring-paper/40"
+          className="fixed right-4 z-40 flex size-14 items-center justify-center overflow-hidden rounded-full bg-accent text-paper shadow-lg ring-2 ring-paper/40"
           style={{ bottom: fabBottom }}
           onPointerDown={onDown}
           onPointerUp={onUp}
@@ -109,7 +109,7 @@ export function AskFab() {
           }}
           onContextMenu={(e) => e.preventDefault()}
         >
-          <MessageSquare className="size-6" />
+          <RoofusFace alt="" className="size-10" />
         </button>
       </Tip>
     </div>

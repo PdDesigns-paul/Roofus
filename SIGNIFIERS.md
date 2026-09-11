@@ -2,9 +2,9 @@
 
 **This file is the UI contract.** Porch words stay in [`DOCTRINE.md`](./DOCTRINE.md). How a canvasser *sees* what to tap lives here.
 
-This PR does **not** change the running app. The live phone at roofus.coach still has the two-row footer, ghost verbs, and the full setup list on Home. After the implementation slices below, this file and the UI must agree. Do not leave them split.
+Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Slice 5 (Streets / Presets / Cards sweep) is still open. Do not invent a sixth control type.
 
-Agents: read this before you touch tabs, the FAB, Home, Today links, setup rows, or `src/components/ui/`. Do not invent a sixth control type.
+Agents: read this before you touch tabs, the FAB, Home, Today links, setup rows, or `src/components/ui/`.
 
 ---
 
@@ -14,14 +14,18 @@ The facets work. The voice works. The actions already exist. What is missing is 
 
 On a screen every pixel already affords a tap. Fill, edge, size, underline, and the dog are how we advertise the tap. Right now almost every control is drawn with the same pencil: `text-sm`, `text-muted`, `text-faint`, 1px `border-border`, underline only on hover. Hover never fires on a thumb.
 
-False signifiers on the live phone:
+False signifiers that this plan already killed on Home / Today / chrome:
 
-- `Ask`, `Did it`, `Pocket cards`, `Open Streets`, `Presets` look like captions and act like buttons or links.
-- Setup rows are links *and* carry a second ghost verb.
-- Home lists Today / Inspect / Streets under the fold *and* those same places live in the tab bar and Menu.
-- Help and Menu sit in a second bottom rail and read as extra tabs.
-- Accent orange is a sticker (FAB + 2px bar), not a system.
-- Selected tab is “stroke 2.2 vs 1.8.” People do not notice degree changes in a driveway.
+- `Ask`, `Did it`, `Pocket cards` as 12px muted captions (Home / Today).
+- Setup rows that were links *and* carried a second ghost Ask.
+- Home listing Today / Inspect / Streets under the fold.
+- Help and Menu in a second bottom rail.
+- Selected tab as “stroke 2.2 vs 1.8.”
+
+Still on Streets / Presets / Cards until Slice 5:
+
+- `Open Streets` / `Use today` / Presets rows that still read as captions.
+- Accent used as a sticker on pages this slice did not touch.
 
 Score of the idea: fine. Score of “what do I tap”: the actual bug.
 
@@ -35,9 +39,9 @@ One shape, one promise. If you cannot name the type, the user cannot either.
 | --- | --- | --- | --- | --- |
 | **Place** | Bottom tab. Selected = accent mark + `text-fg`. Idle = `text-faint`. | I am *in* a place. | Today · Inspect · Home | Help, Back, Menu, Streets |
 | **Do** | Pill, 48–56px. Primary = filled (`bg-fg text-paper`, or `bg-accent` when the verb is talk to Roofus). Secondary = outlined on a solid surface, same height. | One tap, something happens *here*. | Open Today, +, Ask how today went, Got it, Tell Roofus, −, Load sample, Not now | Navigation a tab or Menu already owns |
-| **Toggle a token** | Chip. Idle = outline + `text-fg`. Selected / done = `bg-accent text-paper`. | A token I can snap on or dismiss. | Did it, Ask (if it survives), Use today, loop on the plan, Live / Roleplay / Mindset fan | The screen’s primary close |
+| **Toggle a token** | Chip. Idle = outline + `text-fg`. Selected / done = `bg-accent` + black type. | A token I can snap on or dismiss. | Did it, Use today, loop on the plan, Live / Roleplay / Mindset fan | The screen’s primary close |
 | **Go** | Always-underlined text, **or** a 56px row with title + hint + chevron. | I will *leave this screen*. | Open Streets, maps label, Presets, setup rows that open a page | Anything that writes today’s log |
-| **Talk** | Orange FAB. Dog face (`RoofusFace`), not a generic chat bubble. Tap fans three chips. Hold starts Live. Hidden on Inspect and while the sheet is open. | The coach. | Live / Roleplay / Mindset | A second FAB |
+| **Talk** | Gold FAB. Dog face (`RoofusFace`), not a generic chat bubble. Tap fans three chips. Hold starts Live. Hidden on Inspect and while the sheet is open. | The coach. | Live / Roleplay / Mindset | A second FAB |
 
 Buttons **do**. Links **go**. Chips **fork the current task**. Tabs **are places**. The FAB **is Roofus**.
 
@@ -86,43 +90,27 @@ Do not make everything orange. Then you are back to blah, just warmer.
 
 ---
 
-## Implementation plan (later slices — not this PR)
+## Implementation plan
 
 Do these in order. One working slice per chat. Push to `main` when that slice is on the phone. Update `src/lib/page-help.ts` and `src/lib/coach-system.ts` in the **same** slice that changes a button that help or the coach names.
 
-### Slice 1 — the kit
+### Slice 1 — the kit — shipped
 
-- Add `Chip` next to `src/components/ui/button.tsx`. Two states only: idle outline, selected accent fill. Height 44–48px. No third variant.
-- Extend `Button`: keep `default` / `outline`. Do not add a content-level `ghost` / text variant. Header icon buttons may stay icon-only.
-- Links that **go**: always `underline` (not `hover:underline`).
-- No other files unless a type error forces it.
+Chip next to Button. `default` / `outline` only. Ghost is not a content verb. Go links on Home / Today always underline.
 
-### Slice 2 — chrome
+### Slice 2 — chrome — shipped
 
-- Move Help (`?`) and Menu (`⋮`) into the header next to the title. One bottom bar: Today · Inspect · Home.
-- Selected tab gets an accent tick or filled icon plus `text-fg`. Idle stays faint.
-- FAB uses `RoofusFace`. Fan stays three chips. Hold still starts Live. Still hidden on Inspect.
-- Back stays a header control on nested pages, not a fourth tab.
-- Update `app-chrome.ts` tests if the back rule changes. Update Home / Today / coach help copy that says “footer above the tabs.”
+Help (`?`) and Menu (`⋮`) in the header. One bottom bar: Today · Inspect · Home. FAB uses `RoofusFace`. Back is a header control on nested pages.
 
-### Slice 3 — Home
+### Slice 3 — Home — shipped
 
-- Collapse setup to one card: “Counties first · 0 of 8” (or “Ready to knock”). Tap expands the rows.
-- Each expanded row is **Go** (chevron). Drop trailing `Ask`, *or* make Ask a chip and make the row inert. Not both.
-- Reminders: one banner, one verb, one Did-it chip. Not two caption rows.
-- Primary stack above the fold: Open Today (filled), Tell Roofus (outline). Sample day only on an empty phone.
-- Delete the Today / Inspect / Streets directory list. Tabs and Menu already own those doors.
-- Install hint stays a card. “Not now” is an outlined pill.
+One setup card. Empty book: name + company + counties/state. Website / Why behind More. Expanded rows are Go (chevron). Tell Roofus is the Do. No directory list. Tour does not auto-play.
 
-### Slice 4 — Today
+### Slice 4 — Today — shipped
 
-- Count tiles: tap the card to +1. − is a small control. Number bigger.
-- `Pocket cards` becomes a Go link (underlined) or a chip — not a muted sentence.
-- `Open Streets` and maps labels are underlined Go links.
-- Empty-setup banner is a tappable ticket (filled or accent outline), not a hollow paragraph box.
-- “Ask Roofus how today went” stays the one filled Do at the bottom of the log.
+Count tiles: tap the card to +1. − is a small control. Pocket cards, Open Streets, and maps labels are underlined Go. Empty-setup is a tappable ticket. Loop picks are chips. “Ask Roofus how today went” is the filled Do.
 
-### Slice 5 — sweep
+### Slice 5 — sweep — open
 
 - Cards “Ask Roofus” is already an outlined pill — keep it. Do not demote it to text.
 - Presets index: rows get chevrons. “Show the question-mark tour” and “Load a sample day” stay secondary outlined pills, below the list, not dressed as the page’s primary.

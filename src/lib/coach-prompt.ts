@@ -76,7 +76,7 @@ export function buildXaiPayload(req: CoachRequest): {
   const extra = [
     `\n\n${brief}`,
     KNOWLEDGE,
-    req.companyName?.trim() ? `Company name from Presets: ${req.companyName.trim()}` : "",
+    req.companyName?.trim() ? `Company name from the book: ${req.companyName.trim()}` : "",
     req.warrantyLine?.trim()
       ? `Warranty line from Presets (this wins over the default): ${req.warrantyLine.trim()}`
       : "",

@@ -10,7 +10,6 @@ const buttonVariants = cva(
       variant: {
         default: "bg-fg text-paper hover:bg-fg/90",
         outline: "border border-border bg-transparent text-fg hover:bg-surface-2",
-        ghost: "text-muted hover:bg-surface-2 hover:text-fg",
       },
       size: {
         default: "h-11 px-5 text-sm",

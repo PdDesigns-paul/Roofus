@@ -40,7 +40,6 @@ export function loadDemo(): void {
       },
     },
   });
-  useSettings.getState().setCompanyName("North Ridge Roofing");
   useSettings.getState().setWarrantyLine("See the actual Owens Corning warranty.");
   useStreets.getState().replace(DEMO_LOOPS, {
     note: "Sample loops. Every county in Presets gets a group — a thin one is not dropped. Rebuild from Presets when this is your real market.",

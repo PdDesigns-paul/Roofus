@@ -62,7 +62,7 @@ function tableItems(table: NotionTable): unknown[] {
       packMindset(s, p, {
         ageMin: streets.ageMin,
         ageMax: streets.ageMax,
-        companyName: set.companyName,
+        companyName: p.company,
         warrantyLine: set.warrantyLine,
         companyWebsite: set.companyWebsite,
       }),
@@ -180,6 +180,9 @@ function applyRestore(pulled: {
   if (Object.keys(survivePatch).length) useSurvive.getState().patch(survivePatch);
 
   const nextProfile = fillProfile(useDayBook.getState().profile, unpacked.profile);
+  if (unpacked.companyName && !nextProfile.company.trim()) {
+    nextProfile.company = unpacked.companyName;
+  }
   useDayBook.setState({ profile: nextProfile });
 
   if (unpacked.ageMin && unpacked.ageMax && !useStreets.getState().builtFor) {
@@ -187,9 +190,6 @@ function applyRestore(pulled: {
   }
 
   const settings = useSettings.getState();
-  if (unpacked.companyName && (!settings.companyName.trim() || settings.companyName === "Roofus")) {
-    settings.setCompanyName(unpacked.companyName);
-  }
   if (unpacked.warrantyLine && settings.warrantyLine === "See the actual Owens Corning warranty.") {
     settings.setWarrantyLine(unpacked.warrantyLine);
   }

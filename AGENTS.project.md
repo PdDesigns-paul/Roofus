@@ -28,9 +28,9 @@ GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at 
 
 ## Product (short)
 
-Phone-first PWA. First screen is the porch. Bottom bar: Today · Inspect · Home. **Target chrome** (see `SIGNIFIERS.md`): Help and Menu live in the header; one tab bar; Back only on Cards, Reference, Presets, and Streets. **Live phone still has Help / Menu in a footer rail** until the chrome slice ships. Do not invent a third layout.
+Phone-first PWA. First screen is the porch. Bottom bar: Today · Inspect · Home. Help and Menu live in the header; one tab bar; Back only on Cards, Reference, Presets, and Streets. Do not invent a third layout.
 
-Home holds setup (bar + Tell Roofus). Streets, mindset, and reminders live in Presets. Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. No lock-screen.
+Home holds setup (one card + Tell Roofus). Streets, mindset, and reminders live in Presets. Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. Finish-setup is the Home card, not a nag. No lock-screen.
 
 Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Inspect hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 

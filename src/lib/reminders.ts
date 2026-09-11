@@ -7,7 +7,7 @@ export const REMINDERS = [
     id: "setup",
     label: "Finish setup",
     when: "Until territory is in",
-    hint: "Name, counties, state. The bar on Home.",
+    hint: "The card on Home. Not a nag.",
     to: "/",
   },
   {
@@ -81,13 +81,13 @@ export function reminderDue(
   id: ReminderId,
   prefs: ReminderPrefs,
   today: string,
-  ready: boolean,
+  _ready: boolean,
   extra: { afterAction: string; stormFetchedOn: string; stackMonth: string },
   clock: RemindClock,
 ): boolean {
   if (!prefs.on[id]) return false;
   if ((prefs.lastDone[id] ?? "") === today) return false;
-  if (id === "setup") return !ready;
+  if (id === "setup") return false;
   if (id === "storm") {
     if (clock.hour >= 12) return false;
     return extra.stormFetchedOn !== today;

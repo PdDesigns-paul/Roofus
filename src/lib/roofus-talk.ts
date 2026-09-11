@@ -56,7 +56,6 @@ export async function sendRoofus(
     const snap = setupSnap({
       goBy: profile.goBy,
       profileCompany: profile.company,
-      settingsCompany: settings.companyName,
       counties: profile.counties,
       states: profile.states,
       knockWindow: profile.knockWindow,
@@ -70,8 +69,8 @@ export async function sendRoofus(
     const patch = applyCoachWrite(content, snap, useSurvive.getState(), row);
     if (patch?.survive) useSurvive.getState().patch(patch.survive);
     if (patch?.profile) useDayBook.getState().patchProfile(patch.profile);
-    if (patch?.companyName) settings.setCompanyName(patch.companyName);
     if (patch?.warrantyLine) settings.setWarrantyLine(patch.warrantyLine);
+
     if (patch?.companyWebsite) {
       settings.setCompanyWebsite(patch.companyWebsite);
       void readCompanySite(patch.companyWebsite);
@@ -99,7 +98,7 @@ export async function sendRoofus(
         who: now.who ?? undefined,
         year: opts?.year,
         origin: thread?.origin,
-        companyName: settings.companyName,
+        companyName: useDayBook.getState().profile.company,
         warrantyLine: settings.warrantyLine,
         companyWebsite: settings.companyWebsite,
         companySiteBrief: settings.companySiteBrief,

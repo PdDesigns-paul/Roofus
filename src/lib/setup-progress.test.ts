@@ -57,9 +57,10 @@ function snap(over: Partial<SetupSnap> = {}): SetupSnap {
 }
 
 describe("companyOf", () => {
-  it("prefers Presets unless it is still the default", () => {
+  it("reads the book first, leftover Presets only if the book is empty", () => {
     assert.equal(companyOf("Ridge", "Roofus"), "Ridge");
-    assert.equal(companyOf("Ridge", "Alpha"), "Alpha");
+    assert.equal(companyOf("Ridge", "Alpha"), "Ridge");
+    assert.equal(companyOf("", "Alpha"), "Alpha");
     assert.equal(companyOf("", "Roofus"), "");
   });
 });
@@ -124,12 +125,12 @@ describe("settingsHashPath", () => {
 });
 
 describe("applySetupAnswer", () => {
-  it("fills name then company, and copies company into both stores", () => {
+  it("fills name then company on the book", () => {
     const a = applySetupAnswer("you", "Paul", snap(), blankSurvive);
     assert.equal(a?.profile?.goBy, "Paul");
     const b = applySetupAnswer("you", "Ridge", snap({ goBy: "Paul" }), blankSurvive);
-    assert.equal(b?.companyName, "Ridge");
     assert.equal(b?.profile?.company, "Ridge");
+    assert.equal("companyName" in (b ?? {}), false);
   });
 
   it("does not invent zips in chat", () => {

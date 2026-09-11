@@ -117,11 +117,13 @@ export type SetupSnap = {
   stack: boolean;
 };
 
-/** Presets company wins. Today-setup leftovers still count. */
-export function companyOf(profileCompany: string, settingsCompany: string): string {
+/** The book is profile.company. Leftover Presets company still counts until adopt runs. */
+export function companyOf(profileCompany: string, settingsCompany = ""): string {
+  const p = profileCompany.trim();
+  if (p) return p;
   const s = settingsCompany.trim();
   if (s && s !== "Roofus") return s;
-  return profileCompany.trim();
+  return "";
 }
 
 function isStockWarranty(v: string): boolean {
@@ -132,7 +134,7 @@ function isStockWarranty(v: string): boolean {
 export function setupSnap(input: {
   goBy: string;
   profileCompany: string;
-  settingsCompany: string;
+  settingsCompany?: string;
   counties: string;
   states: string;
   knockWindow: string;
@@ -144,7 +146,7 @@ export function setupSnap(input: {
 }): SetupSnap {
   return {
     goBy: input.goBy.trim(),
-    company: companyOf(input.profileCompany, input.settingsCompany),
+    company: companyOf(input.profileCompany, input.settingsCompany ?? ""),
     counties: input.counties.trim(),
     states: input.states.trim(),
     knockWindow: input.knockWindow.trim(),
@@ -195,7 +197,6 @@ export type SetupPatch = {
     paperWindow: string;
     hardStop: string;
   }>;
-  companyName?: string;
   warrantyLine?: string;
   companyWebsite?: string;
 };
@@ -215,7 +216,7 @@ export function applySetupAnswer(
       return url ? { companyWebsite: url } : null;
     }
     if (!snap.goBy) return { profile: { goBy: value } };
-    if (!snap.company) return { companyName: value, profile: { company: value } };
+    if (!snap.company) return { profile: { company: value } };
     const url = normalizeWebsiteUrl(value);
     if (url) return { companyWebsite: url };
     return null;

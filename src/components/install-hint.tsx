@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 function isStandalone() {
   if (typeof window === "undefined") return true;
@@ -49,17 +50,13 @@ export function InstallHint() {
       </p>
       <div className="mt-3 flex gap-2">
         {promptEvent ? (
-          <button
-            type="button"
-            className="h-11 flex-1 rounded-full bg-fg text-sm text-paper"
-            onClick={() => void promptEvent.prompt()}
-          >
+          <Button type="button" className="flex-1" onClick={() => void promptEvent.prompt()}>
             Install
-          </button>
+          </Button>
         ) : null}
-        <button type="button" className="h-11 flex-1 rounded-full border border-border text-sm" onClick={dismiss}>
+        <Button type="button" variant="outline" className="flex-1" onClick={dismiss}>
           Not now
-        </button>
+        </Button>
       </div>
     </div>
   );

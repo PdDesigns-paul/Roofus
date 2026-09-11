@@ -2,15 +2,15 @@ export const PAGE_HELP = {
   home: {
     title: "Roofus",
     body: [
-      "This is the porch. The bar is setup — name, territory, zips, hours, warranty, Why. Each row opens that Presets page or Ask Roofus. Tell Roofus is the pinned setup chat.",
-      "Orange button is Roofus. Tap to pick Live, Roleplay, or Mindset — each is a new chat. Hold starts Live. History is the clock in the chat. Menu: Cards, Reference, Streets, Presets. First open walks the question mark.",
-      "Bottom: Today, Inspect, Home. Back shows on Cards, Reference, Presets, and Streets. Put the app on your Home Screen so the tile says Roofus and shows the dog.",
+      "This is the porch. Setup is one card — name, company, counties first. Tap the card to open the rest (zips, hours, warranty, Why). Tell Roofus writes those fields. Open Today is the day.",
+      "The gold button is Roofus — dog face. Tap to pick Live, Roleplay, or Mindset. Hold starts Live. History is the clock in the chat. ? and Menu live in the header. Menu: Cards, Reference, Streets, Presets.",
+      "Bottom: Today, Inspect, Home. Back is in the header on Cards, Reference, Presets, and Streets. Put the app on your Home Screen so the tile says Roofus and shows the dog.",
     ],
   },
   today: {
     title: "Today",
     body: [
-      "First time: finish setup on Home — counties and a state. Hours live in Presets. Then the four counts.",
+      "First time: counties and a state on Home. Hours live in Presets. Then the four counts. Tap a count tile to add one. Minus is the small control.",
       "Before you knock is the loop, age band, weather you may mention, and the first door line. Pocket cards is Door, Pushback, i35, Set, Compass.",
       "Neighborhood today is one or more park-once loops from Streets. Check backups in case a loop is picked over — first remaining is Working. Open Streets from More, Home, or that line. After Action Report is wins first, then facts, then a plan with verbs. Ask Roofus and he’ll name tomorrow.",
     ],
@@ -58,7 +58,7 @@ export const PAGE_HELP = {
       "Presets is a list of pages. You, Territory, Hours, Mindset, Reminders, Backup. Streets is its own page. Back on every sub page. Tour and sample day stay on this list.",
       "You: first name, company, website, warranty. Paste a URL — we crawl it in the background. Pages land in Reference. He uses those notes when he talks product.",
       "Territory: counties and a state. Rebuild Streets after you change them. Hours: when you knock, morning work, hard stop.",
-      "Reminders nag you when you open the app. Morning: storm report if it is empty. Evening: After Action Report if it is blank. Sundays: pace. The 1st: talent stack. Did it dismisses that nag for today.",
+      "Reminders: morning storm if empty, evening After Action Report if blank, Sundays pace, the 1st talent stack. Did it is a chip. Finish-setup is the card on Home, not a nag.",
       "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report is on Today.",
       "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Do not Restore onto a full phone. Do not Backup from an empty one.",
       "Show the question-mark tour plays the first-open walk again.",

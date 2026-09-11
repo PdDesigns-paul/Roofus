@@ -106,10 +106,12 @@ export const useSettings = create<SettingsState>()(
           localStorage.setItem("roofus-dark-v2", "1");
           applyTheme("dark");
           useSettings.setState({ hydrated: true, theme: "dark" });
+          void import("./adopt-company.ts").then((m) => m.adoptWhenStoresReady());
           return;
         }
         if (state?.theme) applyTheme(state.theme);
         useSettings.setState({ hydrated: true });
+        void import("./adopt-company.ts").then((m) => m.adoptWhenStoresReady());
       },
     },
   ),
@@ -125,6 +127,7 @@ if (typeof window !== "undefined") {
       applyTheme(useSettings.getState().theme);
     }
     useSettings.setState({ hydrated: true });
+    void import("./adopt-company.ts").then((m) => m.adoptWhenStoresReady());
   });
   window.setTimeout(() => {
     if (!useSettings.getState().hydrated) useSettings.setState({ hydrated: true });

@@ -12,7 +12,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 
 | Surface | What it is |
 | --- | --- |
-| **Porch** | First screen. Setup bar. Tell Roofus. Open Today or Inspect. |
+| **Porch** | First screen. One setup card. Tell Roofus. Open Today. |
 | **Today** | Pre-knock strip, four counts, neighborhood (several park-once loops), weather you may mention, After Action Report (wins / do-better / plan), tomorrow. |
 | **Streets** | Not a tab. Open from Menu or Presets. Age-band **park-once loops** named from Census streets, grouped by township (default 17–25 year roofs). Working pinned. Maps parks on the loop. One weather sentence on the Working loop if a kept storm matches. Use today adds that loop to Today’s plan. |
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
@@ -23,9 +23,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 | **Mindset** | Worksheets in Presets → Mindset: Why (ladder), Name the demon, Pace (gear), Talent stack. Chat from the orange fan. Private. After Action Report lives on Today. |
 | **Presets** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. Streets is its own page. Name, company, website (crawled into Reference), warranty, counties, hours, mindset, reminder toggles, optional Notion, Memory FAQs. Reminders nag on open if that box is empty. |
 
-Bottom bar: Today · Inspect · Home. Menu: Cards, Reference, Streets, Presets. Back only on Cards, Reference, Presets, and Streets. Streets and mindset worksheets live in Presets (Streets is its own page; worksheets are Presets → Mindset).
-
-**Live phone** still parks Help and Menu in a footer rail above the tabs. **Target** (see [`SIGNIFIERS.md`](./SIGNIFIERS.md)): those two move to the header so the bottom bar is places only. Do not invent a third map.
+Bottom bar: Today · Inspect · Home. Help and Menu live in the header. Menu: Cards, Reference, Streets, Presets. Back only on Cards, Reference, Presets, and Streets. Streets and mindset worksheets live in Presets (Streets is its own page; worksheets are Presets → Mindset).
 
 ## Doctrine (short)
 

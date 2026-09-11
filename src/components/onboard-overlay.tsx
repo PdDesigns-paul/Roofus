@@ -1,10 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from "react";
-import {
-  isOnboardDone,
-  markOnboardDone,
-  ONBOARD_STEPS,
-  subscribeOnboard,
-} from "@/lib/onboard";
+import { Button } from "@/components/ui/button";
+import { markOnboardDone, ONBOARD_STEPS, subscribeOnboard } from "@/lib/onboard";
 
 type Rect = { top: number; left: number; width: number; height: number };
 
@@ -22,7 +18,6 @@ export function OnboardOverlay() {
   const [hole, setHole] = useState<Rect | null>(null);
 
   useEffect(() => {
-    if (!isOnboardDone()) setOpen(true);
     return subscribeOnboard(() => {
       setStep(0);
       setOpen(true);
@@ -131,17 +126,13 @@ export function OnboardOverlay() {
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-muted">{current.body}</p>
         <div className="mt-4 flex items-center gap-2">
-          <button
-            type="button"
-            className="h-11 flex-1 rounded-full bg-fg text-sm text-paper"
-            onClick={next}
-          >
+          <Button className="flex-1" onClick={next}>
             {last ? "Got it" : "Next"}
-          </button>
+          </Button>
           {last ? null : (
-            <button type="button" className="h-11 px-4 text-sm text-muted" onClick={finish}>
+            <Button variant="outline" onClick={finish}>
               Skip
-            </button>
+            </Button>
           )}
         </div>
       </div>

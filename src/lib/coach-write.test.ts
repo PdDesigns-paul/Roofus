@@ -58,7 +58,7 @@ describe("applyCoachWrite", () => {
   });
   it("saves call me / company / counties in Live", () => {
     assert.equal(applyCoachWrite("Call me Jordan", snap(), blankSurvive)?.profile?.goBy, "Jordan");
-    assert.equal(applyCoachWrite("I work for North Ridge", snap(), blankSurvive)?.companyName, "North Ridge");
+    assert.equal(applyCoachWrite("I work for North Ridge", snap(), blankSurvive)?.profile?.company, "North Ridge");
     assert.equal(
       applyCoachWrite("My counties are Dauphin, Perry, Cumberland", snap(), blankSurvive)?.profile?.counties,
       "Dauphin, Perry, Cumberland",

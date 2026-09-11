@@ -40,11 +40,8 @@ function YouPage() {
             <Input
               id="company"
               className="mt-1"
-              value={s.companyName}
-              onChange={(e) => {
-                s.setCompanyName(e.target.value);
-                patchProfile({ company: e.target.value });
-              }}
+              value={profile.company}
+              onChange={(e) => patchProfile({ company: e.target.value })}
               placeholder="Roofus"
             />
           </div>
@@ -115,7 +112,7 @@ function WebsiteField() {
         <Link
           to="/coach/reference"
           hash="company"
-          className="mt-2 block text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
+          className="mt-2 block text-sm text-fg underline underline-offset-4"
         >
           {pages.length} page{pages.length === 1 ? "" : "s"} in Reference
         </Link>

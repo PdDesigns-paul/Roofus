@@ -1,4 +1,4 @@
-/** First-run tour. Stays on this phone. Replay lives in Presets. */
+/** First-run tour. Stays on this phone. Replay lives in Presets. Does not auto-play. */
 
 export const ONBOARD_KEY = "roofus-onboard-v1";
 
@@ -32,18 +32,18 @@ export const ONBOARD_STEPS = [
     id: "help",
     selector: "[data-tour='help']",
     title: "The question mark",
-    body: "Every page has this above the tabs. Tap it when you're lost. That's how this page works.",
+    body: "Every page has this in the header. Tap it when you're lost. That's how this page works.",
   },
   {
     id: "roofus",
     selector: "[data-tour='roofus']",
     title: "That's Roofus",
-    body: "Orange button. Tap to pick Live, Roleplay, or Mindset. Hold for a new Live chat.",
+    body: "Gold button. Dog face. Tap to pick Live, Roleplay, or Mindset. Hold for a new Live chat.",
   },
   {
     id: "tabs",
     selector: "[data-tour='tabs']",
     title: "The day",
-    body: "Today. Inspect. Home. Home holds setup — the bar, the forms in Presets, and Tell Roofus.",
+    body: "Today. Inspect. Home. Home is one setup card. Tell Roofus writes the book.",
   },
 ] as const;
