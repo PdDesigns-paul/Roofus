@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoachRouteImport } from './routes/coach'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as StormsRouteImport } from './routes/storms'
 import { Route as StreetsRouteImport } from './routes/streets'
 import { Route as TodayRouteImport } from './routes/today'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
@@ -49,6 +50,11 @@ const CoachRoute = CoachRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StormsRoute = StormsRouteImport.update({
+  id: '/storms',
+  path: '/storms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StreetsRoute = StreetsRouteImport.update({
@@ -171,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/coach': typeof CoachRouteWithChildren
   '/settings': typeof SettingsRouteWithChildren
+  '/storms': typeof StormsRoute
   '/streets': typeof StreetsRoute
   '/today': typeof TodayRoute
   '/api/coach': typeof ApiCoachRoute
@@ -197,6 +204,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/storms': typeof StormsRoute
   '/streets': typeof StreetsRoute
   '/today': typeof TodayRoute
   '/api/coach': typeof ApiCoachRoute
@@ -226,6 +234,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/coach': typeof CoachRouteWithChildren
   '/settings': typeof SettingsRouteWithChildren
+  '/storms': typeof StormsRoute
   '/streets': typeof StreetsRoute
   '/today': typeof TodayRoute
   '/api/coach': typeof ApiCoachRoute
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/'
     | '/coach'
     | '/settings'
+    | '/storms'
     | '/streets'
     | '/today'
     | '/api/coach'
@@ -282,6 +292,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/storms'
     | '/streets'
     | '/today'
     | '/api/coach'
@@ -310,6 +321,7 @@ export interface FileRouteTypes {
     | '/'
     | '/coach'
     | '/settings'
+    | '/storms'
     | '/streets'
     | '/today'
     | '/api/coach'
@@ -339,6 +351,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CoachRoute: typeof CoachRouteWithChildren
   SettingsRoute: typeof SettingsRouteWithChildren
+  StormsRoute: typeof StormsRoute
   StreetsRoute: typeof StreetsRoute
   TodayRoute: typeof TodayRoute
   ApiCoachRoute: typeof ApiCoachRoute
@@ -373,6 +386,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/storms': {
+      id: '/storms'
+      path: '/storms'
+      fullPath: '/storms'
+      preLoaderRoute: typeof StormsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/streets': {
@@ -585,6 +605,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CoachRoute: CoachRouteWithChildren,
   SettingsRoute: SettingsRouteWithChildren,
+  StormsRoute: StormsRoute,
   StreetsRoute: StreetsRoute,
   TodayRoute: TodayRoute,
   ApiCoachRoute: ApiCoachRoute,

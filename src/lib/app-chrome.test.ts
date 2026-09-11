@@ -11,6 +11,7 @@ describe("showBack", () => {
 
   it("shows Back on nested pages, including Streets and Presets sub pages", () => {
     assert.equal(showBack("/streets"), true);
+    assert.equal(showBack("/storms"), true);
     assert.equal(showBack("/settings"), true);
     assert.equal(showBack("/settings/you"), true);
     assert.equal(showBack("/coach/cards"), true);
@@ -23,6 +24,7 @@ describe("helpPageFor", () => {
     assert.equal(helpPageFor("/"), "home");
     assert.equal(helpPageFor("/today"), "today");
     assert.equal(helpPageFor("/streets"), "streets");
+    assert.equal(helpPageFor("/storms"), "storms");
     assert.equal(helpPageFor("/coach/inspect"), "inspect");
     assert.equal(helpPageFor("/settings"), "settings");
     assert.equal(helpPageFor("/settings/you"), "settings");

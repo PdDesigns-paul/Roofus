@@ -9,6 +9,7 @@ const LINKS = [
   { to: "/coach/cards", label: "Cards", hint: "Door, pushback, i35, set, compass." },
   { to: "/coach/reference", label: "Reference", hint: "Roof articles. Their company pages." },
   { to: "/streets", label: "Streets", hint: "Park-once loops by township. Where you knock." },
+  { to: "/storms", label: "Storms", hint: "Kept pins on satellite. Last 48 hours." },
   { to: "/settings", label: "Presets", hint: "You, territory, hours, mindset, backup" },
 ] as const;
 
@@ -17,7 +18,7 @@ export function MoreMenu() {
 
   return (
     <>
-      <Tip label="Cards, Reference, Streets, Presets">
+      <Tip label="Cards, Reference, Streets, Storms, Presets">
         <button
           type="button"
           aria-label="More"

@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { blankReminderPrefs, reminderDue, type RemindClock } from "./reminders.ts";
+import { blankReminderPrefs, reminderDue, REMINDERS, type RemindClock } from "./reminders.ts";
 
 const extra = { afterAction: "", stormFetchedOn: "", stackMonth: "" };
 const prefs = blankReminderPrefs();
@@ -22,6 +22,7 @@ describe("reminderDue", () => {
       reminderDue("storm", prefs, "2026-09-10", true, { ...extra, stormFetchedOn: "2026-09-10" }, clock({ hour: 9 })),
       false,
     );
+    assert.equal(REMINDERS.find((r) => r.id === "storm")?.to, "/storms");
   });
 
   it("nags journal only in the evening when the After Action Report is blank", () => {
