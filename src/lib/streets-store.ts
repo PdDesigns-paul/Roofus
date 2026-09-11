@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useScout } from "@/lib/scout-store";
+import { streetsScoutLine } from "@/lib/streets-near";
 import type { LoopResult, LoopStatus, StreetLoop } from "@/lib/streets-types";
 import { loopHeadline, mergeStatus, nextFreshInTownship } from "@/lib/streets-rank";
 import { hOverrideLoop, pulseIsFresh } from "@/lib/weather-grade";
@@ -103,6 +105,7 @@ export function suggestTomorrow(loops: StreetLoop[]): StreetLoop | null {
 
 export function streetsForCoach(): string {
   const { loops, note, yearFrom, yearTo, ageMin, ageMax } = useStreets.getState();
+  const cards = useScout.getState().cards;
   if (!loops.length) {
     return `# Streets\nNo loop list yet. Send them to Presets, then Streets, and build from their counties. Their age band is ${ageMin}–${ageMax} years. Age first. Do not invent a zip or a subdivision name.`;
   }
@@ -110,6 +113,8 @@ export function streetsForCoach(): string {
     "# Streets (park-once loops from Census, grouped by township. Storms are NOT why these are here.)",
     note || `They set roofs about ${ageMin}–${ageMax} years old (built ${yearFrom}–${yearTo}).`,
     "Pick tomorrow: a 48h High on a loop they keep jumps Working (restoration). Then Working. Then the next fresh loop in that township. M/L do not pick the day. Do not ask a newbie where to go. Do not rank the whole list by hail.",
+    "Near me sorts loops they already built. Empty book does not invent a zip.",
+    "Hunt footnotes (ageBand / stormBand / why) are not porch copy. Do not invent hail. Human chips own Skip.",
   ];
   for (const l of loops.slice(0, 24)) {
     const name = loopHeadline(l);
@@ -118,6 +123,8 @@ export function streetsForCoach(): string {
     lines.push(
       `- ${name}${twp} · ${l.county} · ~${l.medianYear} · ${l.status}${l.lastResult ? `/${l.lastResult}` : ""} · ${streets}`,
     );
+    const hunt = streetsScoutLine(cards[l.id]);
+    if (hunt) lines.push(`  hunt: ${hunt}. Not porch copy.`);
   }
   const next = suggestTomorrow(loops);
   if (next) lines.push(`Suggested tomorrow: ${loopHeadline(next)} (${next.streets.slice(0, 4).join(", ")}).`);

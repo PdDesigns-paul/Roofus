@@ -14,7 +14,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 | --- | --- |
 | **Porch** | First screen. One setup card. Tell Roofus. Open Today. |
 | **Today** | Pre-knock strip, four counts, neighborhood (several park-once loops), weather you may mention, After Action Report (wins / do-better / plan), tomorrow. |
-| **Streets** | Not a tab. Open from Menu or Presets. Age-band **park-once loops** named from Census streets, grouped by township (default 17–25 year roofs). Working pinned. Maps parks on the loop. One weather sentence on the Working loop if a kept storm matches. Use today adds that loop to Today’s plan. |
+| **Streets** | Not a tab. Open from Menu or Presets. Age-band **park-once loops** named from Census streets, grouped by township (default 17–25 year roofs). Working pinned. Near me sorts loops already built. Maps parks on the loop. Muted hunt tag when a scout card exists. One weather sentence on the Working loop if a kept storm matches. Use today is a chip on the card. |
 | **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot. Practice shot is off the roof. CompanyCam is the report. |
 | **Roofus** | Orange button. Tap fans Live, Roleplay, Mindset — each is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. Hold-to-talk in Roleplay. Beats at the bottom. Score me is a button. Hear it reads his line. Practice only — do not record a homeowner. |

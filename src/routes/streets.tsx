@@ -1,9 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { AppHeader } from "@/components/app-header";
+import { Chip } from "@/components/ui/chip";
 import { useDayBook } from "@/lib/day-book";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
-import { addLoopToPlan, loopAge, loopHeadline, loopPlace, loopZip, groupLoopsByTownship, searchStreetLoops } from "@/lib/streets-rank";
+import { useScout } from "@/lib/scout-store";
+import { formatMiles, loopHasPin, milesBetween, nearMeList, streetsScoutTag } from "@/lib/streets-near";
+import {
+  addLoopToPlan,
+  dropLoopFromPlan,
+  groupLoopsByTownship,
+  loopAge,
+  loopHeadline,
+  loopInPlan,
+  loopPlace,
+  loopZip,
+  searchStreetLoops,
+} from "@/lib/streets-rank";
 import { marketKey, useStreets } from "@/lib/streets-store";
 import type { LoopResult, LoopStatus, StreetLoop, StreetsBuildResponse } from "@/lib/streets-types";
 import { parseList, countyBasename } from "@/lib/us-state-fips";
@@ -49,12 +62,18 @@ function StreetsPage() {
   const [ageOpen, setAgeOpen] = useState(false);
   const [openCounty, setOpenCounty] = useState<string | null | undefined>(undefined);
   const [q, setQ] = useState("");
+  const [nearMe, setNearMe] = useState(false);
+  const [here, setHere] = useState<{ lat: number; lon: number } | null>(null);
+  const [nearBusy, setNearBusy] = useState(false);
+  const [nearErr, setNearErr] = useState("");
   const [emptyCounties, setEmptyCounties] = useState<string[]>([]);
   const key = marketKey(profile.counties, profile.states, ageMin, ageMax);
   const stale = Boolean(loops.length && builtFor && builtFor !== key);
   const autoBuild = useRef(false);
   const { working, rest, searching } = searchStreetLoops(loops, q);
   const groups = groupLoopsByTownship(rest);
+  const nearRest = nearMe ? nearMeList(rest, here) : [];
+  const plan = useDayBook((s) => s.today().cluster);
   const asked = parseList(profile.counties);
   const have = new Set(loops.map((l) => countyBasename(l.county).toLowerCase()));
   const ghostCounties = [
@@ -104,6 +123,40 @@ function StreetsPage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  function toggleNearMe() {
+    if (nearMe) {
+      setNearMe(false);
+      setHere(null);
+      setNearBusy(false);
+      setNearErr("");
+      return;
+    }
+    if (!loops.length) {
+      setNearErr("Build loops first. Near me does not invent a zip.");
+      return;
+    }
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setNearErr("This phone will not share a location. County list stays.");
+      return;
+    }
+    setNearBusy(true);
+    setNearErr("");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setHere({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+        setNearMe(true);
+        setNearBusy(false);
+      },
+      () => {
+        setNearMe(false);
+        setHere(null);
+        setNearBusy(false);
+        setNearErr("Could not get a location. County list stays.");
+      },
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 60_000 },
+    );
   }
 
   useEffect(() => {
@@ -238,12 +291,20 @@ function StreetsPage() {
       ) : null}
 
       {loops.length ? (
-        <input
-          className="mt-4 h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Find a township, loop, street, zip, or county"
-        />
+        <div className="mt-4 flex flex-col gap-3">
+          <input
+            className="h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Find a township, loop, street, zip, or county"
+          />
+          <div className="flex flex-wrap items-center gap-2">
+            <Chip selected={nearMe} disabled={nearBusy} onClick={toggleNearMe}>
+              {nearBusy ? "Finding you…" : "Near me"}
+            </Chip>
+          </div>
+          {nearErr ? <p className="text-sm leading-relaxed text-muted">{nearErr}</p> : null}
+        </div>
       ) : null}
 
       {busy ? (
@@ -263,12 +324,38 @@ function StreetsPage() {
           <p className="text-xs font-medium uppercase tracking-wide text-faint">Working</p>
           <ul className="mt-3 flex flex-col gap-3">
             {working.map((loop) => (
-              <LoopCard key={loop.id} loop={loop} />
+              <LoopCard
+                key={loop.id}
+                loop={loop}
+                plan={plan}
+                miles={here && nearMe ? milesBetween(here.lat, here.lon, loop.lat, loop.lon) : undefined}
+              />
             ))}
           </ul>
         </section>
       ) : null}
 
+      {nearMe && here ? (
+        <section className="mt-5">
+          <p className="text-xs font-medium uppercase tracking-wide text-faint">Near me</p>
+          {nearRest.length ? (
+            <ul className="mt-3 flex flex-col gap-3">
+              {nearRest.map((loop) => (
+                <LoopCard
+                  key={loop.id}
+                  loop={loop}
+                  plan={plan}
+                  miles={milesBetween(here.lat, here.lon, loop.lat, loop.lon)}
+                />
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm leading-relaxed text-muted">
+              No other loops in this book. Near me does not invent a zip.
+            </p>
+          )}
+        </section>
+      ) : (
       <ul className="mt-5 flex flex-col gap-2">
         {groups.map((group) => {
           const open = searching || shownCounty === group.county;
@@ -292,7 +379,7 @@ function StreetsPage() {
                       <p className="px-1 text-xs font-medium uppercase tracking-wide text-faint">{twp.township}</p>
                       <ul className="mt-2 flex flex-col gap-3">
                         {twp.loops.map((loop) => (
-                          <LoopCard key={loop.id} loop={loop} />
+                          <LoopCard key={loop.id} loop={loop} plan={plan} />
                         ))}
                       </ul>
                     </li>
@@ -311,22 +398,35 @@ function StreetsPage() {
           </li>
         ))}
       </ul>
+      )}
     </main>
   );
 }
 
-function LoopCard({ loop }: { loop: StreetLoop }) {
+function LoopCard({
+  loop,
+  plan,
+  miles,
+}: {
+  loop: StreetLoop;
+  plan: string;
+  miles?: number;
+}) {
   const [open, setOpen] = useState(false);
   const setStatus = useStreets((s) => s.setStatus);
   const setResult = useStreets((s) => s.setResult);
   const patchToday = useDayBook((s) => s.patchToday);
   const kept = useWeather((s) => s.kept);
+  const card = useScout((s) => s.cards[loop.id]);
   const zip = loopZip(loop);
   const place = loopPlace(loop) || loopHeadline(loop);
   const twp = (loop.township ?? "").trim();
   const age = loopAge(loop);
   const mention = loop.status === "working" ? mentionOnStreet(kept, loop) : "";
+  const tag = streetsScoutTag(card);
+  const onPlan = loopInPlan(loop, plan);
   const sub = [twp, zip].filter(Boolean).join(" · ");
+  const milesLabel = miles != null && loopHasPin(loop) ? formatMiles(miles) : "";
 
   return (
     <li className="rounded-2xl border border-border bg-surface px-4 py-3">
@@ -335,15 +435,22 @@ function LoopCard({ loop }: { loop: StreetLoop }) {
         <p className="mt-1 text-xs text-muted">
           {sub ? `${sub} · ` : ""}
           roofs around {age} years
+          {milesLabel ? ` · ${milesLabel}` : ""}
           {loop.status !== "fresh" ? ` · ${loop.status}` : ""}
         </p>
+        {tag ? (
+          <p className="mt-2 text-xs leading-relaxed text-muted">
+            {tag.ageBand} · {tag.stormBand}
+            {tag.why ? ` · ${tag.why}` : ""}
+          </p>
+        ) : null}
         {mention ? <p className="mt-2 text-sm leading-relaxed text-muted">{mention}</p> : null}
       </button>
       <a
         href={mapsUrl(loop)}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2 inline-flex h-11 items-center text-sm text-muted underline-offset-4 hover:text-fg hover:underline"
+        className="mt-2 inline-flex h-11 items-center text-sm text-fg underline underline-offset-4"
       >
         {mapsLabel(loop)}
       </a>
@@ -378,20 +485,25 @@ function LoopCard({ loop }: { loop: StreetLoop }) {
               </button>
             ))}
           </div>
-          <button
-            type="button"
-            className="mt-3 h-11 w-full rounded-full border border-border text-sm"
-            onClick={() => {
-              setStatus(loop.id, "working");
-              const cur = useDayBook.getState().today();
-              patchToday({
-                cluster: addLoopToPlan(cur.cluster, loop),
-                storm: cur.storm.trim() || mentionOnStreet(kept, loop),
-              });
-            }}
-          >
-            Use today
-          </button>
+          <div className="mt-3">
+            <Chip
+              selected={onPlan}
+              onClick={() => {
+                const cur = useDayBook.getState().today();
+                if (onPlan) {
+                  patchToday({ cluster: dropLoopFromPlan(cur.cluster, loop) });
+                  return;
+                }
+                setStatus(loop.id, "working");
+                patchToday({
+                  cluster: addLoopToPlan(cur.cluster, loop),
+                  storm: cur.storm.trim() || mentionOnStreet(kept, loop),
+                });
+              }}
+            >
+              Use today
+            </Chip>
+          </div>
         </div>
       ) : null}
     </li>

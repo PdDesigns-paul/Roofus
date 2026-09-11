@@ -2,7 +2,7 @@
 
 **This file is the UI contract.** Porch words stay in [`DOCTRINE.md`](./DOCTRINE.md). How a canvasser *sees* what to tap lives here.
 
-Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Slice 5 (Streets / Presets / Cards sweep) is still open. Do not invent a sixth control type.
+Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Streets Near me / scout tags and Use today as a chip shipped. Presets / Cards sweep is still open. Do not invent a sixth control type.
 
 Agents: read this before you touch tabs, the FAB, Home, Today links, setup rows, or `src/components/ui/`.
 
@@ -22,9 +22,9 @@ False signifiers that this plan already killed on Home / Today / chrome:
 - Help and Menu in a second bottom rail.
 - Selected tab as “stroke 2.2 vs 1.8.”
 
-Still on Streets / Presets / Cards until Slice 5:
+Still on Presets / Cards until that sweep:
 
-- `Open Streets` / `Use today` / Presets rows that still read as captions.
+- Presets rows that still read as captions.
 - Accent used as a sticker on pages this slice did not touch.
 
 Score of the idea: fine. Score of “what do I tap”: the actual bug.
@@ -110,13 +110,19 @@ One setup card. Empty book: name + company + counties/state. Website / Why behin
 
 Count tiles: tap the card to +1. − is a small control. Pocket cards, Open Streets, and maps labels are underlined Go. Empty-setup is a tappable ticket. Loop picks are chips. “Ask Roofus how today went” is the filled Do.
 
-### Slice 5 — sweep — open
+### Slice 5 — Streets hunt + Near me — shipped
+
+- Streets card shows muted ageBand / stormBand / why when a scout card exists. Not a CRM row. Not porch copy.
+- **Near me** is a chip. Sorts loops they already built. Empty book does not invent a zip. County folders stay when the chip is off.
+- **Use today** is a chip on the card — not muted text.
+- Maps label is an always-underlined Go. No `hover:underline`.
+- Help copy and coach prompt name Near me and the hunt footnote.
+
+### Slice 6 — Presets / Cards sweep — open
 
 - Cards “Ask Roofus” is already an outlined pill — keep it. Do not demote it to text.
 - Presets index: rows get chevrons. “Show the question-mark tour” and “Load a sample day” stay secondary outlined pills, below the list, not dressed as the page’s primary.
-- Streets “Use today” is a chip or a filled Do on the card — not muted text.
-- Kill any leftover `hover:underline` on phone actions.
-- Help copy and coach prompt name the controls that actually exist after slices 1–4.
+- Help copy and coach prompt name the controls that actually exist after the sweep.
 
 Out of scope for this plan: new facets, login, a design-token package, Playwright, restyling every page a different way.
 
