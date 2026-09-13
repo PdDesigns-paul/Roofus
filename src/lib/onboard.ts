@@ -1,4 +1,4 @@
-/** First-run tour. Stays on this phone. Replay lives in Presets. Does not auto-play. */
+/** First-run tour. Stays on this phone. Replay lives in Settings. Does not auto-play. */
 
 export const ONBOARD_KEY = "roofus-onboard-v1";
 
@@ -44,6 +44,6 @@ export const ONBOARD_STEPS = [
     id: "tabs",
     selector: "[data-tour='tabs']",
     title: "The day",
-    body: "Today. Inspect. Home. Home is one setup card. Tell Roofus writes the book.",
+    body: "Truck. Door. Roof. After. Settings holds the book. Tell Roofus writes it.",
   },
 ] as const;

@@ -35,12 +35,12 @@ describe("roleplayKnockLine", () => {
 });
 
 describe("threadTag", () => {
-  it("colors Live, Roleplay, Mindset, and keeps Inspect", () => {
+  it("colors Live, Roleplay, Mindset, and keeps Roof", () => {
     assert.equal(threadTag({ mode: "live" }).label, "Live");
     assert.equal(threadTag({ mode: "roleplay" }).id, "roleplay");
     assert.equal(threadTag({ origin: "mindset", mode: "mindset" }).label, "Mindset");
     assert.equal(threadTag({ origin: "setup", mode: "live" }).label, "Setup");
-    assert.equal(threadTag({ origin: "inspect", mode: "live" }).label, "Inspect");
+    assert.equal(threadTag({ origin: "inspect", mode: "live" }).label, "Roof");
     assert.equal(threadTag({ hat: "door" }).label, "Live");
     assert.equal(threadTag({ hat: "score" }).label, "Roleplay");
   });

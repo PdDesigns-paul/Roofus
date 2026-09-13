@@ -87,7 +87,7 @@ export const POCKET_CARDS: PocketCard[] = [
       { note: "3. Retail replace — age + wear. Cash or monthly." },
       { say: "Does [day] morning or [day] afternoon work better?" },
       { note: "Both decision-makers. Before the driveway. Name even on a no." },
-      { note: "Text the confirm from the number in Presets. Never invent a number." },
+      { note: "Text the confirm from the number in Settings. Never invent a number." },
     ],
   },
   {
@@ -97,7 +97,7 @@ export const POCKET_CARDS: PocketCard[] = [
     when: "Truck only. Never a porch line.",
     lines: [
       ...COMPASS.map((line) => ({ note: line })),
-      { note: "Why is in Presets. The demon never goes on a door." },
+      { note: "Why is in Settings. The demon never goes on a door." },
     ],
   },
 ];
@@ -138,10 +138,10 @@ export function preKnock(input: PreKnockInput): PreKnock {
     .filter(Boolean)
     .join(" · ");
   return {
-    zip: zip || "Pick a zip on Streets",
+    zip: zip || "Pick a zip on After",
     age: `Roofs ${input.ageMin}–${input.ageMax}`,
     weather: storm || "Age only. Do not invent weather.",
-    hours: hours || "Hours live in Presets",
+    hours: hours || "Hours live in Settings",
     script: storm
       ? "Age first. Name this weather only on this zip."
       : "Million-dollar script. Age and a free look.",

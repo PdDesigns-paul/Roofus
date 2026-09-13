@@ -11,7 +11,7 @@ function CoachRedirect() {
   const navigate = useNavigate();
   useEffect(() => {
     openCoach("resume");
-    void navigate({ to: "/", replace: true });
+    void navigate({ to: "/truck", replace: true });
   }, [navigate]);
   return null;
 }

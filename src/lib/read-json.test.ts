@@ -25,6 +25,6 @@ describe("phoneError", () => {
     );
   });
   it("keeps a short product miss", () => {
-    assert.equal(phoneError("Need a county and a state in Presets first.", "Nope."), "Need a county and a state in Presets first.");
+    assert.equal(phoneError("Need a county and a state in Settings first.", "Nope."), "Need a county and a state in Settings first.");
   });
 });

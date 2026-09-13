@@ -37,7 +37,7 @@ describe("whyFilled / demonFilled", () => {
     assert.equal(demonFilled(blank), false);
     assert.equal(demonFilled({ ...blank, demon: "the truck" }), true);
   });
-  it("does not call Pace written just because Presets have hours", () => {
+  it("does not call Pace written just because Settings have hours", () => {
     assert.equal(paceFilled(blank, "3-7"), false);
     assert.equal(paceFilled({ ...blank, offBlock: "Sunday", gear: "all-day" }), true);
   });

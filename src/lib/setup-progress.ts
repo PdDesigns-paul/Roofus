@@ -1,4 +1,4 @@
-/** Home checklist. Forms and the Setup chat write the same fields. */
+/** Settings checklist. Forms and the Setup chat write the same fields. */
 import { applyWalkAnswer, type WalkPatch } from "./survive.ts";
 import { looksLikeWebsite, normalizeWebsiteUrl } from "./company-site.ts";
 import type { SurviveState } from "./survive-store.ts";
@@ -23,8 +23,8 @@ export const SETUP_ROWS = [
     id: "zips",
     label: "Zips",
     hint: "Age-band loops from those counties",
-    path: "/streets",
-    ask: "Tell me to open Streets from Presets and build loops. You cannot invent zips or subdivision names in chat. Then wait.",
+    path: "/after",
+    ask: "Tell me to open After and build loops. You cannot invent zips or subdivision names in chat. Then wait.",
   },
   {
     id: "hours",
@@ -70,7 +70,7 @@ export type SettingsHashTarget =
   | "/settings/you"
   | "/settings/territory"
   | "/settings/hours"
-  | "/streets"
+  | "/after"
   | "/settings/mindset"
   | "/settings/reminders"
   | "/settings/backup";
@@ -80,7 +80,7 @@ const HASH_PATH: Record<string, SettingsHashTarget> = {
   warranty: "/settings/you",
   territory: "/settings/territory",
   hours: "/settings/hours",
-  zips: "/streets",
+  zips: "/after",
   mindset: "/settings/mindset",
   why: "/settings/mindset",
   demon: "/settings/mindset",
@@ -117,7 +117,7 @@ export type SetupSnap = {
   stack: boolean;
 };
 
-/** The book is profile.company. Leftover Presets company still counts until adopt runs. */
+/** The book is profile.company. Leftover Settings company still counts until adopt runs. */
 export function companyOf(profileCompany: string, settingsCompany = ""): string {
   const p = profileCompany.trim();
   if (p) return p;

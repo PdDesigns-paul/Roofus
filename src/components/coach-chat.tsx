@@ -312,7 +312,7 @@ function MindsetStart({ onWalk }: { onWalk: (id: WalkId) => void }) {
       <p className="text-xs font-medium uppercase tracking-wide text-faint">Truck only</p>
       <h1 className="mt-2 font-display text-3xl leading-tight tracking-tight">Mindset</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">
-        One question at a time. Private. Never a porch line. What you wrote in Presets is his notes.
+        One question at a time. Private. Never a porch line. What you wrote in Settings is his notes.
       </p>
       <div className="mt-5 flex flex-col gap-2">
         {WALKS.map((w) => (

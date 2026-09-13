@@ -122,7 +122,7 @@ export function streetsForCoach(): string {
   const { loops, note, yearFrom, yearTo, ageMin, ageMax } = useStreets.getState();
   const cards = useScout.getState().cards;
   if (!loops.length) {
-    return `# Streets\nNo loop list yet. Send them to Presets, then Streets, and build from their counties. Their age band is ${ageMin}–${ageMax} years. Age first. Do not invent a zip or a subdivision name.`;
+    return `# Streets\nNo loop list yet. Send them to Settings, then After, and build from their counties. Their age band is ${ageMin}–${ageMax} years. Age first. Do not invent a zip or a subdivision name.`;
   }
   const lines = [
     "# Streets (park-once loops from Census, grouped by township. Storms are NOT why these are here.)",

@@ -28,7 +28,7 @@ async function handlePost({ request }: { request: Request }) {
   }
   const token = body.token?.trim() ?? "";
   if (!looksLikeNotionToken(token) || !validNotionIds(body.ids)) {
-    return json({ error: "Connect Notion in Presets first." }, 400);
+    return json({ error: "Connect Notion in Settings first." }, 400);
   }
   const ids = body.ids;
   try {

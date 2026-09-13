@@ -57,7 +57,7 @@ function snap(over: Partial<SetupSnap> = {}): SetupSnap {
 }
 
 describe("companyOf", () => {
-  it("reads the book first, leftover Presets only if the book is empty", () => {
+  it("reads the book first, leftover Settings only if the book is empty", () => {
     assert.equal(companyOf("Ridge", "Roofus"), "Ridge");
     assert.equal(companyOf("Ridge", "Alpha"), "Ridge");
     assert.equal(companyOf("", "Alpha"), "Alpha");
@@ -97,12 +97,12 @@ describe("nextIncomplete", () => {
 });
 
 describe("setupRowPath", () => {
-  it("sends Home rows to the Presets page, Streets for zips", () => {
+  it("sends setup rows to Settings, After for zips", () => {
     assert.equal(setupRowPath("you"), "/settings/you");
     assert.equal(setupRowPath("warranty"), "/settings/you");
     assert.equal(setupRowPath("territory"), "/settings/territory");
     assert.equal(setupRowPath("hours"), "/settings/hours");
-    assert.equal(setupRowPath("zips"), "/streets");
+    assert.equal(setupRowPath("zips"), "/after");
     assert.equal(setupRowPath("why"), "/settings/mindset");
     assert.equal(setupRowPath("pace"), "/settings/mindset");
   });
@@ -114,7 +114,7 @@ describe("settingsHashPath", () => {
     assert.equal(settingsHashPath("warranty"), "/settings/you");
     assert.equal(settingsHashPath("territory"), "/settings/territory");
     assert.equal(settingsHashPath("hours"), "/settings/hours");
-    assert.equal(settingsHashPath("zips"), "/streets");
+    assert.equal(settingsHashPath("zips"), "/after");
     assert.equal(settingsHashPath("mindset"), "/settings/mindset");
     assert.equal(settingsHashPath("why"), "/settings/mindset");
     assert.equal(settingsHashPath("reminders"), "/settings/reminders");

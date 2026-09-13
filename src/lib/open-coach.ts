@@ -33,7 +33,7 @@ export function openSetup(row?: SetupRowId) {
     useCoach.getState().openSheet();
     const line = row
       ? setupKickoff(row)
-      : "Ask the next blank field on the Home setup card. One question. Wait. Do not invent a zip.";
+      : "Ask the next blank field in Settings. One question. Wait. Do not invent a zip.";
     void sendRoofus(line, { kickoff: true }).catch(() => undefined);
   });
 }

@@ -59,11 +59,11 @@ export function MindsetWorksheets() {
       </section>
 
       <Link
-        to="/today"
+        to="/truck"
         className="mt-4 flex min-h-14 items-center justify-between rounded-2xl border border-border px-4 text-sm"
       >
         <span>3 · After Action Report</span>
-        <span className="text-muted">Today · wins first</span>
+        <span className="text-muted">Truck · wins first</span>
       </Link>
 
       <ul className="mt-4 flex flex-col gap-3">

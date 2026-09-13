@@ -15,7 +15,7 @@ export type ScoutAccess = "public" | "gated" | "permit-unclear" | "unknown";
 export type ScoutFatigue = "quiet" | "signs" | "unknown";
 export type ScoutConfidence = "low" | "medium" | "high";
 
-/** Built-year window from Presets (now − ageMax … now − ageMin). */
+/** Built-year window from Settings (now − ageMax … now − ageMin). */
 export type TargetYears = {
   from: number;
   to: number;
@@ -73,7 +73,7 @@ function hasTarget(target: TargetYears): boolean {
   );
 }
 
-/** medianYear vs Presets years. Missing year → unknown. Do not invent years. */
+/** medianYear vs Settings years. Missing year → unknown. Do not invent years. */
 export function ageBand(
   loop: Pick<StreetLoop, "medianYear">,
   targetYears: TargetYears,

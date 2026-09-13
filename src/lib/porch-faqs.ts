@@ -9,7 +9,7 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_mds",
     q: "What is the million-dollar door script?",
-    a: "Retail / age. Dashaun Bryant’s public opener, told honest: “Hey — I’m [name] with [company]. I stopped by to see if you heard what’s been going on in the area.” They ask what’s going on. You tell the truth: “A lot of these houses are on the original roof from around [year]. That’s first-roof age. We’re doing free looks this week. Do you know what year this one went on?” Before the ladder: “We’d both agree this roof is at the age where it’s time to plan a replacement, right?” Close the hook with age + a free look. Do not invent a storm to finish the sentence. Storm talk only if Today has a logged storm that hit this street. This is the Live starter.",
+    a: "Retail / age. Dashaun Bryant’s public opener, told honest: “Hey — I’m [name] with [company]. I stopped by to see if you heard what’s been going on in the area.” They ask what’s going on. You tell the truth: “A lot of these houses are on the original roof from around [year]. That’s first-roof age. We’re doing free looks this week. Do you know what year this one went on?” Before the ladder: “We’d both agree this roof is at the age where it’s time to plan a replacement, right?” Close the hook with age + a free look. Do not invent a storm to finish the sentence. Storm talk only if Truck has a logged storm that hit this street. This is the Live starter.",
   },
   {
     id: "f_seed_enroll",
@@ -29,7 +29,7 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_age",
     q: "Age first or storm first?",
-    a: "Age first. Target original roofs in the years they set (default 15–22). Script A (claim talk) only after they Keep a storm and it matches that street. If Today has no weather, do not invent hail, a cell, or “we’re working next door.”",
+    a: "Age first. Target original roofs in the years they set (default 15–22). Script A (claim talk) only after they Keep a storm and it matches that street. If Truck has no weather, do not invent hail, a cell, or “we’re working next door.”",
   },
   {
     id: "f_seed_nextdoor",
@@ -74,12 +74,12 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_i35",
     q: "What is i35 after photos?",
-    a: "After photos. Bad / Good / Worst — the good must be true. Then: Can you see this? How long / has anybody shown you? How does that make you feel? What would you like to do about it? Never WHY in the house. Do not announce findings off the ladder. On Inspect, he names the slot on the shot you just took.",
+    a: "After photos. Bad / Good / Worst — the good must be true. Then: Can you see this? How long / has anybody shown you? How does that make you feel? What would you like to do about it? Never WHY in the house. Do not announce findings off the ladder. On Roof, he names the slot on the shot you just took.",
   },
   {
     id: "f_seed_why",
     q: "Why can’t I ask why in the house?",
-    a: "WHY puts them on trial. Use “how does that make you feel” and “what would you like to do about it.” Save why for Presets, never the kitchen.",
+    a: "WHY puts them on trial. Use “how does that make you feel” and “what would you like to do about it.” Save why for Settings, never the kitchen.",
   },
   {
     id: "f_seed_options",
@@ -114,12 +114,12 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_win",
     q: "What is a winning day?",
-    a: "One appointment from a day of knocking is a winning day. Empty doors with zero roofs is the critic pretending it worked. Counts live on Today. Ask Roofus tonight and he names tomorrow.",
+    a: "One appointment from a day of knocking is a winning day. Empty doors with zero roofs is the critic pretending it worked. Counts live on Truck. Ask Roofus tonight and he names tomorrow.",
   },
   {
     id: "f_seed_warranty",
     q: "What warranty may I say?",
-    a: "Whatever Presets say. Default if Presets are blank: Owens Corning Duration. Preferred (when built and registered to spec: 4 OC components + OC underlayment + OC ridge) = TruPro 50 including tear-off/disposal, workmanship first 10 years. Always “see the actual OC warranty.” Never “lifetime labor,” never “50-year workmanship,” never guaranteed claim + full warranty.",
+    a: "Whatever Settings say. Default if Settings are blank: Owens Corning Duration. Preferred (when built and registered to spec: 4 OC components + OC underlayment + OC ridge) = TruPro 50 including tear-off/disposal, workmanship first 10 years. Always “see the actual OC warranty.” Never “lifetime labor,” never “50-year workmanship,” never guaranteed claim + full warranty.",
   },
   {
     id: "f_seed_record",

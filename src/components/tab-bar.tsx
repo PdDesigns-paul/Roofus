@@ -1,16 +1,35 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { CalendarDays, Camera, Home } from "lucide-react";
+import { Camera, DoorOpen, Map, Truck } from "lucide-react";
 
 const TABS = [
-  { to: "/today", id: "today", label: "Today", icon: CalendarDays, match: (p: string) => p === "/today" },
   {
-    to: "/coach/inspect",
-    id: "inspect",
-    label: "Inspect",
-    icon: Camera,
-    match: (p: string) => p.startsWith("/coach/inspect"),
+    to: "/truck",
+    id: "truck",
+    label: "Truck",
+    icon: Truck,
+    match: (p: string) => p === "/truck" || p === "/today" || p === "/",
   },
-  { to: "/", id: "home", label: "Home", icon: Home, match: (p: string) => p === "/" },
+  {
+    to: "/door",
+    id: "door",
+    label: "Door",
+    icon: DoorOpen,
+    match: (p: string) => p.startsWith("/door") || p.startsWith("/coach/cards"),
+  },
+  {
+    to: "/roof",
+    id: "roof",
+    label: "Roof",
+    icon: Camera,
+    match: (p: string) => p.startsWith("/roof") || p.startsWith("/coach/inspect"),
+  },
+  {
+    to: "/after",
+    id: "after",
+    label: "After",
+    icon: Map,
+    match: (p: string) => p.startsWith("/after") || p.startsWith("/streets"),
+  },
 ] as const;
 
 export function TabBar() {
@@ -23,7 +42,7 @@ export function TabBar() {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <nav>
-        <ul className="mx-auto grid max-w-lg grid-cols-3">
+        <ul className="mx-auto grid max-w-lg grid-cols-4">
           {TABS.map((tab) => {
             const on = tab.match(path);
             const Icon = tab.icon;

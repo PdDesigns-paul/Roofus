@@ -108,7 +108,7 @@ export async function connectNotion(onProgress?: Progress) {
 
 export async function backupNotion(onProgress?: Progress) {
   const { token, ids, setError, markSync } = useNotion.getState();
-  if (!token || !ids) throw new Error("Connect Notion in Presets first.");
+  if (!token || !ids) throw new Error("Connect Notion in Settings first.");
   setError("");
   onProgress?.("Preparing…");
   await postSync({ token, ids, mode: "prepare" });
@@ -137,7 +137,7 @@ export async function backupNotion(onProgress?: Progress) {
 
 export async function restoreNotion(onProgress?: Progress) {
   const { token, ids, setError, setFaqs, markSync } = useNotion.getState();
-  if (!token || !ids) throw new Error("Connect Notion in Presets first.");
+  if (!token || !ids) throw new Error("Connect Notion in Settings first.");
   setError("");
   await Promise.all([
     whenHydrated(useDayBook),

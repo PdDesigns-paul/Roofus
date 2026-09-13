@@ -2,7 +2,7 @@
 
 **This file is the only live porch + product doctrine.** GitHub is the book. Drive, chat summaries, and memory do not override it.
 
-Older Alpha Exteriors work-folder files (playbooks, storm log, county sheets, packet photos) are a **Sept 2026 research archive**. Do not copy that identity into the app. Company name, license, phone, hours, and counties live in **Presets** on the phone.
+Older Alpha Exteriors work-folder files (playbooks, storm log, county sheets, packet photos) are a **Sept 2026 research archive**. Do not copy that identity into the app. Company name, license, phone, hours, and counties live in **Settings** on the phone.
 
 If this file and the UI disagree, fix the UI or fix this file in the same change. Do not leave them split.
 
@@ -15,8 +15,8 @@ How a control looks like a control lives in [`SIGNIFIERS.md`](./SIGNIFIERS.md). 
 Phone-first ride-along **journal + coach** for door-to-door roofers and storm restoration canvassers.
 
 - The phone is the live log. Notion is an optional copy so a dead phone is not a dead year.
-- First screen is the porch. Today is the log. Roofus (the orange button) is the coach. CompanyCam is the report. This app is not a CRM, takeoff, clipboard, listing lookup, or notes app.
-- Generic canvasser. Never assume a name, employer, West Shore loop, or 3:30 start. Today’s log and Presets win.
+- First screen is Truck. Truck is the log. Roofus (the orange button) is the coach. CompanyCam is the report. This app is not a CRM, takeoff, clipboard, listing lookup, or notes app.
+- Generic canvasser. Never assume a name, employer, West Shore loop, or 3:30 start. Truck’s log and Settings win.
 - The app is **Roofus**. One word. Capital R only. Not Rufus, not RoofUS.
 
 ## Brand tokens
@@ -105,7 +105,7 @@ Closed questions kill the knock. Bad: “Have you had your roof inspected?” Be
 6. Look. Photos. Then **i35**. Then the three options from what **they** already agreed they saw.
 7. Walk the house. Buying questions while you walk, not on the porch.
 8. Book [day] morning or [day] afternoon before the driveway. Both decision-makers.
-9. Text the confirm from **their** number in Presets. Never invent a number.
+9. Text the confirm from **their** number in Settings. Never invent a number.
 
 Goal of a knock: conversation → look → age/condition agreement when true → a set → a name even on a no. Not a porch signature.
 
@@ -146,7 +146,7 @@ WHY puts them on trial. Save why for the Mindset page, never the kitchen.
 Same words every time. From what they already agreed they saw. Ask to present before paper.
 
 1. **Insurance** — documented storm-related damage that may belong on a claim. No damage, no claim speech. A claim can be denied. Carrier decides. We document. We do not control approval.
-2. **Repair / maintenance** — isolated failures if the field still has life. Default in-house under about **$1,500** unless Memory / Presets say otherwise.
+2. **Repair / maintenance** — isolated failures if the field still has life. Default in-house under about **$1,500** unless Memory / Settings say otherwise.
 3. **Retail replace** — age + wear + remaining life. Cash or monthly. Default on original builder roofs in the age band that have not been done.
 
 Do not dump the three options on a cold face.
@@ -170,7 +170,7 @@ Walk questions (while you walk): how long have you been thinking about it; anyon
 - Storm chaser; guaranteed approval; your neighbors all filed; free roof
 - “Adjuster” unless they ask who meets the carrier
 - “Lifetime labor,” “50-year workmanship,” guaranteed claim + full warranty
-- How long the company has been around unless Presets say it
+- How long the company has been around unless Settings say it
 - A spoken office street, lender name, or bonding limit unless they typed it
 
 **Prefer**
@@ -201,7 +201,7 @@ Knock, don’t ring, unless the house makes a knock impossible.
 
 ## Warranty they may say
 
-Presets win. If Presets are blank:
+Settings win. If Settings are blank:
 
 - Default product talk: Owens Corning Duration
 - Preferred (when built **and registered** to spec: 4 OC components + OC underlayment + OC ridge) = TruPro 50 including tear-off/disposal, workmanship first **10** years
@@ -232,7 +232,7 @@ Worksheets live on the Mindset page. After Action Report lives on **Today**, not
 
 1. **Why** — number as if earned, what it buys, who else, then the person or promise. Date it. Read it out loud on a dead day. Check it in 90 days.
 2. **Name the demon** — the voice that keeps them in the truck. One word. Where it started. How that same radar could help a homeowner. Which attack this week: fear, doubt, or just-one-more.
-3. **Pace** — knock hours from Presets + one real off-block + when the phone goes down. Circle a gear. Drop one thing. Name one thing they already have.
+3. **Pace** — knock hours from Settings + one real off-block + when the phone goes down. Circle a gear. Drop one thing. Name one thing they already have.
 4. **Talent stack** — three skills this month, one tiny drill, windshield audio, a night book that is a person not work.
 
 Compass: this job is personal growth that pays; choose to care; glad to work today; stack skills.
@@ -254,23 +254,23 @@ Roofus is not their lawyer.
 
 ## Product map (keep the coach prompt in sync)
 
-Bottom bar: **Today · Inspect · Home**. Those are places. Home is the porch: one setup card and Tell Roofus (pinned Setup chat). Streets is not a tab — open it from Menu, Today, or Presets. Menu: Cards, Reference, Streets, Presets. Mindset worksheets live in Presets → Mindset. Reminders nag on open (morning storm, evening journal, Sundays pace, the 1st stack) if that box is empty — finish-setup is the card, not a nag. Roofus is the gold button with the dog face — tap fans Live / Roleplay / Mindset. Hold starts Live. Inspect hides him. Not a tab.
+Bottom bar: **Truck · Door · Roof · After**. Those are places. Truck is the day log (formerly Today). Door is the pocket cards. Roof is the inspect walk. After is park-once loops (formerly Streets). Menu: Reference, Settings. Mindset worksheets live in Settings → Mindset. Reminders nag on open (morning storm, evening journal, Sundays pace, the 1st stack) if that box is empty — finish-setup is Settings, not a nag. Roofus is the gold button with the dog face — tap fans Live / Roleplay / Mindset. Hold starts Live. Roof hides him. Not a tab.
 
-Help (`?`) and Menu (`⋮`) live in the header. Back is a header control on Cards, Reference, Presets, and Streets. One bottom bar. Setup on Home is one card (“Counties first · 0 of 8”) that expands. Empty book: name, company, counties/state on that card. No directory list that duplicates the tabs. Count tiles on Today are the control — tap the tile to add one. The question-mark tour does not auto-play; replay lives in Presets.
+Help (`?`) and Menu (`⋮`) live in the header. Back is a header control on Settings, Reference, and nested settings pages — not on the four Places. One bottom bar. Count tiles on Truck are the control — tap the tile to add one. The question-mark tour does not auto-play; replay lives in Settings.
 
 Control types — Place, Do, Chip, Go, Talk. Buttons do. Links go. Chips fork the current task. Ghost captions are not actions. Kit, tests, and slice order: [`SIGNIFIERS.md`](./SIGNIFIERS.md). Do not add a sixth type.
 
 | Surface | What it is |
 | --- | --- |
-| **Today** | Pre-knock strip (loop · zip, age, weather you may mention, first door line). Four counts (Doors, Talked, On the roof, Appointments), neighborhood picker from Streets (several loops — backups if one is picked over), weather they may mention, After Action Report (wins, do-better, plan), tomorrow. Pocket cards. Counties and hours are **not** here — Presets. |
-| **Cards** | Five pocket cards: Door, Pushback, i35, Set, Compass. Distilled from this file. Compass is truck only. |
-| **Streets** | Age-band **park-once loops** named from Census streets (or a small CDP), grouped by county then township. Working pinned. Search. **Near me** chip sorts loops they already built — empty book does not invent a zip. Rural counties still get a row. Maps parks on the loop. Muted ageBand / stormBand / why when a scout card exists (not porch copy). One weather sentence on the Working loop if a kept storm matches. **Use today** is a chip that adds that loop to Today’s plan. Military bases are dropped. Last 48 hours and season log are **not** on this page. Not a developer-subdivision dump. Not one card per block group. |
-| **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
-| **Inspect** | Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic (what to shoot). Then This shot: Camera, Photos, or Practice. Ask about that frame. He names the i35 slot (Bad / Good / Worst / skip theater). Practice shot is a sample close-up — not this house. |
+| **Truck** | Pre-knock strip (loop · zip, age, weather you may mention, first door line). Four counts (Doors, Talked, On the roof, Appointments), neighborhood picker from After (several loops — backups if one is picked over), weather they may mention, After Action Report (wins, do-better, plan), tomorrow. Pocket cards on Door. Counties and hours are **not** here — Settings. |
+| **Door** | Five pocket cards: Door, Pushback, i35, Set, Compass. Distilled from this file. Compass is truck only. |
+| **After** | Age-band **park-once loops** named from Census streets (or a small CDP), grouped by county then township. Working pinned. Search. **Near me** chip sorts loops they already built — empty book does not invent a zip. Rural counties still get a row. Maps parks on the loop. Muted ageBand / stormBand / why when a scout card exists (not porch copy). One weather sentence on the Working loop if a kept storm matches. **Use today** is a chip that adds that loop to Truck’s plan. Military bases are dropped. Last 48 hours and season log are **not** on this page. Not a developer-subdivision dump. Not one card per block group. |
+| **Last 48 hours** | Not on After. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
+| **Roof** | Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic (what to shoot). Then This shot: Camera, Photos, or Practice. Ask about that frame. He names the i35 slot (Bad / Good / Worst / skip theater). Practice shot is a sample close-up — not this house. |
 | **Roofus** | Tap fans Live, Roleplay, Mindset. Each pick is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. New Live lives on the History sheet. Live’s first starter is the million-dollar script (B). Roleplay beats at the bottom: Walk-up, They push, After photos (talk only), The set, Whole visit. Score me is a button. Hold-to-talk in Roleplay. Hear it reads his line. Mindset is truck only. |
-| **Mindset** | Worksheets in Presets → Mindset: Why, demon, Pace, Talent stack. Chat from the orange fan. Private. Why is a ladder. Demon names the attack. Pace drops a gear. Stack is three skills. |
+| **Mindset** | Worksheets in Settings → Mindset: Why, demon, Pace, Talent stack. Chat from the orange fan. Private. Why is a ladder. Demon names the attack. Pace drops a gear. Stack is three skills. |
 | **Reference** | InterNACHI Mastering Roof Inspections cards, plus a Company chapter when they pasted their website. Name the title. Do not paste article bodies. |
-| **Presets** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. Streets is its own page. Name, counties, state, hours, company, website (crawled into Reference), warranty, mindset worksheets, optional Notion, Memory FAQs. He can write these when they clearly set them. |
+| **Settings** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. After is its own tab. Name, counties, state, hours, company, website (crawled into Reference), warranty, mindset worksheets, optional Notion, Memory FAQs. He can write these when they clearly set them. |
 
 Tomorrow, in order: last-48h **High** on a loop they keep → Working → next fresh loop in that township → next township. Do not ask a newbie where to go. Do not invent hail.
 

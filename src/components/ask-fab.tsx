@@ -13,11 +13,11 @@ export function AskFab() {
   const long = useRef(false);
   const timer = useRef(0);
   const root = useRef<HTMLDivElement>(null);
-  const onInspect = path.startsWith("/coach/inspect");
+  const onRoof = path.startsWith("/roof") || path.startsWith("/coach/inspect");
 
   useEffect(() => {
-    if (sheetOpen || onInspect) setFan(false);
-  }, [sheetOpen, onInspect]);
+    if (sheetOpen || onRoof) setFan(false);
+  }, [sheetOpen, onRoof]);
 
   useEffect(() => {
     if (!fan) return;
@@ -62,7 +62,7 @@ export function AskFab() {
     setFan((open) => !open);
   }
 
-  if (onInspect || sheetOpen) return null;
+  if (onRoof || sheetOpen) return null;
 
   const fabBottom = "calc(5.5rem + env(safe-area-inset-bottom))";
   const fanBottom = "calc(9.5rem + env(safe-area-inset-bottom))";

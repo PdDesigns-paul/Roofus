@@ -2,9 +2,9 @@
 
 **This file is the UI contract.** Porch words stay in [`DOCTRINE.md`](./DOCTRINE.md). How a canvasser *sees* what to tap lives here.
 
-Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Streets Near me / scout tags and Use today as a chip shipped. Presets / Cards sweep is still open. Do not invent a sixth control type.
+Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Streets Near me / scout tags and Use today as a chip shipped. **Places are Truck · Door · Roof · After.** Settings / Door row restyle is still open. Do not invent a sixth control type.
 
-Agents: read this before you touch tabs, the FAB, Home, Today links, setup rows, or `src/components/ui/`.
+Agents: read this before you touch tabs, the FAB, Truck links, setup rows, or `src/components/ui/`.
 
 ---
 
@@ -22,9 +22,9 @@ False signifiers that this plan already killed on Home / Today / chrome:
 - Help and Menu in a second bottom rail.
 - Selected tab as “stroke 2.2 vs 1.8.”
 
-Still on Presets / Cards until that sweep:
+Still on Settings / Door until that sweep:
 
-- Presets rows that still read as captions.
+- Settings rows that still read as captions.
 - Accent used as a sticker on pages this slice did not touch.
 
 Score of the idea: fine. Score of “what do I tap”: the actual bug.
@@ -37,11 +37,11 @@ One shape, one promise. If you cannot name the type, the user cannot either.
 
 | Type | Shape | Promise | Use for | Do not use for |
 | --- | --- | --- | --- | --- |
-| **Place** | Bottom tab. Selected = accent mark + `text-fg`. Idle = `text-faint`. | I am *in* a place. | Today · Inspect · Home | Help, Back, Menu, Streets |
-| **Do** | Pill, 48–56px. Primary = filled (`bg-fg text-paper`, or `bg-accent` when the verb is talk to Roofus). Secondary = outlined on a solid surface, same height. | One tap, something happens *here*. | Open Today, +, Ask how today went, Got it, Tell Roofus, −, Load sample, Not now | Navigation a tab or Menu already owns |
+| **Place** | Bottom tab. Selected = accent mark + `text-fg`. Idle = `text-faint`. | I am *in* a place. | Truck · Door · Roof · After | Help, Back, Menu |
+| **Do** | Pill, 48–56px. Primary = filled (`bg-fg text-paper`, or `bg-accent` when the verb is talk to Roofus). Secondary = outlined on a solid surface, same height. | One tap, something happens *here*. | Ask how today went, +, Got it, Tell Roofus, −, Load sample, Not now | Navigation a tab or Menu already owns |
 | **Toggle a token** | Chip. Idle = outline + `text-fg`. Selected / done = `bg-accent` + black type. | A token I can snap on or dismiss. | Did it, Use today, loop on the plan, Live / Roleplay / Mindset fan | The screen’s primary close |
-| **Go** | Always-underlined text, **or** a 56px row with title + hint + chevron. | I will *leave this screen*. | Open Streets, maps label, Presets, setup rows that open a page | Anything that writes today’s log |
-| **Talk** | Gold FAB. Dog face (`RoofusFace`), not a generic chat bubble. Tap fans three chips. Hold starts Live. Hidden on Inspect and while the sheet is open. | The coach. | Live / Roleplay / Mindset | A second FAB |
+| **Go** | Always-underlined text, **or** a 56px row with title + hint + chevron. | I will *leave this screen*. | Open After, maps label, Settings, setup rows that open a page | Anything that writes today’s log |
+| **Talk** | Gold FAB. Dog face (`RoofusFace`), not a generic chat bubble. Tap fans three chips. Hold starts Live. Hidden on Roof and while the sheet is open. | The coach. | Live / Roleplay / Mindset | A second FAB |
 
 Buttons **do**. Links **go**. Chips **fork the current task**. Tabs **are places**. The FAB **is Roofus**.
 
@@ -51,16 +51,16 @@ Ban ghost text as an action in content. Text-only controls belong in a header to
 
 ## Map — one door per room
 
-Destinations live in four places today. Pick this rule and stop adding a fifth.
+Destinations live in four places. Pick this rule and stop adding a fifth.
 
-- **Day work** = tabs (Today, Inspect, Home).
-- **Kit** = Menu (Cards, Reference, Streets, Presets).
+- **Day work** = tabs (Truck, Door, Roof, After).
+- **Kit** = Menu (Reference, Settings).
 - **Coach** = orange FAB only.
-- **Help and Back** = header. Back only on Cards, Reference, Presets, Streets. Not a second bottom rail.
+- **Help and Back** = header. Back only on Settings, Reference, nested settings pages. Not a second bottom rail.
 
 If a screen needs a fourth way in, the first three already failed.
 
-Home after this plan is not a directory. Tabs already are Today / Inspect. Streets lives in Menu. Do not also list them as a third stack of rows.
+Do not list Door or After again as Menu rows. Settings is the book. After is the loops tab.
 
 ---
 
@@ -100,7 +100,7 @@ Chip next to Button. `default` / `outline` only. Ghost is not a content verb. Go
 
 ### Slice 2 — chrome — shipped
 
-Help (`?`) and Menu (`⋮`) in the header. One bottom bar: Today · Inspect · Home. FAB uses `RoofusFace`. Back is a header control on nested pages.
+Help (`?`) and Menu (`⋮`) in the header. One bottom bar: **Truck · Door · Roof · After**. FAB uses `RoofusFace`. Hidden on Roof. Back is a header control on nested pages (Settings, Reference) — not on the four Places.
 
 ### Slice 3 — Home — shipped
 
@@ -118,10 +118,10 @@ Count tiles: tap the card to +1. − is a small control. Pocket cards, Open Stre
 - Maps label is an always-underlined Go. No `hover:underline`.
 - Help copy and coach prompt name Near me and the hunt footnote.
 
-### Slice 6 — Presets / Cards sweep — open
+### Slice 6 — Settings / Door sweep — open
 
-- Cards “Ask Roofus” is already an outlined pill — keep it. Do not demote it to text.
-- Presets index: rows get chevrons. “Show the question-mark tour” and “Load a sample day” stay secondary outlined pills, below the list, not dressed as the page’s primary.
+- Door “Ask Roofus” is already an outlined pill — keep it. Do not demote it to text.
+- Settings index: rows get chevrons. “Show the question-mark tour” and “Load a sample day” stay secondary outlined pills, below the list, not dressed as the page’s primary.
 - Help copy and coach prompt name the controls that actually exist after the sweep.
 
 Out of scope for this plan: new facets, login, a design-token package, Playwright, restyling every page a different way.

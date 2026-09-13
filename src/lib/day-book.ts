@@ -238,7 +238,7 @@ export function dayBookForCoach(): string {
   if (day.afterAction.trim()) lines.push(`After Action Report:\n${day.afterAction.trim()}`);
   if (day.tomorrowStreet.trim()) lines.push(`Tomorrow they start at: ${day.tomorrowStreet.trim()}`);
   if (!profile.setupDone) {
-    lines.push("They have not filled counties yet. If you need their county, send them to Presets.");
+    lines.push("They have not filled counties yet. If you need their county, send them to Settings.");
   }
   lines.push("Do not assume a 3:30 start, a named town, or a specific employer.");
   return lines.join("\n");

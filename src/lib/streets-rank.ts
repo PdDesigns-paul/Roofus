@@ -292,7 +292,7 @@ function groupKeyFor(name: string, groups: Map<string, StreetLoop[]>): string | 
 
 /**
  * Don't let dense counties eat the whole loop budget.
- * A thin county they typed in Presets still gets a share.
+ * A thin county they typed in Settings still gets a share.
  */
 export function fairCountySlice(loops: StreetLoop[], countyOrder: string[], cap = 80, minPer = 12): StreetLoop[] {
   if (!loops.length) return [];

@@ -12,7 +12,7 @@ export const Route = createFileRoute("/settings/")({
 const PAGES = [
   { to: "/settings/you", label: "You", hint: "First name, company, website, warranty" },
   { to: "/settings/territory", label: "Territory", hint: "Counties and state" },
-  { to: "/streets", label: "Streets", hint: "Park-once loops from those counties" },
+  { to: "/after", label: "After", hint: "Park-once loops from those counties" },
   { to: "/settings/hours", label: "Hours", hint: "When you knock" },
   { to: "/settings/mindset", label: "Mindset", hint: "Why, demon, Pace, stack" },
   { to: "/settings/reminders", label: "Reminders", hint: "The four nags" },
@@ -24,17 +24,17 @@ function SettingsIndex() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <AppHeader title="Presets" />
+      <AppHeader title="Settings" />
 
       <p className="mt-3 text-sm leading-snug text-muted">
-        You, territory, hours. Streets. Mindset. Reminders. Backup is optional.
+        You, territory, hours. After. Mindset. Reminders. Backup is optional.
       </p>
 
       <button
         type="button"
         className="mt-4 h-11 w-full rounded-full border border-border text-sm"
         onClick={() => {
-          void navigate({ to: "/" });
+          void navigate({ to: "/truck" });
           resetOnboard();
         }}
       >
@@ -66,7 +66,7 @@ function LoadSample() {
       className="mt-2 h-11 w-full rounded-full border border-border text-sm"
       onClick={() => {
         loadDemo();
-        void navigate({ to: "/streets" });
+        void navigate({ to: "/after" });
       }}
     >
       Load a sample day

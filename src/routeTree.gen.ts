@@ -10,10 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AfterRouteImport } from './routes/after'
 import { Route as CoachRouteImport } from './routes/coach'
+import { Route as DoorRouteImport } from './routes/door'
+import { Route as RoofRouteImport } from './routes/roof'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as StreetsRouteImport } from './routes/streets'
 import { Route as TodayRouteImport } from './routes/today'
+import { Route as TruckRouteImport } from './routes/truck'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
 import { Route as ApiCompanySiteRouteImport } from './routes/api/company-site'
 import { Route as ApiNotionSetupRouteImport } from './routes/api/notion-setup'
@@ -41,9 +45,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AfterRoute = AfterRouteImport.update({
+  id: '/after',
+  path: '/after',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CoachRoute = CoachRouteImport.update({
   id: '/coach',
   path: '/coach',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DoorRoute = DoorRouteImport.update({
+  id: '/door',
+  path: '/door',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoofRoute = RoofRouteImport.update({
+  id: '/roof',
+  path: '/roof',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -59,6 +78,11 @@ const StreetsRoute = StreetsRouteImport.update({
 const TodayRoute = TodayRouteImport.update({
   id: '/today',
   path: '/today',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TruckRoute = TruckRouteImport.update({
+  id: '/truck',
+  path: '/truck',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCoachRoute = ApiCoachRouteImport.update({
@@ -169,10 +193,14 @@ const SettingsYouRoute = SettingsYouRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/after': typeof AfterRoute
   '/coach': typeof CoachRouteWithChildren
+  '/door': typeof DoorRoute
+  '/roof': typeof RoofRoute
   '/settings': typeof SettingsRouteWithChildren
   '/streets': typeof StreetsRoute
   '/today': typeof TodayRoute
+  '/truck': typeof TruckRoute
   '/api/coach': typeof ApiCoachRoute
   '/api/company-site': typeof ApiCompanySiteRoute
   '/api/notion-setup': typeof ApiNotionSetupRoute
@@ -197,8 +225,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/after': typeof AfterRoute
+  '/door': typeof DoorRoute
+  '/roof': typeof RoofRoute
   '/streets': typeof StreetsRoute
   '/today': typeof TodayRoute
+  '/truck': typeof TruckRoute
   '/api/coach': typeof ApiCoachRoute
   '/api/company-site': typeof ApiCompanySiteRoute
   '/api/notion-setup': typeof ApiNotionSetupRoute
@@ -224,10 +256,14 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/after': typeof AfterRoute
   '/coach': typeof CoachRouteWithChildren
+  '/door': typeof DoorRoute
+  '/roof': typeof RoofRoute
   '/settings': typeof SettingsRouteWithChildren
   '/streets': typeof StreetsRoute
   '/today': typeof TodayRoute
+  '/truck': typeof TruckRoute
   '/api/coach': typeof ApiCoachRoute
   '/api/company-site': typeof ApiCompanySiteRoute
   '/api/notion-setup': typeof ApiNotionSetupRoute
@@ -254,10 +290,14 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/after'
     | '/coach'
+    | '/door'
+    | '/roof'
     | '/settings'
     | '/streets'
     | '/today'
+    | '/truck'
     | '/api/coach'
     | '/api/company-site'
     | '/api/notion-setup'
@@ -282,8 +322,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/after'
+    | '/door'
+    | '/roof'
     | '/streets'
     | '/today'
+    | '/truck'
     | '/api/coach'
     | '/api/company-site'
     | '/api/notion-setup'
@@ -308,10 +352,14 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/after'
     | '/coach'
+    | '/door'
+    | '/roof'
     | '/settings'
     | '/streets'
     | '/today'
+    | '/truck'
     | '/api/coach'
     | '/api/company-site'
     | '/api/notion-setup'
@@ -337,10 +385,14 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AfterRoute: typeof AfterRoute
   CoachRoute: typeof CoachRouteWithChildren
+  DoorRoute: typeof DoorRoute
+  RoofRoute: typeof RoofRoute
   SettingsRoute: typeof SettingsRouteWithChildren
   StreetsRoute: typeof StreetsRoute
   TodayRoute: typeof TodayRoute
+  TruckRoute: typeof TruckRoute
   ApiCoachRoute: typeof ApiCoachRoute
   ApiCompanySiteRoute: typeof ApiCompanySiteRoute
   ApiNotionSetupRoute: typeof ApiNotionSetupRoute
@@ -361,11 +413,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/after': {
+      id: '/after'
+      path: '/after'
+      fullPath: '/after'
+      preLoaderRoute: typeof AfterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/coach': {
       id: '/coach'
       path: '/coach'
       fullPath: '/coach'
       preLoaderRoute: typeof CoachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/door': {
+      id: '/door'
+      path: '/door'
+      fullPath: '/door'
+      preLoaderRoute: typeof DoorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roof': {
+      id: '/roof'
+      path: '/roof'
+      fullPath: '/roof'
+      preLoaderRoute: typeof RoofRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -387,6 +460,13 @@ declare module '@tanstack/react-router' {
       path: '/today'
       fullPath: '/today'
       preLoaderRoute: typeof TodayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/truck': {
+      id: '/truck'
+      path: '/truck'
+      fullPath: '/truck'
+      preLoaderRoute: typeof TruckRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/coach': {
@@ -583,10 +663,14 @@ const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AfterRoute: AfterRoute,
   CoachRoute: CoachRouteWithChildren,
+  DoorRoute: DoorRoute,
+  RoofRoute: RoofRoute,
   SettingsRoute: SettingsRouteWithChildren,
   StreetsRoute: StreetsRoute,
   TodayRoute: TodayRoute,
+  TruckRoute: TruckRoute,
   ApiCoachRoute: ApiCoachRoute,
   ApiCompanySiteRoute: ApiCompanySiteRoute,
   ApiNotionSetupRoute: ApiNotionSetupRoute,

@@ -42,7 +42,7 @@ export function loadDemo(): void {
   });
   useSettings.getState().setWarrantyLine("See the actual Owens Corning warranty.");
   useStreets.getState().replace(DEMO_LOOPS, {
-    note: "Sample loops. Every county in Presets gets a group — a thin one is not dropped. Rebuild from Presets when this is your real market.",
+    note: "Sample loops. Every county in Settings gets a group — a thin one is not dropped. Rebuild from Settings when this is your real market.",
     yearFrom: new Date().getFullYear() - 22,
     yearTo: new Date().getFullYear() - 15,
     builtFor: marketKey(DEMO_COUNTIES, DEMO_STATES, 15, 22),

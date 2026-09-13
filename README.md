@@ -12,18 +12,17 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 
 | Surface | What it is |
 | --- | --- |
-| **Porch** | First screen. One setup card. Tell Roofus. Open Today. |
-| **Today** | Pre-knock strip, four counts, neighborhood (several park-once loops), weather you may mention, After Action Report (wins / do-better / plan), tomorrow. |
-| **Streets** | Not a tab. Open from Menu or Presets. Age-band **park-once loops** named from Census streets, grouped by township (default 15–22 year roofs). Working pinned. Near me sorts loops already built. Maps parks on the loop. Muted hunt tag when a scout card exists. One weather sentence on the Working loop if a kept storm matches. Use today is a chip on the card. Military bases are dropped. |
-| **Last 48 hours** | Not on Streets. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
-| **Inspect** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot. Practice shot is off the roof. CompanyCam is the report. |
+| **Truck** | Pre-knock strip, four counts, neighborhood (several park-once loops), weather you may mention, After Action Report (wins / do-better / plan), tomorrow. |
+| **Door** | Five pocket cards: Door, Pushback, i35, Set, Compass. Compass is truck only. |
+| **Roof** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot. Practice shot is off the roof. CompanyCam is the report. |
+| **After** | Age-band **park-once loops** named from Census streets, grouped by township (default 15–22 year roofs). Working pinned. Near me sorts loops already built. Maps parks on the loop. Muted hunt tag when a scout card exists. One weather sentence on the Working loop if a kept storm matches. Use today is a chip on the card. Military bases are dropped. |
+| **Last 48 hours** | Not on After. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Roofus** | Orange button. Tap fans Live, Roleplay, Mindset — each is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. Hold-to-talk in Roleplay. Beats at the bottom. Score me is a button. Hear it reads his line. Practice only — do not record a homeowner. |
-| **Cards** | Five pocket cards: Door, Pushback, i35, Set, Compass. Compass is truck only. |
-| **Reference** | InterNACHI roof articles. Company pages land here when they paste a website in Presets. Tap a card to open the page. |
-| **Mindset** | Worksheets in Presets → Mindset: Why (ladder), Name the demon, Pace (gear), Talent stack. Chat from the orange fan. Private. After Action Report lives on Today. |
-| **Presets** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. Streets is its own page. Name, company, website (crawled into Reference), warranty, counties, hours, mindset, reminder toggles, optional Notion, Memory FAQs. Reminders nag on open if that box is empty. |
+| **Reference** | InterNACHI roof articles. Company pages land here when they paste a website in Settings. Tap a card to open the page. |
+| **Mindset** | Worksheets in Settings → Mindset: Why (ladder), Name the demon, Pace (gear), Talent stack. Chat from the orange fan. Private. After Action Report lives on Truck. |
+| **Settings** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. After is its own tab. Name, company, website (crawled into Reference), warranty, counties, hours, mindset, reminder toggles, optional Notion, Memory FAQs. Reminders nag on open if that box is empty. |
 
-Bottom bar: Today · Inspect · Home. Help and Menu live in the header. Menu: Cards, Reference, Streets, Presets. Back only on Cards, Reference, Presets, and Streets. Streets and mindset worksheets live in Presets (Streets is its own page; worksheets are Presets → Mindset).
+Bottom bar: Truck · Door · Roof · After. Help and Menu live in the header. Menu: Reference, Settings. Back only on Settings, Reference, and nested settings pages. Mindset worksheets live in Settings → Mindset.
 
 ## Doctrine (short)
 
@@ -81,7 +80,7 @@ npm run dev
 | `XAI_API_KEY` | server only | Roofus chat, transcribe, speak, Last 48 hours pulse. Never `VITE_`. |
 | `DATABASE_URL` | unused by this app | Platform leftover. Auth and Postgres stay off. |
 
-Maps open Google Maps search links. No Maps API key. Streets come from Census TIGERweb. Weather is NWS. Notion secret is pasted in Presets and stays on the phone.
+Maps open Google Maps search links. No Maps API key. Streets come from Census TIGERweb. Weather is NWS. Notion secret is pasted in Settings and stays on the phone.
 
 Loop research (WFO recap, local news, GIS clickers) is a **sidecar**, not a Streets tap. Vercel Hobby cannot run Chromium:
 

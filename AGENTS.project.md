@@ -9,10 +9,10 @@ This file is for any agent (Grok Build, Cursor, Copilot). Porch doctrine is [`DO
 | Live | Dead |
 | --- | --- |
 | This repo (`DOCTRINE.md`, `SIGNIFIERS.md`, this file, `README.md`, the code) | Google Drive “Alpha Exteriors” / Sept 2026 zip |
-| Presets + Today on **their** phone | Anything you assume about Paul, Alpha, West Shore, or a 3:30 start |
+| Settings + Truck on **their** phone | Anything you assume about Paul, Alpha, West Shore, or a 3:30 start |
 | Storms they **Keep** in the app | `STORM_LOG.md` from the archive |
 
-The Drive folder is a research archive. Do not copy Alpha phones, PAHIC numbers, Paul/Ari territory, named subdivisions, or live storm rows into the app. Generic canvasser. Name / company / counties / hours come from Presets.
+The Drive folder is a research archive. Do not copy Alpha phones, PAHIC numbers, Paul/Ari territory, named subdivisions, or live storm rows into the app. Generic canvasser. Name / company / counties / hours come from Settings.
 
 If `DOCTRINE.md` and a button disagree, fix both in the same change.
 If `SIGNIFIERS.md` and a control disagree after a chrome slice, fix both in the same change.
@@ -20,7 +20,7 @@ If `SIGNIFIERS.md` and a control disagree after a chrome slice, fix both in the 
 ## Resume (fresh Build chat)
 
 1. This workspace may already have the app. If it looks like a blank template, **pull** [PdDesigns-paul/Roofus](https://github.com/PdDesigns-paul/Roofus) before you write code.
-2. Read `DOCTRINE.md` only when the slice touches porch words. Read `SIGNIFIERS.md` when the slice touches tabs, the FAB, Home, Today actions, setup rows, or `src/components/ui/`. Do not reread the coach prompt “just in case.”
+2. Read `DOCTRINE.md` only when the slice touches porch words. Read `SIGNIFIERS.md` when the slice touches tabs, the FAB, Truck actions, setup rows, or `src/components/ui/`. Do not reread the coach prompt “just in case.”
 3. Do only the slice they asked. Push back to that repo when it works.
 4. Do not paste the old chat. Do not dump the archive playbooks into new files.
 
@@ -28,13 +28,13 @@ GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at 
 
 ## Product (short)
 
-Phone-first PWA. First screen is the porch. Bottom bar: Today · Inspect · Home. Help and Menu live in the header; one tab bar; Back only on Cards, Reference, Presets, and Streets. Do not invent a third layout.
+Phone-first PWA. First screen is Truck. Bottom bar: Truck · Door · Roof · After. Help and Menu live in the header; one tab bar; Back only on Settings, Reference, and nested settings pages. Do not invent a third layout.
 
-Home holds setup (one card + Tell Roofus). Streets, mindset, and reminders live in Presets. Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. Finish-setup is the Home card, not a nag. No lock-screen.
+Settings holds the book (You, territory, hours, mindset, reminders, backup). Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. Finish-setup is Settings, not a nag. No lock-screen.
 
-Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Inspect hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
+Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Roof hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 
-- Streets = **park-once loops** grouped by county then township (not named subdivisions, not one card per zip, not one card per block group). Headline is cluster · zip. Township is the folder. Open from Menu, Home, Today, or Presets.
+- After = **park-once loops** grouped by county then township (not named subdivisions, not one card per zip, not one card per block group). Headline is cluster · zip. Township is the folder. Open from the After tab.
 - Door / Live first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.
 - Auth OFF. Database OFF. localStorage / Zustand only. Notion is optional backup in **their** workspace.
 - No CRM, takeoff, listing lookup, notes app, or apartment flow.
@@ -47,7 +47,7 @@ Full book: [`SIGNIFIERS.md`](./SIGNIFIERS.md). Five types. No sixth.
 
 | Type | Promise |
 | --- | --- |
-| **Place** | Tab. I am in a place. Today · Inspect · Home. |
+| **Place** | Tab. I am in a place. Truck · Door · Roof · After. |
 | **Do** | Pill, 48–56px. Something happens here. One filled primary per screen. |
 | **Toggle a token** | Chip. Outline off, accent fill on. |
 | **Go** | Underlined text, or a row with a chevron. Leaves this screen. |
@@ -65,7 +65,7 @@ Squint test: blur the screenshot. If the action disappears, it was never signifi
 - Invented years, prices, squares, hail, license, phone
 - Recording a homeowner
 - High-pressure one-call close as the default
-- “This phone is the book” jargon in UI copy — say After Action Report, Today, Presets
+- “This phone is the book” jargon in UI copy — say After Action Report, Truck, Settings
 - Changing doctrine in the coach prompt without changing `DOCTRINE.md` (and the other way around)
 - A new control type that is not Place / Do / Chip / Go / Talk
 - Growing Roofus chrome rules in `AGENTS.md`

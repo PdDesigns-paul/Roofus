@@ -170,7 +170,7 @@ function GoRow({
   hint,
   done,
 }: {
-  to: "/settings/you" | "/settings/territory" | "/streets" | "/settings/hours" | "/settings/mindset" | "/settings";
+  to: "/settings/you" | "/settings/territory" | "/after" | "/settings/hours" | "/settings/mindset" | "/settings";
   label: string;
   hint: string;
   done: boolean;

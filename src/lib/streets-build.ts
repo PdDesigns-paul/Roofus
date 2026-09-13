@@ -467,7 +467,7 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
   const stateNames = parseList(req.states);
   const stateFps = [...new Set(stateNames.map(stateFips).filter((x): x is string => Boolean(x)))];
   if (!countyNames.length || !stateFps.length) {
-    throw new Error("Need a county and a state first — fill those in Presets.");
+    throw new Error("Need a county and a state first — fill those in Settings.");
   }
 
   const counties: CountyHit[] = [];
@@ -484,7 +484,7 @@ export async function buildStreetLoops(req: StreetsBuildRequest): Promise<Street
   if (!counties.length) {
     throw new Error(
       missing.length
-        ? `Could not find ${missing.join(", ")} as a US county. Check the spelling in Presets.`
+        ? `Could not find ${missing.join(", ")} as a US county. Check the spelling in Settings.`
         : "Could not find those counties.",
     );
   }

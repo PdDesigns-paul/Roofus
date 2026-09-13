@@ -1,4 +1,4 @@
-/** One-shot: leftover Presets company lands in the day-book. Not an ongoing sync. */
+/** One-shot: leftover Settings company lands in the day-book. Not an ongoing sync. */
 import { useDayBook } from "./day-book.ts";
 import { useSettings } from "./settings-store.ts";
 
