@@ -30,7 +30,7 @@ GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at 
 
 Phone-first PWA. First screen is Truck. Bottom bar: Truck · Door · Roof · After. Help and Menu live in the header; one tab bar; Back only on Settings, Reference, and nested settings pages. Do not invent a third layout.
 
-Settings holds the book (You, territory, hours, mindset, reminders, backup). Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. Finish-setup is Settings, not a nag. No lock-screen.
+Settings holds the book (You, territory, hours, mindset, reminders, backup). Empty book: setup card on Truck (name, company, counties). Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. Finish-setup is Settings, not a nag. No lock-screen.
 
 Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Roof hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 

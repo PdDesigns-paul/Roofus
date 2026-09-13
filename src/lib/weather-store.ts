@@ -174,7 +174,7 @@ export function weatherForCoach(): string {
   }
   const keptLine = freshKeptSentence(keptStorms);
   if (keptLine) {
-    lines.push(`Kept row (Home/Today, 48h): ${keptLine}`);
+    lines.push(`Kept row (Truck, 48h): ${keptLine}`);
     lines.push(
       "Script A (claim questions) only if that kept storm matches Working / today's loop — same county, within ~10 miles (stormsNearLoop / mentionOnStreet). If Streets does not put this storm on that loop, stay on Script B. Do not invent hail.",
     );

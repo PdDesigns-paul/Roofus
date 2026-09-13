@@ -10,8 +10,8 @@ export const PAGE_HELP = {
   today: {
     title: "Truck",
     body: [
-      "First time: counties and a state in Settings. Hours live there too. Then the four counts. Tap a count tile to add one. Minus is the small control.",
-      "Before you knock is the loop, age band, weather you may mention, and the first door line. Keep a last-48h lead and Truck shows that sentence for 48 hours. Toss or Skip does not. Pocket cards is Door, Pushback, i35, Set, Compass — on the Door tab.",
+      "First time: name, company, counties on this page if the book is blank. Hours live in Settings. Then the four counts. Tap a count tile to add one. Minus is the small control.",
+      "Before you knock is the loop, age band, weather you may mention, and the first door line. Keep a last-48h lead and Truck shows that sentence for 48 hours. Toss or Skip does not. Cards in that strip opens Door — Door, Pushback, i35, Set, Compass.",
       "Neighborhood today is one or more park-once loops from After. Check backups in case a loop is picked over — first remaining is Working. Open After from that line. After Action Report is wins first, then facts, then a plan with verbs. Ask Roofus and he’ll name tomorrow.",
     ],
   },

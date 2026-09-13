@@ -228,7 +228,7 @@ What they carry is their kit, not this app.
 
 Never quote a book at a homeowner. Never put the demon on the porch.
 
-Worksheets live on the Mindset page. After Action Report lives on **Today**, not duplicated on Mindset.
+Worksheets live on the Mindset page. After Action Report lives on **Truck**, not duplicated on Mindset.
 
 1. **Why** — number as if earned, what it buys, who else, then the person or promise. Date it. Read it out loud on a dead day. Check it in 90 days.
 2. **Name the demon** — the voice that keeps them in the truck. One word. Where it started. How that same radar could help a homeowner. Which attack this week: fear, doubt, or just-one-more.
@@ -262,7 +262,7 @@ Control types — Place, Do, Chip, Go, Talk. Buttons do. Links go. Chips fork th
 
 | Surface | What it is |
 | --- | --- |
-| **Truck** | Pre-knock strip (loop · zip, age, weather you may mention, first door line). Four counts (Doors, Talked, On the roof, Appointments), neighborhood picker from After (several loops — backups if one is picked over), weather they may mention, After Action Report (wins, do-better, plan), tomorrow. Pocket cards on Door. Counties and hours are **not** here — Settings. |
+| **Truck** | Pre-knock strip (loop · zip, age, weather you may mention, first door line). **Cards** in that strip is a Go to Door. Four counts (Doors, Talked, On the roof, Appointments), neighborhood picker from After (several loops — backups if one is picked over), weather they may mention, After Action Report (wins, do-better, plan), tomorrow. Empty-book setup card if the profile is blank. Pocket cards on Door. Counties and hours are **not** here — Settings. |
 | **Door** | Five pocket cards: Door, Pushback, i35, Set, Compass. Distilled from this file. Compass is truck only. |
 | **After** | Age-band **park-once loops** named from Census streets (or a small CDP), grouped by county then township. Working pinned. Search. **Near me** chip sorts loops they already built — empty book does not invent a zip. Rural counties still get a row. Maps parks on the loop. Muted ageBand / stormBand / why when a scout card exists (not porch copy). One weather sentence on the Working loop if a kept storm matches. **Use today** is a chip that adds that loop to Truck’s plan. Military bases are dropped. Last 48 hours and season log are **not** on this page. Not a developer-subdivision dump. Not one card per block group. |
 | **Last 48 hours** | Not on After. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |

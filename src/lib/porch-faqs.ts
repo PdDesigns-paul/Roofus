@@ -64,7 +64,7 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_denied",
     q: "Insurance already said no damage.",
-    a: "Only if a real logged storm hit that street. “They said no. That happens.” Then: we document, the carrier decides, a claim can still be denied. Do not promise a flip. If there is no storm on Today, stay on age / retail.",
+    a: "Only if a real logged storm hit that street. “They said no. That happens.” Then: we document, the carrier decides, a claim can still be denied. Do not promise a flip. If there is no storm on Truck, stay on age / retail.",
   },
   {
     id: "f_seed_agree",

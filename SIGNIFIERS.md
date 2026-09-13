@@ -108,7 +108,7 @@ One setup card. Empty book: name + company + counties/state. Website / Why behin
 
 ### Slice 4 — Today — shipped
 
-Count tiles: tap the card to +1. − is a small control. Pocket cards, Open Streets, and maps labels are underlined Go. Empty-setup is a tappable ticket. Loop picks are chips. “Ask Roofus how today went” is the filled Do.
+Count tiles: tap the card to +1. − is a small control. Cards, Open After, and maps labels are underlined Go. Empty-book setup card on Truck when the profile is blank. Loop picks are chips. “Ask Roofus how today went” is the filled Do. Truck is this page (formerly /today).
 
 ### Slice 5 — Streets hunt + Near me — shipped
 

@@ -44,7 +44,7 @@ export function MindsetWorksheets() {
       <p className="mt-2 text-sm leading-snug text-muted">
         Most first-year roofers do not fail because they cannot sell. They fail because they cannot
         stand themselves when it gets hard. This page is that fight. After Action Report lives on
-        Today. The orange fan opens the chat.
+        Truck. The orange fan opens the chat.
       </p>
 
       <section className="mt-4 rounded-2xl border border-border px-3 py-3">

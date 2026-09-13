@@ -1,5 +1,5 @@
 /**
- * Slice 1: one kept-storm row. Home/Today show it for 48 hours.
+ * Slice 1: one kept-storm row. Truck shows it for 48 hours.
  * Filter on read. No cron. Skip / Toss never write this row.
  */
 import { pulseIsFresh } from "./weather-grade.ts";

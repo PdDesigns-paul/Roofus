@@ -12,7 +12,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 
 | Surface | What it is |
 | --- | --- |
-| **Truck** | Pre-knock strip, four counts, neighborhood (several park-once loops), weather you may mention, After Action Report (wins / do-better / plan), tomorrow. |
+| **Truck** | Pre-knock strip, four counts, neighborhood (several park-once loops), weather you may mention, After Action Report (wins / do-better / plan), tomorrow. Cards in the strip opens Door. Empty-book setup if the profile is blank. |
 | **Door** | Five pocket cards: Door, Pushback, i35, Set, Compass. Compass is truck only. |
 | **Roof** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot. Practice shot is off the roof. CompanyCam is the report. |
 | **After** | Age-band **park-once loops** named from Census streets, grouped by township (default 15–22 year roofs). Working pinned. Near me sorts loops already built. Maps parks on the loop. Muted hunt tag when a scout card exists. One weather sentence on the Working loop if a kept storm matches. Use today is a chip on the card. Military bases are dropped. |

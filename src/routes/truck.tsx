@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { AppHeader } from "@/components/app-header";
+import { HomeSetupCard } from "@/components/home-setup-card";
 import { InstallHint } from "@/components/install-hint";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
@@ -23,7 +24,9 @@ import { stormsNearLoop } from "@/lib/weather-match";
 import { useWeather } from "@/lib/weather-store";
 import type { PulseLead, PulseReport, StormEvent } from "@/lib/weather-types";
 import { preKnock } from "@/lib/pocket-cards";
-import { companyOf } from "@/lib/setup-progress";
+import { companyOf, setupSnap } from "@/lib/setup-progress";
+import { useSettings } from "@/lib/settings-store";
+import { useSurvive } from "@/lib/survive-store";
 import {
   addCluster,
   addLoopToPlan,
@@ -45,10 +48,10 @@ import type { StreetLoop } from "@/lib/streets-types";
 /** Truck journal. Formerly /today. */
 export const Route = createFileRoute("/truck")({
   codeSplitGroupings: [],
-  component: TodayJournal,
+  component: Truck,
 });
 
-export function TodayJournal() {
+function Truck() {
   return <DaySheet />;
 }
 
@@ -87,11 +90,14 @@ function DaySheet() {
   const pulse = useWeather((s) => s.pulse);
   const pending = useWeather((s) => s.pending);
   const tossed = useWeather((s) => s.tossed);
+  const fetchedAt = useWeather((s) => s.fetchedAt);
   const keep = useWeather((s) => s.keep);
   const toss = useWeather((s) => s.toss);
   const keepLead = useWeather((s) => s.keepLead);
   const tossLead = useWeather((s) => s.tossLead);
   const skipLead = useWeather((s) => s.skipLead);
+  const warrantyLine = useSettings((s) => s.warrantyLine);
+  const survive = useSurvive();
   const busy = useCoach((s) => s.busy);
   const [askErr, setAskErr] = useState<string | null>(null);
   const plan = loopsInPlan(loops, day.cluster);
@@ -137,6 +143,18 @@ function DaySheet() {
 
   const market = [profile.counties, profile.states].filter(Boolean).join(", ");
   const working = loops.find((l) => l.status === "working");
+  const snap = setupSnap({
+    goBy: profile.goBy,
+    profileCompany: profile.company,
+    counties: profile.counties,
+    states: profile.states,
+    knockWindow: profile.knockWindow,
+    paperWindow: profile.paperWindow,
+    hardStop: profile.hardStop,
+    warranty: warrantyLine,
+    zipCount: loops.length,
+    survive,
+  });
   const knock = preKnock({
     cluster: clusterLines(day.cluster)[0] ?? "",
     storm: day.storm,
@@ -152,14 +170,12 @@ function DaySheet() {
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
       <AppHeader title="Truck" />
-      {!profile.counties.trim() || !profile.states.trim() ? (
-        <Link
-          to="/settings/territory"
-          className="mt-3 flex min-h-12 items-center rounded-2xl border-2 border-accent px-4 text-sm text-fg"
-        >
-          Counties and a state in Settings — then After can build loops.
-        </Link>
-      ) : null}
+      <HomeSetupCard
+        snap={snap}
+        afterAction={day.afterAction}
+        stormFetchedOn={fetchedAt.slice(0, 10)}
+        stackMonth={survive.stackMonth}
+      />
       <p className="mt-4 text-xs font-medium uppercase tracking-wide text-faint">{day.date}</p>
       <h1 className="mt-1 font-display text-2xl leading-tight tracking-tight">
         {profile.goBy.trim() ? `${profile.goBy.trim()}'s day` : "Truck"}
@@ -198,7 +214,7 @@ function DaySheet() {
         <p className="mt-2 text-xs leading-relaxed text-muted">{knock.script}</p>
         <p className="mt-3 text-sm leading-relaxed">{knock.opener}</p>
         <Link to="/door" className="mt-3 inline-flex h-11 items-center text-sm text-fg underline underline-offset-4">
-          Pocket cards
+          Cards
         </Link>
       </section>
 

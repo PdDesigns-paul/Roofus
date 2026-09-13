@@ -1,4 +1,4 @@
-/** Mindset worksheets. Private. Never a pitch. After Action Report lives on Today. */
+/** Mindset worksheets. Private. Never a pitch. After Action Report lives on Truck. */
 import { localDateKey } from "./day-book.ts";
 import type { SurviveState } from "./survive-store.ts";
 

@@ -15,7 +15,7 @@ describe("parseJson", () => {
 });
 
 describe("phoneError", () => {
-  it("does not dump JSON.parse onto Today", () => {
+  it("does not dump JSON.parse onto Truck", () => {
     const dumped = `Unexpected token 'P', "Port hds-6"... is not valid JSON`;
     assert.equal(isParseDump(dumped), true);
     assert.equal(phoneError(dumped, "Could not check the last 48 hours."), "Could not check the last 48 hours.");
