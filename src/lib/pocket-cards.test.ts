@@ -29,7 +29,22 @@ describe("POCKET_CARDS", () => {
     const c = POCKET_CARDS.find((x) => x.id === "compass")!;
     assert.equal(c.mode, "mindset");
     assert.match(c.when, /Truck only/);
+    assert.match(c.formula, /truck/i);
     assert.match(c.lines.map((l) => l.note).join(" "), /demon never/);
+  });
+  it("each card has a one-line formula from doctrine", () => {
+    for (const c of POCKET_CARDS) {
+      assert.ok(c.formula.trim());
+      assert.doesNotMatch(c.formula, /\n/);
+    }
+    const door = POCKET_CARDS.find((c) => c.id === "door")!;
+    assert.match(door.formula, /free look/i);
+    assert.match(door.formula, /what year/i);
+    const i35 = POCKET_CARDS.find((c) => c.id === "i35")!;
+    assert.match(i35.formula, /Can you see this/);
+    assert.doesNotMatch(i35.formula, /why/i);
+    const set = POCKET_CARDS.find((c) => c.id === "set")!;
+    assert.match(set.formula, /three options/i);
   });
 });
 
@@ -83,6 +98,7 @@ describe("pocketKnowledge", () => {
     const k = pocketKnowledge();
     assert.match(k, /### Door/);
     assert.match(k, /### i35/);
+    assert.match(k, /Formula: /);
     assert.match(k, /Never WHY/);
   });
 });

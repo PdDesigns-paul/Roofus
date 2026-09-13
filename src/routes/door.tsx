@@ -8,10 +8,10 @@ import { POCKET_CARDS, type PocketCard } from "@/lib/pocket-cards";
 /** Door cards. Formerly /coach/cards. */
 export const Route = createFileRoute("/door")({
   codeSplitGroupings: [],
-  component: CardsPage,
+  component: Door,
 });
 
-export function CardsPage() {
+function Door() {
   const [open, setOpen] = useState<PocketCard["id"] | null>("door");
 
   return (
@@ -19,8 +19,9 @@ export function CardsPage() {
       <AppHeader title="Door" />
       <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">In your pocket.</h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
-        Five cards. Door is the default knock. Compass is truck only. Ask Roofus opens Roleplay on
-        that beat — Compass opens Mindset.
+        Five cards. Each has a formula: hook, honest reason, one open question. Door is the default
+        knock. Compass stays here — read it in the truck. Ask Roofus opens Roleplay on that beat.
+        Compass opens Mindset.
       </p>
       <ul className="mt-5 flex flex-col gap-3">
         {POCKET_CARDS.map((c) => (
@@ -32,6 +33,7 @@ export function CardsPage() {
             >
               <p className="text-xs font-medium uppercase tracking-wide text-faint">{c.when}</p>
               <p className="mt-1 font-display text-xl tracking-tight">{c.title}</p>
+              <p className="mt-1 text-sm leading-relaxed">{c.formula}</p>
             </button>
             {open === c.id ? <CardBody card={c} /> : null}
           </li>

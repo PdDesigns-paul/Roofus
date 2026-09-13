@@ -10,6 +10,7 @@ export type PocketCard = {
   scene?: RoleplaySceneId;
   title: string;
   when: string;
+  formula: string;
   lines: PocketLine[];
 };
 
@@ -20,6 +21,7 @@ export const POCKET_CARDS: PocketCard[] = [
     scene: "walkup",
     title: "Door",
     when: "Walk-up. Default knock.",
+    formula: "What’s going on → original roofs + free looks → what year is this one?",
     lines: [
       { note: "SLAP in your head: say hi, why you stopped, one open question, present only to that." },
       {
@@ -46,6 +48,7 @@ export const POCKET_CARDS: PocketCard[] = [
     scene: "push",
     title: "Pushback",
     when: "They push. Restate first.",
+    formula: "Restate → one honest beat → one question that books a next look",
     lines: [
       { note: "Acknowledge. Restate their words. Do not argue. Do not drop price on the porch." },
       { say: "Are you selling something? — Yes. Roofs. Not a number on the porch. Age + free look." },
@@ -63,6 +66,7 @@ export const POCKET_CARDS: PocketCard[] = [
     scene: "after",
     title: "i35",
     when: "After photos. Never on the ladder.",
+    formula: "Can you see this → Bad / Good / Worst → what would you like to do about it?",
     lines: [
       { note: "Take as many pictures as you need. Show three. Five max. Do not announce off the ladder." },
       { note: "Bad — relatable. Good — a sound area. Has to be true. Worst — the one that matters." },
@@ -80,6 +84,7 @@ export const POCKET_CARDS: PocketCard[] = [
     scene: "set",
     title: "Set",
     when: "After they agreed what they saw.",
+    formula: "What they already agreed → three options → [day] morning or afternoon?",
     lines: [
       { note: "Ask to present before paper. Same three options every time. From what they already agreed." },
       { note: "1. Insurance — documented storm damage. A claim can be denied. Carrier decides." },
@@ -95,6 +100,7 @@ export const POCKET_CARDS: PocketCard[] = [
     mode: "mindset",
     title: "Compass",
     when: "Truck only. Never a porch line.",
+    formula: "Read this in the truck.",
     lines: [
       ...COMPASS.map((line) => ({ note: line })),
       { note: "Why is in Settings. The demon never goes on a door." },
@@ -158,6 +164,6 @@ export function pocketKnowledge(): string {
         return `- ${l.note}`;
       })
       .join("\n");
-    return `### ${c.title} (${c.when})\n${body}`;
+    return `### ${c.title} (${c.when})\nFormula: ${c.formula}\n${body}`;
   }).join("\n\n");
 }

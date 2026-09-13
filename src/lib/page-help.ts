@@ -25,7 +25,7 @@ export const PAGE_HELP = {
   cards: {
     title: "Door",
     body: [
-      "Five pocket cards from the porch book. Door is the default knock. Pushback restates first. i35 is after photos. Set is morning or afternoon. Compass is truck only.",
+      "Five pocket cards on this tab, not Menu. Each has a formula: hook, honest reason, one open question. Door is the default knock. Pushback restates first. i35 is after photos. Set is morning or afternoon. Compass stays here — read it in the truck.",
       "Ask Roofus opens Roleplay on that beat. Compass opens Mindset. This is not Reference — those are InterNACHI articles.",
     ],
   },
