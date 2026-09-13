@@ -95,7 +95,7 @@ function titleFor(
   scene?: RoleplaySceneId | null,
 ): string {
   if (origin === "help") return "How this page works";
-  if (origin === "inspect") return "Inspect";
+  if (origin === "inspect") return "Roof";
   if (origin === "setup") return "Setup";
   if (origin === "mindset" || mode === "mindset") return "Mindset";
   if (mode === "roleplay") return scene ? sceneById(scene).label : "Roleplay";

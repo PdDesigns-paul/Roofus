@@ -15,10 +15,10 @@ const EMPTY_TURNS: { role: "user" | "assistant"; content: string }[] = [];
 /** Roof walk. Formerly /coach/inspect. */
 export const Route = createFileRoute("/roof")({
   codeSplitGroupings: [],
-  component: InspectPage,
+  component: RoofPage,
 });
 
-function InspectPage() {
+function RoofPage() {
   const cameraRef = useRef<HTMLInputElement>(null);
   const rollRef = useRef<HTMLInputElement>(null);
   const liveId = useRef<string | null>(null);

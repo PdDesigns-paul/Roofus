@@ -49,6 +49,7 @@ describe("threadTag", () => {
 describe("modeBrief", () => {
   it("live never becomes the homeowner", () => {
     assert.match(modeBrief("live"), /not the homeowner/i);
+    assert.match(modeBrief("live"), /Roof page/);
     assert.match(modeBrief("roleplay", "visit"), /WHOLE VISIT/);
     assert.match(modeBrief("mindset"), /Truck only/);
     assert.match(modeBrief("live", null, null, null, "setup"), /SETUP/);

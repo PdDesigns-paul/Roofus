@@ -2,6 +2,7 @@ import { useRouterState } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { RoofusFace } from "@/components/roofus-mark";
 import { Tip } from "@/components/ui/tooltip";
+import { hideTalk } from "@/lib/app-chrome";
 import { useCoach } from "@/lib/coach-store";
 import { openCoachMode } from "@/lib/open-coach";
 import { COACH_MODES, threadTag, type CoachMode } from "@/lib/coach-modes";
@@ -13,7 +14,7 @@ export function AskFab() {
   const long = useRef(false);
   const timer = useRef(0);
   const root = useRef<HTMLDivElement>(null);
-  const onRoof = path.startsWith("/roof") || path.startsWith("/coach/inspect");
+  const onRoof = hideTalk(path);
 
   useEffect(() => {
     if (sheetOpen || onRoof) setFan(false);

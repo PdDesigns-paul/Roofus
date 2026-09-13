@@ -55,6 +55,7 @@ describe("ensureInspect", () => {
     const s = useCoach.getState();
     assert.notEqual(s.activeId, "t_old");
     assert.equal(s.threads[s.activeId ?? ""]?.origin, "inspect");
+    assert.equal(s.threads[s.activeId ?? ""]?.title, "Roof");
     assert.deepEqual(s.messages, []);
     assert.equal(s.threads.t_old?.messages.length, 2);
   });
@@ -62,6 +63,7 @@ describe("ensureInspect", () => {
   it("keeps the current inspect thread when it is still empty", () => {
     useCoach.getState().ensureInspect();
     const first = useCoach.getState().activeId;
+    assert.equal(useCoach.getState().threads[first ?? ""]?.title, "Roof");
     useCoach.getState().ensureInspect();
     assert.equal(useCoach.getState().activeId, first);
   });

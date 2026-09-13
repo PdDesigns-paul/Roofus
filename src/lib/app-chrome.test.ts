@@ -1,6 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { helpPageFor, showBack } from "./app-chrome.ts";
+import { helpPageFor, hideTalk, showBack } from "./app-chrome.ts";
+import { PAGE_HELP } from "./page-help.ts";
 
 describe("showBack", () => {
   it("hides Back on the four Places", () => {
@@ -22,6 +23,17 @@ describe("showBack", () => {
   });
 });
 
+describe("hideTalk", () => {
+  it("hides the dog on Roof, not on the other Places", () => {
+    assert.equal(hideTalk("/roof"), true);
+    assert.equal(hideTalk("/coach/inspect"), true);
+    assert.equal(hideTalk("/truck"), false);
+    assert.equal(hideTalk("/door"), false);
+    assert.equal(hideTalk("/after"), false);
+    assert.equal(hideTalk("/settings"), false);
+  });
+});
+
 describe("helpPageFor", () => {
   it("maps the path to the ? copy", () => {
     assert.equal(helpPageFor("/"), "today");
@@ -29,8 +41,9 @@ describe("helpPageFor", () => {
     assert.equal(helpPageFor("/today"), "today");
     assert.equal(helpPageFor("/after"), "streets");
     assert.equal(helpPageFor("/streets"), "streets");
-    assert.equal(helpPageFor("/roof"), "inspect");
-    assert.equal(helpPageFor("/coach/inspect"), "inspect");
+    assert.equal(helpPageFor("/roof"), "roof");
+    assert.equal(helpPageFor("/coach/inspect"), "roof");
+    assert.equal(PAGE_HELP.roof.title, "Roof");
     assert.equal(helpPageFor("/settings"), "settings");
     assert.equal(helpPageFor("/settings/you"), "settings");
     assert.equal(helpPageFor("/settings/mindset"), "settings");

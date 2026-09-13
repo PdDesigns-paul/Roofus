@@ -9,10 +9,15 @@ export function showBack(path: string): boolean {
   return true;
 }
 
+/** Talk (the dog) is hidden on Roof so it does not cover the shutter. */
+export function hideTalk(path: string): boolean {
+  return path.startsWith("/roof") || path.startsWith("/coach/inspect");
+}
+
 export function helpPageFor(path: string): HelpPageId {
   if (path.startsWith("/truck") || path.startsWith("/today")) return "today";
   if (path.startsWith("/after") || path.startsWith("/streets")) return "streets";
-  if (path.startsWith("/roof") || path.startsWith("/coach/inspect")) return "inspect";
+  if (path.startsWith("/roof") || path.startsWith("/coach/inspect")) return "roof";
   if (path.startsWith("/door") || path.startsWith("/coach/cards")) return "cards";
   if (path.startsWith("/coach/mindset")) return "mindset";
   if (path.startsWith("/coach/reference")) return "reference";

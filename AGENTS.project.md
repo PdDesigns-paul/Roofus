@@ -95,7 +95,7 @@ Follow the slice order in `SIGNIFIERS.md`. One slice per chat. Do not implement 
 
 Comments explain a trap, not the line. One short why is enough (`Zip when we have one — that’s the card now.`). Do not JSDoc `bump()`. Do not narrate `// increment knocks`. Do not comment-out dead code. Do not sweep old files adding comments.
 
-Tests live in `src/lib/*.test.ts` (`node:test`). Pure functions: labels, hail grade, county parse, Notion merge, Inspect-blank. No live xAI, Notion, Census, or NWS. A slice that changes those rules **ships a test in the same change**. Do not add Playwright / browser suites to CI. Phone UI is them tapping roofus.coach.
+Tests live in `src/lib/*.test.ts` (`node:test`). Pure functions: labels, hail grade, county parse, Notion merge, Roof-walk blank. No live xAI, Notion, Census, or NWS. A slice that changes those rules **ships a test in the same change**. Do not add Playwright / browser suites to CI. Phone UI is them tapping roofus.coach.
 
 `npm run test:app` is the product suite. `npm test` also runs Grok platform script tests — CI must not use that.
 

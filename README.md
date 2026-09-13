@@ -125,7 +125,7 @@ Backup merge rules live in `src/lib/notion-merge.ts` and are unit-tested. Writes
 
 ## Tests
 
-`npm run test:app` is `node --test` on `src/lib/*.test.ts`. Pure functions only (labels, hail grade, county parse, Notion merge, Inspect-blank). No live Notion token, no live xAI key. GitHub Action on `main` runs typecheck, `test:app`, and build. Do not put Grok `scripts/**/*.test.mjs` in CI.
+`npm run test:app` is `node --test` on `src/lib/*.test.ts`. Pure functions only (labels, hail grade, county parse, Notion merge, Roof-walk blank). No live Notion token, no live xAI key. GitHub Action on `main` runs typecheck, `test:app`, and build. Do not put Grok `scripts/**/*.test.mjs` in CI.
 
 Phone chrome is not a unit test. Squint at roofus.coach: if an action disappears when type blurs, it was never signified. See [`SIGNIFIERS.md`](./SIGNIFIERS.md).
 

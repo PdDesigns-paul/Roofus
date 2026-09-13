@@ -29,7 +29,7 @@ export const PAGE_HELP = {
       "Ask Roofus opens Roleplay on that beat. Compass opens Mindset. This is not Reference — those are InterNACHI articles.",
     ],
   },
-  inspect: {
+  roof: {
     title: "Roof",
     body: [
       "Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic — tap a row for what to shoot. Ticks are this house. They stay until Reset. Not a report.",
