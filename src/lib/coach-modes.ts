@@ -17,7 +17,7 @@ export const COACH_MODES: CoachModeMeta[] = [
     id: "live",
     label: "Live",
     hint: "Ride-along",
-    use: "Real door, real day. Next line, morale, policy, how many more. He is not the homeowner. Photos go to Inspect. Why-walks go to Mindset.",
+    use: "Real door, real day. Next line, morale, policy, how many more. He is not the homeowner. Photos go to Roof. Why-walks go to Mindset.",
     starters: [
       "Give me the million-dollar door script. Age and a free look. No fake storm.",
       "Door is half closed. 2004 roof. Cut to the chase.",
