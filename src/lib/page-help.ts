@@ -12,7 +12,7 @@ export const PAGE_HELP = {
     body: [
       "First time: name, company, counties on this page if the book is blank. Hours live in Settings. Then the four counts. Tap a count tile to add one. Minus is the small control.",
       "Before you knock is the loop, age band, weather you may mention, and the first door line. Keep a last-48h lead and Truck shows that sentence for 48 hours. Toss or Skip does not. Cards in that strip opens Door — Door, Pushback, i35, Set, Compass.",
-      "Neighborhood today is one or more park-once loops from After. Check backups in case a loop is picked over — first remaining is Working. Open After from that line. Process day is four chips: Left on time, Working loop set, AAR written, Tomorrow picked. Look and Set are bonus — they do not fail the day. After Action Report is wins first, then facts, then a plan with verbs. Ask Roofus and he’ll name tomorrow.",
+      "Neighborhood today is one or more park-once loops from After. Check backups in case a loop is picked over — first remaining is Working. Open After from that line. After Action Report is wins first, then facts, then a plan with verbs. Ask Roofus and he’ll name tomorrow.",
     ],
   },
   streets: {
@@ -20,7 +20,7 @@ export const PAGE_HELP = {
     body: [
       "Build from the counties in Settings. This is the After tab — park-once loops, not a fifth Place. You pick the roof age — default 15–22 years. Tap Change. Chips pick a band. From and To take the number when you leave the field, not on the first digit. Each card is a park-once loop (Census streets or a small CDP). Township is the folder. Working sits at the top. Tap a county to open the rest. Search township, loop, street, zip, or county. Empty match says so. Near me is a chip — it sorts loops you already built. Empty book does not invent a zip. A rural county still gets a row even if Census found no age-band loops yet. Military bases (barracks, NSA, depots) are dropped — rebuild to take them off a list you already have.",
       "When a scout card exists, the loop shows a muted ageBand / stormBand / why. That is not porch copy. A Working loop shows one sentence if a kept storm actually hit it. Use today is a chip — it adds that loop to Truck’s plan and copies the sentence if the weather box is empty. Skip is still a chip you tap. Last 48 hours and the season log are not on this page. Rebuild does not copy old zip Working onto the new loops.",
-      "Night: finish After Action Report here — same Wins / Better / Plan as Truck, one store. Tomorrow I start at is the same tomorrow line. Process day is the same four chips as Truck (Left on time, Working loop set, AAR written, Tomorrow picked). Settings is a Go at the bottom, not a fifth tab. Pick tomorrow. Finish the journal. Do not expand the hunt.",
+      "Night: finish After Action Report here — same Wins / Better / Plan as Truck, one store. Tomorrow I start at is the same tomorrow line. Settings is a Go at the bottom, not a fifth tab. Pick tomorrow. Finish the journal. Do not expand the hunt.",
     ],
   },
   cards: {

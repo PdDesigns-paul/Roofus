@@ -39,7 +39,7 @@ One shape, one promise. If you cannot name the type, the user cannot either.
 | --- | --- | --- | --- | --- |
 | **Place** | Bottom tab. Selected = accent mark + `text-fg`. Idle = `text-faint`. | I am *in* a place. | Truck · Door · Roof · After | Help, Back, Menu |
 | **Do** | Pill, 48–56px. Primary = filled (`bg-fg text-paper`, or `bg-accent` when the verb is talk to Roofus). Secondary = outlined on a solid surface, same height. | One tap, something happens *here*. | Ask how today went, +, Got it, Tell Roofus, −, Load sample, Not now | Navigation a tab or Menu already owns |
-| **Toggle a token** | Chip. Idle = outline + `text-fg`. Selected / done = `bg-accent` + black type. | A token I can snap on or dismiss. | Did it, Use today, loop on the plan, process day (Left on time · Working loop set · AAR written · Tomorrow picked · Look · Set), Live / Roleplay / Mindset fan | The screen’s primary close |
+| **Toggle a token** | Chip. Idle = outline + `text-fg`. Selected / done = `bg-accent` + black type. | A token I can snap on or dismiss. | Did it, Use today, loop on the plan, Live / Roleplay / Mindset fan | The screen’s primary close |
 | **Go** | Always-underlined text, **or** a 56px row with title + hint + chevron. | I will *leave this screen*. | Open After, maps label, Settings (bottom of After), setup rows that open a page | Anything that writes today’s log |
 | **Talk** | Gold FAB. Dog face (`RoofusFace`), not a generic chat bubble. Tap fans three chips. Hold starts Live. Hidden on Roof and while the sheet is open. | The coach. | Live / Roleplay / Mindset | A second FAB |
 

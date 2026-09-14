@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AarFields } from "@/components/aar-fields";
-import { ProcessDayStrip } from "@/components/process-day-strip";
 import { AppHeader } from "@/components/app-header";
 import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
@@ -465,7 +464,6 @@ function AfterPage() {
         <p className="mt-1 text-sm leading-relaxed text-muted">
           Pick tomorrow. Finish the journal. Do not expand the hunt.
         </p>
-        <ProcessDayStrip />
         <AarFields value={day.afterAction} onChange={(v) => patchToday({ afterAction: v })} />
         <label className="mt-4 block min-w-0">
           <span className="text-xs font-medium uppercase tracking-wide text-faint">Tomorrow I start at</span>
