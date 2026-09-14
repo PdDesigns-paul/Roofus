@@ -76,7 +76,7 @@ describe("CLAIM_PATH_CARD / doorList", () => {
     assert.match(text, /Do not promise a flip/);
     assert.match(text, /every carrier pays/);
     assert.doesNotMatch(text, /hail/i);
-    assert.equal(CLAIM_PATH_CARD.scene, "walkup");
+    assert.equal(CLAIM_PATH_CARD.scene, "claim");
   });
 });
 
