@@ -7,6 +7,7 @@ export type StreamCoachInput = {
   who?: string;
   year?: string;
   origin?: string;
+  kept?: boolean;
   companyName?: string;
   warrantyLine?: string;
   companyWebsite?: string;
