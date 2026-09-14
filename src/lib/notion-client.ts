@@ -7,6 +7,7 @@
 import { parseNotionId, type NotionFaq, type NotionIds, type NotionTable } from "@/lib/notion-ids";
 import type { DayEntry } from "@/lib/day-book";
 import type { StreetLoop } from "@/lib/streets-types";
+import { restorePin, type HousePin } from "@/lib/pins";
 import { loopHeadline, townFromHeadline, zipFromHeadline } from "@/lib/streets-rank";
 import type { StormEvent } from "@/lib/weather-types";
 import type { MindsetRow } from "@/lib/notion-merge";
@@ -227,11 +228,37 @@ const MEM_PROPS = {
   Key: { rich_text: {} },
 };
 
+const PIN_PROPS = {
+  Name: { title: {} },
+  Key: { rich_text: {} },
+  Loop: { rich_text: {} },
+  House: { rich_text: {} },
+  Note: { rich_text: {} },
+  Status: {
+    select: {
+      options: [
+        { name: "no-answer" },
+        { name: "talked" },
+        { name: "look" },
+        { name: "set" },
+        { name: "revisit" },
+        { name: "skip" },
+      ],
+    },
+  },
+  Curb: { rich_text: {} },
+  Lat: { number: {} },
+  Lng: { number: {} },
+  Created: { rich_text: {} },
+  Updated: { rich_text: {} },
+};
+
 function dbId(ids: NotionIds, table: NotionTable) {
   if (table === "days") return ids.daysDb;
   if (table === "streets") return ids.streetsDb;
   if (table === "storms") return ids.stormsDb;
   if (table === "mindset") return ids.mindsetDb;
+  if (table === "pins") return ids.pinsDb;
   return ids.memoryDb;
 }
 
@@ -250,7 +277,9 @@ export async function setupNotion(token: string, pageUrl: string): Promise<Notio
   const mindsetDb = await findOrCreateDb(token, parentPageId, kids, "Mindset", MIND_PROPS, titles);
   await sleep(RATE_MS);
   const memoryDb = await findOrCreateDb(token, parentPageId, kids, "Memory", MEM_PROPS, titles);
-  const ids = { parentPageId, daysDb, streetsDb, stormsDb, mindsetDb, memoryDb };
+  await sleep(RATE_MS);
+  const pinsDb = await findOrCreateDb(token, parentPageId, kids, "Pins", PIN_PROPS, titles);
+  const ids = { parentPageId, daysDb, streetsDb, stormsDb, mindsetDb, memoryDb, pinsDb };
   await prepareNotion(token, ids);
   return ids;
 }
@@ -380,6 +409,23 @@ function faqProps(f: NotionFaq): Record<string, NotionProp> {
   return { Name: title(f.q), Answer: rich(f.a), Key: rich(f.id) };
 }
 
+function pinProps(p: HousePin): Record<string, NotionProp> {
+  const name = p.houseNumber.trim() || "Pin";
+  return {
+    Name: title(name),
+    Key: rich(p.id),
+    Loop: rich(p.loopId),
+    House: rich(p.houseNumber),
+    Note: rich(p.note),
+    Status: sel(p.status),
+    Curb: rich(p.curbTags.join(", ")),
+    Lat: num(p.lat),
+    Lng: num(p.lng),
+    Created: rich(p.createdAt),
+    Updated: rich(p.updatedAt),
+  };
+}
+
 function asDay(v: unknown): DayEntry | null {
   if (!v || typeof v !== "object") return null;
   const d = v as DayEntry;
@@ -415,6 +461,10 @@ function asFaq(v: unknown): NotionFaq | null {
   return { id: String(f.id || f.q), q: String(f.q), a: String(f.a) };
 }
 
+function asPin(v: unknown): HousePin | null {
+  return restorePin(v);
+}
+
 export async function pushChunk(
   token: string,
   ids: NotionIds,
@@ -439,6 +489,9 @@ export async function pushChunk(
     } else if (table === "mindset") {
       const m = asMind(item);
       if (m?.body.trim()) await upsert(token, db, map, m.name, mindProps(m));
+    } else if (table === "pins") {
+      const p = asPin(item);
+      if (p) await upsert(token, db, map, p.id, pinProps(p));
     } else {
       const f = asFaq(item);
       if (f) await upsert(token, db, map, f.id, faqProps(f));
@@ -454,6 +507,7 @@ export type NotionRestore = {
   storms: StormEvent[];
   mindset: Record<string, string>;
   faqs: NotionFaq[];
+  pins: HousePin[];
 };
 
 export async function pullSnapshot(token: string, ids: NotionIds): Promise<NotionRestore> {
@@ -542,5 +596,23 @@ export async function pullSnapshot(token: string, ids: NotionIds): Promise<Notio
     }))
     .filter((f) => f.q && f.a);
 
-  return { days, loops, storms, mindset, faqs };
+  const pinRaw = await queryAll(token, ids.pinsDb);
+  const pins: HousePin[] = pinRaw
+    .map((p) =>
+      restorePin({
+        id: readRich(p, "Key") || String(p.id),
+        loopId: readRich(p, "Loop"),
+        houseNumber: readRich(p, "House"),
+        note: readRich(p, "Note"),
+        status: readSel(p, "Status"),
+        curbTags: readRich(p, "Curb"),
+        lat: readNum(p, "Lat"),
+        lng: readNum(p, "Lng"),
+        createdAt: readRich(p, "Created"),
+        updatedAt: readRich(p, "Updated"),
+      }),
+    )
+    .filter((p): p is HousePin => Boolean(p));
+
+  return { days, loops, storms, mindset, faqs, pins };
 }

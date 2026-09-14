@@ -24,6 +24,8 @@ import { useStreets } from "@/lib/streets-store";
 import type { StreetLoop } from "@/lib/streets-types";
 import { useSurvive } from "@/lib/survive-store";
 import { useWeather } from "@/lib/weather-store";
+import { MAX_BACKUP_PINS, type HousePin } from "@/lib/pins";
+import { mergeIncomingPins, usePins } from "@/lib/pins-store";
 import type { StormEvent } from "@/lib/weather-types";
 
 type Progress = (label: string) => void;
@@ -43,6 +45,7 @@ async function postSync(body: Record<string, unknown>) {
       storms: StormEvent[];
       mindset: Record<string, string>;
       faqs: NotionFaq[];
+      pins?: HousePin[];
     };
   };
   if (!res.ok) throw new Error(data.error || "Notion missed that.");
@@ -68,6 +71,7 @@ function tableItems(table: NotionTable): unknown[] {
       }),
     );
   }
+  if (table === "pins") return usePins.getState().pins.slice(0, MAX_BACKUP_PINS);
   return useNotion.getState().faqs;
 }
 
@@ -77,6 +81,7 @@ const LABELS: Record<NotionTable, string> = {
   storms: "storms",
   mindset: "mindset",
   memory: "memory",
+  pins: "pins",
 };
 
 function whenHydrated(store: {
@@ -110,20 +115,28 @@ export async function backupNotion(onProgress?: Progress) {
   const { token, ids, setError, markSync } = useNotion.getState();
   if (!token || !ids) throw new Error("Connect Notion in Settings first.");
   setError("");
+  let liveIds = ids;
+  if (!liveIds.pinsDb) {
+    onProgress?.("Finding tables…");
+    await connectNotion();
+    const next = useNotion.getState().ids;
+    if (!next?.pinsDb) throw new Error("Connect Notion in Settings first.");
+    liveIds = next;
+  }
   onProgress?.("Preparing…");
-  await postSync({ token, ids, mode: "prepare" });
-  const tables: NotionTable[] = ["days", "streets", "storms", "mindset", "memory"];
+  await postSync({ token, ids: liveIds, mode: "prepare" });
+  const tables: NotionTable[] = ["days", "streets", "storms", "mindset", "memory", "pins"];
   for (const table of tables) {
     const items = tableItems(table);
     if (!items.length) continue;
     onProgress?.(`Copying ${LABELS[table]}…`);
-    const indexed = await postSync({ token, ids, mode: "index", table });
+    const indexed = await postSync({ token, ids: liveIds, mode: "index", table });
     let index = indexed.index ?? {};
     for (let i = 0; i < items.length; i += 8) {
       onProgress?.(`Copying ${LABELS[table]} ${Math.min(i + 8, items.length)} of ${items.length}…`);
       const chunk = await postSync({
         token,
-        ids,
+        ids: liveIds,
         mode: "push",
         table,
         items: items.slice(i, i + 8),
@@ -139,6 +152,14 @@ export async function restoreNotion(onProgress?: Progress) {
   const { token, ids, setError, setFaqs, markSync } = useNotion.getState();
   if (!token || !ids) throw new Error("Connect Notion in Settings first.");
   setError("");
+  let liveIds = ids;
+  if (!liveIds.pinsDb) {
+    onProgress?.("Finding tables…");
+    await connectNotion();
+    const next = useNotion.getState().ids;
+    if (!next?.pinsDb) throw new Error("Connect Notion in Settings first.");
+    liveIds = next;
+  }
   await Promise.all([
     whenHydrated(useDayBook),
     whenHydrated(useStreets),
@@ -146,13 +167,15 @@ export async function restoreNotion(onProgress?: Progress) {
     whenHydrated(useSurvive),
     whenHydrated(useNotion),
     whenHydrated(useSettings),
+    whenHydrated(usePins),
   ]);
   onProgress?.("Restoring…");
-  const data = await postSync({ token, ids, mode: "pull" });
+  const data = await postSync({ token, ids: liveIds, mode: "pull" });
   if (!data.pulled) throw new Error("Restore missed.");
   const pulled = {
     ...data.pulled,
     loops: data.pulled.loops.filter(loopWorthKeeping),
+    pins: data.pulled.pins ?? [],
   };
   applyRestore(pulled);
   setFaqs(mergeFaqs(useNotion.getState().faqs, pulled.faqs));
@@ -165,6 +188,7 @@ function applyRestore(pulled: {
   loops: StreetLoop[];
   storms: StormEvent[];
   mindset: Record<string, string>;
+  pins: HousePin[];
 }) {
   useDayBook.setState((s) => ({ days: mergeDays(s.days, pulled.days) }));
 
@@ -174,6 +198,7 @@ function applyRestore(pulled: {
   if (pulled.storms.length) {
     useWeather.setState((s) => ({ kept: mergeStorms(s.kept, pulled.storms) }));
   }
+  if (pulled.pins.length) mergeIncomingPins(pulled.pins);
 
   const unpacked = unpackMindset(pulled.mindset);
   const survivePatch = fillSurvive(useSurvive.getState(), unpacked.survive);

@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { AppHeader } from "@/components/app-header";
 import { AarFields } from "@/components/aar-fields";
+import { PinBoard } from "@/components/pin-board";
 import { HomeSetupCard } from "@/components/home-setup-card";
 import { InstallHint } from "@/components/install-hint";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,7 @@ import {
   MAX_TODAY_LOOPS,
 } from "@/lib/streets-rank";
 import { suggestTomorrow, useStreets } from "@/lib/streets-store";
+import { usePins } from "@/lib/pins-store";
 import type { StreetLoop } from "@/lib/streets-types";
 
 /** Truck journal. Formerly /today. */
@@ -99,6 +101,9 @@ function DaySheet() {
   const survive = useSurvive();
   const busy = useCoach((s) => s.busy);
   const [askErr, setAskErr] = useState<string | null>(null);
+  const [pinBusy, setPinBusy] = useState(false);
+  const [pinErr, setPinErr] = useState("");
+  const addPin = usePins((s) => s.add);
   const plan = loopsInPlan(loops, day.cluster);
   const current = firstRemainingInPlan(loops, day.cluster);
   const extra = Math.max(0, clusterLines(day.cluster).length - 1);
@@ -215,6 +220,53 @@ function DaySheet() {
         <Link to="/door" className="mt-3 inline-flex h-11 items-center text-sm text-fg underline underline-offset-4">
           Cards
         </Link>
+      </section>
+
+      <section className="mt-4">
+        <p className="text-xs font-medium uppercase tracking-wide text-faint">Pins</p>
+        <p className="mt-0.5 text-xs leading-snug text-muted">
+          On this loop. Sidewalk only. Not a CRM.
+        </p>
+        <button
+          type="button"
+          disabled={pinBusy}
+          onClick={() => {
+            if (!current) {
+              setPinErr("Pick a Working loop first.");
+              return;
+            }
+            if (typeof navigator === "undefined" || !navigator.geolocation) {
+              addPin({ loopId: current.id, lat: current.lat, lng: current.lon });
+              setPinErr("This phone will not share a location. Dropped on the loop.");
+              return;
+            }
+            setPinBusy(true);
+            setPinErr("");
+            navigator.geolocation.getCurrentPosition(
+              (pos) => {
+                addPin({
+                  loopId: current.id,
+                  lat: pos.coords.latitude,
+                  lng: pos.coords.longitude,
+                });
+                setPinBusy(false);
+              },
+              () => {
+                addPin({ loopId: current.id, lat: current.lat, lng: current.lon });
+                setPinBusy(false);
+                setPinErr("Could not get a location. Dropped on the loop.");
+              },
+              { enableHighAccuracy: false, timeout: 8000, maximumAge: 15_000 },
+            );
+          }}
+          className="mt-3 h-12 w-full rounded-full bg-fg text-sm text-paper disabled:opacity-40"
+        >
+          {pinBusy ? "Dropping pin…" : "Pin"}
+        </button>
+        {pinErr ? <p className="mt-2 text-sm leading-relaxed text-muted">{pinErr}</p> : null}
+        {current ? <PinBoard loopId={current.id} /> : (
+          <p className="mt-3 text-sm leading-relaxed text-muted">Pick a Working loop, then tap Pin at the house.</p>
+        )}
       </section>
 
       <section className="mt-4">
