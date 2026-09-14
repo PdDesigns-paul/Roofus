@@ -10,7 +10,7 @@ Pick one i35 slot for THIS frame:
 - **Worst** — the one that actually matters (missing tabs and open felt usually land here)
 - **Skip theater** — only if the field is just old and clean. Do not invent a worst.
 
-Name one Reference card: Blow-off vs a crease; What a hit looks like; What is actually on here?; Photo order. Send them to Reference. Do not paste articles.
+Name one Reference card from: Fall protection; Photo order; What a hit looks like; Is it functional?; Storm came from one side; Blow-off vs a crease; What is actually on here?; Fasteners; How many layers?; Worn out vs hit; Step, kickout, counter; Valleys; Pipes, boots, skylights; What the attic shows. Send them to Reference. Do not paste articles. Do not invent a card.
 
 If they asked what to say: one 5th-grade line for the house. Plain meaning first, then the roof word. Not off the ladder.
 

@@ -259,32 +259,78 @@ export function mriSearchHay(chapter: MriChapter, card: MriCard) {
   return `${chapter.title} ${chapter.when} ${card.title} ${card.look} ${card.tags}`.toLowerCase();
 }
 
-export function inspectKnowledge(): string {
-  return MRI_CHAPTERS.map((ch) => {
-    const seen = new Set<string>();
-    const cards = ch.cards
-      .map((c) => {
-        const look = seen.has(c.look) ? "" : (seen.add(c.look), `: ${c.look}`);
-        return `- ${c.title}${look}`;
-      })
-      .join("\n");
-    return `### ${ch.title}\nWhen: ${ch.when}\n${cards}`;
-  }).join("\n\n");
+/** Named cards the coach may cite. Reference page still lists every chapter. */
+export const COACH_MRI = [
+  { id: "mri-ppe-51", title: "Fall protection" },
+  { id: "mri-photography-54", title: "Photo order" },
+  { id: "hail-damage-part1-28", title: "What a hit looks like" },
+  { id: "hail-damage-part2-29", title: "Is it functional?" },
+  { id: "hail-damage-part5-32", title: "Storm came from one side" },
+  { id: "wind-damage-part1-40", title: "Blow-off vs a crease" },
+  { id: "asphalt-comp-shingles-part1-55", title: "What is actually on here?" },
+  { id: "asphalt-comp-shingles-part25-79", title: "Fasteners" },
+  { id: "asphalt-comp-shingles-part28-82", title: "How many layers?" },
+  { id: "asphalt-comp-shingles-part30-84", title: "Worn out vs hit" },
+  { id: "flashing-part1-12", title: "Step, kickout, counter" },
+  { id: "flashing-part5-16", title: "Valleys" },
+  { id: "roof-penetrations-part1-18", title: "Pipes, boots, skylights" },
+  { id: "attic-area-5", title: "What the attic shows" },
+] as const;
+
+const SHOT_MRI_TITLES = new Set([
+  "Fall protection",
+  "Photo order",
+  "What a hit looks like",
+  "Is it functional?",
+  "Storm came from one side",
+  "Blow-off vs a crease",
+  "What is actually on here?",
+  "Fasteners",
+  "How many layers?",
+  "Worn out vs hit",
+]);
+
+type NamedCard = { chapter: string; card: MriCard };
+
+function resolveNamed(want: { id: string; title: string }): NamedCard | null {
+  for (const ch of MRI_CHAPTERS) {
+    const hit = ch.cards.find((c) => c.id === want.id);
+    if (hit) return { chapter: ch.title, card: hit };
+  }
+  for (const ch of MRI_CHAPTERS) {
+    const hit = ch.cards.find((c) => c.title === want.title);
+    if (hit) return { chapter: ch.title, card: hit };
+  }
+  return null;
 }
 
-/** Short card list for a photo ask — the full dump drowns the frame. */
-const SHOT_CHAPTERS = new Set(["climb", "hail", "wind", "asphalt"]);
+function namedCards(only?: Set<string>): NamedCard[] {
+  const out: NamedCard[] = [];
+  const seenLook = new Set<string>();
+  for (const want of COACH_MRI) {
+    const row = resolveNamed(want);
+    if (!row) continue;
+    if (only && !only.has(row.card.title)) continue;
+    if (seenLook.has(row.card.look)) continue;
+    seenLook.add(row.card.look);
+    out.push(row);
+  }
+  return out;
+}
 
-export function inspectKnowledgeForShot(): string {
-  return MRI_CHAPTERS.filter((ch) => SHOT_CHAPTERS.has(ch.id))
-    .map((ch) => {
-      const cards = ch.cards
-        .filter((c) => !/Part \d/.test(c.title))
-        .map((c) => `- ${c.title}: ${c.look}`)
-        .join("\n");
-      return `### ${ch.title}\n${cards}`;
-    })
+function formatNamed(rows: NamedCard[]): string {
+  return rows
+    .map(({ chapter, card }) => `### ${chapter} — ${card.title}\n${card.look}\nOpen Reference: ${card.title}`)
     .join("\n\n");
+}
+
+export function inspectKnowledge(): string {
+  return formatNamed(namedCards());
+}
+
+/** Photo turns: hail / wind / wear subset of the named cards. Not the catalog. */
+export function inspectKnowledgeForShot(): string {
+  return formatNamed(namedCards(SHOT_MRI_TITLES));
 }
 
 
