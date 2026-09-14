@@ -86,6 +86,34 @@ function toolCallsFrom(message: XaiMessage | undefined): ToolCall[] {
     .filter((call) => call.name);
 }
 
+function pipeXaiSse(upstream: Response) {
+  const decoder = new TextDecoder();
+  const reader = upstream.body!.getReader();
+  let carry = "";
+  return sseStream(async (send) => {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      carry += decoder.decode(value, { stream: true });
+      const lines = carry.split("\n");
+      carry = lines.pop() ?? "";
+      for (const raw of lines) {
+        const line = raw.trim();
+        if (!line.startsWith("data:")) continue;
+        const data = line.slice(5).trim();
+        if (!data || data === "[DONE]") continue;
+        try {
+          const parsed = JSON.parse(data) as { choices?: { delta?: { content?: string } }[] };
+          const t = parsed.choices?.[0]?.delta?.content;
+          if (t) send({ t });
+        } catch {
+          /* keepalives */
+        }
+      }
+    }
+  });
+}
+
 async function handlePost({ request }: { request: Request }) {
   const apiKey = process.env.XAI_API_KEY;
   if (!apiKey) return json({ error: "Roofus is asleep. AI is not available here." }, 503);
@@ -117,38 +145,13 @@ async function handlePost({ request }: { request: Request }) {
     if (!upstream.ok || !upstream.body) {
       return json({ error: `Roofus hit a snag (${upstream.status}).` }, 502);
     }
-    const decoder = new TextDecoder();
-    const reader = upstream.body.getReader();
-    let carry = "";
-    return sseStream(async (send) => {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        carry += decoder.decode(value, { stream: true });
-        const lines = carry.split("\n");
-        carry = lines.pop() ?? "";
-        for (const raw of lines) {
-          const line = raw.trim();
-          if (!line.startsWith("data:")) continue;
-          const data = line.slice(5).trim();
-          if (!data || data === "[DONE]") continue;
-          try {
-            const parsed = JSON.parse(data) as { choices?: { delta?: { content?: string } }[] };
-            const t = parsed.choices?.[0]?.delta?.content;
-            if (t) send({ t });
-          } catch {
-            /* keepalives */
-          }
-        }
-      }
-    });
+    return pipeXaiSse(upstream);
   }
 
   const messages: XaiMessage[] = payload.messages as XaiMessage[];
   let rounds = 0;
-  let finalText = "";
 
-  while (true) {
+  while (rounds < 2) {
     const upstream = await xaiPost(apiKey, { ...payload, messages, stream: false }, request.signal);
     if (!upstream.ok) {
       return json({ error: `Roofus hit a snag (${upstream.status}).` }, 502);
@@ -156,35 +159,40 @@ async function handlePost({ request }: { request: Request }) {
     const body = (await upstream.json()) as { choices?: { message?: XaiMessage }[] };
     const message = body.choices?.[0]?.message;
     const calls = toolCallsFrom(message);
-    if (calls.length) {
-      const ran = runToolRound(calls, book, rounds);
-      if (ran.skipped) {
-        finalText = TOOLS_FALLBACK;
-        break;
-      }
-      rounds += 1;
-      messages.push({
-        role: "assistant",
-        content: message?.content ?? null,
-        tool_calls: message?.tool_calls,
+    if (!calls.length) {
+      const text = (message?.content ?? "").trim() || TOOLS_FALLBACK;
+      return sseStream(async (send) => {
+        send({ t: text });
       });
-      for (const item of ran.executed as { id: string; name: string; result: unknown }[]) {
-        messages.push({
-          role: "tool",
-          tool_call_id: item.id,
-          content: JSON.stringify(item.result),
-        });
-      }
-      continue;
     }
-    finalText = (message?.content ?? "").trim();
-    break;
+    const ran = runToolRound(calls, book, rounds);
+    if (ran.skipped) break;
+    rounds += 1;
+    messages.push({
+      role: "assistant",
+      content: message?.content ?? null,
+      tool_calls: message?.tool_calls,
+    });
+    for (const item of ran.executed as { id: string; name: string; result: unknown }[]) {
+      messages.push({
+        role: "tool",
+        tool_call_id: item.id,
+        content: JSON.stringify(item.result),
+      });
+    }
   }
 
-  const text = finalText || TOOLS_FALLBACK;
-  return sseStream(async (send) => {
-    send({ t: text });
-  });
+  const answer = await xaiPost(
+    apiKey,
+    { ...payload, messages, stream: true, tools: undefined, tool_choice: undefined },
+    request.signal,
+  );
+  if (!answer.ok || !answer.body) {
+    return sseStream(async (send) => {
+      send({ t: TOOLS_FALLBACK });
+    });
+  }
+  return pipeXaiSse(answer);
 }
 
 export const Route = createFileRoute("/api/coach")({
