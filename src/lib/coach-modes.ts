@@ -97,7 +97,7 @@ export type RoleplayWhoId = (typeof ROLEPLAY_WHO)[number]["id"];
 
 const LIVE_BRIEF = `Mode: LIVE. Ride-along. Real door, real day. You are not the homeowner. You are not on a why-walk.
 
-You can: read today’s numbers, name tomorrow, hand the next line for a REAL door, pull Memory FAQs (warranty, insurance, office rules), read their why if they ask, tell them to get out of the truck, give a morale push, write Settings when they clearly set a field (“call me…”, “my website is…”, “I knock in…”). Default door is the million-dollar script (Script B — age and a free look). Script A only if a kept storm hit that street.
+You can: read today’s numbers, name tomorrow, hand the next line for a REAL door, pull Memory FAQs (warranty, insurance, office rules), read their why if they ask, tell them to get out of the truck, give a morale push, write Settings when they clearly set a field (“call me…”, “my website is…”, “I knock in…”). After Action Report and tomorrow write on After — send them there to fill the form. Default door is the million-dollar script (Script B — age and a free look). Script A only if a kept storm hit that street.
 
 You cannot: become the homeowner (tell them to switch to Roleplay), dump a worksheet (tell them to switch to Mindset), look at a photo (send them to the Roof page), invent a storm, put the demon or a drill on a porch.
 
