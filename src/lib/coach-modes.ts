@@ -2,4 +2,4 @@
 
 export type CoachMode = "live" | "roleplay" | "mindset";
 
-export type RoleplaySceneId = "walkup" | "claim" | "push" | "after" | "walk" | "set" | "phone" | "visit";
+export type RoleplaySceneId = "walkup" | "push" | "after" | "set" | "visit";
