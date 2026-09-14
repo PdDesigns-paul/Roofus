@@ -1,11 +1,89 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { buildXaiPayload, type CoachRequest } from "@/lib/coach-prompt";
+import { bookFromRequest, buildXaiPayload, type CoachRequest } from "@/lib/coach-prompt";
+import {
+  runToolRound,
+  toolsOnFor,
+  TOOLS_FALLBACK,
+  type ToolCall,
+} from "@/lib/coach-tools";
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { "content-type": "application/json", "cache-control": "no-store" },
   });
+}
+
+function sseChunk(payload: unknown) {
+  return `data: ${JSON.stringify(payload)}\n\n`;
+}
+
+function sseStream(write: (send: (payload: unknown) => void) => Promise<void>) {
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const send = (payload: unknown) => {
+        controller.enqueue(encoder.encode(sseChunk(payload)));
+      };
+      try {
+        await write(send);
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+        controller.close();
+      } catch {
+        try {
+          send({ error: "Roofus missed that. Try again." });
+          controller.close();
+        } catch {
+          /* already closed */
+        }
+      }
+    },
+  });
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
+    },
+  });
+}
+
+type XaiToolCall = {
+  id?: string;
+  type?: string;
+  function?: { name?: string; arguments?: string };
+};
+
+type XaiMessage = {
+  role?: string;
+  content?: string | null;
+  tool_calls?: XaiToolCall[];
+  tool_call_id?: string;
+};
+
+async function xaiPost(apiKey: string, body: unknown, signal: AbortSignal) {
+  const stream = Boolean(body && typeof body === "object" && (body as { stream?: boolean }).stream);
+  return fetch("https://api.x.ai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+      Accept: stream ? "text/event-stream" : "application/json",
+    },
+    body: JSON.stringify(body),
+    signal,
+  });
+}
+
+function toolCallsFrom(message: XaiMessage | undefined): ToolCall[] {
+  return (message?.tool_calls ?? [])
+    .map((call) => ({
+      id: call.id,
+      name: call.function?.name ?? "",
+      arguments: call.function?.arguments ?? "{}",
+    }))
+    .filter((call) => call.name);
 }
 
 async function handlePost({ request }: { request: Request }) {
@@ -30,76 +108,82 @@ async function handlePost({ request }: { request: Request }) {
     }
   }
 
-  const payload = buildXaiPayload(req);
-  const upstream = await fetch("https://api.x.ai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-      Accept: "text/event-stream",
-    },
-    body: JSON.stringify(payload),
-    signal: request.signal,
-  });
-  if (!upstream.ok || !upstream.body) {
-    return json({ error: `Roofus hit a snag (${upstream.status}).` }, 502);
-  }
+  const useTools = toolsOnFor(req);
+  const payload = buildXaiPayload(req, { stream: !useTools, tools: useTools });
+  const book = bookFromRequest(req);
 
-  const encoder = new TextEncoder();
-  const decoder = new TextDecoder();
-  const reader = upstream.body.getReader();
-  let carry = "";
-
-  const stream = new ReadableStream<Uint8Array>({
-    async start(controller) {
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          carry += decoder.decode(value, { stream: true });
-          const lines = carry.split("\n");
-          carry = lines.pop() ?? "";
-          for (const raw of lines) {
-            const line = raw.trim();
-            if (!line.startsWith("data:")) continue;
-            const data = line.slice(5).trim();
-            if (!data || data === "[DONE]") continue;
-            try {
-              const parsed = JSON.parse(data) as {
-                choices?: { delta?: { content?: string } }[];
-              };
-              const t = parsed.choices?.[0]?.delta?.content;
-              if (t) controller.enqueue(encoder.encode(`data: ${JSON.stringify({ t })}\n\n`));
-            } catch {
-              /* skip keepalives */
-            }
+  if (!useTools) {
+    const upstream = await xaiPost(apiKey, payload, request.signal);
+    if (!upstream.ok || !upstream.body) {
+      return json({ error: `Roofus hit a snag (${upstream.status}).` }, 502);
+    }
+    const decoder = new TextDecoder();
+    const reader = upstream.body.getReader();
+    let carry = "";
+    return sseStream(async (send) => {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        carry += decoder.decode(value, { stream: true });
+        const lines = carry.split("\n");
+        carry = lines.pop() ?? "";
+        for (const raw of lines) {
+          const line = raw.trim();
+          if (!line.startsWith("data:")) continue;
+          const data = line.slice(5).trim();
+          if (!data || data === "[DONE]") continue;
+          try {
+            const parsed = JSON.parse(data) as { choices?: { delta?: { content?: string } }[] };
+            const t = parsed.choices?.[0]?.delta?.content;
+            if (t) send({ t });
+          } catch {
+            /* keepalives */
           }
         }
-        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-        controller.close();
-      } catch {
-        try {
-          controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ error: "Roofus missed that. Try again." })}\n\n`),
-          );
-          controller.close();
-        } catch {
-          /* already closed */
-        }
       }
-    },
-    cancel() {
-      void reader.cancel();
-    },
-  });
+    });
+  }
 
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream; charset=utf-8",
-      "Cache-Control": "no-cache, no-transform",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    },
+  const messages: XaiMessage[] = payload.messages as XaiMessage[];
+  let rounds = 0;
+  let finalText = "";
+
+  while (true) {
+    const upstream = await xaiPost(apiKey, { ...payload, messages, stream: false }, request.signal);
+    if (!upstream.ok) {
+      return json({ error: `Roofus hit a snag (${upstream.status}).` }, 502);
+    }
+    const body = (await upstream.json()) as { choices?: { message?: XaiMessage }[] };
+    const message = body.choices?.[0]?.message;
+    const calls = toolCallsFrom(message);
+    if (calls.length) {
+      const ran = runToolRound(calls, book, rounds);
+      if (ran.skipped) {
+        finalText = TOOLS_FALLBACK;
+        break;
+      }
+      rounds += 1;
+      messages.push({
+        role: "assistant",
+        content: message?.content ?? null,
+        tool_calls: message?.tool_calls,
+      });
+      for (const item of ran.executed as { id: string; name: string; result: unknown }[]) {
+        messages.push({
+          role: "tool",
+          tool_call_id: item.id,
+          content: JSON.stringify(item.result),
+        });
+      }
+      continue;
+    }
+    finalText = (message?.content ?? "").trim();
+    break;
+  }
+
+  const text = finalText || TOOLS_FALLBACK;
+  return sseStream(async (send) => {
+    send({ t: text });
   });
 }
 
