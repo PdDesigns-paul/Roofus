@@ -115,53 +115,7 @@ export function walkReadWhy(): string {
 export function surviveKnowledge(): string {
   const compass = COMPASS.map((line) => `- ${line}`).join("\n");
   const attacks = ATTACKS.map((a) => `- ${a.label}: ${a.fix}`).join("\n");
-  return `Survival field manual. Truck only. Never a porch line. Never quote a book at a homeowner.
-
-## Compass
-${compass}
-
-## Why
-- Number as if earned. Date it.
-- What it buys. Who else. Then the person or promise.
-- Dead day: read it out loud before you drive home.
-- Check in 90 days.
-- Money fades once bills are paid. Why has to outlast the first check.
-
-## Demon
-- One word. Where it started. How that same radar could help a homeowner.
-- Never put the demon on the porch.
-${attacks}
-
-## Pace
-- Knock hours from Settings.
-- One real off-block.
-- When the phone goes down.
-- Circle a gear. Drop one thing.
-- Name one thing they already have.
-
-## Talent stack
-- Three skills this month.
-- One tiny drill.
-- Windshield audio.
-- Night book that is a person, not work.
-
-## After Action Report
-- After Action Report on the phone, not Mindset chat.
-- Wins: long list first.
-- Facts: not self-hate.
-- Plan: verbs.
-- Five minutes of mental reps.
-
-## ARO (disaster / leak call)
-- Acknowledge the mess in detail.
-- Reassure you will make it right.
-- Overcome with a real plan.
-- Service, not a door trick.
-
-## Only competitor
-- You are the only competitor that matters.
-- Measure today vs yesterday.
-- Do not compare to Drew.`;
+  return `Survival field manual. Truck only. Never a porch line. Never quote a book at a homeowner.\n\n## Compass\n${compass}\n\n## Why\n- Number as if earned. Date it.\n- What it buys. Who else. Then the person or promise.\n- Dead day: read it out loud before you drive home.\n- Check in 90 days.\n- Money fades once bills are paid. Why has to outlast the first check.\n\n## Demon\n- One word. Where it started. How that same radar could help a homeowner.\n- Never put the demon on the porch.\n${attacks}\n\n## Pace\n- Knock hours from Settings.\n- One real off-block.\n- When the phone goes down.\n- Circle a gear. Drop one thing.\n- Name one thing they already have.\n\n## Talent stack\n- Three skills this month.\n- One tiny drill.\n- Windshield audio.\n- Night book that is a person, not work.\n\n## After Action Report\n- After Action Report lives on After. Not Mindset chat. Not a Truck textarea.\n- Wins: long list first.\n- Facts: not self-hate.\n- Plan: verbs.\n- Five minutes of mental reps.\n\n## ARO (disaster / leak call)\n- Acknowledge the mess in detail.\n- Reassure you will make it right.\n- Overcome with a real plan.\n- Service, not a door trick.\n\n## Only competitor\n- You are the only competitor that matters.\n- Measure today vs yesterday.\n- Do not compare to Drew.`;
 }
 
 export type WalkPatch = {
