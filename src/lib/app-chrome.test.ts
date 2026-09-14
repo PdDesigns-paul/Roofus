@@ -44,6 +44,8 @@ describe("helpPageFor", () => {
     assert.equal(helpPageFor("/roof"), "roof");
     assert.equal(helpPageFor("/coach/inspect"), "roof");
     assert.equal(PAGE_HELP.roof.title, "Roof");
+    assert.match(PAGE_HELP.streets.body.join(" "), /After Action Report/);
+    assert.match(PAGE_HELP.streets.body.join(" "), /Settings is a Go at the bottom/);
     assert.equal(helpPageFor("/settings"), "settings");
     assert.equal(helpPageFor("/settings/you"), "settings");
     assert.equal(helpPageFor("/settings/mindset"), "settings");

@@ -20,6 +20,7 @@ export const PAGE_HELP = {
     body: [
       "Build from the counties in Settings. This is the After tab — park-once loops, not a fifth Place. You pick the roof age — default 15–22 years. Tap Change. Chips pick a band. From and To take the number when you leave the field, not on the first digit. Each card is a park-once loop (Census streets or a small CDP). Township is the folder. Working sits at the top. Tap a county to open the rest. Search township, loop, street, zip, or county. Empty match says so. Near me is a chip — it sorts loops you already built. Empty book does not invent a zip. A rural county still gets a row even if Census found no age-band loops yet. Military bases (barracks, NSA, depots) are dropped — rebuild to take them off a list you already have.",
       "When a scout card exists, the loop shows a muted ageBand / stormBand / why. That is not porch copy. A Working loop shows one sentence if a kept storm actually hit it. Use today is a chip — it adds that loop to Truck’s plan and copies the sentence if the weather box is empty. Skip is still a chip you tap. Last 48 hours and the season log are not on this page. Rebuild does not copy old zip Working onto the new loops.",
+      "Night: finish After Action Report here — same Wins / Better / Plan as Truck, one store. Tomorrow I start at is the same tomorrow line. Settings is a Go at the bottom, not a fifth tab. Pick tomorrow. Finish the journal. Do not expand the hunt.",
     ],
   },
   cards: {
@@ -41,7 +42,7 @@ export const PAGE_HELP = {
     title: "Mindset",
     body: [
       "Worksheets live in Settings → Mindset. Four truths at the top. Then Why, Name the demon, Pace, Talent stack.",
-      "Why is a ladder: number, what it buys, who else, the person or promise. Read it with Roofus on a dead day. Demon names the attack. Pace drops a gear. Stack is three skills. After Action Report is on Truck — wins, facts, a plan.",
+      "Why is a ladder: number, what it buys, who else, the person or promise. Read it with Roofus on a dead day. Demon names the attack. Pace drops a gear. Stack is three skills. After Action Report is on Truck and After — wins, facts, a plan.",
       "Coach me through this opens a Mindset chat and asks one question. The orange fan also opens that chat. Answers land on this page. Private. Not a pitch.",
     ],
   },
@@ -59,7 +60,7 @@ export const PAGE_HELP = {
       "You: first name, company, website, warranty. Paste a URL — we crawl it in the background. Pages land in Reference. He uses those notes when he talks product.",
       "Territory: counties and a state. Rebuild After after you change them. Hours: when you knock, morning work, hard stop.",
       "Reminders: morning storm if empty, evening After Action Report if blank, Sundays pace, the 1st talent stack. Did it is a chip. Finish-setup is Settings, not a nag.",
-      "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report is on Truck.",
+      "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report is on Truck and After.",
       "Backup: optional Notion copy of days, streets, storms, mindset, and FAQs. Do not Restore onto a full phone. Do not Backup from an empty one.",
       "Show the question-mark tour plays the first-open walk again.",
     ],
