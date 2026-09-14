@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { AppHeader } from "@/components/app-header";
 import { AarFields } from "@/components/aar-fields";
+import { ProcessDayStrip } from "@/components/process-day-strip";
 import { HomeSetupCard } from "@/components/home-setup-card";
 import { InstallHint } from "@/components/install-hint";
 import { Button } from "@/components/ui/button";
@@ -244,6 +245,8 @@ function DaySheet() {
           ))}
         </ul>
       </section>
+
+      <ProcessDayStrip bonus />
 
       <section className="mt-4 min-w-0">
         <p className="text-xs font-medium uppercase tracking-wide text-faint">Neighborhood today</p>
