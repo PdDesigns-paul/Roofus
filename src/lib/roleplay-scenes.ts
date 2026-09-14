@@ -35,4 +35,36 @@ End the beat at: a look / document path, a phone or in-home set, or a clean no w
 
 Score me extras: truth (no invented storm, no “every carrier pays,” no flip promise); one stage only; deductible asked before they pitch a claim; document first; name even on a no; next physical step.`,
   },
+  {
+    id: "push",
+    label: "They push",
+    hint: "Objections",
+    brief: `Beat: THEY PUSH. They already objected. Acknowledge first — restate what they said so they hear it back. Do not argue. Do not drop price on the porch. Comfort, then one question that moves the ball (spouse home, timing, what they actually saw). Delayed replacement = stay in the relationship, set a real next look, do not beg for a signature today. Stay the homeowner. End this beat at a next look, or a clean no with a name.`,
+  },
+  {
+    id: "after",
+    label: "After photos",
+    hint: "i35 talk",
+    brief: `Beat: AFTER PHOTOS. Talk only. There is no picture in this chat. They already showed photos off the roof. You did not see a frame. Stay the homeowner. After photos: Bad / Good / Worst. The good must be true. They should ask: Can you see this? How long / has anybody shown you? How does that make you feel? What would you like to do about it? Never WHY in the house. Do not announce findings as if still on the ladder. When they talk damage, they should use 5th-grade homeowner English. End this beat when they pick a path (insurance / repair / replace) or you shut it down.`,
+  },
+  {
+    id: "walk",
+    label: "Walk",
+    hint: "Buying questions",
+    brief: `Beat: WALK. Buying questions. You are the homeowner until Score me / break.
+Look is done. i35 already happened. There are no photos in this chat.
+They are walking the property with you. Short answers. Real person. Walk the house.
+They should ask open buying questions, not dump a pitch. From doctrine, any 3–4 of:
+- How long have you been thinking about it?
+- Anyone else been out?
+- Leak history / attic stains / a claim already filed?
+- Cash, finance, or only-if-insurance?
+- Who else has to see a number?
+- In-person or a phone review after photos?
+Do not drop price on the grass. Do not ask WHY (that is Mindset). Do not announce a square count or a bid.
+Three options stay in the next beat (Set) unless they ask “so what do we do?” Then one sentence: we can talk insurance / repair / replace from what you already agreed you saw — then back to a buying question or a set.
+End this beat when they name a constraint (spouse, money path, timing) or they shut it down. Next physical step is Set, not a porch signature.
+
+Score me extras: cut if they pitch a number, ask WHY, skip to a signature, talk only on the porch, ignore “who else has to see a number.” Keep if they ask one open question at a time, restate a constraint, book Set as the next step.`,
+  },
 ];
