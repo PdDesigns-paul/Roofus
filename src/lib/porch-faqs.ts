@@ -114,7 +114,7 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_win",
     q: "What is a winning day?",
-    a: "One appointment from a day of knocking is a winning day. Empty doors with zero roofs is the critic pretending it worked. Counts live on Truck. Ask Roofus tonight and he names tomorrow.",
+    a: "One appointment from a day of knocking is a winning day. Empty doors with zero roofs is the critic pretending it worked. Counts live on Truck. After Action Report and tomorrow live on After. Ask Roofus how today went on Truck when there is no Working loop — he names tomorrow from the log. Finish the form on After.",
   },
   {
     id: "f_seed_warranty",
