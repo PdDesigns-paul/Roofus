@@ -86,6 +86,9 @@ describe("surviveKnowledge", () => {
     assert.match(k, /Read Why out loud/);
     assert.match(k, /Phone in the other room/);
     assert.match(k, /personal growth that pays/);
+    assert.match(k, /After Action Report lives on After/);
+    assert.doesNotMatch(k, /AAR lives on Truck/);
+    assert.doesNotMatch(k, /on Truck and After/);
     assert.doesNotMatch(k, /I stopped by/);
     assert.doesNotMatch(k, /What.?s going on → original roofs/);
     assert.ok(k.split(/\s+/).filter(Boolean).length < 600);
