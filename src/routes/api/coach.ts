@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { bookFromRequest, buildXaiPayload, type CoachRequest } from "@/lib/coach-prompt";
+import { buildXaiPayload, type CoachRequest } from "@/lib/coach-prompt";
+import { bookFromRequest } from "@/lib/coach-book";
 import {
   runToolRound,
   toolsOnFor,
   TOOLS_FALLBACK,
+  COACH_TOOL_DEFS,
+  TOOLS_BRIEF,
   type ToolCall,
 } from "@/lib/coach-tools";
 
@@ -137,8 +140,18 @@ async function handlePost({ request }: { request: Request }) {
   }
 
   const useTools = toolsOnFor(req);
-  const payload = buildXaiPayload(req, { stream: !useTools, tools: useTools });
+  const built = buildXaiPayload(req);
   const book = bookFromRequest(req);
+  const system = built.messages[0];
+  const payload = {
+    ...built,
+    stream: !useTools,
+    messages:
+      useTools && system && "content" in system && typeof system.content === "string"
+        ? [{ ...system, content: `${system.content}\n\n${TOOLS_BRIEF}` }, ...built.messages.slice(1)]
+        : built.messages,
+    ...(useTools ? { tools: COACH_TOOL_DEFS, tool_choice: "auto" as const } : {}),
+  };
 
   if (!useTools) {
     const upstream = await xaiPost(apiKey, payload, request.signal);
