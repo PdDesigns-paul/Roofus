@@ -1,4 +1,4 @@
-/** First-run tour. Stays on this phone. Replay lives in Settings. Does not auto-play. */
+/** First-run sheet over Truck. Stays on this phone. Replay lives in Settings. */
 
 export const ONBOARD_KEY = "roofus-onboard-v1";
 
@@ -29,21 +29,29 @@ export function subscribeOnboard(fn: Listener): () => void {
 
 export const ONBOARD_STEPS = [
   {
-    id: "help",
-    selector: "[data-tour='help']",
-    title: "The question mark",
-    body: "Every page has this in the header. Tap it when you're lost. That's how this page works.",
+    id: "places",
+    title: "The day",
+    body: "Truck · Door · Roof · Prep. Truck is today’s log. Prep is night-before and morning: loops, Keep / Toss, After Action Report.",
+  },
+  {
+    id: "door",
+    title: "Door",
+    body: "Pocket cards. First knock is age and a free look. Not a storm story unless you Kept one.",
+  },
+  {
+    id: "roof",
+    title: "Roof",
+    body: "Walk this house, then this shot. The dog hides so you can take the picture.",
   },
   {
     id: "roofus",
-    selector: "[data-tour='roofus']",
-    title: "That's Roofus",
-    body: "Gold button. Dog face. Tap to pick Live, Roleplay, or Mindset. Hold for a new Live chat.",
+    title: "That’s Roofus",
+    body: "Gold button. Dog face. Tap Live, Roleplay, or Mindset. Hold starts Live.",
   },
   {
-    id: "tabs",
-    selector: "[data-tour='tabs']",
-    title: "The day",
-    body: "Truck. Door. Roof. Prep. Prep is night-before and morning. Settings holds the book. Tell Roofus writes it.",
+    id: "age",
+    title: "Age first",
+    body: "Name weather only if you Kept it. The question mark is how this page works. Settings holds the book.",
+    sample: true,
   },
 ] as const;

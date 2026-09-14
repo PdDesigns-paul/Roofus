@@ -38,7 +38,6 @@ export function TabBar() {
   return (
     <div
       className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-paper/95 backdrop-blur"
-      data-tour="tabs"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <nav>

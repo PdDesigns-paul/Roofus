@@ -2,7 +2,7 @@ export const PAGE_HELP = {
   home: {
     title: "Roofus",
     body: [
-      "Bottom: Truck, Door, Roof, Prep. Setup lives in Settings — name, company, counties. Tell Roofus writes those fields. Truck is the field log.",
+      "Bottom: Truck, Door, Roof, Prep. Setup lives in Settings — name, company, counties. Tell Roofus writes those fields. Truck is the field log. First open is five slides over Truck. Skip is on every slide.",
       "The gold button is Roofus — dog face. Tap to pick Live, Roleplay, or Mindset. Hold starts Live. History is the clock in the chat. ? and Menu live in the header. Menu: Reference, Settings.",
       "Back is in the header on Settings, Reference, and nested settings pages. Put the app on your Home Screen so the tile says Roofus and shows the dog.",
     ],
@@ -62,7 +62,7 @@ export const PAGE_HELP = {
       "Reminders: morning storm if empty, evening After Action Report if blank, Sundays pace, the 1st talent stack. Did it is a chip. Finish-setup is Settings, not a nag.",
       "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report lives on Prep.",
       "Backup: optional Notion copy of days, streets, storms, mindset, FAQs, and pins. Do not Restore onto a full phone. Do not Backup from an empty one.",
-      "Show the question-mark tour plays the first-open walk again.",
+      "Show the tour plays the five slides again. Skip is on every slide.",
     ],
   },
   coach: {

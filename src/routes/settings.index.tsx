@@ -40,7 +40,7 @@ function SettingsIndex() {
           resetOnboard();
         }}
       >
-        Show the question-mark tour
+        Show the tour
       </button>
       <LoadSample />
 

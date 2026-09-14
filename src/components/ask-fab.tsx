@@ -99,7 +99,6 @@ export function AskFab() {
           aria-label="Talk to Roofus"
           aria-haspopup="menu"
           aria-expanded={fan}
-          data-tour="roofus"
           className="fixed right-4 z-40 flex size-14 items-center justify-center overflow-hidden rounded-full bg-accent text-paper shadow-lg ring-2 ring-paper/40"
           style={{ bottom: fabBottom }}
           onPointerDown={onDown}

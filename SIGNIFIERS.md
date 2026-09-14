@@ -2,7 +2,7 @@
 
 **This file is the UI contract.** Porch words stay in [`DOCTRINE.md`](./DOCTRINE.md). How a canvasser *sees* what to tap lives here.
 
-Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Streets Near me / scout tags and Use today as a chip shipped. **Places are Truck · Door · Roof · Prep.** After became Prep. Truck is the field log. Settings / Door row restyle is still open. Do not invent a sixth control type.
+Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Streets Near me / scout tags and Use today as a chip shipped. **Places are Truck · Door · Roof · Prep.** After became Prep. Truck is the field log. First-run is a 5-slide sheet over Truck. Settings / Door row restyle is still open. Do not invent a sixth control type.
 
 Agents: read this before you touch tabs, the FAB, Truck links, setup rows, or `src/components/ui/`.
 
@@ -121,12 +121,16 @@ Count tiles: tap the card to +1. − is a small control. Cards and maps labels a
 ### Slice 6 — Settings / Door sweep — open
 
 - Door “Ask Roofus” is already an outlined pill — keep it. Do not demote it to text.
-- Settings index: rows get chevrons. “Show the question-mark tour” and “Load a sample day” stay secondary outlined pills, below the list, not dressed as the page’s primary.
+- Settings index: rows get chevrons. “Show the tour” and “Load a sample day” stay secondary outlined pills, below the list, not dressed as the page’s primary.
 - Help copy and coach prompt name the controls that actually exist after the sweep.
 
 ### Slice 7 — Prep — shipped
 
 Tab word is **Prep**. Route stays `/after`. Hint: night-before + morning. Not a fifth Place. Keep / Toss lives on Prep. One Working loop is picked on Prep (Use today). Truck is that loop line + counts + Pin + one kept sentence. Night is a Go to Prep#finish. Empty-book Setup leaves Truck after name + company + one county.
+
+### Slice 8 — first-run tour — shipped
+
+Five-slide sheet over Truck. Skip on every slide. Plays once when `roofus-onboard-v1` is missing. Replay is **Show the tour** in Settings. Last slide may offer Load a sample day on an empty book — no sample storm. Replaces the 3-dot spotlight. Not a `/tour` route. Not the PWA install tutorial.
 
 Out of scope for this plan: new facets, login, a design-token package, Playwright, restyling every page a different way.
 

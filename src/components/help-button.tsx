@@ -39,7 +39,6 @@ export function HelpButton({ page }: { page: HelpPageId }) {
         <button
           type="button"
           aria-label="How this page works"
-          data-tour="help"
           className="inline-flex size-11 items-center justify-center rounded-md text-muted hover:bg-surface-2 hover:text-fg"
           onClick={() => setOpen(true)}
         >

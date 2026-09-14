@@ -1,46 +1,27 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { markOnboardDone, ONBOARD_STEPS, subscribeOnboard } from "@/lib/onboard";
-
-type Rect = { top: number; left: number; width: number; height: number };
-
-function readRect(selector: string): Rect | null {
-  const el = document.querySelector(selector);
-  if (!el) return null;
-  const r = el.getBoundingClientRect();
-  if (r.width < 8 || r.height < 8) return null;
-  return { top: r.top, left: r.left, width: r.width, height: r.height };
-}
+import { useDayBook } from "@/lib/day-book";
+import { loadDemo } from "@/lib/demo-data";
+import { isOnboardDone, markOnboardDone, ONBOARD_STEPS, subscribeOnboard } from "@/lib/onboard";
 
 export function OnboardOverlay() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
-  const [hole, setHole] = useState<Rect | null>(null);
+  const navigate = useNavigate();
+  const emptyBook = !useDayBook((s) => s.profile.counties).trim();
 
   useEffect(() => {
+    if (!isOnboardDone()) {
+      setStep(0);
+      setOpen(true);
+    }
     return subscribeOnboard(() => {
       setStep(0);
       setOpen(true);
     });
   }, []);
-
-  const current = ONBOARD_STEPS[step];
-
-  useLayoutEffect(() => {
-    if (!open || !current) return;
-    function measure() {
-      setHole(readRect(current.selector));
-    }
-    measure();
-    const t = window.setInterval(measure, 250);
-    window.addEventListener("resize", measure);
-    window.addEventListener("scroll", measure, true);
-    return () => {
-      window.clearInterval(t);
-      window.removeEventListener("resize", measure);
-      window.removeEventListener("scroll", measure, true);
-    };
-  }, [open, current]);
 
   useEffect(() => {
     if (!open) return;
@@ -66,76 +47,65 @@ export function OnboardOverlay() {
     else setStep((n) => n + 1);
   }
 
+  const current = ONBOARD_STEPS[step];
   if (!open || !current) return null;
 
   const last = step >= ONBOARD_STEPS.length - 1;
-  const pad = 6;
-  const cut = hole
-    ? {
-        top: Math.max(0, hole.top - pad),
-        left: Math.max(0, hole.left - pad),
-        right: hole.left + hole.width + pad,
-        bottom: hole.top + hole.height + pad,
-        width: hole.width + pad * 2,
-        height: hole.height + pad * 2,
-      }
-    : null;
+  const offerSample = last && emptyBook && "sample" in current && current.sample;
 
-  const placeCardLow = hole ? hole.top < window.innerHeight * 0.42 : true;
-  const cardPos = hole
-    ? placeCardLow
-      ? { top: Math.min(hole.top + hole.height + 16, window.innerHeight - 210) }
-      : { bottom: Math.max(window.innerHeight - hole.top + 16, 88) }
-    : { top: 96 };
-
-  return (
-    <div className="fixed inset-0" style={{ zIndex: 80 }} role="dialog" aria-modal="true" aria-labelledby="tour-title">
-      {cut ? (
-        <>
-          <div className="pointer-events-none absolute inset-x-0 top-0 bg-fg/55" style={{ height: cut.top }} />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-fg/55" style={{ top: cut.bottom }} />
-          <div
-            className="pointer-events-none absolute bg-fg/55"
-            style={{ top: cut.top, left: 0, width: cut.left, height: cut.height }}
-          />
-          <div
-            className="pointer-events-none absolute bg-fg/55"
-            style={{ top: cut.top, left: cut.right, right: 0, height: cut.height }}
-          />
-          <div
-            className="pointer-events-none absolute rounded-xl ring-2 ring-accent"
-            style={{ top: cut.top, left: cut.left, width: cut.width, height: cut.height }}
-          />
-        </>
-      ) : (
-        <div className="pointer-events-none absolute inset-0 bg-fg/55" />
-      )}
-
-      <button type="button" aria-label="Next tip" className="absolute inset-0 cursor-default" onClick={next} />
-
-      <div
-        className="absolute left-1/2 max-w-sm -translate-x-1/2 rounded-2xl border border-border bg-paper p-4"
-        style={{ ...cardPos, width: "min(20rem, calc(100% - 2rem))" }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <p className="text-xs font-medium uppercase tracking-wide text-faint">
+  const node = (
+    <div
+      className="fixed inset-0 flex items-end justify-center bg-fg/40"
+      style={{ zIndex: 80 }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tour-title"
+    >
+      <div className="flex h-[92dvh] w-full max-w-lg flex-col rounded-t-3xl border border-border bg-paper px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-8px_40px_rgba(0,0,0,0.18)]">
+        <div className="flex shrink-0 justify-center pt-1">
+          <div className="h-1 w-10 rounded-full bg-border" />
+        </div>
+        <p className="mt-6 text-xs font-medium uppercase tracking-wide text-faint">
           {step + 1} of {ONBOARD_STEPS.length}
         </p>
-        <h2 id="tour-title" className="mt-1 font-display text-xl leading-tight">
-          {current.title}
-        </h2>
-        <p className="mt-2 text-sm leading-relaxed text-muted">{current.body}</p>
-        <div className="mt-4 flex items-center gap-2">
-          <Button className="flex-1" onClick={next}>
+        <div className="flex min-h-0 flex-1 flex-col justify-center">
+          <h2 id="tour-title" className="font-display text-3xl leading-tight">
+            {current.title}
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-muted">{current.body}</p>
+        </div>
+        <div className="flex justify-center gap-1.5 py-5" aria-hidden>
+          {ONBOARD_STEPS.map((s, i) => (
+            <span
+              key={s.id}
+              className={i === step ? "h-1.5 w-4 rounded-full bg-accent" : "size-1.5 rounded-full bg-border"}
+            />
+          ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button className="min-h-12 flex-1" onClick={next}>
             {last ? "Got it" : "Next"}
           </Button>
-          {last ? null : (
-            <Button variant="outline" onClick={finish}>
-              Skip
-            </Button>
-          )}
+          <Button variant="outline" className="min-h-12" onClick={finish}>
+            Skip
+          </Button>
         </div>
+        {offerSample ? (
+          <Button
+            variant="outline"
+            className="mt-2 min-h-12 w-full"
+            onClick={() => {
+              loadDemo();
+              finish();
+              void navigate({ to: "/after" });
+            }}
+          >
+            Load a sample day
+          </Button>
+        ) : null}
       </div>
     </div>
   );
+
+  return typeof document === "undefined" ? node : createPortal(node, document.body);
 }
