@@ -1,7 +1,7 @@
 import "./test-setup.ts";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { applyWalkAnswer, parseSkills, toggleSkill, walkKickoff, whyRecap } from "./survive.ts";
+import { applyWalkAnswer, parseSkills, surviveKnowledge, toggleSkill, walkKickoff, whyRecap } from "./survive.ts";
 import { demonFilled, paceFilled, whyFilled, type SurviveState } from "./survive-store.ts";
 
 const blank: SurviveState = {
@@ -72,6 +72,23 @@ describe("walkKickoff", () => {
     assert.match(p, /Walk me through Why/);
     assert.doesNotMatch(p, /I have earned/);
     assert.match(p, /Not a door/);
+  });
+});
+
+describe("surviveKnowledge", () => {
+  it("is a truck manual: ARO, attacks, no homeowner opener", () => {
+    const k = surviveKnowledge();
+    assert.match(k, /ARO/);
+    assert.match(k, /Acknowledge/);
+    assert.match(k, /Reassure/);
+    assert.match(k, /Overcome/);
+    assert.match(k, /First door in 10/);
+    assert.match(k, /Read Why out loud/);
+    assert.match(k, /Phone in the other room/);
+    assert.match(k, /personal growth that pays/);
+    assert.doesNotMatch(k, /I stopped by/);
+    assert.doesNotMatch(k, /What.?s going on → original roofs/);
+    assert.ok(k.split(/\s+/).filter(Boolean).length < 600);
   });
 });
 

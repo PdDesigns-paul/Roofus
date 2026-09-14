@@ -1,2 +1,2 @@
-/** Coach appendix. The five pocket cards are the live copy. */
-export { pocketKnowledge as mindsetKnowledge } from "./pocket-cards.ts";
+/** Coach appendix. Survival worksheets + compass. Not pocket cards. */
+export { surviveKnowledge as mindsetKnowledge } from "./survive.ts";

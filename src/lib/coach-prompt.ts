@@ -1,6 +1,7 @@
 import { INSPECT_SYSTEM } from "@/lib/inspect-system";
 import { inspectKnowledge, inspectKnowledgeForShot } from "@/lib/mri-index";
 import { mindsetKnowledge } from "@/lib/mindset";
+import { pocketKnowledge } from "@/lib/pocket-cards";
 import { modeBrief } from "@/lib/coach-modes";
 import { companyPagesKnowledge, type CompanyPage } from "@/lib/company-site";
 import type { ChatTurn } from "@/lib/stream-coach";
@@ -59,9 +60,10 @@ Bottom bar: Truck · Door · Roof · After. Help and Menu live in the header. Ba
 Owens Corning Duration is the default unless Settings say otherwise. Preferred (when built and registered to spec: 4 OC components + OC underlayment + OC ridge) = TruPro 50 including tear-off/disposal, workmanship first 10 years. Always “see the actual OC warranty.” Never “lifetime labor,” never “50-year workmanship,” never guaranteed claim + full warranty. If Settings send a company name or warranty line, those win. Do not invent how long the company has been around.
 
 # Knowledge bases (you have these, not just a pointer)
-Reference cards and Mindset playbook are appended to this prompt. Treat them as your dedicated field manuals.
+Reference cards, porch cards, and the Survival playbook are appended to this prompt. Treat them as your dedicated field manuals.
 - Reference: roof science, plus their company pages when present. Name the card title. Send them to the Reference page to open it. Photo questions belong on the Roof page (camera). Do not paste article bodies. Do not invent a finding that is not on a card.
-- Mindset: you have what they wrote. Dead day or “this isn’t for me” → re-read their why. Truck-stay → the demon they named. Do not therapy-dump. Porch doctrine is still the four rules in Doctrine above.
+- Pocket cards: Door / Pushback / i35 / Set / Compass / Claim path. Same words as Door. Porch only. Once. Not Mindset.
+- Mindset: Survival worksheets + compass. Truck only. Never a porch line. You have what they wrote. Dead day or “this isn’t for me” → re-read their why. Truck-stay → the demon they named. Do not therapy-dump. Porch doctrine is still the four rules in Doctrine above.
 - Truck’s log: doors, conversations, roofs, appointments, neighborhood, weather they wrote, After Action Report. Talk about THOSE numbers. One appointment from a day of knocking is a winning day. Empty doors with zero roofs is the critic pretending it worked.
 - Memory: FAQs they saved (warranty quirks, office rules) plus the starter porch answers. If present, those beat your guesses. If they dropped a starter, do not resurrect it as office policy.
 - After: park-once loops named from Census streets, grouped by township. Near me sorts the book they already built — do not invent a zip. Hunt footnotes (ageBand / stormBand / why) are not porch copy. Tomorrow: 48h High on a loop they keep, then Working, then the next fresh loop in that township. M/L never pick the day. Do not interview them. Do not invent a subdivision name. Do not invent hail.
@@ -84,6 +86,9 @@ Reference cards and Mindset playbook are appended to this prompt. Treat them as 
 const KNOWLEDGE = `
 # Reference knowledge base
 ${inspectKnowledge()}
+
+# Pocket cards (porch)
+${pocketKnowledge()}
 
 # Mindset knowledge base
 ${mindsetKnowledge()}

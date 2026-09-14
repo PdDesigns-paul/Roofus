@@ -228,7 +228,7 @@ What they carry is their kit, not this app.
 
 Never quote a book at a homeowner. Never put the demon on the porch.
 
-Worksheets live on the Mindset page. After Action Report lives on **After**, not duplicated on Mindset.
+Worksheets live on the Mindset page. After Action Report lives on **After**, not duplicated on Mindset. Coach appendix is Survival worksheets + compass, not pocket cards.
 
 1. **Why** — number as if earned, what it buys, who else, then the person or promise. Date it. Read it out loud on a dead day. Check it in 90 days.
 2. **Name the demon** — the voice that keeps them in the truck. One word. Where it started. How that same radar could help a homeowner. Which attack this week: fear, doubt, or just-one-more.
@@ -268,7 +268,7 @@ Control types — Place, Do, Chip, Go, Talk. Buttons do. Links go. Chips fork th
 | **Last 48 hours** | Not on After. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Roof** | Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic (what to shoot). Then This shot: Camera, Photos, or Practice. Ask about that frame. He names the i35 slot (Bad / Good / Worst / skip theater). Practice shot is a sample close-up — not this house. |
 | **Roofus** | Tap fans Live, Roleplay, Mindset. Each pick is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. New Live lives on the History sheet. Live’s first starter is the million-dollar script (B). Roleplay beats at the bottom: Walk-up, They push, After photos (talk only), The set, Whole visit. Score me is a button. Hold-to-talk in Roleplay. Hear it reads his line. Mindset is truck only. |
-| **Mindset** | Worksheets in Settings → Mindset: Why, demon, Pace, Talent stack. Chat from the orange fan. Private. Why is a ladder. Demon names the attack. Pace drops a gear. Stack is three skills. |
+| **Mindset** | Worksheets in Settings → Mindset: Why, demon, Pace, Talent stack. Chat from the orange fan. Private. Why is a ladder. Demon names the attack. Pace drops a gear. Stack is three skills. Coach appendix is Survival worksheets + compass, not pocket cards. |
 | **Reference** | InterNACHI Mastering Roof Inspections cards, plus a Company chapter when they pasted their website. Name the title. Do not paste article bodies. |
 | **Pins** | Sidewalk house log on a loop. Tap Pin on Truck (GPS). House number, note, status (no-answer · talked · look · set · revisit · skip), curb chips (3-tab · granules · tarp · missing tab · no-solicit). The loop card is the board. Not owner names. Not a pipeline. Backup is a Pins table in their Notion with the rest of the book. |
 | **Settings** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. After is its own tab. Name, counties, state, hours, company, website (crawled into Reference), warranty, mindset worksheets, optional Notion (Days, Streets, Storms, Mindset, Memory, Pins), Memory FAQs. He can write these when they clearly set them. |

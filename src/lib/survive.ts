@@ -111,6 +111,59 @@ export function walkReadWhy(): string {
   return "Read my why back. One breath. Ask if it still holds. Private. Not a door.";
 }
 
+/** Coach appendix. Truck only. Never a porch line. Not pocket cards. */
+export function surviveKnowledge(): string {
+  const compass = COMPASS.map((line) => `- ${line}`).join("\n");
+  const attacks = ATTACKS.map((a) => `- ${a.label}: ${a.fix}`).join("\n");
+  return `Survival field manual. Truck only. Never a porch line. Never quote a book at a homeowner.
+
+## Compass
+${compass}
+
+## Why
+- Number as if earned. Date it.
+- What it buys. Who else. Then the person or promise.
+- Dead day: read it out loud before you drive home.
+- Check in 90 days.
+- Money fades once bills are paid. Why has to outlast the first check.
+
+## Demon
+- One word. Where it started. How that same radar could help a homeowner.
+- Never put the demon on the porch.
+${attacks}
+
+## Pace
+- Knock hours from Settings.
+- One real off-block.
+- When the phone goes down.
+- Circle a gear. Drop one thing.
+- Name one thing they already have.
+
+## Talent stack
+- Three skills this month.
+- One tiny drill.
+- Windshield audio.
+- Night book that is a person, not work.
+
+## After Action Report
+- After Action Report on the phone, not Mindset chat.
+- Wins: long list first.
+- Facts: not self-hate.
+- Plan: verbs.
+- Five minutes of mental reps.
+
+## ARO (disaster / leak call)
+- Acknowledge the mess in detail.
+- Reassure you will make it right.
+- Overcome with a real plan.
+- Service, not a door trick.
+
+## Only competitor
+- You are the only competitor that matters.
+- Measure today vs yesterday.
+- Do not compare to Drew.`;
+}
+
 export type WalkPatch = {
   survive?: Partial<Omit<SurviveState, "patch">>;
   profile?: { knockWindow?: string; paperWindow?: string; hardStop?: string };
