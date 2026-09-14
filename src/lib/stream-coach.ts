@@ -15,6 +15,29 @@ export type StreamCoachInput = {
   companySitePages?: { title: string; look: string; url: string }[];
   imageDataUrl?: string;
   dayBook?: string;
+  workingLoop?: {
+    name?: string;
+    zip?: string;
+    ageBand?: string;
+    status?: string;
+  };
+  keptStorms?: {
+    zip?: string;
+    say?: string;
+    street?: string;
+    loopLabel?: string;
+    kind?: string;
+    status?: string;
+  }[];
+  faqs?: { q: string; a: string }[];
+  surviveSnap?: {
+    whyRecap?: string;
+    earned?: string;
+    demon?: string;
+    gear?: string;
+    attack?: string;
+  };
+  pinCounts?: Record<string, number>;
 };
 
 export async function streamCoach(
