@@ -59,6 +59,7 @@ describe("modeBrief", () => {
 describe("cardAsk", () => {
   it("opens Roleplay on porch cards and Mindset on Compass", () => {
     assert.deepEqual(cardAsk("door"), { mode: "roleplay", scene: "walkup" });
+    assert.deepEqual(cardAsk("claim"), { mode: "roleplay", scene: "walkup" });
     assert.deepEqual(cardAsk("i35"), { mode: "roleplay", scene: "after" });
     assert.deepEqual(cardAsk("compass"), { mode: "mindset" });
   });

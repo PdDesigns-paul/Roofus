@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppHeader } from "@/components/app-header";
+import { PlaceCard } from "@/components/place-card";
 import { whenCoachReady, useCoach } from "@/lib/coach-store";
+import { readFreshKept } from "@/lib/kept-storm";
 import { abortTalk } from "@/lib/roofus-talk";
-import { POCKET_CARDS, type PocketCard } from "@/lib/pocket-cards";
+import { doorList, type PocketCard } from "@/lib/pocket-cards";
+import { useWeather } from "@/lib/weather-store";
 
 /** Door cards. Formerly /coach/cards. */
 export const Route = createFileRoute("/door")({
@@ -12,6 +15,9 @@ export const Route = createFileRoute("/door")({
 });
 
 function Door() {
+  const keptStorms = useWeather((s) => s.keptStorms);
+  const showClaim = readFreshKept(keptStorms).length > 0;
+  const cards = doorList(showClaim);
   const [open, setOpen] = useState<PocketCard["id"] | null>("door");
 
   return (
@@ -19,24 +25,23 @@ function Door() {
       <AppHeader title="Door" />
       <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">In your pocket.</h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
-        Five cards. Each has a formula: hook, honest reason, one open question. Door is the default
-        knock. Compass stays here — read it in the truck. Ask Roofus opens Roleplay on that beat.
-        Compass opens Mindset.
+        Pocket cards. Each has a formula: hook, honest reason, one open question. Door is the default
+        knock. Claim path shows after you Keep a storm. Compass stays here — read it in the truck. Ask
+        Roofus opens Roleplay on that beat. Compass opens Mindset.
       </p>
       <ul className="mt-5 flex flex-col gap-3">
-        {POCKET_CARDS.map((c) => (
-          <li key={c.id} className="rounded-2xl border border-border bg-surface">
-            <button
-              type="button"
-              onClick={() => setOpen((cur) => (cur === c.id ? null : c.id))}
-              className="w-full px-4 py-3 text-left"
-            >
-              <p className="text-xs font-medium uppercase tracking-wide text-faint">{c.when}</p>
-              <p className="mt-1 font-display text-xl tracking-tight">{c.title}</p>
-              <p className="mt-1 text-sm leading-relaxed">{c.formula}</p>
-            </button>
-            {open === c.id ? <CardBody card={c} /> : null}
-          </li>
+        {cards.map((c) => (
+          <PlaceCard
+            key={c.id}
+            id={c.id}
+            when={c.when}
+            title={c.title}
+            formula={c.formula}
+            open={open === c.id}
+            onToggle={(id) => setOpen((cur) => (cur === id ? null : (id as PocketCard["id"])))}
+          >
+            <CardBody card={c} />
+          </PlaceCard>
         ))}
       </ul>
     </main>
@@ -45,7 +50,7 @@ function Door() {
 
 function CardBody({ card }: { card: PocketCard }) {
   return (
-    <div className="border-t border-border px-4 pb-4 pt-3">
+    <>
       <ul className="flex flex-col gap-3">
         {card.lines.map((l, i) => (
           <li key={`${card.id}-${i}`}>
@@ -63,7 +68,7 @@ function CardBody({ card }: { card: PocketCard }) {
       >
         Ask Roofus
       </button>
-    </div>
+    </>
   );
 }
 
@@ -73,6 +78,7 @@ function askCard(card: PocketCard) {
     useCoach.getState().startNew({
       mode: card.mode,
       scene: card.scene,
+      title: card.id === "claim" ? "Claim path" : undefined,
     });
     useCoach.getState().openSheet();
   });

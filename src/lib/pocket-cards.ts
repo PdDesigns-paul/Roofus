@@ -1,11 +1,11 @@
-/** Five pocket cards. Distilled from /DOCTRINE.md. Not a Drive dump. */
+/** Pocket cards. Distilled from /DOCTRINE.md. Not a Drive dump. */
 import type { CoachMode, RoleplaySceneId } from "./coach-modes.ts";
 import { COMPASS } from "./survive.ts";
 
 export type PocketLine = { say?: string; note?: string };
 
 export type PocketCard = {
-  id: "door" | "pushback" | "i35" | "set" | "compass";
+  id: "door" | "claim" | "pushback" | "i35" | "set" | "compass";
   mode: CoachMode;
   scene?: RoleplaySceneId;
   title: string;
@@ -93,6 +93,15 @@ export const POCKET_CARDS: PocketCard[] = [
       { say: "Does [day] morning or [day] afternoon work better?" },
       { note: "Both decision-makers. Before the driveway. Name even on a no." },
       { note: "Text the confirm from the number in Settings. Never invent a number." },
+      {
+        say: "No answer, I leave a card. We talked or I looked, I leave a flyer. Storm damage on camera, I leave the claims how-to. Auth only after they read it. Storm letter only if a kept storm matches this zip.",
+      },
+      {
+        say: "We can do in-home, or I inspect first and we do a 20–30 minute phone review.",
+      },
+      {
+        say: "I’ll text the confirm from the number in Settings. Both names. Roofus does not send that text.",
+      },
     ],
   },
   {
@@ -107,6 +116,34 @@ export const POCKET_CARDS: PocketCard[] = [
     ],
   },
 ];
+
+/** Script A. Door list only after a fresh Keep. Matching zip is the when-line. Do not invent hail. */
+export const CLAIM_PATH_CARD: PocketCard = {
+  id: "claim",
+  mode: "roleplay",
+  scene: "walkup",
+  title: "Claim path",
+  when: "Only after Keep. Matching zip.",
+  formula: "Where are you at with insurance → present only to that → document first",
+  lines: [
+    {
+      say: "Where are you at with insurance on the house — nothing filed, adjuster’s been out, they paid something, they denied it, or you already have a check?",
+    },
+    { note: "Present only to that answer. Do not dump all four stages." },
+    { note: "Document first. No claim speech until something is on camera." },
+    {
+      say: "The average deductible is a few thousand dollars. Are you comfortable with that before we go further?",
+    },
+    { note: "Do not say every carrier pays. Do not promise a flip on a denial." },
+  ],
+};
+
+/** B cards always. A card after Door when they Kept a storm. */
+export function doorList(showClaim: boolean): PocketCard[] {
+  if (!showClaim) return POCKET_CARDS;
+  const [door, ...rest] = POCKET_CARDS;
+  return [door, CLAIM_PATH_CARD, ...rest];
+}
 
 export type PreKnockInput = {
   cluster: string;
@@ -156,14 +193,17 @@ export function preKnock(input: PreKnockInput): PreKnock {
 }
 
 export function pocketKnowledge(): string {
-  return POCKET_CARDS.map((c) => {
-    const body = c.lines
-      .map((l) => {
-        if (l.say && l.note) return `- Say: ${l.say}\n  (${l.note})`;
-        if (l.say) return `- Say: ${l.say}`;
-        return `- ${l.note}`;
-      })
-      .join("\n");
-    return `### ${c.title} (${c.when})\nFormula: ${c.formula}\n${body}`;
-  }).join("\n\n");
+  const cards = [POCKET_CARDS[0], CLAIM_PATH_CARD, ...POCKET_CARDS.slice(1)];
+  return cards
+    .map((c) => {
+      const body = c.lines
+        .map((l) => {
+          if (l.say && l.note) return `- Say: ${l.say}\n  (${l.note})`;
+          if (l.say) return `- Say: ${l.say}`;
+          return `- ${l.note}`;
+        })
+        .join("\n");
+      return `### ${c.title} (${c.when})\nFormula: ${c.formula}\n${body}`;
+    })
+    .join("\n\n");
 }

@@ -4,6 +4,7 @@ import {
   CURB_TAGS,
   PIN_STATUSES,
   PIN_STATUS_LABEL,
+  morningPins,
   pinHasPoint,
   pinMapsUrl,
   pinsForLoop,
@@ -51,7 +52,31 @@ export function RevisitPinList({
   );
 }
 
-function PinCard({ pin }: { pin: HousePin }) {
+export function MorningPinList({
+  loopLabel,
+}: {
+  loopLabel: (loopId: string) => string;
+}) {
+  const pins = usePins((s) => s.pins);
+  const mine = morningPins(pins);
+  if (!mine.length) {
+    return (
+      <p className="mt-3 text-sm leading-relaxed text-muted">Nothing to call. Build a loop or knock.</p>
+    );
+  }
+  return (
+    <ul className="mt-3 flex flex-col gap-3">
+      {mine.map((pin) => (
+        <li key={pin.id} className="rounded-2xl border border-border bg-surface px-4 py-3">
+          <p className="text-xs font-medium uppercase tracking-wide text-faint">{loopLabel(pin.loopId)}</p>
+          <PinCard pin={pin} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function PinCard({ pin }: { pin: HousePin }) {
   const update = usePins((s) => s.update);
   const drop = usePins((s) => s.drop);
 

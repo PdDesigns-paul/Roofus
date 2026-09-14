@@ -100,6 +100,26 @@ export function blankDay(date: string): DayEntry {
   };
 }
 
+export function weekTally(days: Record<string, DayEntry>, today = localDateKey()): DayCounts {
+  const out: DayCounts = { knocks: 0, talks: 0, looks: 0, sets: 0 };
+  const start = new Date(`${today}T12:00:00`);
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() - i);
+    const row = days[localDateKey(d)];
+    if (!row) continue;
+    out.knocks += row.knocks;
+    out.talks += row.talks;
+    out.looks += row.looks;
+    out.sets += row.sets;
+  }
+  return out;
+}
+
+export function weekTallyLine(t: DayCounts): string {
+  return `Last 7 days: ${t.knocks} doors · ${t.talks} talks · ${t.looks} looks · ${t.sets} sets`;
+}
+
 type DayBookState = {
   profile: DayProfile;
   days: Record<string, DayEntry>;

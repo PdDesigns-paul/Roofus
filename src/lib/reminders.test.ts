@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { blankReminderPrefs, reminderDue, type RemindClock } from "./reminders.ts";
+import { blankReminderPrefs, reminderDue, REMINDERS, type RemindClock } from "./reminders.ts";
 
 const extra = { afterAction: "", stormFetchedOn: "", stackMonth: "" };
 const prefs = blankReminderPrefs();
@@ -31,6 +31,13 @@ describe("reminderDue", () => {
       reminderDue("journal", prefs, "2026-09-10", true, { ...extra, afterAction: "Wins: one set" }, clock({ hour: 20 })),
       false,
     );
+  });
+
+  it("sends the evening nag to After, not Truck", () => {
+    const journal = REMINDERS.find((r) => r.id === "journal");
+    assert.equal(journal?.to, "/after");
+    const storm = REMINDERS.find((r) => r.id === "storm");
+    assert.equal(storm?.to, "/truck");
   });
 
   it("nags pace on Sunday, stack on the 1st", () => {

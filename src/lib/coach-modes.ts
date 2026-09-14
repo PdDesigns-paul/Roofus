@@ -217,7 +217,7 @@ export function threadTag(input: { origin?: string; mode?: string; hat?: string 
 }
 
 /** Pocket card → which chat to open. */
-export function cardAsk(cardId: "door" | "pushback" | "i35" | "set" | "compass"): {
+export function cardAsk(cardId: "door" | "claim" | "pushback" | "i35" | "set" | "compass"): {
   mode: CoachMode;
   scene?: RoleplaySceneId;
 } {

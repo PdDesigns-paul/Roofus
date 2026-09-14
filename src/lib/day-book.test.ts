@@ -1,7 +1,7 @@
 import "./test-setup.ts";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { blankDay, EMPTY_COUNTS, localDateKey, packAfterAction, unpackAfterAction } from "./day-book.ts";
+import { blankDay, EMPTY_COUNTS, localDateKey, packAfterAction, unpackAfterAction, weekTally, weekTallyLine } from "./day-book.ts";
 
 describe("localDateKey", () => {
   it("is YYYY-MM-DD in local time", () => {
@@ -34,5 +34,20 @@ describe("packAfterAction", () => {
     const out = unpackAfterAction("knocked 40\ngot a set");
     assert.equal(out.wins, "knocked 40\ngot a set");
     assert.equal(out.better, "");
+  });
+});
+
+describe("weekTally", () => {
+  it("sums the last 7 days including today", () => {
+    const t = weekTally(
+      {
+        "2026-09-08": { ...blankDay("2026-09-08"), knocks: 10, talks: 2, looks: 1, sets: 1 },
+        "2026-09-01": { ...blankDay("2026-09-01"), knocks: 99, talks: 9, looks: 9, sets: 9 },
+      },
+      "2026-09-08",
+    );
+    assert.equal(t.knocks, 10);
+    assert.equal(t.sets, 1);
+    assert.match(weekTallyLine(t), /10 doors/);
   });
 });

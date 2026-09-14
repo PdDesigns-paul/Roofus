@@ -143,8 +143,18 @@ export function pinsForLoop(pins: HousePin[], loopId: string): HousePin[] {
   return pins.filter((p) => p.loopId === id);
 }
 
+export function morningPins(pins: HousePin[]): HousePin[] {
+  return pins.filter((p) => p.status === "set" || p.status === "revisit");
+}
+
 export function revisitPins(pins: HousePin[]): HousePin[] {
   return pins.filter((p) => p.status === "revisit");
+}
+
+export function lastPinOnLoop(pins: HousePin[], loopId: string): HousePin | undefined {
+  const mine = pinsForLoop(pins, loopId);
+  if (!mine.length) return undefined;
+  return mine.reduce((a, b) => (a.createdAt >= b.createdAt ? a : b));
 }
 
 export function pinHasPoint(p: Pick<HousePin, "lat" | "lng">): boolean {

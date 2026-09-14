@@ -146,6 +146,6 @@ export function surviveForCoach(): string {
     if (s.windshield) lines.push(`Windshield: ${s.windshield}`);
     if (s.nightBook) lines.push(`Night book (person, not work): ${s.nightBook}`);
   }
-  lines.push("After Action Report is on Truck and After — same fields. Wins first, then facts, then a plan with verbs. Do not duplicate it here.");
+  lines.push("After Action Report lives on After. Wins first, then facts, then a plan with verbs. Do not duplicate it here.");
   return lines.join("\n");
 }

@@ -46,8 +46,11 @@ describe("helpPageFor", () => {
     assert.equal(PAGE_HELP.roof.title, "Roof");
     assert.match(PAGE_HELP.streets.body.join(" "), /After Action Report/);
     assert.match(PAGE_HELP.streets.body.join(" "), /Settings is a Go at the bottom/);
-    assert.match(PAGE_HELP.today.body.join(" "), /Pin drops a sidewalk pin/);
-    assert.match(PAGE_HELP.streets.body.join(" "), /pin board/);
+    assert.match(PAGE_HELP.streets.body.join(" "), /Morning/);
+    assert.match(PAGE_HELP.streets.body.join(" "), /Finish the day owns the night form/);
+    assert.match(PAGE_HELP.today.body.join(" "), /Night is a Go to After/);
+    assert.match(PAGE_HELP.today.body.join(" "), /Ask Roofus how today went is the filled Do on Truck/);
+    assert.match(PAGE_HELP.cards.body.join(" "), /Claim path/);
     assert.equal(helpPageFor("/settings/you"), "settings");
     assert.equal(helpPageFor("/settings/mindset"), "settings");
     assert.equal(helpPageFor("/door"), "cards");

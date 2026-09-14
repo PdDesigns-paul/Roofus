@@ -2,8 +2,10 @@ import "./test-setup.ts";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
+  lastPinOnLoop,
   makePin,
   mergePins,
+  morningPins,
   pinsForLoop,
   pinsLineForCoach,
   restorePin,
@@ -58,6 +60,27 @@ describe("pinsForLoop / revisitPins", () => {
     const pins = [a, b, c];
     assert.equal(pinsForLoop(pins, "oak").length, 2);
     assert.equal(revisitPins(pins).length, 2);
+  });
+});
+
+describe("morningPins / lastPinOnLoop", () => {
+  it("lists only set + revisit for the 7am chip", () => {
+    const a = makePin({ loopId: "oak", lat: 1, lng: 1, status: "set" });
+    const b = makePin({ loopId: "oak", lat: 1, lng: 1, status: "revisit" });
+    const c = makePin({ loopId: "oak", lat: 1, lng: 1, status: "talked" });
+    const d = makePin({ loopId: "oak", lat: 1, lng: 1, status: "no-answer" });
+    assert.equal(morningPins([a, b, c, d]).length, 2);
+    assert.deepEqual(
+      morningPins([a, b, c, d]).map((p) => p.status).sort(),
+      ["revisit", "set"],
+    );
+  });
+  it("returns the newest pin on a loop", () => {
+    const a = makePin({ loopId: "oak", lat: 1, lng: 1, houseNumber: "10" });
+    const b = { ...makePin({ loopId: "oak", lat: 1, lng: 1, houseNumber: "12" }), createdAt: "2099-01-01T00:00:00.000Z" };
+    const last = lastPinOnLoop([a, b], "oak");
+    assert.equal(last?.houseNumber, "12");
+    assert.equal(lastPinOnLoop([a, b], "elm"), undefined);
   });
 });
 

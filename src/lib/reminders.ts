@@ -21,8 +21,8 @@ export const REMINDERS = [
     id: "journal",
     label: "Tracking + journal",
     when: "Evening",
-    hint: "Four counts. After Action Report. After 5, if it is blank.",
-    to: "/truck",
+    hint: "After Action Report on After. After 5, if it is blank.",
+    to: "/after",
   },
   {
     id: "pace",

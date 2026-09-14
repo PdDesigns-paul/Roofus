@@ -2,11 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AarFields } from "@/components/aar-fields";
-import { PinBoard, RevisitPinList } from "@/components/pin-board";
+import { PinBoard, RevisitPinList, MorningPinList } from "@/components/pin-board";
 import { AppHeader } from "@/components/app-header";
+import { PlaceCard } from "@/components/place-card";
 import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
-import { blankDay, localDateKey, useDayBook } from "@/lib/day-book";
+import { blankDay, localDateKey, useDayBook, weekTally, weekTallyLine } from "@/lib/day-book";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
 import { phoneError, readJson } from "@/lib/read-json";
 import { useScout } from "@/lib/scout-store";
@@ -23,7 +24,7 @@ import {
   searchStreetLoops,
 } from "@/lib/streets-rank";
 import { marketKey, useStreets } from "@/lib/streets-store";
-import { pinsForLoop, revisitPins } from "@/lib/pins";
+import { morningPins, pinsForLoop, revisitPins } from "@/lib/pins";
 import { usePins } from "@/lib/pins-store";
 import {
   DEFAULT_AGE_MAX,
@@ -86,6 +87,7 @@ function AfterPage() {
   const [q, setQ] = useState("");
   const [nearMe, setNearMe] = useState(false);
   const [revisit, setRevisit] = useState(false);
+  const [morning, setMorning] = useState(false);
   const [here, setHere] = useState<{ lat: number; lon: number } | null>(null);
   const [nearBusy, setNearBusy] = useState(false);
   const [nearErr, setNearErr] = useState("");
@@ -94,7 +96,18 @@ function AfterPage() {
   const stale = Boolean(loops.length && builtFor && builtFor !== key);
   const autoBuild = useRef(false);
   const allPins = usePins((s) => s.pins);
+  const days = useDayBook((s) => s.days);
   const revisitCount = revisitPins(allPins).length;
+  const morningCount = morningPins(allPins).length;
+  const hasWorking = loops.some((l) => l.status === "working");
+  const [huntOpen, setHuntOpen] = useState(!hasWorking);
+  const [finishOpen, setFinishOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    if (window.location.hash === "#finish") return true;
+    return new Date().getHours() >= 17;
+  });
+  const week = weekTally(days, date);
+  const weekLine = week.knocks || week.talks || week.looks || week.sets ? weekTallyLine(week) : "";
   const { working, rest, searching } = searchStreetLoops(loops, q);
   const groups = groupLoopsByTownship(rest);
   const nearRest = nearMe ? nearMeList(rest, here) : [];
@@ -182,6 +195,7 @@ function AfterPage() {
     setNearBusy(true);
     setNearErr("");
     setRevisit(false);
+    setMorning(false);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setHere({ lat: pos.coords.latitude, lon: pos.coords.longitude });
@@ -202,6 +216,13 @@ function AfterPage() {
     setDraftMin(String(ageMin));
     setDraftMax(String(ageMax));
   }, [ageMin, ageMax]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.hash !== "#finish") return;
+    setFinishOpen(true);
+    document.getElementById("finish")?.scrollIntoView({ block: "start" });
+  }, []);
 
   useEffect(() => {
     if (autoBuild.current) return;
@@ -265,8 +286,22 @@ function AfterPage() {
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
       <AppHeader title="After" />
-      <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where you knock.</h1>
-      <p className="mt-2 text-sm leading-relaxed text-muted">
+      <ul className="mt-4 flex flex-col gap-3">
+        <PlaceCard
+          id="hunt"
+          when="Hunt"
+          title="Where you knock"
+          formula={
+            working[0]
+              ? loopHeadline(working[0])
+              : loops.length
+                ? `${loops.length} loop${loops.length === 1 ? "" : "s"}`
+                : "Build a loop"
+          }
+          open={huntOpen}
+          onToggle={() => setHuntOpen((v) => !v)}
+        >
+      <p className="text-sm leading-relaxed text-muted">
         {profile.counties.trim()}, {profile.states.trim()}. Each card is a walkable loop. Township is the folder.
       </p>
 
@@ -364,6 +399,22 @@ function AfterPage() {
               {nearBusy ? "Finding you…" : "Near me"}
             </Chip>
             <Chip
+              selected={morning}
+              onClick={() => {
+                setMorning((v) => {
+                  const next = !v;
+                  if (next) {
+                    setNearMe(false);
+                    setHere(null);
+                    setRevisit(false);
+                  }
+                  return next;
+                });
+              }}
+            >
+              {morningCount ? `Morning · ${morningCount}` : "Morning"}
+            </Chip>
+            <Chip
               selected={revisit}
               onClick={() => {
                 setRevisit((v) => {
@@ -371,6 +422,7 @@ function AfterPage() {
                   if (next) {
                     setNearMe(false);
                     setHere(null);
+                    setMorning(false);
                   }
                   return next;
                 });
@@ -400,7 +452,17 @@ function AfterPage() {
         </p>
       ) : null}
 
-      {revisit ? (
+      {morning ? (
+        <section className="mt-5">
+          <p className="text-xs font-medium uppercase tracking-wide text-faint">Morning</p>
+          <MorningPinList
+            loopLabel={(id) => {
+              const loop = loops.find((l) => l.id === id);
+              return loop ? loopHeadline(loop) : "Loop";
+            }}
+          />
+        </section>
+      ) : revisit ? (
         <section className="mt-5">
           <p className="text-xs font-medium uppercase tracking-wide text-faint">Revisit</p>
           <RevisitPinList
@@ -494,12 +556,21 @@ function AfterPage() {
       )}
         </>
       )}
+        </PlaceCard>
 
-      <section className="mt-8 border-t border-border pt-5">
-        <h2 className="font-display text-xl tracking-tight">Finish the day</h2>
-        <p className="mt-1 text-sm leading-relaxed text-muted">
+        <PlaceCard
+          id="finish"
+          when="Night"
+          title="Finish the day"
+          formula={day.afterAction.trim() ? "AAR · done" : "AAR · blank"}
+          open={finishOpen}
+          onToggle={() => setFinishOpen((v) => !v)}
+          anchor="finish"
+        >
+        <p className="text-sm leading-relaxed text-muted">
           Pick tomorrow. Finish the journal. Do not expand the hunt.
         </p>
+        {weekLine ? <p className="mt-2 text-sm leading-relaxed">{weekLine}</p> : null}
         <AarFields value={day.afterAction} onChange={(v) => patchToday({ afterAction: v })} />
         <label className="mt-4 block min-w-0">
           <span className="text-xs font-medium uppercase tracking-wide text-faint">Tomorrow I start at</span>
@@ -509,7 +580,8 @@ function AfterPage() {
             onChange={(e) => patchToday({ tomorrowStreet: e.target.value })}
           />
         </label>
-      </section>
+        </PlaceCard>
+      </ul>
 
       <Link
         to="/settings"

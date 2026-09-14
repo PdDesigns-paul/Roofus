@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/app-header";
-import { AarFields } from "@/components/aar-fields";
-import { PinBoard } from "@/components/pin-board";
 import { HomeSetupCard } from "@/components/home-setup-card";
 import { InstallHint } from "@/components/install-hint";
+import { PlaceCard } from "@/components/place-card";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import { whenCoachReady, useCoach } from "@/lib/coach-store";
@@ -18,6 +17,7 @@ import {
 } from "@/lib/day-book";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
 import { freshKeptSentence } from "@/lib/kept-storm";
+import { lastPinOnLoop, pinsForLoop } from "@/lib/pins";
 import { applyPulseFootprints } from "@/lib/scout-store";
 import { phoneError, readJson } from "@/lib/read-json";
 import { stormsNearLoop } from "@/lib/weather-match";
@@ -28,19 +28,14 @@ import { companyOf, setupSnap } from "@/lib/setup-progress";
 import { useSettings } from "@/lib/settings-store";
 import { useSurvive } from "@/lib/survive-store";
 import {
-  addCluster,
-  addLoopToPlan,
   clusterLines,
   dropCluster,
   dropLoopFromPlan,
   firstRemainingInPlan,
-  groupLoopsByTownship,
   loopHeadline,
-  loopInPlan,
   loopLabel,
   loopsInPlan,
   matchLoopCluster,
-  MAX_TODAY_LOOPS,
 } from "@/lib/streets-rank";
 import { suggestTomorrow, useStreets } from "@/lib/streets-store";
 import { usePins } from "@/lib/pins-store";
@@ -104,11 +99,16 @@ function DaySheet() {
   const [pinBusy, setPinBusy] = useState(false);
   const [pinErr, setPinErr] = useState("");
   const addPin = usePins((s) => s.add);
+  const allPins = usePins((s) => s.pins);
   const plan = loopsInPlan(loops, day.cluster);
   const current = firstRemainingInPlan(loops, day.cluster);
   const extra = Math.max(0, clusterLines(day.cluster).length - 1);
   const nearby = stormsNearPlan(kept, plan);
   const keptLine = freshKeptSentence(keptStorms);
+  const working = loops.find((l) => l.status === "working");
+  const [open, setOpen] = useState<string | null>(working ? "pin" : "before");
+  const pinCount = current ? pinsForLoop(allPins, current.id).length : 0;
+  const lastPin = current ? lastPinOnLoop(allPins, current.id) : undefined;
 
   useEffect(() => {
     if (!plan.length || day.storm.trim() || !nearby.length) return;
@@ -121,6 +121,10 @@ function DaySheet() {
     patchToday({ cluster: next });
     const hit = firstRemainingInPlan(loops, next);
     if (hit) useStreets.getState().setStatus(hit.id, "working");
+  }
+
+  function toggleCard(id: string) {
+    setOpen((cur) => (cur === id ? null : id));
   }
 
   function askAboutToday() {
@@ -145,8 +149,37 @@ function DaySheet() {
     });
   }
 
+  function dropPin() {
+    if (!current) {
+      setPinErr("Pick a Working loop first.");
+      return;
+    }
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      addPin({ loopId: current.id, lat: current.lat, lng: current.lon });
+      setPinErr("This phone will not share a location. Dropped on the loop.");
+      return;
+    }
+    setPinBusy(true);
+    setPinErr("");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        addPin({
+          loopId: current.id,
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+        setPinBusy(false);
+      },
+      () => {
+        addPin({ loopId: current.id, lat: current.lat, lng: current.lon });
+        setPinBusy(false);
+        setPinErr("Could not get a location. Dropped on the loop.");
+      },
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 15_000 },
+    );
+  }
+
   const market = [profile.counties, profile.states].filter(Boolean).join(", ");
-  const working = loops.find((l) => l.status === "working");
   const snap = setupSnap({
     goBy: profile.goBy,
     profileCompany: profile.company,
@@ -170,6 +203,18 @@ function DaySheet() {
     ageMax,
     workingZip: working ? loopLabel(working) : "",
   });
+  const aarDone = Boolean(day.afterAction.trim());
+  const pinFormula = current
+    ? lastPin
+      ? `${pinCount} pin${pinCount === 1 ? "" : "s"} · last ${lastPin.houseNumber.trim() || "dropped"}`
+      : "Tap Pin at the house"
+    : "Working loop first";
+  const planFormula = plan.length
+    ? `${plan.length} on the plan`
+    : "Open After to pick a loop";
+  const weatherFormula = day.storm.trim()
+    ? day.storm.trim().split("\n")[0] ?? "Age first"
+    : "Age first";
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
@@ -204,172 +249,208 @@ function DaySheet() {
         )}
       </p>
 
-      <section className="mt-4 rounded-2xl border border-border bg-surface px-4 py-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-faint">Before you knock</p>
-        <p className="mt-2 font-display text-2xl tracking-tight">
-          {current ? loopHeadline(current) : knock.zip}
-          {extra ? <span className="text-lg font-normal text-muted">{` + ${extra} more`}</span> : null}
-        </p>
-        <p className="mt-1 text-sm text-muted">
-          {knock.age}
-          {knock.hours ? ` · ${knock.hours}` : ""}
-        </p>
-        <p className="mt-2 text-sm leading-relaxed">{keptLine || knock.weather}</p>
-        <p className="mt-2 text-xs leading-relaxed text-muted">{knock.script}</p>
-        <p className="mt-3 text-sm leading-relaxed">{knock.opener}</p>
-        <Link to="/door" className="mt-3 inline-flex h-11 items-center text-sm text-fg underline underline-offset-4">
-          Cards
-        </Link>
-      </section>
+      {!working ? (
+        <>
+          <Button type="button" size="lg" className="mt-5 w-full" disabled={busy} onClick={askAboutToday}>
+            Ask Roofus how today went
+          </Button>
+          {askErr ? <p className="mt-2 text-sm text-danger">{askErr}</p> : null}
+        </>
+      ) : null}
 
-      <section className="mt-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-faint">Pins</p>
-        <p className="mt-0.5 text-xs leading-snug text-muted">
-          On this loop. Sidewalk only. Not a CRM.
-        </p>
-        <button
-          type="button"
-          disabled={pinBusy}
-          onClick={() => {
-            if (!current) {
-              setPinErr("Pick a Working loop first.");
-              return;
-            }
-            if (typeof navigator === "undefined" || !navigator.geolocation) {
-              addPin({ loopId: current.id, lat: current.lat, lng: current.lon });
-              setPinErr("This phone will not share a location. Dropped on the loop.");
-              return;
-            }
-            setPinBusy(true);
-            setPinErr("");
-            navigator.geolocation.getCurrentPosition(
-              (pos) => {
-                addPin({
-                  loopId: current.id,
-                  lat: pos.coords.latitude,
-                  lng: pos.coords.longitude,
-                });
-                setPinBusy(false);
-              },
-              () => {
-                addPin({ loopId: current.id, lat: current.lat, lng: current.lon });
-                setPinBusy(false);
-                setPinErr("Could not get a location. Dropped on the loop.");
-              },
-              { enableHighAccuracy: false, timeout: 8000, maximumAge: 15_000 },
-            );
-          }}
-          className="mt-3 h-12 w-full rounded-full bg-fg text-sm text-paper disabled:opacity-40"
+      <ul className="mt-4 flex flex-col gap-3">
+        <PlaceCard
+          id="before"
+          when="Before you knock"
+          title={current ? loopHeadline(current) : knock.zip}
+          formula={`${knock.age}${extra ? ` · +${extra} more` : ""}`}
+          open={open === "before"}
+          onToggle={toggleCard}
         >
-          {pinBusy ? "Dropping pin…" : "Pin"}
-        </button>
-        {pinErr ? <p className="mt-2 text-sm leading-relaxed text-muted">{pinErr}</p> : null}
-        {current ? <PinBoard loopId={current.id} /> : (
-          <p className="mt-3 text-sm leading-relaxed text-muted">Pick a Working loop, then tap Pin at the house.</p>
-        )}
-      </section>
+          <p className="text-sm text-muted">
+            {knock.age}
+            {knock.hours ? ` · ${knock.hours}` : ""}
+          </p>
+          <p className="mt-2 text-sm leading-relaxed">{keptLine || knock.weather}</p>
+          <p className="mt-2 text-xs leading-relaxed text-muted">{knock.script}</p>
+          <p className="mt-3 text-sm leading-relaxed">{knock.opener}</p>
+          <Link to="/door" className="mt-3 inline-flex h-11 items-center text-sm text-fg underline underline-offset-4">
+            Cards
+          </Link>
+        </PlaceCard>
 
-      <section className="mt-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-faint">Tap to count</p>
-        <ul className="mt-2 grid grid-cols-2 gap-2">
-          {COUNTERS.map((c) => (
-            <li key={c.key} className="relative min-w-0 rounded-2xl border border-border bg-surface">
-              <button
-                type="button"
-                aria-label={`Plus ${c.label}`}
-                className="flex min-h-24 w-full flex-col items-start px-3 py-3 pr-12 pb-12 text-left"
-                onClick={() => bump(c.key, 1)}
-              >
-                <p className="text-[11px] uppercase tracking-wide text-faint">{c.label}</p>
-                <p className="mt-1 font-display text-4xl tabular-nums leading-none">{day[c.key]}</p>
-                <p className="mt-1 text-xs text-muted">{c.hint}</p>
-              </button>
-              <button
-                type="button"
-                aria-label={`Minus ${c.label}`}
-                className="absolute bottom-1 right-1 inline-flex size-11 items-center justify-center rounded-full border border-border text-sm"
-                onClick={() => bump(c.key, -1)}
-              >
-                −
-              </button>
-            </li>
+        <PlaceCard
+          id="counts"
+          when="Counts"
+          title="Tap to count"
+          formula={`${day.knocks} · ${day.talks} · ${day.looks} · ${day.sets}`}
+          open={open === "counts"}
+          onToggle={toggleCard}
+        >
+          <ul className="grid grid-cols-2 gap-2">
+            {COUNTERS.map((c) => (
+              <li key={c.key} className="relative min-w-0 rounded-2xl border border-border bg-surface">
+                <button
+                  type="button"
+                  aria-label={`Plus ${c.label}`}
+                  className="flex min-h-24 w-full flex-col items-start px-3 py-3 pr-12 pb-12 text-left"
+                  onClick={() => bump(c.key, 1)}
+                >
+                  <p className="text-[11px] uppercase tracking-wide text-faint">{c.label}</p>
+                  <p className="mt-1 font-display text-4xl tabular-nums leading-none">{day[c.key]}</p>
+                  <p className="mt-1 text-xs text-muted">{c.hint}</p>
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Minus ${c.label}`}
+                  className="absolute bottom-1 right-1 inline-flex size-11 items-center justify-center rounded-full border border-border text-sm"
+                  onClick={() => bump(c.key, -1)}
+                >
+                  −
+                </button>
+              </li>
+            ))}
+          </ul>
+        </PlaceCard>
+
+        <PlaceCard
+          id="pin"
+          when="Pin"
+          title="This house"
+          formula={pinFormula}
+          open={open === "pin"}
+          onToggle={toggleCard}
+        >
+          <p className="text-xs leading-snug text-muted">On this loop. Sidewalk only. Not a CRM.</p>
+          <button
+            type="button"
+            disabled={pinBusy}
+            onClick={dropPin}
+            className={`mt-3 h-12 w-full rounded-full text-sm disabled:opacity-40 ${
+              working ? "bg-fg text-paper" : "border border-border"
+            }`}
+          >
+            {pinBusy ? "Dropping pin…" : "Pin"}
+          </button>
+          {pinErr ? <p className="mt-2 text-sm leading-relaxed text-muted">{pinErr}</p> : null}
+          {lastPin ? (
+            <p className="mt-3 text-sm leading-relaxed">
+              Last: {lastPin.houseNumber.trim() || "dropped"}
+              {lastPin.note.trim() ? ` · ${lastPin.note.trim()}` : ""}
+            </p>
+          ) : (
+            <p className="mt-3 text-sm leading-relaxed text-muted">
+              {current ? "No pin yet." : "Pick a Working loop, then tap Pin at the house."}
+            </p>
+          )}
+          {pinCount > 1 ? (
+            <p className="mt-1 text-xs text-muted">{pinCount} on this loop. Full board is on After.</p>
+          ) : null}
+        </PlaceCard>
+
+        <PlaceCard
+          id="plan"
+          when="Plan"
+          title="Neighborhood today"
+          formula={planFormula}
+          open={open === "plan"}
+          onToggle={toggleCard}
+        >
+          <PlanChips loops={loops} cluster={day.cluster} onPlan={applyPlan} />
+          <Link to="/after" className="mt-3 inline-flex h-11 items-center text-sm text-fg underline underline-offset-4">
+            Open After
+          </Link>
+          {plan.map((l) => (
+            <a
+              key={l.id}
+              href={mapsUrl(l)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 block text-sm text-fg underline underline-offset-4"
+            >
+              {mapsLabel(l)}
+            </a>
           ))}
-        </ul>
-      </section>
+        </PlaceCard>
 
-      <section className="mt-4 min-w-0">
-        <p className="text-xs font-medium uppercase tracking-wide text-faint">Neighborhood today</p>
-        <p className="mt-0.5 text-xs leading-snug text-muted">
-          {loops.length
-            ? "Check backups in case one is picked over. First remaining is Working."
-            : "Build Streets from your counties, or type a loop · zip."}
-        </p>
-        {loops.length ? (
-          <LoopPlan loops={loops} cluster={day.cluster} onPlan={applyPlan} />
-        ) : (
-          <input
-            className="mt-2 h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
-            value={day.cluster}
-            onChange={(e) => applyPlan(e.target.value)}
-            placeholder="Loop · zip, or type"
-          />
-        )}
-      </section>
-      <Link to="/after" className="mt-2 text-sm text-fg underline underline-offset-4">
-        {loops.length ? "Open After" : "Build loops from my counties"}
-      </Link>
-      {plan.map((l) => (
-        <a
-          key={l.id}
-          href={mapsUrl(l)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 text-sm text-fg underline underline-offset-4"
+        <PlaceCard
+          id="pulse"
+          when="Last 48 hours"
+          title="Keep / Toss / Skip"
+          formula={keptLine ? "Keep on" : "Check last 48 hours"}
+          open={open === "pulse"}
+          onToggle={toggleCard}
         >
-          {mapsLabel(l)}
-        </a>
-      ))}
+          <Last48Hours
+            pulse={pulse}
+            pending={pending}
+            tossed={tossed}
+            keptLine={keptLine}
+            counties={profile.counties}
+            states={profile.states}
+            onKeepLead={keepLead}
+            onTossLead={tossLead}
+            onSkipLead={skipLead}
+            onKeepStorm={keep}
+            onTossStorm={toss}
+          />
+        </PlaceCard>
 
-      <Last48Hours
-        pulse={pulse}
-        pending={pending}
-        tossed={tossed}
-        keptLine={keptLine}
-        counties={profile.counties}
-        states={profile.states}
-        onKeepLead={keepLead}
-        onTossLead={tossLead}
-        onSkipLead={skipLead}
-        onKeepStorm={keep}
-        onTossStorm={toss}
-      />
+        <PlaceCard
+          id="weather"
+          when="Weather you can say"
+          title="Age first"
+          formula={weatherFormula}
+          open={open === "weather"}
+          onToggle={toggleCard}
+        >
+          <p className="text-xs leading-snug text-muted">
+            Copied from After when you tap Use today. Edit freely. Age first.
+          </p>
+          <textarea
+            className="mt-2 min-h-16 w-full min-w-0 rounded-xl border border-border bg-surface px-3 py-2 text-base leading-relaxed"
+            value={day.storm}
+            onChange={(e) => patchToday({ storm: e.target.value })}
+            placeholder="Yesterday’s cell, 1 inch hail in Hampden — only if that’s true."
+          />
+        </PlaceCard>
 
-      <Field
-        label="Weather you can mention"
-        hint="Copied from Streets when you tap Use today. Edit freely. Age first."
-      >
-        <textarea
-          className="mt-2 min-h-16 w-full min-w-0 rounded-xl border border-border bg-surface px-3 py-2 text-base leading-relaxed"
-          value={day.storm}
-          onChange={(e) => patchToday({ storm: e.target.value })}
-          placeholder="Yesterday’s cell, 1 inch hail in Hampden — only if that’s true."
-        />
-      </Field>
+        <PlaceCard
+          id="night"
+          when="Night"
+          title="Finish the day"
+          formula={aarDone ? "AAR · done" : "AAR · blank"}
+          open={open === "night"}
+          onToggle={toggleCard}
+        >
+          <p className="text-sm leading-relaxed text-muted">
+            After Action Report and tomorrow live on After. No second form here.
+          </p>
+          <Link
+            to="/after"
+            hash="finish"
+            className="mt-3 inline-flex h-11 items-center text-sm text-fg underline underline-offset-4"
+          >
+            Open After
+          </Link>
+        </PlaceCard>
+      </ul>
 
-      <AarFields value={day.afterAction} onChange={(v) => patchToday({ afterAction: v })} />
-
-      <Field label="Tomorrow I start at">
-        <input
-          className="mt-2 h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
-          value={day.tomorrowStreet}
-          onChange={(e) => patchToday({ tomorrowStreet: e.target.value })}
-        />
-      </Field>
-
-      <Button type="button" size="lg" className="mt-5 w-full" disabled={busy} onClick={askAboutToday}>
-        Ask Roofus how today went
-      </Button>
-      {askErr ? <p className="mt-2 text-sm text-danger">{askErr}</p> : null}
+      {working ? (
+        <>
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            className="mt-5 w-full"
+            disabled={busy}
+            onClick={askAboutToday}
+          >
+            Ask Roofus how today went
+          </Button>
+          {askErr ? <p className="mt-2 text-sm text-danger">{askErr}</p> : null}
+        </>
+      ) : null}
 
       <InstallHint />
       <NotionHint />
@@ -377,9 +458,7 @@ function DaySheet() {
   );
 }
 
-const COLLAPSE_ABOVE = 24;
-
-function LoopPlan({
+function PlanChips({
   loops,
   cluster,
   onPlan,
@@ -388,114 +467,24 @@ function LoopPlan({
   cluster: string;
   onPlan: (next: string) => void;
 }) {
-  const [typed, setTyped] = useState("");
-  const [open, setOpen] = useState<Record<string, boolean>>({});
-  const many = loops.length > COLLAPSE_ABOVE;
-  const atCap = clusterLines(cluster).length >= MAX_TODAY_LOOPS;
+  const plan = loopsInPlan(loops, cluster);
   const unmatched = clusterLines(cluster).filter((line) => !loops.some((l) => matchLoopCluster(l, line)));
-
-  function toggle(loop: StreetLoop) {
-    const on = loopInPlan(loop, cluster);
-    if (!on && atCap) return;
-    onPlan(on ? dropLoopFromPlan(cluster, loop) : addLoopToPlan(cluster, loop));
+  if (!plan.length && !unmatched.length) {
+    return <p className="text-sm leading-relaxed text-muted">No loop on today’s plan. Open After.</p>;
   }
-
-  function addTyped() {
-    const value = typed.trim();
-    if (!value) return;
-    const hit = loops.find((l) => matchLoopCluster(l, value) || loopHeadline(l).toLowerCase() === value.toLowerCase());
-    onPlan(hit ? addLoopToPlan(cluster, hit) : addCluster(cluster, value));
-    setTyped("");
-  }
-
   return (
-    <>
-      {unmatched.length ? (
-        <ul className="mt-2 space-y-1">
-          {unmatched.map((line) => (
-            <li
-              key={line}
-              className="flex min-h-11 items-center justify-between gap-2 rounded-xl border border-border px-3"
-            >
-              <span className="min-w-0 truncate text-sm">{line}</span>
-              <Chip onClick={() => onPlan(dropCluster(cluster, line))}>Remove</Chip>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-      <div className="mt-2 space-y-2">
-        {groupLoopsByTownship(loops).map((g) =>
-          g.townships.map((t) => {
-            const key = `${g.county}-${t.township}`;
-            const hasPick = t.loops.some((l) => loopInPlan(l, cluster));
-            const shown = !many || hasPick || open[key];
-            return (
-              <div key={key} className="rounded-2xl border border-border">
-                <button
-                  type="button"
-                  className="flex min-h-11 w-full items-center justify-between gap-2 px-3 text-left text-sm"
-                  onClick={() => setOpen((s) => ({ ...s, [key]: !shown }))}
-                  aria-expanded={shown}
-                >
-                  <span className="min-w-0 truncate">
-                    {t.township} · {g.county}
-                  </span>
-                  <span className="shrink-0 text-xs text-muted">
-                    {hasPick ? `${t.loops.filter((l) => loopInPlan(l, cluster)).length} on` : `${t.loops.length}`}
-                  </span>
-                </button>
-                {shown ? (
-                  <div className="flex flex-col gap-2 border-t border-border px-3 py-2">
-                    {t.loops.map((l) => {
-                      const on = loopInPlan(l, cluster);
-                      return (
-                        <Chip
-                          key={l.id}
-                          selected={on}
-                          disabled={!on && atCap}
-                          className="w-full justify-start"
-                          onClick={() => toggle(l)}
-                        >
-                          {loopHeadline(l)}
-                        </Chip>
-                      );
-                    })}
-                  </div>
-                ) : null}
-              </div>
-            );
-          }),
-        )}
-      </div>
-      {atCap ? <p className="mt-2 text-xs text-muted">Eight loops is enough for one day.</p> : null}
-      <input
-        className="mt-2 h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
-        value={typed}
-        onChange={(e) => {
-          const value = e.target.value;
-          const hit = loops.find((l) => loopHeadline(l) === value);
-          if (hit) {
-            onPlan(addLoopToPlan(cluster, hit));
-            setTyped("");
-            return;
-          }
-          setTyped(value);
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            addTyped();
-          }
-        }}
-        placeholder="Add another loop · zip"
-        list="street-loops"
-      />
-      <datalist id="street-loops">
-        {loops.map((l) => (
-          <option key={l.id} value={loopHeadline(l)} />
-        ))}
-      </datalist>
-    </>
+    <div className="flex flex-col gap-2">
+      {plan.map((l) => (
+        <Chip key={l.id} selected className="w-full justify-start" onClick={() => onPlan(dropLoopFromPlan(cluster, l))}>
+          {loopHeadline(l)}
+        </Chip>
+      ))}
+      {unmatched.map((line) => (
+        <Chip key={line} selected className="w-full justify-start" onClick={() => onPlan(dropCluster(cluster, line))}>
+          {line}
+        </Chip>
+      ))}
+    </div>
   );
 }
 
@@ -596,11 +585,8 @@ function Last48Hours({
   }
 
   return (
-    <section className="mt-4">
-      <p className="text-xs font-medium uppercase tracking-wide text-faint">Last 48 hours</p>
-      <p className="mt-0.5 text-xs leading-snug text-muted">
-        Keep is the porch gate. Toss or Skip writes no sentence.
-      </p>
+    <div>
+      <p className="text-xs leading-snug text-muted">Keep is the porch gate. Toss or Skip writes no sentence.</p>
       {ready ? (
         <Button type="button" variant="outline" className="mt-2 w-full" disabled={busy} onClick={() => void checkPulse()}>
           {busy ? "Checking…" : "Check last 48 hours"}
@@ -651,24 +637,6 @@ function Last48Hours({
           ))}
         </ul>
       ) : null}
-    </section>
-  );
-}
-
-function Field({
-  label,
-  hint,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  children: ReactNode;
-}) {
-  return (
-    <label className="mt-4 block min-w-0">
-      <span className="text-xs font-medium uppercase tracking-wide text-faint">{label}</span>
-      {hint ? <span className="mt-0.5 block text-xs leading-snug text-muted">{hint}</span> : null}
-      {children}
-    </label>
+    </div>
   );
 }
