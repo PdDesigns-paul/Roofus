@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { AarFields } from "@/components/aar-fields";
 import { AppHeader } from "@/components/app-header";
 import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
-import { useDayBook } from "@/lib/day-book";
+import { blankDay, localDateKey, useDayBook } from "@/lib/day-book";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
 import { phoneError, readJson } from "@/lib/read-json";
 import { useScout } from "@/lib/scout-store";
@@ -33,10 +35,10 @@ import { parseList, countyBasename } from "@/lib/us-state-fips";
 import { mentionOnStreet } from "@/lib/weather-match";
 import { useWeather } from "@/lib/weather-store";
 
-/** After hosts the Streets hunt. Formerly /streets. */
+/** After hosts the Streets hunt and the night wrap-up. Formerly /streets. */
 export const Route = createFileRoute("/after")({
   codeSplitGroupings: [],
-  component: StreetsPage,
+  component: AfterPage,
 });
 
 const RESULTS: { id: LoopResult; label: string }[] = [
@@ -59,8 +61,12 @@ const PRESETS: { min: number; max: number; label: string }[] = [
   { min: 20, max: 30, label: "20–30" },
 ];
 
-function StreetsPage() {
+function AfterPage() {
   const profile = useDayBook((s) => s.profile);
+  const date = localDateKey();
+  const stored = useDayBook((s) => s.days[date]);
+  const day = stored ?? blankDay(date);
+  const patchToday = useDayBook((s) => s.patchToday);
   const loops = useStreets((s) => s.loops);
   const note = useStreets((s) => s.note);
   const builtFor = useStreets((s) => s.builtFor);
@@ -86,7 +92,7 @@ function StreetsPage() {
   const { working, rest, searching } = searchStreetLoops(loops, q);
   const groups = groupLoopsByTownship(rest);
   const nearRest = nearMe ? nearMeList(rest, here) : [];
-  const plan = useDayBook((s) => s.today().cluster);
+  const plan = day.cluster;
   const asked = parseList(profile.counties);
   const have = new Set(loops.map((l) => countyBasename(l.county).toLowerCase()));
   const ghostCounties = [
@@ -234,6 +240,16 @@ function StreetsPage() {
           className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-fg text-sm text-paper"
         >
           Open Settings
+        </Link>
+        <Link
+          to="/settings"
+          className="mt-6 mb-2 flex min-h-14 items-center justify-between gap-3 border-t border-border py-3"
+        >
+          <span className="flex min-w-0 flex-col">
+            <span className="text-sm text-fg">Settings</span>
+            <span className="text-xs text-faint">You, territory, hours, mindset, backup</span>
+          </span>
+          <ChevronRight className="size-5 shrink-0 text-muted" aria-hidden />
         </Link>
       </main>
     );
@@ -442,6 +458,33 @@ function StreetsPage() {
         ))}
       </ul>
       )}
+
+      <section className="mt-8 border-t border-border pt-5">
+        <h2 className="font-display text-xl tracking-tight">Finish the day</h2>
+        <p className="mt-1 text-sm leading-relaxed text-muted">
+          Pick tomorrow. Finish the journal. Do not expand the hunt.
+        </p>
+        <AarFields value={day.afterAction} onChange={(v) => patchToday({ afterAction: v })} />
+        <label className="mt-4 block min-w-0">
+          <span className="text-xs font-medium uppercase tracking-wide text-faint">Tomorrow I start at</span>
+          <input
+            className="mt-2 h-11 w-full min-w-0 rounded-xl border border-border bg-surface px-3 text-base"
+            value={day.tomorrowStreet}
+            onChange={(e) => patchToday({ tomorrowStreet: e.target.value })}
+          />
+        </label>
+      </section>
+
+      <Link
+        to="/settings"
+        className="mt-6 mb-2 flex min-h-14 items-center justify-between gap-3 border-t border-border py-3"
+      >
+        <span className="flex min-w-0 flex-col">
+          <span className="text-sm text-fg">Settings</span>
+          <span className="text-xs text-faint">You, territory, hours, mindset, backup</span>
+        </span>
+        <ChevronRight className="size-5 shrink-0 text-muted" aria-hidden />
+      </Link>
     </main>
   );
 }
