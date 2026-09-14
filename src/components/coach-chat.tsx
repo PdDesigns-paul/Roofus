@@ -9,13 +9,11 @@ import { RoofusFace, RoofusMark } from "@/components/roofus-mark";
 import { Tip } from "@/components/ui/tooltip";
 import { abortTalk, sendRoofus, stopRoofus } from "@/lib/roofus-talk";
 import { useCoach } from "@/lib/coach-store";
+import { RoleplayBar } from "@/components/roleplay-bar";
 import {
-  ROLEPLAY_SCENES,
-  ROLEPLAY_WHO,
   modeById,
+  personForScene,
   roleplayKnockLine,
-  type RoleplaySceneId,
-  type RoleplayWhoId,
 } from "@/lib/coach-modes";
 import { WALKS, walkKickoff, type WalkId } from "@/lib/survive";
 
@@ -37,7 +35,7 @@ export function CoachChat({ embedded = false }: { embedded?: boolean }) {
   const bottom = useRef<HTMLDivElement>(null);
   const mode = modeById(modeId);
   const beat = scene ?? "walkup";
-  const person = who ?? "busy";
+  const person = personForScene(beat, who);
 
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "end" });
@@ -228,80 +226,6 @@ export function CoachChat({ embedded = false }: { embedded?: boolean }) {
           )}
         </div>
       </form>
-    </div>
-  );
-}
-
-function RoleplayBar({
-  beat,
-  person,
-  year,
-  onBeat,
-  onPerson,
-  onYear,
-  onKnock,
-}: {
-  beat: RoleplaySceneId;
-  person: RoleplayWhoId;
-  year: string;
-  onBeat: (id: RoleplaySceneId) => void;
-  onPerson: (id: RoleplayWhoId) => void;
-  onYear: (year: string) => void;
-  onKnock: () => void;
-}) {
-  return (
-    <div className="mb-2 flex flex-col gap-2">
-      <div className="flex flex-wrap gap-1.5">
-        {ROLEPLAY_SCENES.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            onClick={() => onBeat(s.id)}
-            className={
-              s.id === beat
-                ? "min-h-11 rounded-full bg-fg px-3 text-sm text-paper"
-                : "min-h-11 rounded-full border border-border bg-surface px-3 text-sm"
-            }
-          >
-            {s.label}
-          </button>
-        ))}
-      </div>
-      <div className="flex flex-wrap gap-1.5">
-        {ROLEPLAY_WHO.map((w) => (
-          <button
-            key={w.id}
-            type="button"
-            onClick={() => onPerson(w.id)}
-            className={
-              w.id === person
-                ? "min-h-11 rounded-full bg-fg px-3 text-sm text-paper"
-                : "min-h-11 rounded-full border border-border bg-surface px-3 text-sm"
-            }
-          >
-            {w.label}
-          </button>
-        ))}
-      </div>
-      <div className="flex gap-2">
-        <label className="min-w-0 flex-1">
-          <span className="sr-only">Roof year</span>
-          <input
-            className="h-12 w-full rounded-full border border-border bg-surface px-4 text-base"
-            inputMode="numeric"
-            placeholder="Roof year"
-            value={year}
-            onChange={(e) => onYear(e.target.value)}
-          />
-        </label>
-        <button
-          type="button"
-          onClick={onKnock}
-          className="h-12 shrink-0 rounded-full bg-accent px-5 text-sm text-paper"
-        >
-          Knock
-        </button>
-      </div>
     </div>
   );
 }
