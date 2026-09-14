@@ -3,6 +3,7 @@
  * Counts take the max. Newest 60 days. FAQs union by id or question.
  */
 import type { DayEntry, DayProfile } from "./day-book.ts";
+import { emptyProcess, restoreProcess, serializeProcess } from "./process-day.ts";
 import type { NotionFaq } from "./notion-ids.ts";
 import type { LoopResult, LoopStatus, StreetLoop } from "./streets-types.ts";
 import type { StormEvent } from "./weather-types.ts";
@@ -60,6 +61,7 @@ function emptyDay(date: string): DayEntry {
     storm: "",
     afterAction: "",
     tomorrowStreet: "",
+    process: emptyProcess(),
   };
 }
 
@@ -107,6 +109,7 @@ export function mergeDays(current: Record<string, DayEntry>, incoming: DayEntry[
     const date = s(raw.date);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
     const cur = days[date];
+    const nextProcess = restoreProcess(raw.process);
     const next: DayEntry = {
       date,
       knocks: n(raw.knocks),
@@ -117,6 +120,7 @@ export function mergeDays(current: Record<string, DayEntry>, incoming: DayEntry[
       storm: s(raw.storm),
       afterAction: s(raw.afterAction),
       tomorrowStreet: s(raw.tomorrowStreet),
+      process: nextProcess,
     };
     days[date] = cur
       ? {
@@ -129,6 +133,10 @@ export function mergeDays(current: Record<string, DayEntry>, incoming: DayEntry[
           storm: cur.storm || next.storm,
           afterAction: cur.afterAction || next.afterAction,
           tomorrowStreet: cur.tomorrowStreet || next.tomorrowStreet,
+          process: serializeProcess({
+            leftOnTime: restoreProcess(cur.process).leftOnTime || nextProcess.leftOnTime,
+            aarWritten: restoreProcess(cur.process).aarWritten || nextProcess.aarWritten,
+          }),
         }
       : { ...emptyDay(date), ...next };
   }

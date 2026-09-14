@@ -18,6 +18,7 @@ describe("blankDay", () => {
       EMPTY_COUNTS,
     );
     assert.equal(d.afterAction, "");
+    assert.deepEqual(d.process, { leftOnTime: false, aarWritten: false });
   });
 });
 

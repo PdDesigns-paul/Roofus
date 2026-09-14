@@ -6,6 +6,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { clusterPlanLabel } from "./streets-rank.ts";
 import { emptyWalk, restoreWalk, serializeWalk, type InspectWalkProgress } from "./inspect-walk.ts";
+import { emptyProcess, processLineForCoach, processStrip, type ProcessSaved } from "./process-day.ts";
 
 export type DayCounts = {
   knocks: number;
@@ -22,6 +23,7 @@ export type DayEntry = DayCounts & {
   storm: string;
   afterAction: string;
   tomorrowStreet: string;
+  process?: ProcessSaved;
 };
 
 export function unpackAfterAction(body: string): AfterAction {
@@ -97,6 +99,7 @@ export function blankDay(date: string): DayEntry {
     storm: "",
     afterAction: "",
     tomorrowStreet: "",
+    process: emptyProcess(),
   };
 }
 
@@ -237,6 +240,7 @@ export function dayBookForCoach(): string {
   }
   if (day.afterAction.trim()) lines.push(`After Action Report:\n${day.afterAction.trim()}`);
   if (day.tomorrowStreet.trim()) lines.push(`Tomorrow they start at: ${day.tomorrowStreet.trim()}`);
+  lines.push(processLineForCoach(processStrip(day)));
   if (!profile.setupDone) {
     lines.push("They have not filled counties yet. If you need their county, send them to Settings.");
   }
