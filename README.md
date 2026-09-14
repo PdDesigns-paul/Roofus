@@ -12,10 +12,10 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 
 | Surface | What it is |
 | --- | --- |
-| **Truck** | Pre-knock strip, four counts, neighborhood (several park-once loops), weather you may mention, After Action Report (wins / do-better / plan), tomorrow. Cards in the strip opens Door. Empty-book setup if the profile is blank. |
+| **Truck** | Pre-knock strip, Pin (sidewalk drop on the Working loop), four counts, neighborhood (several park-once loops), weather you may mention, After Action Report (wins / do-better / plan), tomorrow. Cards in the strip opens Door. Empty-book setup if the profile is blank. |
 | **Door** | Five pocket cards: Door, Pushback, i35, Set, Compass. One-line formula on each (hook → honest reason → one open question). Compass is truck only — still on this tab. |
 | **Roof** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot. Practice shot is off the roof. CompanyCam is the report. |
-| **After** | Night ritual. Age-band **park-once loops** named from Census streets, grouped by township (default 15–22 year roofs). Working pinned. Near me sorts loops already built. Maps parks on the loop. Muted hunt tag when a scout card exists. One weather sentence on the Working loop if a kept storm matches. Use today is a chip on the card. Finish After Action Report here (same fields as Truck). Settings is a Go at the bottom. Military bases are dropped. |
+| **After** | Night ritual. Age-band **park-once loops** named from Census streets, grouped by township (default 15–22 year roofs). Working pinned. Near me sorts loops already built. Maps parks on the loop. Muted hunt tag when a scout card exists. One weather sentence on the Working loop if a kept storm matches. Use today is a chip on the card. Open a loop: that card is the pin board. Revisit is a chip across loops. Finish After Action Report here (same fields as Truck). Settings is a Go at the bottom. Military bases are dropped. |
 | **Last 48 hours** | Not on After. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
 | **Roofus** | Orange button. Tap fans Live, Roleplay, Mindset — each is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. Hold-to-talk in Roleplay. Beats at the bottom. Score me is a button. Hear it reads his line. Practice only — do not record a homeowner. |
 | **Reference** | InterNACHI roof articles. Company pages land here when they paste a website in Settings. Tap a card to open the page. |
@@ -52,7 +52,7 @@ There is **no login** and **no app database**. Do not put a Notion secret in the
 
 ### Notion backup (optional, recommended)
 
-Free Notion account. Internal integration. They paste the secret and a page link. We build **Days, Streets, Storms, Mindset, Memory** in *their* workspace. Restore fills blanks and keeps the higher counts. It does not wipe what they already tapped.
+Free Notion account. Internal integration. They paste the secret and a page link. We build **Days, Streets, Storms, Mindset, Memory, Pins** in *their* workspace. Restore fills blanks and keeps the higher counts. It does not wipe what they already tapped.
 
 FAQs under “Things Roofus should remember” ship with public porch answers (Dashaun Bryant / Adam Bensman). He reads them in chat. Edit or drop. Your office rules win. They work even before they connect Notion.
 

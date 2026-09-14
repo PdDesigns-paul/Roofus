@@ -419,6 +419,7 @@ export function restoreTally(pulled: {
   storms: StormEvent[];
   mindset: Record<string, string>;
   faqs: NotionFaq[];
+  pins?: { id: string }[];
 }): string {
   const bits: string[] = [];
   if (pulled.days.length) {
@@ -429,6 +430,9 @@ export function restoreTally(pulled: {
   }
   if (pulled.storms.length) {
     bits.push(`${pulled.storms.length} storm${pulled.storms.length === 1 ? "" : "s"}`);
+  }
+  if (pulled.pins?.length) {
+    bits.push(`${pulled.pins.length} pin${pulled.pins.length === 1 ? "" : "s"}`);
   }
   if (Object.values(pulled.mindset).some((v) => v.trim())) bits.push("mindset");
   if (pulled.faqs.length) bits.push("memory");

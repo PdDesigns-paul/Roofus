@@ -7,6 +7,7 @@ import { dayBookForCoach, useDayBook } from "@/lib/day-book";
 import { useCoach } from "@/lib/coach-store";
 import { useSettings } from "@/lib/settings-store";
 import { streetsForCoach } from "@/lib/streets-store";
+import { pinsForCoach } from "@/lib/pins-store";
 import { streamCoach } from "@/lib/stream-coach";
 import { notionForCoach } from "@/lib/notion-store";
 import { applyWalkAnswer } from "@/lib/survive";
@@ -107,6 +108,7 @@ export async function sendRoofus(
         dayBook: [
           dayBookForCoach(),
           streetsForCoach(),
+          pinsForCoach(),
           weatherForCoach(),
           surviveForCoach(),
           notionForCoach(),

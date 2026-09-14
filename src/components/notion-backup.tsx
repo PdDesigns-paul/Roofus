@@ -50,7 +50,7 @@ export function NotionBackup() {
       <p className="text-xs font-medium uppercase tracking-wide text-faint">Backup (optional)</p>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         Your day lives on this phone. A free Notion account keeps a copy if this phone dies — days,
-        streets, storms, mindset, and things Roofus should remember. Recommended. Not required.
+        streets, storms, mindset, pins, and things Roofus should remember. Recommended. Not required.
       </p>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         The secret stays on this phone. We only send it to Notion when you tap Connect, Backup, or

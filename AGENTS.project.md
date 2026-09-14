@@ -37,8 +37,8 @@ Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold star
 - After = **park-once loops** grouped by county then township (not named subdivisions, not one card per zip, not one card per block group). Headline is cluster · zip. Township is the folder. Open from the After tab. Night: finish After Action Report (same store as Truck) and pick tomorrow. Settings is a Go at the bottom of After, not a fifth tab.
 - Door = five pocket cards with a one-line formula (hook → honest reason → one open question). Compass stays visible — read it in the truck.
 - Door / Live first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.
-- Auth OFF. Database OFF. localStorage / Zustand only. Notion is optional backup in **their** workspace.
-- No CRM, takeoff, listing lookup, notes app, or apartment flow.
+- Auth OFF. Database OFF. localStorage / Zustand only. Notion is optional backup in **their** workspace (Days, Streets, Storms, Mindset, Memory, Pins).
+- Pins hang on a loop — sidewalk house log, not a CRM, not a pipeline. No takeoff, listing lookup, or apartment flow.
 
 The product path is this phone’s journal. Do not wire `better-auth`, `src/lib/db.ts`, or `src/lib/auth/*` into routes; `AuthProvider` in the root is a Grok-host passthrough. `npm run build` is Vite only — never chain `db:migrate`. What stayed for the host, and why: [`PLATFORM.md`](./PLATFORM.md).
 

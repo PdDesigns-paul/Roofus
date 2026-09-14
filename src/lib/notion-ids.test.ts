@@ -47,11 +47,13 @@ describe("validNotionIds", () => {
         stormsDb: id,
         mindsetDb: id,
         memoryDb: id,
+        pinsDb: id,
       }),
       true,
     );
     assert.equal(validNotionIds({ parentPageId: id }), false);
     assert.equal(isNotionTable("days"), true);
+    assert.equal(isNotionTable("pins"), true);
     assert.equal(isNotionTable("nope"), false);
   });
 });

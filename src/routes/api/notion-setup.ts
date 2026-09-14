@@ -1,4 +1,4 @@
-/** Builds the five backup tables in the user's Notion. Token is request-scoped — never written to disk. */
+/** Builds the backup tables in the user's Notion. Token is request-scoped — never written to disk. */
 import { createFileRoute } from "@tanstack/react-router";
 import { looksLikeNotionToken } from "@/lib/notion-ids";
 import { setupNotion } from "@/lib/notion-client";

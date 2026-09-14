@@ -1,4 +1,4 @@
-/** Notion page IDs, integration secrets, and the five backup tables. Token is never stored on our server. */
+/** Notion page IDs, integration secrets, and the backup tables. Token is never stored on our server. */
 export type NotionFaq = { id: string; q: string; a: string };
 
 export type NotionIds = {
@@ -8,11 +8,12 @@ export type NotionIds = {
   stormsDb: string;
   mindsetDb: string;
   memoryDb: string;
+  pinsDb: string;
 };
 
-export type NotionTable = "days" | "streets" | "storms" | "mindset" | "memory";
+export type NotionTable = "days" | "streets" | "storms" | "mindset" | "memory" | "pins";
 
-export const NOTION_TABLES: NotionTable[] = ["days", "streets", "storms", "mindset", "memory"];
+export const NOTION_TABLES: NotionTable[] = ["days", "streets", "storms", "mindset", "memory", "pins"];
 
 const ID_KEYS: (keyof NotionIds)[] = [
   "parentPageId",
@@ -21,6 +22,7 @@ const ID_KEYS: (keyof NotionIds)[] = [
   "stormsDb",
   "mindsetDb",
   "memoryDb",
+  "pinsDb",
 ];
 
 function hyphenate(h: string) {

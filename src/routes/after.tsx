@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AarFields } from "@/components/aar-fields";
+import { PinBoard, RevisitPinList } from "@/components/pin-board";
 import { AppHeader } from "@/components/app-header";
 import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,8 @@ import {
   searchStreetLoops,
 } from "@/lib/streets-rank";
 import { marketKey, useStreets } from "@/lib/streets-store";
+import { pinsForLoop, revisitPins } from "@/lib/pins";
+import { usePins } from "@/lib/pins-store";
 import {
   DEFAULT_AGE_MAX,
   DEFAULT_AGE_MIN,
@@ -82,6 +85,7 @@ function AfterPage() {
   const [openCounty, setOpenCounty] = useState<string | null | undefined>(undefined);
   const [q, setQ] = useState("");
   const [nearMe, setNearMe] = useState(false);
+  const [revisit, setRevisit] = useState(false);
   const [here, setHere] = useState<{ lat: number; lon: number } | null>(null);
   const [nearBusy, setNearBusy] = useState(false);
   const [nearErr, setNearErr] = useState("");
@@ -89,6 +93,8 @@ function AfterPage() {
   const key = marketKey(profile.counties, profile.states, ageMin, ageMax);
   const stale = Boolean(loops.length && builtFor && builtFor !== key);
   const autoBuild = useRef(false);
+  const allPins = usePins((s) => s.pins);
+  const revisitCount = revisitPins(allPins).length;
   const { working, rest, searching } = searchStreetLoops(loops, q);
   const groups = groupLoopsByTownship(rest);
   const nearRest = nearMe ? nearMeList(rest, here) : [];
@@ -175,6 +181,7 @@ function AfterPage() {
     }
     setNearBusy(true);
     setNearErr("");
+    setRevisit(false);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setHere({ lat: pos.coords.latitude, lon: pos.coords.longitude });
@@ -356,6 +363,21 @@ function AfterPage() {
             <Chip selected={nearMe} disabled={nearBusy} onClick={toggleNearMe}>
               {nearBusy ? "Finding you…" : "Near me"}
             </Chip>
+            <Chip
+              selected={revisit}
+              onClick={() => {
+                setRevisit((v) => {
+                  const next = !v;
+                  if (next) {
+                    setNearMe(false);
+                    setHere(null);
+                  }
+                  return next;
+                });
+              }}
+            >
+              {revisitCount ? `Revisit · ${revisitCount}` : "Revisit"}
+            </Chip>
           </div>
           {nearErr ? <p className="text-sm leading-relaxed text-muted">{nearErr}</p> : null}
           {noSearchHits ? (
@@ -378,6 +400,18 @@ function AfterPage() {
         </p>
       ) : null}
 
+      {revisit ? (
+        <section className="mt-5">
+          <p className="text-xs font-medium uppercase tracking-wide text-faint">Revisit</p>
+          <RevisitPinList
+            loopLabel={(id) => {
+              const loop = loops.find((l) => l.id === id);
+              return loop ? loopHeadline(loop) : "Loop";
+            }}
+          />
+        </section>
+      ) : (
+        <>
       {working.length ? (
         <section className="mt-5">
           <p className="text-xs font-medium uppercase tracking-wide text-faint">Working</p>
@@ -458,6 +492,8 @@ function AfterPage() {
         ))}
       </ul>
       )}
+        </>
+      )}
 
       <section className="mt-8 border-t border-border pt-5">
         <h2 className="font-display text-xl tracking-tight">Finish the day</h2>
@@ -504,6 +540,7 @@ function LoopCard({
   const patchToday = useDayBook((s) => s.patchToday);
   const kept = useWeather((s) => s.kept);
   const card = useScout((s) => s.cards[loop.id]);
+  const pinCount = usePins((s) => pinsForLoop(s.pins, loop.id).length);
   const zip = loopZip(loop);
   const place = loopPlace(loop) || loopHeadline(loop);
   const twp = (loop.township ?? "").trim();
@@ -523,6 +560,7 @@ function LoopCard({
           roofs around {age} years
           {milesLabel ? ` · ${milesLabel}` : ""}
           {loop.status !== "fresh" ? ` · ${loop.status}` : ""}
+          {pinCount ? ` · ${pinCount} pin${pinCount === 1 ? "" : "s"}` : ""}
         </p>
         {tag ? (
           <p className="mt-2 text-xs leading-relaxed text-muted">
@@ -589,6 +627,10 @@ function LoopCard({
             >
               Use today
             </Chip>
+          </div>
+          <div className="mt-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-faint">Pins</p>
+            <PinBoard loopId={loop.id} />
           </div>
         </div>
       ) : null}
