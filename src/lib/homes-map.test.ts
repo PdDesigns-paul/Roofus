@@ -1,0 +1,23 @@
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import { PAGE_HELP } from "./page-help.ts";
+import { DEFAULT_FAQS } from "./porch-faqs.ts";
+
+describe("AAR homes after #39", () => {
+  it("names After as the form home and does not say the form lives on Truck", () => {
+    const help = [
+      PAGE_HELP.today.body.join(" "),
+      PAGE_HELP.streets.body.join(" "),
+      PAGE_HELP.mindset.body.join(" "),
+      PAGE_HELP.settings.body.join(" "),
+    ].join("\n");
+    const win = DEFAULT_FAQS.find((f) => f.id === "f_seed_win")?.a ?? "";
+    assert.match(PAGE_HELP.today.body.join(" "), /Night is a Go to After/);
+    assert.match(PAGE_HELP.streets.body.join(" "), /live here only/);
+    assert.match(help, /After Action Report lives on After/);
+    assert.doesNotMatch(help, /on Truck and After/);
+    assert.doesNotMatch(help, /AAR lives on Truck/);
+    assert.match(win, /live on After/);
+    assert.doesNotMatch(win, /Ask Roofus tonight and he names tomorrow/);
+  });
+});
