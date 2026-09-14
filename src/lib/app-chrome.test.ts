@@ -48,11 +48,13 @@ describe("helpPageFor", () => {
     assert.match(PAGE_HELP.streets.body.join(" "), /Settings is a Go at the bottom/);
     assert.match(PAGE_HELP.streets.body.join(" "), /Morning/);
     assert.match(PAGE_HELP.streets.body.join(" "), /Finish the day owns the night form/);
-    assert.match(PAGE_HELP.today.body.join(" "), /Night is a Go to After/);
-    assert.match(PAGE_HELP.today.body.join(" "), /Ask Roofus how today went is the filled Do on Truck/);
+    assert.equal(PAGE_HELP.streets.title, "Prep");
+    assert.match(PAGE_HELP.streets.body.join(" "), /Keep \/ Toss lives here/);
+    assert.match(PAGE_HELP.today.body.join(" "), /Night is a Go to Prep/);
+    assert.match(PAGE_HELP.today.body.join(" "), /No Keep \/ Toss on Truck/);
     assert.match(PAGE_HELP.today.body.join(" "), /No Wins \/ Better \/ Plan textareas here/);
     assert.doesNotMatch(PAGE_HELP.today.body.join(" "), /on Truck and After/);
-    assert.match(PAGE_HELP.mindset.body.join(" "), /After Action Report lives on After/);
+    assert.match(PAGE_HELP.mindset.body.join(" "), /After Action Report lives on Prep/);
     assert.doesNotMatch(PAGE_HELP.mindset.body.join(" "), /on Truck and After/);
     assert.match(PAGE_HELP.cards.body.join(" "), /Claim path/);
     assert.equal(helpPageFor("/settings/you"), "settings");

@@ -1,5 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
+import { InstallHint } from "@/components/install-hint";
+import { NotionHint } from "@/components/notion-hint";
 import { useDayBook } from "@/lib/day-book";
 import { loadDemo } from "@/lib/demo-data";
 import { resetOnboard } from "@/lib/onboard";
@@ -12,7 +14,7 @@ export const Route = createFileRoute("/settings/")({
 const PAGES = [
   { to: "/settings/you", label: "You", hint: "First name, company, website, warranty" },
   { to: "/settings/territory", label: "Territory", hint: "Counties and state" },
-  { to: "/after", label: "After", hint: "Park-once loops from those counties" },
+  { to: "/after", label: "Prep", hint: "Park-once loops from those counties" },
   { to: "/settings/hours", label: "Hours", hint: "When you knock" },
   { to: "/settings/mindset", label: "Mindset", hint: "Why, demon, Pace, stack" },
   { to: "/settings/reminders", label: "Reminders", hint: "The four nags" },
@@ -27,7 +29,7 @@ function SettingsIndex() {
       <AppHeader title="Settings" />
 
       <p className="mt-3 text-sm leading-snug text-muted">
-        You, territory, hours. After. Mindset. Reminders. Backup is optional.
+        You, territory, hours. Prep. Mindset. Reminders. Backup is optional.
       </p>
 
       <button
@@ -52,6 +54,8 @@ function SettingsIndex() {
           </li>
         ))}
       </ul>
+      <InstallHint />
+      <NotionHint />
     </main>
   );
 }

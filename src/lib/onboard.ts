@@ -44,6 +44,6 @@ export const ONBOARD_STEPS = [
     id: "tabs",
     selector: "[data-tour='tabs']",
     title: "The day",
-    body: "Truck. Door. Roof. After. Settings holds the book. Tell Roofus writes it.",
+    body: "Truck. Door. Roof. Prep. Prep is night-before and morning. Settings holds the book. Tell Roofus writes it.",
   },
 ] as const;

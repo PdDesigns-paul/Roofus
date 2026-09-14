@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useDayBook } from "@/lib/day-book";
 import { dueReminders } from "@/lib/reminders";
 import { useReminders } from "@/lib/reminders-store";
-import { rowDone, SETUP_ROWS, setupScore, type SetupSnap } from "@/lib/setup-progress";
+import { rowDone, SETUP_ROWS, setupScore, truckSetupOpen, type SetupSnap } from "@/lib/setup-progress";
 
 export function HomeSetupCard({
   snap,
@@ -20,7 +20,7 @@ export function HomeSetupCard({
   stormFetchedOn: string;
   stackMonth: string;
 }) {
-  const emptyBook = !snap.goBy && !snap.company && !snap.counties && !snap.states;
+  const emptyBook = truckSetupOpen(snap);
   const [firstRun, setFirstRun] = useState(emptyBook);
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(
@@ -31,14 +31,14 @@ export function HomeSetupCard({
   const lastDone = useReminders((s) => s.lastDone);
   const markDone = useReminders((s) => s.markDone);
   const due = dueReminders({ on, lastDone }, snap, { afterAction, stormFetchedOn, stackMonth });
-  const hideSetup = hidden && score.done === score.total;
+  const hideSetup = !emptyBook || (hidden && score.done === score.total);
 
   useEffect(() => {
-    if (rowDone("territory", snap) || snap.zipCount > 0) {
+    if (!emptyBook) {
       setFirstRun(false);
       setOpen(false);
     }
-  }, [snap.counties, snap.states, snap.zipCount]);
+  }, [emptyBook]);
 
   if (hideSetup && !due.length) return null;
 
@@ -51,7 +51,7 @@ export function HomeSetupCard({
         <ul className="mb-4 flex flex-col gap-2">
           {due.map((r) => (
             <li key={r.id} className="flex min-h-11 items-center justify-between gap-2">
-              <Link to={r.to} className="min-w-0 text-sm text-fg underline underline-offset-4">
+              <Link to={r.to} hash={"hash" in r ? r.hash : undefined} className="min-w-0 text-sm text-fg underline underline-offset-4">
                 {r.label}
               </Link>
               <Chip onClick={() => markDone(r.id)}>Did it</Chip>

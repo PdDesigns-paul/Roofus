@@ -9,6 +9,7 @@ import {
   setupRowPath,
   setupScore,
   setupSnap,
+  truckSetupOpen,
   type SetupSnap,
 } from "./setup-progress.ts";
 import type { SurviveState } from "./survive-store.ts";
@@ -89,6 +90,14 @@ describe("setupScore", () => {
   });
 });
 
+describe("truckSetupOpen", () => {
+  it("leaves Truck once name, company, and one county exist", () => {
+    assert.equal(truckSetupOpen(snap()), true);
+    assert.equal(truckSetupOpen(snap({ goBy: "P", company: "Ridge" })), true);
+    assert.equal(truckSetupOpen(snap({ goBy: "P", company: "Ridge", counties: "Cumberland" })), false);
+  });
+});
+
 describe("nextIncomplete", () => {
   it("stays on the preferred row until that row is done", () => {
     assert.equal(nextIncomplete(snap({ goBy: "P" }), "you"), "you");
@@ -97,7 +106,7 @@ describe("nextIncomplete", () => {
 });
 
 describe("setupRowPath", () => {
-  it("sends setup rows to Settings, After for zips", () => {
+  it("sends setup rows to Settings, Prep (/after) for zips", () => {
     assert.equal(setupRowPath("you"), "/settings/you");
     assert.equal(setupRowPath("warranty"), "/settings/you");
     assert.equal(setupRowPath("territory"), "/settings/territory");

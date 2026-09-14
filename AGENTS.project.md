@@ -28,13 +28,13 @@ GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at 
 
 ## Product (short)
 
-Phone-first PWA. First screen is Truck. Bottom bar: Truck · Door · Roof · After. Help and Menu live in the header; one tab bar; Back only on Settings, Reference, and nested settings pages. Do not invent a third layout.
+Phone-first PWA. First screen is Truck. Bottom bar: Truck · Door · Roof · Prep. Help and Menu live in the header; one tab bar; Back only on Settings, Reference, and nested settings pages. Do not invent a third layout.
 
 Settings holds the book (You, territory, hours, mindset, reminders, backup). Empty book: setup card on Truck (name, company, counties). Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. Finish-setup is Settings, not a nag. No lock-screen.
 
 Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Roof hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 
-- After = **park-once loops** grouped by county then township (not named subdivisions, not one card per zip, not one card per block group). Headline is cluster · zip. Township is the folder. Open from the After tab. Two stacks: Where you knock, Finish the day. After Action Report and tomorrow live on After. Truck Night is a Go. Morning chip lists set + revisit pins. Settings is a Go at the bottom of After, not a fifth tab.
+- Prep = **park-once loops** grouped by county then township (not named subdivisions, not one card per zip, not one card per block group). Headline is cluster · zip. Township is the folder. Open from the Prep tab (route `/after`). Night-before + morning. Last 48 hours Keep / Toss lives here. After Action Report and tomorrow live on Prep. Truck Night is a Go to Prep#finish. Morning chip lists set + revisit pins. Settings is a Go at the bottom of Prep, not a fifth tab.
 - Door = pocket cards with a one-line formula (hook → honest reason → one open question). Compass stays visible — read it in the truck. Claim path shows after Keep.
 - Door / Live first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.
 - Auth OFF. Database OFF. localStorage / Zustand only. Notion is optional backup in **their** workspace (Days, Streets, Storms, Mindset, Memory, Pins).
@@ -48,7 +48,7 @@ Full book: [`SIGNIFIERS.md`](./SIGNIFIERS.md). Five types. No sixth.
 
 | Type | Promise |
 | --- | --- |
-| **Place** | Tab. I am in a place. Truck · Door · Roof · After. |
+| **Place** | Tab. I am in a place. Truck · Door · Roof · Prep. |
 | **Do** | Pill, 48–56px. Something happens here. One filled primary per screen. |
 | **Toggle a token** | Chip. Outline off, accent fill on. |
 | **Go** | Underlined text, or a row with a chevron. Leaves this screen. |

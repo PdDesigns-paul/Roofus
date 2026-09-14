@@ -39,10 +39,10 @@ function TerritoryPage() {
           />
         </div>
         <p className="text-xs leading-snug text-faint">
-          Streets builds park-once loops from these counties. Rebuild on After if you change them.
+          Streets builds park-once loops from these counties. Rebuild on Prep if you change them.
         </p>
         <Link to="/after" className="flex min-h-14 flex-col justify-center border-b border-border py-3">
-          <span className="text-sm text-fg">After</span>
+          <span className="text-sm text-fg">Prep</span>
           <span className="text-xs text-faint">Age-band loops. Rebuild after you change counties.</span>
         </Link>
       </div>

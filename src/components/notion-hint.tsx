@@ -1,0 +1,27 @@
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { useNotion } from "@/lib/notion-store";
+
+/** Settings, or first empty book on Truck. Not a standing Truck card. */
+export function NotionHint() {
+  const connected = useNotion((s) => Boolean(s.ids && s.token));
+  const hidden = useNotion((s) => s.hintHidden);
+  const hide = useNotion((s) => s.hideHint);
+  if (connected || hidden) return null;
+  return (
+    <div className="mt-6 rounded-2xl border border-border px-4 py-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-faint">Recommended</p>
+      <p className="mt-2 text-sm leading-relaxed text-muted">
+        Copy your days to a free Notion so a dead phone is not a dead year. Optional. Settings.
+      </p>
+      <div className="mt-3 flex gap-2">
+        <Button asChild className="flex-1">
+          <Link to="/settings/backup">Set up backup</Link>
+        </Button>
+        <Button type="button" variant="outline" className="flex-1" onClick={hide}>
+          Not now
+        </Button>
+      </div>
+    </div>
+  );
+}

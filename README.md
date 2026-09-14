@@ -12,17 +12,17 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 
 | Surface | What it is |
 | --- | --- |
-| **Truck** | Door-style cards, one open. Pre-knock, Pin (drop + last pin on the Working loop), four counts, plan chips, weather you may mention. **Night** is a Go to After (AAR · blank or AAR · done). Cards opens Door. Empty-book setup if the profile is blank. Ask Roofus how today went is the filled Do when there is no Working loop. |
+| **Truck** | Field log. Working loop one-liner + Cards Go. Pin (drop + last pin on the Working loop). Four counts. One weather sentence, read-only from Keep / Use today. **Night** is a Go to Prep#finish (AAR · blank or AAR · done). Empty-book setup until name + company + one county exist. Ask Roofus how today went is an outline. Pin is the filled Do when a loop is Working. |
 | **Door** | Pocket cards: Door, Pushback, i35, Set, Compass. Claim path after Keep. One-line formula on each (hook → honest reason → one open question). Compass is truck only — still on this tab. |
 | **Roof** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot. Practice shot is off the roof. CompanyCam is the report. |
-| **After** | Two stacks. Where you knock: age-band **park-once loops** named from Census streets, grouped by township (default 15–22 year roofs). Working pinned. Near me / Morning / Revisit chips. Maps parks on the loop. Muted hunt tag when a scout card exists. One weather sentence on the Working loop if a kept storm matches. Use today is a chip on the card. Open a loop: that card is the pin board. Finish the day owns After Action Report and tomorrow. Settings is a Go at the bottom. Military bases are dropped. |
-| **Last 48 hours** | Not on After. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. |
+| **Prep** | Tab word **Prep**. Route still `/after`. Night-before + morning. Age-band **park-once loops** named from Census streets, grouped by township (default 15–22 year roofs). Working pinned. Near me / Morning / Revisit chips. Plan chips. Maps parks on the loop. Muted hunt tag when a scout card exists. One weather sentence on the Working loop if a kept storm matches. Use today is a chip on the card. Open a loop: that card is the pin board. **Last 48 hours Keep / Toss** lives here. Finish the day owns After Action Report and tomorrow. Settings is a Go at the bottom. Military bases are dropped. |
+| **Last 48 hours** | Lives on Prep. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. Truck may show one kept sentence. |
 | **Roofus** | Orange button. Tap fans Live, Roleplay, Mindset — each is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. Hold-to-talk in Roleplay. Beats at the bottom. Score me is a button. Hear it reads his line. Practice only — do not record a homeowner. |
 | **Reference** | Reference page lists the InterNACHI index. Coach appendix is the named cards. Company pages land here when they paste a website in Settings. Tap a card to open the page. |
-| **Mindset** | Worksheets in Settings → Mindset: Why (ladder), Name the demon, Pace (gear), Talent stack. Chat from the orange fan. Private. After Action Report lives on After. |
-| **Settings** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. After is its own tab. Name, company, website (crawled into Reference), warranty, counties, hours, mindset, reminder toggles, optional Notion, Memory FAQs. Reminders nag on open if that box is empty. |
+| **Mindset** | Worksheets in Settings → Mindset: Why (ladder), Name the demon, Pace (gear), Talent stack. Chat from the orange fan. Private. After Action Report lives on Prep. |
+| **Settings** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. Prep is its own tab. Name, company, website (crawled into Reference), warranty, counties, hours, mindset, reminder toggles, optional Notion, Memory FAQs. Reminders nag on open if that box is empty. |
 
-Bottom bar: Truck · Door · Roof · After. Help and Menu live in the header. Menu: Reference, Settings. Back only on Settings, Reference, and nested settings pages. Mindset worksheets live in Settings → Mindset.
+Bottom bar: Truck · Door · Roof · Prep. Help and Menu live in the header. Menu: Reference, Settings. Back only on Settings, Reference, and nested settings pages. Mindset worksheets live in Settings → Mindset.
 
 ## Doctrine (short)
 

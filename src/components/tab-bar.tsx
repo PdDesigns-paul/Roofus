@@ -26,7 +26,7 @@ const TABS = [
   {
     to: "/after",
     id: "after",
-    label: "After",
+    label: "Prep",
     icon: Map,
     match: (p: string) => p.startsWith("/after") || p.startsWith("/streets"),
   },

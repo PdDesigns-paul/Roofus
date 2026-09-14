@@ -24,7 +24,7 @@ export const SETUP_ROWS = [
     label: "Zips",
     hint: "Age-band loops from those counties",
     path: "/after",
-    ask: "Tell me to open After and build loops. You cannot invent zips or subdivision names in chat. Then wait.",
+    ask: "Tell me to open Prep and build loops. You cannot invent zips or subdivision names in chat. Then wait.",
   },
   {
     id: "hours",
@@ -175,6 +175,11 @@ export function rowDone(id: SetupRowId, snap: SetupSnap): boolean {
 export function setupScore(snap: SetupSnap): { done: number; total: number; ready: boolean } {
   const done = SETUP_ROWS.filter((r) => rowDone(r.id, snap)).length;
   return { done, total: SETUP_ROWS.length, ready: rowDone("territory", snap) };
+}
+
+/** Truck Setup leaves once name, company, and one county exist. */
+export function truckSetupOpen(snap: SetupSnap): boolean {
+  return !snap.goBy || !snap.company || !snap.counties;
 }
 
 export function nextIncomplete(snap: SetupSnap, prefer?: SetupRowId | null): SetupRowId | null {

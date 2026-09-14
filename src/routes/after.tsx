@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AarFields } from "@/components/aar-fields";
+import { Last48Hours } from "@/components/last-48-hours";
 import { PinBoard, RevisitPinList, MorningPinList } from "@/components/pin-board";
 import { AppHeader } from "@/components/app-header";
 import { PlaceCard } from "@/components/place-card";
@@ -9,18 +10,24 @@ import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { blankDay, localDateKey, useDayBook, weekTally, weekTallyLine } from "@/lib/day-book";
 import { mapsLabel, mapsUrl } from "@/lib/maps-url";
+import { freshKeptSentence } from "@/lib/kept-storm";
 import { phoneError, readJson } from "@/lib/read-json";
 import { useScout } from "@/lib/scout-store";
 import { formatMiles, loopHasPin, milesBetween, nearMeList, streetsScoutTag } from "@/lib/streets-near";
 import {
   addLoopToPlan,
+  clusterLines,
+  dropCluster,
   dropLoopFromPlan,
+  firstRemainingInPlan,
   groupLoopsByTownship,
   loopAge,
   loopHeadline,
   loopInPlan,
   loopPlace,
   loopZip,
+  loopsInPlan,
+  matchLoopCluster,
   searchStreetLoops,
 } from "@/lib/streets-rank";
 import { marketKey, useStreets } from "@/lib/streets-store";
@@ -39,7 +46,7 @@ import { parseList, countyBasename } from "@/lib/us-state-fips";
 import { mentionOnStreet } from "@/lib/weather-match";
 import { useWeather } from "@/lib/weather-store";
 
-/** After hosts the Streets hunt and the night wrap-up. Formerly /streets. */
+/** Prep hosts the hunt, Keep / Toss, and the night wrap-up. Route stays /after. Formerly Streets. */
 export const Route = createFileRoute("/after")({
   codeSplitGroupings: [],
   component: AfterPage,
@@ -97,6 +104,16 @@ function AfterPage() {
   const autoBuild = useRef(false);
   const allPins = usePins((s) => s.pins);
   const days = useDayBook((s) => s.days);
+  const pulse = useWeather((s) => s.pulse);
+  const pending = useWeather((s) => s.pending);
+  const tossed = useWeather((s) => s.tossed);
+  const keptStorms = useWeather((s) => s.keptStorms);
+  const keep = useWeather((s) => s.keep);
+  const toss = useWeather((s) => s.toss);
+  const keepLead = useWeather((s) => s.keepLead);
+  const tossLead = useWeather((s) => s.tossLead);
+  const skipLead = useWeather((s) => s.skipLead);
+  const keptLine = freshKeptSentence(keptStorms);
   const revisitCount = revisitPins(allPins).length;
   const morningCount = morningPins(allPins).length;
   const hasWorking = loops.some((l) => l.status === "working");
@@ -105,6 +122,10 @@ function AfterPage() {
     if (typeof window === "undefined") return false;
     if (window.location.hash === "#finish") return true;
     return new Date().getHours() >= 17;
+  });
+  const [pulseOpen, setPulseOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.location.hash === "#pulse";
   });
   const week = weekTally(days, date);
   const weekLine = week.knocks || week.talks || week.looks || week.sets ? weekTallyLine(week) : "";
@@ -219,9 +240,14 @@ function AfterPage() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.location.hash !== "#finish") return;
-    setFinishOpen(true);
-    document.getElementById("finish")?.scrollIntoView({ block: "start" });
+    if (window.location.hash === "#finish") {
+      setFinishOpen(true);
+      document.getElementById("finish")?.scrollIntoView({ block: "start" });
+    }
+    if (window.location.hash === "#pulse") {
+      setPulseOpen(true);
+      document.getElementById("pulse")?.scrollIntoView({ block: "start" });
+    }
   }, []);
 
   useEffect(() => {
@@ -257,10 +283,10 @@ function AfterPage() {
   if (!profile.setupDone) {
     return (
       <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-        <AppHeader title="After" />
+        <AppHeader title="Prep" />
         <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where you knock.</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted">
-          Settings needs a county and a state first. Then we build park-once loops from roofs in the age
+          Night-before and morning. Settings needs a county and a state first. Then we build park-once loops from roofs in the age
           band — not from hail.
         </p>
         <Link
@@ -285,7 +311,7 @@ function AfterPage() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <AppHeader title="After" />
+      <AppHeader title="Prep" />
       <ul className="mt-4 flex flex-col gap-3">
         <PlaceCard
           id="hunt"
@@ -302,8 +328,18 @@ function AfterPage() {
           onToggle={() => setHuntOpen((v) => !v)}
         >
       <p className="text-sm leading-relaxed text-muted">
-        {profile.counties.trim()}, {profile.states.trim()}. Each card is a walkable loop. Township is the folder.
+        Night-before and morning. {profile.counties.trim()}, {profile.states.trim()}. Each card is a walkable loop. Township is the folder. Age first on the porch.
       </p>
+
+      <PlanChips
+        loops={loops}
+        cluster={plan}
+        onPlan={(next) => {
+          patchToday({ cluster: next });
+          const hit = firstRemainingInPlan(loops, next);
+          if (hit) useStreets.getState().setStatus(hit.id, "working");
+        }}
+      />
 
       <button
         type="button"
@@ -559,6 +595,30 @@ function AfterPage() {
         </PlaceCard>
 
         <PlaceCard
+          id="pulse"
+          when="Last 48 hours"
+          title="Keep / Toss"
+          formula={keptLine ? "Keep on" : "Check last 48 hours"}
+          open={pulseOpen}
+          onToggle={() => setPulseOpen((v) => !v)}
+          anchor="pulse"
+        >
+          <Last48Hours
+            pulse={pulse}
+            pending={pending}
+            tossed={tossed}
+            keptLine={keptLine}
+            counties={profile.counties}
+            states={profile.states}
+            onKeepLead={keepLead}
+            onTossLead={tossLead}
+            onSkipLead={skipLead}
+            onKeepStorm={keep}
+            onTossStorm={toss}
+          />
+        </PlaceCard>
+
+        <PlaceCard
           id="finish"
           when="Night"
           title="Finish the day"
@@ -594,6 +654,35 @@ function AfterPage() {
         <ChevronRight className="size-5 shrink-0 text-muted" aria-hidden />
       </Link>
     </main>
+  );
+}
+
+function PlanChips({
+  loops,
+  cluster,
+  onPlan,
+}: {
+  loops: StreetLoop[];
+  cluster: string;
+  onPlan: (next: string) => void;
+}) {
+  const plan = loopsInPlan(loops, cluster);
+  const unmatched = clusterLines(cluster).filter((line) => !loops.some((l) => matchLoopCluster(l, line)));
+  if (!plan.length && !unmatched.length) return null;
+  return (
+    <div className="mt-4 flex flex-col gap-2">
+      <p className="text-xs font-medium uppercase tracking-wide text-faint">On the plan</p>
+      {plan.map((l) => (
+        <Chip key={l.id} selected className="w-full justify-start" onClick={() => onPlan(dropLoopFromPlan(cluster, l))}>
+          {loopHeadline(l)}
+        </Chip>
+      ))}
+      {unmatched.map((line) => (
+        <Chip key={line} selected className="w-full justify-start" onClick={() => onPlan(dropCluster(cluster, line))}>
+          {line}
+        </Chip>
+      ))}
+    </div>
   );
 }
 

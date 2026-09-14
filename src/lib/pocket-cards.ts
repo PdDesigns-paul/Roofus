@@ -182,7 +182,7 @@ export function preKnock(input: PreKnockInput): PreKnock {
     .filter(Boolean)
     .join(" · ");
   return {
-    zip: zip || "Pick a zip on After",
+    zip: zip || "Pick a zip on Prep",
     age: `Roofs ${input.ageMin}–${input.ageMax}`,
     weather: storm || "Age only. Do not invent weather.",
     hours: hours || "Hours live in Settings",

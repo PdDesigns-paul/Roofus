@@ -44,7 +44,7 @@ export function MindsetWorksheets() {
       <p className="mt-2 text-sm leading-snug text-muted">
         Most first-year roofers do not fail because they cannot sell. They fail because they cannot
         stand themselves when it gets hard. This page is that fight. After Action Report lives on
-        After. The orange fan opens the chat.
+        Prep. The orange fan opens the chat.
       </p>
 
       <section className="mt-4 rounded-2xl border border-border px-3 py-3">
@@ -64,7 +64,7 @@ export function MindsetWorksheets() {
         className="mt-4 flex min-h-14 items-center justify-between rounded-2xl border border-border px-4 text-sm"
       >
         <span>3 · After Action Report</span>
-        <span className="text-muted">After · wins first</span>
+        <span className="text-muted">Prep · wins first</span>
       </Link>
 
       <ul className="mt-4 flex flex-col gap-3">
