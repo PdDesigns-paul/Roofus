@@ -6,16 +6,16 @@
 import { dayBookForCoach, useDayBook } from "@/lib/day-book";
 import { useCoach } from "@/lib/coach-store";
 import { useSettings } from "@/lib/settings-store";
-import { streetsForCoach } from "@/lib/streets-store";
-import { pinsForCoach } from "@/lib/pins-store";
+import { streetsForCoach, useStreets } from "@/lib/streets-store";
+import { loopHeadline } from "@/lib/streets-rank";
+import { pinsForCoach, usePins } from "@/lib/pins-store";
 import { streamCoach } from "@/lib/stream-coach";
-import { notionForCoach } from "@/lib/notion-store";
+import { notionForCoach, useNotion } from "@/lib/notion-store";
 import { applyWalkAnswer } from "@/lib/survive";
 import { applyCoachWrite } from "@/lib/coach-write";
 import { readCompanySite } from "@/lib/company-site-read";
 import { nextIncomplete, setupSnap } from "@/lib/setup-progress";
-import { surviveForCoach, useSurvive } from "@/lib/survive-store";
-import { useStreets } from "@/lib/streets-store";
+import { surviveForCoach, useSurvive, whyFilled } from "@/lib/survive-store";
 import { weatherForCoach, useWeather } from "@/lib/weather-store";
 import { readFreshKept } from "@/lib/kept-storm";
 import { claimUnlocked } from "@/lib/coach-modes";
@@ -118,6 +118,11 @@ export async function sendRoofus(
         ]
           .filter(Boolean)
           .join("\n\n"),
+        workingLoop: workingLoopSnap(),
+        keptStorms: keptStormsSnap(),
+        faqs: useNotion.getState().faqs.map((f) => ({ q: f.q, a: f.a })),
+        surviveSnap: surviveSnap(),
+        pinCounts: pinCountsSnap(),
       },
       (next) => {
         latest = next;
@@ -152,4 +157,52 @@ export function stopRoofus() {
   const partial = latest.trim();
   if (partial) useCoach.getState().finishAssistant(partial);
   else useCoach.getState().clearStreaming();
+}
+
+function workingLoopSnap() {
+  const { loops, ageMin, ageMax } = useStreets.getState();
+  const loop = loops.find((l) => l.status === "working");
+  if (!loop) return { name: "", zip: "", ageBand: `${ageMin}–${ageMax}`, status: "" };
+  return {
+    name: loopHeadline(loop),
+    zip: loop.zip,
+    ageBand: `${ageMin}–${ageMax}`,
+    status: loop.status,
+  };
+}
+
+function keptStormsSnap() {
+  const loops = useStreets.getState().loops;
+  return readFreshKept(useWeather.getState().keptStorms).map((row) => {
+    const loop = loops.find((l) => l.id === row.loopId);
+    return {
+      zip: loop?.zip ?? "",
+      say: row.say,
+      street: row.street,
+      loopLabel: row.loopLabel,
+      kind: row.kind,
+      status: "keep",
+    };
+  });
+}
+
+function surviveSnap() {
+  const s = useSurvive.getState();
+  const filled = whyFilled(s);
+  return {
+    whyRecap: filled ? `earned ${s.earned} by ${s.byDate || "a date they set"}` : "",
+    earned: filled ? s.earned : "",
+    demon: s.demon,
+    gear: s.gear,
+    attack: s.attack,
+  };
+}
+
+function pinCountsSnap() {
+  const pins = usePins.getState().pins;
+  const working = useStreets.getState().loops.find((l) => l.status === "working");
+  const subset = working ? pins.filter((p) => p.loopId === working.id) : pins;
+  const counts: Record<string, number> = {};
+  for (const pin of subset) counts[pin.status] = (counts[pin.status] ?? 0) + 1;
+  return counts;
 }
