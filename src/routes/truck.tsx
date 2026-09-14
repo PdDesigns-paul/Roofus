@@ -37,7 +37,7 @@ import {
   loopsInPlan,
   matchLoopCluster,
 } from "@/lib/streets-rank";
-import { suggestTomorrow, useStreets } from "@/lib/streets-store";
+import { useStreets } from "@/lib/streets-store";
 import { usePins } from "@/lib/pins-store";
 import type { StreetLoop } from "@/lib/streets-types";
 
@@ -129,10 +129,6 @@ function DaySheet() {
 
   function askAboutToday() {
     setAskErr(null);
-    const next = suggestTomorrow(useStreets.getState().loops);
-    if (next && !useDayBook.getState().today().tomorrowStreet.trim()) {
-      patchToday({ tomorrowStreet: `${loopLabel(next)} — ${next.streets.slice(0, 3).join(", ")}` });
-    }
     whenCoachReady(() => {
       abortTalk();
       useCoach.getState().startNew();
