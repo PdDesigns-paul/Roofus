@@ -99,6 +99,7 @@ export const POCKET_CARDS: PocketCard[] = [
       {
         say: "We can do in-home, or I inspect first and we do a 20–30 minute phone review.",
       },
+      { note: "Walk first if you have not asked buying questions." },
       {
         say: "I’ll text the confirm from the number in Settings. Both names. Roofus does not send that text.",
       },
@@ -121,7 +122,7 @@ export const POCKET_CARDS: PocketCard[] = [
 export const CLAIM_PATH_CARD: PocketCard = {
   id: "claim",
   mode: "roleplay",
-  scene: "walkup",
+  scene: "claim",
   title: "Claim path",
   when: "Only after Keep. Matching zip.",
   formula: "Where are you at with insurance → present only to that → document first",
@@ -129,7 +130,7 @@ export const CLAIM_PATH_CARD: PocketCard = {
     {
       say: "Where are you at with insurance on the house — nothing filed, adjuster’s been out, they paid something, they denied it, or you already have a check?",
     },
-    { note: "Present only to that answer. Do not dump all four stages." },
+    { note: "Present only to that answer. Do not dump all five stages." },
     { note: "Document first. No claim speech until something is on camera." },
     {
       say: "The average deductible is a few thousand dollars. Are you comfortable with that before we go further?",
