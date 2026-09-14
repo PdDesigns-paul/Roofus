@@ -16,7 +16,9 @@ import { readCompanySite } from "@/lib/company-site-read";
 import { nextIncomplete, setupSnap } from "@/lib/setup-progress";
 import { surviveForCoach, useSurvive } from "@/lib/survive-store";
 import { useStreets } from "@/lib/streets-store";
-import { weatherForCoach } from "@/lib/weather-store";
+import { weatherForCoach, useWeather } from "@/lib/weather-store";
+import { readFreshKept } from "@/lib/kept-storm";
+import { claimUnlocked } from "@/lib/coach-modes";
 
 let liveAbort: AbortController | null = null;
 let raf = 0;
@@ -98,6 +100,7 @@ export async function sendRoofus(
         scene: now.scene ?? undefined,
         who: now.who ?? undefined,
         year: opts?.year,
+        kept: claimUnlocked(readFreshKept(useWeather.getState().keptStorms)),
         origin: thread?.origin,
         companyName: useDayBook.getState().profile.company,
         warrantyLine: settings.warrantyLine,
