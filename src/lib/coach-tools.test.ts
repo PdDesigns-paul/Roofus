@@ -52,7 +52,8 @@ describe("get_mri_card", () => {
     const out = getMriCard("Blow-off vs a crease");
     assert.ok("look" in out);
     if (!("look" in out)) return;
-    assert.match(out.look, /crease|seal|wind/i);
+    const look = out.look ?? "";
+    assert.match(look, /crease|seal|wind/i);
     assert.equal(out.open, "Reference");
     assert.equal(out.title, "Blow-off vs a crease");
   });
