@@ -1,15 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="Roofus mark">
-  <title>Roofus mark</title>
-  <circle fill="#F5A623" cx="16" cy="16.2" r="15"/>
-  <path fill="#161616" d="M9.2 13 L7.6 3.2 Q8 1.6 10 2.6 L14.2 13 Z"/>
-  <path fill="#161616" d="M20.4 14 Q24 11.4 27.2 14.2 Q27.8 16 25.4 17.2 Q22.4 18 20.4 16 Z"/>
-  <path fill="#161616" d="M7.4 14 Q7.4 27 16 28.2 Q24.6 27 24.6 14 Q24.6 11.4 16 11 Q7.4 11.4 7.4 14 Z"/>
-  <path fill="#C4A05A" d="M8.6 14 Q9 7.6 16 7 Q23 7.6 23.4 14 Q20 12.6 16 12.6 Q12 12.6 8.6 14 Z"/>
-  <path fill="#6B4A2A" d="M8.2 13.6 Q16 12.2 23.8 13.6 Q23.8 15 16 14.6 Q8.2 15 8.2 13.6 Z"/>
-  <circle fill="#E6B422" cx="16" cy="7.4" r="0.7"/>
-  <path fill="#C9924A" d="M9 17.4 Q9.6 24 13.8 25.2 L13.2 18 Q11.4 16 9 17.4 Z"/>
-  <path fill="#C9924A" d="M23 17.4 Q22.4 24 18.2 25.2 L18.8 18 Q20.6 16 23 17.4 Z"/>
-  <circle fill="#E8A317" cx="12.4" cy="17.4" r="1.35"/>
-  <circle fill="#E8A317" cx="19.6" cy="17.4" r="1.35"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="7" fill="#0c0c0d"/>
+  <path fill="#f2f1ee" d="M16 4.2 29.5 17.2h-3.8V27.2H6.3V17.2H2.5Z"/>
 </svg>

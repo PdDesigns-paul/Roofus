@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "@tanstack/react-router";
-import { RoofusFace } from "@/components/roofus-mark";
 import { Button } from "@/components/ui/button";
 import { useDayBook } from "@/lib/day-book";
 import { loadDemo } from "@/lib/demo-data";
@@ -70,13 +69,6 @@ export function OnboardOverlay() {
           {step + 1} of {ONBOARD_STEPS.length}
         </p>
         <div className="flex min-h-0 flex-1 flex-col justify-center">
-          {current.id === "roofus" ? (
-            <div className="mb-6 flex justify-center">
-              <span className="flex size-20 items-center justify-center overflow-hidden rounded-full bg-accent shadow-lg ring-2 ring-paper/40">
-                <RoofusFace alt="" className="size-14" mood="live" />
-              </span>
-            </div>
-          ) : null}
           <h2 id="tour-title" className="font-display text-3xl leading-tight">
             {current.title}
           </h2>
