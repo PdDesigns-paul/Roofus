@@ -60,7 +60,7 @@ FAQs under “Things Roofus should remember” ship with public porch answers (D
 
 - TanStack Start + Router, React 19, Tailwind v4, Zustand
 - xAI for coach chat, speech-to-text, and text-to-speech
-- Google Maps JS (Geocoder + Places) when `VITE_GOOGLE_MAPS_KEY` is set
+- Google Maps JS (Geocoder + Places) when `GOOGLE_MAPS_API_KEY` is set
 - NWS / IEM Local Storm Reports for season weather
 - Notion REST `2022-06-28` via a server proxy (no CORS from the phone)
 
@@ -78,10 +78,10 @@ npm run dev
 | Variable | Where | What |
 | --- | --- | --- |
 | `XAI_API_KEY` | server only | Roofus chat, transcribe, speak, Last 48 hours pulse. Never `VITE_`. |
-| `VITE_GOOGLE_MAPS_KEY` | client | Maps JS + Geocoder + Places. Restrict HTTP referrers to `https://roofus.coach/*` and `https://*.vercel.app/*`. Never commit the key. |
+| `GOOGLE_MAPS_API_KEY` | server | Maps JS + Geocoder + Places. Phone reads `/api/maps-key`. Never `VITE_` — that prefix errors on the host. Restrict HTTP referrers to `https://roofus.coach/*` and `https://*.vercel.app/*`. Never commit the key. |
 | `DATABASE_URL` | unused by this app | Platform leftover. Auth and Postgres stay off. |
 
-Maps uses `VITE_GOOGLE_MAPS_KEY` on the phone (Geocoder + Places). Street View / Directions / Zillow / Redfin are outbound links — no scrape. Weather is NWS. Notion secret is pasted in Settings and stays on the phone.
+Maps uses `GOOGLE_MAPS_API_KEY` (Geocoder + Places). Street View / Directions / Zillow / Redfin are outbound links — no scrape. Weather is NWS. Notion secret is pasted in Settings and stays on the phone.
 
 Loop research (WFO recap, local news, GIS clickers) is a **sidecar**, not a Streets tap. Vercel Hobby cannot run Chromium:
 

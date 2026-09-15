@@ -99,7 +99,7 @@ Tests live in `src/lib/*.test.ts` (`node:test`). Pure functions: labels, hail gr
 
 `npm run test:app` is the product suite. `npm test` also runs Grok platform script tests — CI must not use that.
 
-Do not add login, Postgres, Codecov, Husky, or commitlint. Do not add new API keys except the Maps key already provided (`VITE_GOOGLE_MAPS_KEY`, never in git). Conventional-commit prefixes are optional; a sentence that says what the phone does is better.
+Do not add login, Postgres, Codecov, Husky, or commitlint. Do not add new API keys except the Maps key already provided (`GOOGLE_MAPS_API_KEY`, never in git, never `VITE_`). Conventional-commit prefixes are optional; a sentence that says what the phone does is better.
 
 Coach context is today’s log + streets + weather + mindset + Memory FAQs + MRI titles + company site notes. Tools read the posted book only (loop, kept storms, FAQs, one named MRI card, survive snap). No web. No RAG / RAPTOR until a real backend (Prep to Launch). If a field is on the phone, Roofus may write it when they clearly set it.
 

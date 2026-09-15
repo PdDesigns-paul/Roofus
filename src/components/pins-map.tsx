@@ -42,7 +42,7 @@ export function PinsMap({
 }: {
   yearFilter: YearFilter;
 }) {
-  const key = mapsKey();
+  const [key, setKey] = useState<string | null>(null);
   const pins = usePins((s) => s.pins);
   const add = usePins((s) => s.add);
   const update = usePins((s) => s.update);
@@ -61,6 +61,16 @@ export function PinsMap({
   const visible = pins.filter((p) => pinMatchesYearFilter(p, yearFilter, ageMin, ageMax) && pinHasPoint(p));
   const workingId = loops.find((l) => l.status === "working")?.id;
   const pickedPin = pins.find((p) => p.id === picked);
+
+  useEffect(() => {
+    let live = true;
+    void mapsKey().then((k) => {
+      if (live) setKey(k);
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!key) return;
@@ -205,6 +215,18 @@ export function PinsMap({
     })();
   }
 
+  const keyMissing = key === "";
+  const mapBox =
+    key && ready ? (
+      <div ref={box} className="mt-3 h-56 w-full overflow-hidden rounded-2xl border border-border" />
+    ) : (
+      <p className="mt-3 text-sm leading-relaxed text-muted">
+        {keyMissing
+          ? "Map key missing — pins still save. Search a zip, then Pin from Truck."
+          : err || "Loading map…"}
+      </p>
+    );
+
   return (
     <div className="mt-3">
       <div className="flex gap-2">
@@ -227,13 +249,7 @@ export function PinsMap({
           Me
         </button>
       </div>
-      {key && ready ? (
-        <div ref={box} className="mt-3 h-56 w-full overflow-hidden rounded-2xl border border-border" />
-      ) : (
-        <p className="mt-3 text-sm leading-relaxed text-muted">
-          {key ? err || "Loading map…" : "Map key missing — pins still save. Search a zip, then Pin from Truck."}
-        </p>
-      )}
+      {mapBox}
       {err && key ? <p className="mt-2 text-sm leading-relaxed text-muted">{err}</p> : null}
       <p className="mt-2 text-xs text-faint">Tap the map to drop. Drag a pin onto the house.</p>
       {pickedPin ? (
