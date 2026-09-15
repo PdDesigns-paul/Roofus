@@ -247,6 +247,20 @@ export function pinLabel(p: Pick<HousePin, "address" | "houseNumber" | "zip">): 
   return "Pin";
 }
 
+/** Spoken color is the street, not the house number. */
+export function streetNameOf(p: Pick<HousePin, "address" | "houseNumber">): string {
+  const addr = p.address.trim();
+  if (!addr) return "";
+  const num = p.houseNumber.trim();
+  if (num) {
+    const escaped = num.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const stripped = addr.replace(new RegExp(`^${escaped}(?:\\s+|,\\s*)`), "").trim();
+    if (stripped && stripped !== addr) return stripped;
+  }
+  const m = addr.match(/^\d+[A-Za-z]?\s+(.+)$/);
+  return (m?.[1] ?? addr).trim();
+}
+
 export function pinQueryAddress(p: Pick<HousePin, "address" | "city" | "state" | "zip" | "houseNumber">): string {
   if (p.address.trim()) {
     return [p.address.trim(), p.city.trim(), p.state.trim(), p.zip.trim()].filter(Boolean).join(", ");

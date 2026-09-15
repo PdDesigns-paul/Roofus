@@ -174,6 +174,122 @@ export function fillName(goBy: string, company: string): { name: string; company
   };
 }
 
+export type PocketFill = {
+  goBy: string;
+  company: string;
+  ageMin: number;
+  ageMax: number;
+  day: string;
+};
+
+export function youEmpty(goBy: string, company: string): boolean {
+  return !goBy.trim() || !company.trim();
+}
+
+/** Next calendar weekday. Hours are free text — do not invent a knockable day they did not set. */
+export function nextKnockDay(now = new Date()): string {
+  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  return d.toLocaleDateString("en-US", { weekday: "long" });
+}
+
+export function yearWindowPhrase(ageMin: number, ageMax: number): string {
+  return `that ${ageMin}–${ageMax} year window`;
+}
+
+export function hasOpenToken(text: string): boolean {
+  return /\[[^\]]+\]/.test(text);
+}
+
+/** Fill what we know. Leave [name]/[company] if You is empty so the UI can hide them. */
+export function fillTokens(text: string, fill: PocketFill): string {
+  const year = yearWindowPhrase(fill.ageMin, fill.ageMax);
+  const day = fill.day.trim() || nextKnockDay();
+  let out = text.replaceAll("[year]", year).replaceAll("[day]", day);
+  const name = fill.goBy.trim();
+  const company = fill.company.trim();
+  if (name) out = out.replaceAll("[name]", name);
+  if (company) out = out.replaceAll("[company]", company);
+  return out;
+}
+
+/** Never leave brackets. Roleplay / TTS. Empty You becomes “your name”, not a person. */
+export function fillSpoken(text: string, fill: PocketFill): string {
+  const year = yearWindowPhrase(fill.ageMin, fill.ageMax);
+  const day = fill.day.trim() || nextKnockDay();
+  const name = fill.goBy.trim() || "your name";
+  const company = fill.company.trim() || "your company";
+  return text
+    .replaceAll("[year]", year)
+    .replaceAll("[day]", day)
+    .replaceAll("[name]", name)
+    .replaceAll("[company]", company);
+}
+
+export function fillPocketCard(card: PocketCard, fill: PocketFill): PocketCard {
+  return {
+    ...card,
+    when: fillTokens(card.when, fill),
+    formula: fillTokens(card.formula, fill),
+    lines: card.lines.map((l) => ({
+      say: l.say ? fillTokens(l.say, fill) : l.say,
+      note: l.note ? fillTokens(l.note, fill) : l.note,
+    })),
+  };
+}
+
+export type DoorStripInput = {
+  goBy: string;
+  company: string;
+  streetName: string;
+  loopLabel: string;
+  ageMin: number;
+  ageMax: number;
+  weather: string;
+};
+
+export type DoorStrip = {
+  emptyYou: boolean;
+  identity: string;
+  place: string;
+  placeGo: "/truck" | "/after";
+  pinNeeded: boolean;
+  age: string;
+  weather: string;
+};
+
+export function doorStrip(input: DoorStripInput): DoorStrip {
+  const goBy = input.goBy.trim();
+  const company = input.company.trim();
+  const emptyYou = !goBy || !company;
+  const street = input.streetName.trim();
+  const loop = input.loopLabel.trim();
+  const place = street || loop;
+  return {
+    emptyYou,
+    identity: emptyYou ? "" : `${goBy} · ${company}`,
+    place,
+    placeGo: loop ? "/after" : "/truck",
+    pinNeeded: !place,
+    age: `roofs ${input.ageMin}–${input.ageMax}`,
+    weather: input.weather.trim() || "Age only",
+  };
+}
+
+/** Claim path only when a kept storm names this zip. */
+export function claimOnStreet(kept: { say: string; zip: string }[]): { show: boolean; when: string } {
+  const row = kept.find((k) => k.say.trim() && k.zip.trim());
+  if (!row) return { show: false, when: "" };
+  return { show: true, when: `${row.say.trim()} · ${row.zip.trim()}` };
+}
+
+export function stripWeather(matchingKeptSay: string, useToday: string): string {
+  const kept = matchingKeptSay.trim();
+  if (kept) return kept;
+  const today = useToday.trim().split("\n")[0]?.trim() ?? "";
+  if (today) return today;
+  return "Age only";
+}
+
 export function preKnock(input: PreKnockInput): PreKnock {
   const zip = input.cluster.trim() || input.workingZip.trim();
   const storm = input.storm.trim();

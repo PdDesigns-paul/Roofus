@@ -5,6 +5,7 @@ import {
   normalizeMode,
   normalizeScene,
   normalizeWho,
+  personForScene,
   sceneById,
   type CoachMode,
   type RoleplaySceneId,
@@ -310,23 +311,26 @@ export const useCoach = create<CoachState>()(
           if (!active || active.mode !== "roleplay") {
             return { lastScene: want, scene: want };
           }
+          const who = personForScene(want, active.who ?? s.lastWho);
           if (active.messages.length === 0) {
             const thread: CoachThread = {
               ...active,
               scene: want,
+              who,
               title: titleFor(active.origin, "roleplay", undefined, want),
               updatedAt: Date.now(),
             };
-            return { ...activate(s, thread), lastScene: want };
+            return { ...activate(s, thread), lastScene: want, lastWho: who };
           }
           const thread = makeThread("porch", {
             mode: "roleplay",
             scene: want,
-            who: active.who ?? s.lastWho,
+            who,
           });
           return {
             ...activate(s, thread),
             lastScene: want,
+            lastWho: who,
             streaming: "",
             busy: false,
           };

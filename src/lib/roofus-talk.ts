@@ -14,7 +14,7 @@ import { notionForCoach, useNotion } from "@/lib/notion-store";
 import { applyWalkAnswer } from "@/lib/survive";
 import { applyCoachWrite } from "@/lib/coach-write";
 import { readCompanySite } from "@/lib/company-site-read";
-import { nextIncomplete, setupSnap } from "@/lib/setup-progress";
+import { nextIncomplete, setupSnap, companyOf } from "@/lib/setup-progress";
 import { surviveForCoach, useSurvive, whyFilled } from "@/lib/survive-store";
 import { weatherForCoach, useWeather } from "@/lib/weather-store";
 import { readFreshKept } from "@/lib/kept-storm";
@@ -102,7 +102,10 @@ export async function sendRoofus(
         year: opts?.year,
         kept: claimUnlocked(readFreshKept(useWeather.getState().keptStorms)),
         origin: thread?.origin,
-        companyName: useDayBook.getState().profile.company,
+        companyName: companyOf(useDayBook.getState().profile.company),
+        goBy: useDayBook.getState().profile.goBy,
+        ageMin: useStreets.getState().ageMin,
+        ageMax: useStreets.getState().ageMax,
         warrantyLine: settings.warrantyLine,
         companyWebsite: settings.companyWebsite,
         companySiteBrief: settings.companySiteBrief,

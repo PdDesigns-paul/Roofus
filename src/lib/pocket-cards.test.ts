@@ -1,6 +1,21 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { CLAIM_PATH_CARD, doorList, POCKET_CARDS, pocketKnowledge, preKnock } from "./pocket-cards.ts";
+import {
+  CLAIM_PATH_CARD,
+  claimOnStreet,
+  doorList,
+  doorStrip,
+  fillPocketCard,
+  fillSpoken,
+  fillTokens,
+  hasOpenToken,
+  nextKnockDay,
+  POCKET_CARDS,
+  pocketKnowledge,
+  preKnock,
+  stripWeather,
+  yearWindowPhrase,
+} from "./pocket-cards.ts";
 
 describe("POCKET_CARDS", () => {
   it("is the five printables", () => {
@@ -133,5 +148,149 @@ describe("pocketKnowledge", () => {
     assert.match(k, /### i35/);
     assert.match(k, /Formula: /);
     assert.match(k, /Never WHY/);
+  });
+});
+
+const fill = {
+  goBy: "Pat",
+  company: "Field Co",
+  ageMin: 15,
+  ageMax: 22,
+  day: "Thursday",
+};
+
+describe("fillTokens", () => {
+  it("says I’m Pat with Field Co, not brackets", () => {
+    const line =
+      "Hey — I’m [name] with [company]. I stopped by to see if you heard what’s been going on in the area.";
+    const out = fillTokens(line, fill);
+    assert.match(out, /I’m Pat with Field Co/);
+    assert.doesNotMatch(out, /\[name\]|\[company\]/);
+  });
+  it("fills year as the age-band window, never a guessed build year", () => {
+    const line = "A lot of these houses are on the original roof from around [year]. That’s first-roof age.";
+    const out = fillTokens(line, fill);
+    assert.match(out, /that 15–22 year window/);
+    assert.doesNotMatch(out, /\[year\]/);
+    assert.doesNotMatch(out, /\b(19|20)\d{2}\b/);
+    assert.equal(yearWindowPhrase(20, 30), "that 20–30 year window");
+  });
+  it("fills [day] with the weekday they passed", () => {
+    assert.equal(fillTokens("Does [day] morning work?", fill), "Does Thursday morning work?");
+  });
+  it("leaves [name] when You is empty so Door can hide it", () => {
+    const out = fillTokens("I’m [name] with [company].", {
+      ...fill,
+      goBy: "",
+      company: "",
+    });
+    assert.match(out, /\[name\]/);
+    assert.match(out, /\[company\]/);
+    assert.equal(hasOpenToken(out), true);
+  });
+  it("keeps source templates unfilled so doctrine asserts still pass", () => {
+    const door = POCKET_CARDS.find((c) => c.id === "door")!;
+    assert.match(door.lines.map((l) => l.say ?? "").join(" "), /\[name\]/);
+    assert.match(door.lines.map((l) => l.say ?? "").join(" "), /\[year\]/);
+  });
+});
+
+describe("fillSpoken / fillPocketCard", () => {
+  it("never leaves brackets, even on an empty book", () => {
+    const out = fillSpoken("I’m [name] with [company] around [year] on [day].", {
+      goBy: "",
+      company: "",
+      ageMin: 15,
+      ageMax: 22,
+      day: "Friday",
+    });
+    assert.doesNotMatch(out, /\[[^\]]+\]/);
+    assert.match(out, /your name/);
+    assert.match(out, /your company/);
+    assert.match(out, /Friday/);
+  });
+  it("fills the Door card at render time", () => {
+    const door = fillPocketCard(POCKET_CARDS.find((c) => c.id === "door")!, fill);
+    const text = door.lines.map((l) => `${l.say ?? ""} ${l.note ?? ""}`).join(" ");
+    assert.match(text, /I’m Pat with Field Co/);
+    assert.match(text, /that 15–22 year window/);
+    assert.doesNotMatch(text, /\[name\]|\[year\]/);
+  });
+  it("fills Roleplay knowledge so practice does not say [name]", () => {
+    const k = fillSpoken(pocketKnowledge(), fill);
+    assert.match(k, /I’m Pat with Field Co/);
+    assert.doesNotMatch(k, /\[name\]|\[company\]|\[year\]|\[day\]/);
+  });
+});
+
+describe("nextKnockDay", () => {
+  it("is tomorrow’s weekday from the local date", () => {
+    assert.equal(nextKnockDay(new Date(2026, 8, 15, 12)), "Wednesday");
+  });
+});
+
+describe("doorStrip", () => {
+  it("names You, street, roofs, and weather", () => {
+    const s = doorStrip({
+      goBy: "Pat",
+      company: "Field Co",
+      streetName: "Oak Street",
+      loopLabel: "Camp Hill · 17050",
+      ageMin: 15,
+      ageMax: 22,
+      weather: "1 inch hail in Camp Hill",
+    });
+    assert.equal(s.emptyYou, false);
+    assert.equal(s.identity, "Pat · Field Co");
+    assert.equal(s.place, "Oak Street");
+    assert.equal(s.placeGo, "/after");
+    assert.equal(s.pinNeeded, false);
+    assert.equal(s.age, "roofs 15–22");
+    assert.match(s.weather, /Camp Hill/);
+  });
+  it("empty You and no street stay honest", () => {
+    const s = doorStrip({
+      goBy: "",
+      company: "",
+      streetName: "",
+      loopLabel: "",
+      ageMin: 15,
+      ageMax: 22,
+      weather: "",
+    });
+    assert.equal(s.emptyYou, true);
+    assert.equal(s.pinNeeded, true);
+    assert.equal(s.placeGo, "/truck");
+    assert.equal(s.weather, "Age only");
+  });
+  it("falls back to the Working loop label when geocode is empty", () => {
+    const s = doorStrip({
+      goBy: "Pat",
+      company: "Field Co",
+      streetName: "",
+      loopLabel: "Camp Hill · 17050",
+      ageMin: 15,
+      ageMax: 22,
+      weather: "Age only",
+    });
+    assert.equal(s.place, "Camp Hill · 17050");
+    assert.equal(s.placeGo, "/after");
+  });
+});
+
+describe("claimOnStreet / stripWeather", () => {
+  it("hides Script A when the zip is missing", () => {
+    assert.equal(claimOnStreet([{ say: "1 inch hail", zip: "" }]).show, false);
+    assert.equal(claimOnStreet([]).show, false);
+  });
+  it("names the kept storm and zip when they match", () => {
+    const c = claimOnStreet([{ say: "1 inch hail in Camp Hill", zip: "17050" }]);
+    assert.equal(c.show, true);
+    assert.equal(c.when, "1 inch hail in Camp Hill · 17050");
+  });
+  it("weather is kept, then Use-today, then age-only", () => {
+    assert.equal(stripWeather("1 inch hail", "Use today line"), "1 inch hail");
+    assert.equal(stripWeather("", "Use today line\nmore"), "Use today line");
+    assert.equal(stripWeather("", ""), "Age only");
   });
 });

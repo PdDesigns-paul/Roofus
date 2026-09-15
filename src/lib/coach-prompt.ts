@@ -1,7 +1,7 @@
 import { INSPECT_SYSTEM } from "@/lib/inspect-system";
 import { inspectKnowledge, inspectKnowledgeForShot } from "@/lib/mri-index";
 import { mindsetKnowledge } from "@/lib/mindset";
-import { pocketKnowledge } from "@/lib/pocket-cards";
+import { pocketKnowledge, fillSpoken, nextKnockDay } from "@/lib/pocket-cards";
 import { modeBrief } from "@/lib/coach-modes";
 import { companyPagesKnowledge, type CompanyPage } from "@/lib/company-site";
 import type { ChatTurn } from "@/lib/stream-coach";
@@ -36,7 +36,7 @@ This is Roofus. Places: Truck, Door, Roof, Prep. Truck is the field log. Door is
 
 **Mindset** — Why: number as if earned, what it buys, who else, then the person or promise. Date it. Dead day: read it back. Demon: name, where it started, how that radar could help, which attack this week (fear / doubt / just-one-more). After Action Report lives on Prep — wins, facts, a plan with verbs — do not duplicate. Pace: their hours + one off-block + gear + what they will drop + one thing they already have. Talent stack: three skills this month, one tiny drill, windshield, night book (person, not work). Compass: growth that pays, choose to care, glad to work today, stack skills. If the week is heavy and Why is blank, open Why first. Never quote a book at a homeowner. Never put the demon on the porch. Porch doctrine (age / free look, i35, three options, honesty) still lives in this prompt. Worksheets live in Settings → Mindset. Chat opens from the orange fan.
 
-**Door** — pocket cards on the Door tab (not Menu): Door, Pushback, i35, Set, Compass. **Claim path** shows after they Keep a storm — Script A, matching zip. Same words as this prompt. Each has a one-line formula (hook → honest reason → one open question). Set also names paper (card / flyer / claims how-to), in-home or inspect-first then a 20–30 min phone review, and text confirm from Settings. Roofus does not send SMS. Compass is truck only — it stays visible; they read it in the truck; there is no lock. Ask Roofus on a porch card opens Roleplay on that beat. Claim path opens walk-up with the A constraint. Compass opens Mindset. Not Reference.
+**Door** — pocket cards on the Door tab (not Menu): Door, Pushback, i35, Set, Compass. **Claim path** shows after they Keep a storm — Script A, matching zip. Same words as this prompt. Each has a one-line formula (hook → honest reason → one open question). Cards fill name and company from You; [year] is the age-band window, never a guessed build year. The strip under the title is You, the street or Working loop, roofs, and Keep / Use-today weather. Hear this line speaks the filled SAY. Ask Roofus on a porch card opens Roleplay on that beat with the filled opener. Set also names paper (card / flyer / claims how-to), in-home or inspect-first then a 20–30 min phone review, and text confirm from Settings. Roofus does not send SMS. Compass is truck only — it stays visible; they read it in the truck; there is no lock. Claim path opens walk-up with the A constraint. Compass opens Mindset. Not Reference.
 
 **Reference** — Reference page lists the InterNACHI index (145 cards), plus a Company chapter when they pasted their website. Search. Open a chapter. Tap a card to open the page in the browser. Coach appendix is the named cards only — not every Part N. You name the card title. You do not paste the article body. You do not invent a card. Open from More.
 
@@ -102,6 +102,7 @@ export type CoachRequest = {
   year?: string;
   origin?: string;
   hat?: string;
+  goBy?: string;
   companyName?: string;
   warrantyLine?: string;
   companyWebsite?: string;
@@ -109,6 +110,9 @@ export type CoachRequest = {
   companySitePages?: Pick<CompanyPage, "title" | "look" | "url">[];
   imageDataUrl?: string;
   dayBook?: string;
+  ageMin?: number;
+  ageMax?: number;
+  kept?: boolean;
 };
 
 type XaiMessage =
@@ -152,10 +156,17 @@ export function buildXaiPayload(req: CoachRequest): {
     };
   }
 
-  const brief = modeBrief(req.mode ?? req.hat, req.scene, req.who, req.year, req.origin);
+  const fill = {
+    goBy: req.goBy ?? "",
+    company: req.companyName ?? "",
+    ageMin: req.ageMin ?? 15,
+    ageMax: req.ageMax ?? 22,
+    day: nextKnockDay(),
+  };
+  const brief = fillSpoken(modeBrief(req.mode ?? req.hat, req.scene, req.who, req.year, req.origin, req.kept), fill);
   const extra = [
     `\n\n${brief}`,
-    KNOWLEDGE,
+    fillSpoken(KNOWLEDGE, fill),
     req.companyName?.trim() ? `Company name from the book: ${req.companyName.trim()}` : "",
     req.warrantyLine?.trim()
       ? `Warranty line from Settings (this wins over the default): ${req.warrantyLine.trim()}`

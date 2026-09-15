@@ -20,6 +20,7 @@ import { Route as TodayRouteImport } from './routes/today'
 import { Route as TruckRouteImport } from './routes/truck'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
 import { Route as ApiCompanySiteRouteImport } from './routes/api/company-site'
+import { Route as ApiMapsKeyRouteImport } from './routes/api/maps-key'
 import { Route as ApiNotionSetupRouteImport } from './routes/api/notion-setup'
 import { Route as ApiNotionSyncRouteImport } from './routes/api/notion-sync'
 import { Route as ApiSpeechRouteImport } from './routes/api/speech'
@@ -93,6 +94,11 @@ const ApiCoachRoute = ApiCoachRouteImport.update({
 const ApiCompanySiteRoute = ApiCompanySiteRouteImport.update({
   id: '/api/company-site',
   path: '/api/company-site',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMapsKeyRoute = ApiMapsKeyRouteImport.update({
+  id: '/api/maps-key',
+  path: '/api/maps-key',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiNotionSetupRoute = ApiNotionSetupRouteImport.update({
@@ -203,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/truck': typeof TruckRoute
   '/api/coach': typeof ApiCoachRoute
   '/api/company-site': typeof ApiCompanySiteRoute
+  '/api/maps-key': typeof ApiMapsKeyRoute
   '/api/notion-setup': typeof ApiNotionSetupRoute
   '/api/notion-sync': typeof ApiNotionSyncRoute
   '/api/speech': typeof ApiSpeechRoute
@@ -233,6 +240,7 @@ export interface FileRoutesByTo {
   '/truck': typeof TruckRoute
   '/api/coach': typeof ApiCoachRoute
   '/api/company-site': typeof ApiCompanySiteRoute
+  '/api/maps-key': typeof ApiMapsKeyRoute
   '/api/notion-setup': typeof ApiNotionSetupRoute
   '/api/notion-sync': typeof ApiNotionSyncRoute
   '/api/speech': typeof ApiSpeechRoute
@@ -266,6 +274,7 @@ export interface FileRoutesById {
   '/truck': typeof TruckRoute
   '/api/coach': typeof ApiCoachRoute
   '/api/company-site': typeof ApiCompanySiteRoute
+  '/api/maps-key': typeof ApiMapsKeyRoute
   '/api/notion-setup': typeof ApiNotionSetupRoute
   '/api/notion-sync': typeof ApiNotionSyncRoute
   '/api/speech': typeof ApiSpeechRoute
@@ -300,6 +309,7 @@ export interface FileRouteTypes {
     | '/truck'
     | '/api/coach'
     | '/api/company-site'
+    | '/api/maps-key'
     | '/api/notion-setup'
     | '/api/notion-sync'
     | '/api/speech'
@@ -330,6 +340,7 @@ export interface FileRouteTypes {
     | '/truck'
     | '/api/coach'
     | '/api/company-site'
+    | '/api/maps-key'
     | '/api/notion-setup'
     | '/api/notion-sync'
     | '/api/speech'
@@ -362,6 +373,7 @@ export interface FileRouteTypes {
     | '/truck'
     | '/api/coach'
     | '/api/company-site'
+    | '/api/maps-key'
     | '/api/notion-setup'
     | '/api/notion-sync'
     | '/api/speech'
@@ -395,6 +407,7 @@ export interface RootRouteChildren {
   TruckRoute: typeof TruckRoute
   ApiCoachRoute: typeof ApiCoachRoute
   ApiCompanySiteRoute: typeof ApiCompanySiteRoute
+  ApiMapsKeyRoute: typeof ApiMapsKeyRoute
   ApiNotionSetupRoute: typeof ApiNotionSetupRoute
   ApiNotionSyncRoute: typeof ApiNotionSyncRoute
   ApiSpeechRoute: typeof ApiSpeechRoute
@@ -481,6 +494,13 @@ declare module '@tanstack/react-router' {
       path: '/api/company-site'
       fullPath: '/api/company-site'
       preLoaderRoute: typeof ApiCompanySiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/maps-key': {
+      id: '/api/maps-key'
+      path: '/api/maps-key'
+      fullPath: '/api/maps-key'
+      preLoaderRoute: typeof ApiMapsKeyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/notion-setup': {
@@ -673,6 +693,7 @@ const rootRouteChildren: RootRouteChildren = {
   TruckRoute: TruckRoute,
   ApiCoachRoute: ApiCoachRoute,
   ApiCompanySiteRoute: ApiCompanySiteRoute,
+  ApiMapsKeyRoute: ApiMapsKeyRoute,
   ApiNotionSetupRoute: ApiNotionSetupRoute,
   ApiNotionSyncRoute: ApiNotionSyncRoute,
   ApiSpeechRoute: ApiSpeechRoute,

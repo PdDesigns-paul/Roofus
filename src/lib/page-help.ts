@@ -26,8 +26,8 @@ export const PAGE_HELP = {
   cards: {
     title: "Door",
     body: [
-      "Five pocket cards on this tab, plus Claim path after you Keep a storm. Each has a formula: hook, honest reason, one open question. Door is the default knock. Pushback restates first. i35 is after photos. Set is morning or afternoon, paper, and a phone-review path. Compass stays here — read it in the truck.",
-      "Ask Roofus opens Roleplay on that beat. Claim path opens walk-up with the A constraint. Compass opens Mindset. This is not Reference — those are InterNACHI articles.",
+      "Five pocket cards on this tab, plus Claim path after you Keep a storm that matches this zip. Each has a formula: hook, honest reason, one open question. Door is the default knock. Pushback restates first. i35 is after photos. Set is morning or afternoon, paper, and a phone-review path. Compass stays here — read it in the truck.",
+      "The line under the title is You, the street or Working loop, the age band, and Keep or Use-today weather. Tap the name to open You. Tap the street to open Prep or Truck. Empty You is a Go, not brackets. Hear this line speaks the filled SAY. Ask Roofus opens Roleplay on that beat with the filled opener. Claim path opens with the A constraint. Compass opens Mindset. This is not Reference — those are InterNACHI articles.",
     ],
   },
   roof: {

@@ -8,6 +8,7 @@ export type StreamCoachInput = {
   year?: string;
   origin?: string;
   kept?: boolean;
+  goBy?: string;
   companyName?: string;
   warrantyLine?: string;
   companyWebsite?: string;
@@ -38,6 +39,8 @@ export type StreamCoachInput = {
     attack?: string;
   };
   pinCounts?: Record<string, number>;
+  ageMin?: number;
+  ageMax?: number;
 };
 
 export async function streamCoach(

@@ -35,7 +35,7 @@ Settings holds the book (You, territory, hours, mindset, reminders, backup). Emp
 Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Roof hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 
 - Prep = a **map of pins**. Walks form from distance (0.4 km, cap 40). Not named subdivisions, not Census cards, not one card per zip. Open from the Prep tab (route `/after`). Night-before + morning. Last 48 hours Keep / Toss lives here. After Action Report and tomorrow live on Prep. Truck Night is a Go to Prep#finish. Morning chip lists set + revisit pins. Settings is a Go at the bottom of Prep, not a fifth tab.
-- Door = pocket cards with a one-line formula (hook → honest reason → one open question). Compass stays visible — read it in the truck. Claim path shows after Keep.
+- Door = pocket cards with a one-line formula (hook → honest reason → one open question). Cards fill name and company from You. Compass stays visible — read it in the truck. Claim path shows after Keep, matching zip.
 - Door / Live first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.
 - Auth OFF. Database OFF. localStorage / Zustand only. Notion is optional backup in **their** workspace (Days, Streets, Storms, Mindset, Memory, Pins).
 - Pins are the hunt. Drop from Truck (GPS) or the Prep map (Desk). Distance makes the loop. Sidewalk house log, not a CRM, not a pipeline. No takeoff, no scrape. Street View / Zillow / Redfin are outbound links.

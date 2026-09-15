@@ -14,6 +14,7 @@ import {
   restorePins,
   revisitPins,
   serializePin,
+  streetNameOf,
   MAX_BACKUP_PINS,
 } from "./pins.ts";
 
@@ -165,3 +166,13 @@ describe("pinsLineForCoach", () => {
     assert.doesNotMatch(line, /555-/);
   });
 });
+
+describe("streetNameOf", () => {
+  it("strips the house number from a geocoded address", () => {
+    assert.equal(streetNameOf({ address: "12 Oak Street", houseNumber: "12" }), "Oak Street");
+    assert.equal(streetNameOf({ address: "12 Oak Street", houseNumber: "" }), "Oak Street");
+    assert.equal(streetNameOf({ address: "Oak Street", houseNumber: "" }), "Oak Street");
+    assert.equal(streetNameOf({ address: "", houseNumber: "12" }), "");
+  });
+});
+
