@@ -64,9 +64,11 @@ describe("tour copy in the book", () => {
   it("help and the coach name the five-slide sheet", () => {
     const settings = PAGE_HELP.settings.body.join(" ");
     assert.match(settings, /Show the tour plays the five slides again/);
+    assert.match(settings, /outlined pills under the list/);
     assert.doesNotMatch(settings, /question-mark tour/);
     assert.match(coachPrompt, /five slides over Truck/);
     assert.match(coachPrompt, /Skip is on every slide/);
+    assert.match(coachPrompt, /outlined pills under the list/);
     assert.doesNotMatch(coachPrompt, /does not auto-play/);
   });
 });

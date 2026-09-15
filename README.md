@@ -20,7 +20,7 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 | **Roofus** | Orange button. Tap fans Live, Roleplay, Mindset — each is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. Hold-to-talk in Roleplay. Beats at the bottom. Score me is a button. Hear it reads his line. Practice only — do not record a homeowner. |
 | **Reference** | Reference page lists the InterNACHI index. Coach appendix is the named cards. Company pages land here when they paste a website in Settings. Tap a card to open the page. |
 | **Mindset** | Worksheets in Settings → Mindset: Why (ladder), Name the demon, Pace (gear), Talent stack. Chat from the orange fan. Private. After Action Report lives on Prep. |
-| **Settings** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. Prep is its own tab. Name, company, website (crawled into Reference), warranty, counties, hours, mindset, reminder toggles, optional Notion, Memory FAQs. Reminders nag on open if that box is empty. |
+| **Settings** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. Each row is a Go with a chevron. Prep is its own tab. Show the tour and Load a sample day are outlined pills under the list. Name, company, website (crawled into Reference), warranty, counties, hours, mindset, reminder toggles, optional Notion, Memory FAQs. Reminders nag on open if that box is empty. |
 
 Bottom bar: Truck · Door · Roof · Prep. Help and Menu live in the header. Menu: Reference, Settings. Back only on Settings, Reference, and nested settings pages. Mindset worksheets live in Settings → Mindset.
 

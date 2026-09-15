@@ -1,7 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 import { InstallHint } from "@/components/install-hint";
 import { NotionHint } from "@/components/notion-hint";
+import { Button } from "@/components/ui/button";
 import { useDayBook } from "@/lib/day-book";
 import { loadDemo } from "@/lib/demo-data";
 import { resetOnboard } from "@/lib/onboard";
@@ -14,7 +16,6 @@ export const Route = createFileRoute("/settings/")({
 const PAGES = [
   { to: "/settings/you", label: "You", hint: "First name, company, website, warranty" },
   { to: "/settings/territory", label: "Territory", hint: "Counties and state" },
-  { to: "/after", label: "Prep", hint: "Park-once loops from those counties" },
   { to: "/settings/hours", label: "Hours", hint: "When you knock" },
   { to: "/settings/mindset", label: "Mindset", hint: "Why, demon, Pace, stack" },
   { to: "/settings/reminders", label: "Reminders", hint: "The four nags" },
@@ -28,32 +29,36 @@ function SettingsIndex() {
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
       <AppHeader title="Settings" />
 
-      <p className="mt-3 text-sm leading-snug text-muted">
-        You, territory, hours. Prep. Mindset. Reminders. Backup is optional.
-      </p>
-
-      <button
-        type="button"
-        className="mt-4 h-11 w-full rounded-full border border-border text-sm"
-        onClick={() => {
-          void navigate({ to: "/truck" });
-          resetOnboard();
-        }}
-      >
-        Show the tour
-      </button>
-      <LoadSample />
-
-      <ul className="mt-5 flex flex-col">
+      <ul className="mt-5 overflow-hidden rounded-2xl border border-border bg-surface px-4">
         {PAGES.map((p) => (
           <li key={p.to} className="border-b border-border last:border-0">
-            <Link to={p.to} className="flex min-h-14 flex-col justify-center py-3">
-              <span className="text-sm text-fg">{p.label}</span>
-              <span className="text-xs text-faint">{p.hint}</span>
+            <Link to={p.to} className="flex min-h-14 items-center gap-3 py-3">
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="text-sm text-fg">{p.label}</span>
+                <span className="text-xs text-muted">{p.hint}</span>
+              </span>
+              <ChevronRight className="size-4 shrink-0 text-faint" aria-hidden />
             </Link>
           </li>
         ))}
       </ul>
+
+      <div className="mt-6 flex flex-col gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          className="w-full"
+          onClick={() => {
+            void navigate({ to: "/truck" });
+            resetOnboard();
+          }}
+        >
+          Show the tour
+        </Button>
+        <LoadSample />
+      </div>
+
       <InstallHint />
       <NotionHint />
     </main>
@@ -65,15 +70,17 @@ function LoadSample() {
   const navigate = useNavigate();
   if (counties.trim()) return null;
   return (
-    <button
+    <Button
       type="button"
-      className="mt-2 h-11 w-full rounded-full border border-border text-sm"
+      variant="outline"
+      size="lg"
+      className="w-full"
       onClick={() => {
         loadDemo();
         void navigate({ to: "/after" });
       }}
     >
       Load a sample day
-    </button>
+    </Button>
   );
 }

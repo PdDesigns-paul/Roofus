@@ -56,13 +56,13 @@ export const PAGE_HELP = {
   settings: {
     title: "Settings",
     body: [
-      "Settings is a list of pages. You, Territory, Hours, Mindset, Reminders, Backup. Prep is its own tab. Back on every sub page. Tour and sample day stay on this list.",
+      "Settings is a list of pages. You, Territory, Hours, Mindset, Reminders, Backup. Each row is a Go — title, hint, chevron. Prep is its own tab, not a row here. Back on every sub page.",
       "You: first name, company, website, warranty. Paste a URL — we crawl it in the background. Pages land in Reference. He uses those notes when he talks product.",
       "Territory: counties and a state. Counties are for storms. Pins make the walks. Hours: when you knock, morning work, hard stop.",
       "Reminders: morning storm if empty, evening After Action Report if blank, Sundays pace, the 1st talent stack. Did it is a chip. Finish-setup is Settings, not a nag.",
       "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report lives on Prep.",
       "Backup: optional Notion copy of days, streets, storms, mindset, FAQs, and pins. Do not Restore onto a full phone. Do not Backup from an empty one.",
-      "Show the tour plays the five slides again. Skip is on every slide.",
+      "Show the tour and Load a sample day are outlined pills under the list. Show the tour plays the five slides again. Skip is on every slide. Load a sample day only on an empty book.",
     ],
   },
   coach: {

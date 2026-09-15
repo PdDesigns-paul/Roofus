@@ -2,7 +2,7 @@
 
 **This file is the UI contract.** Porch words stay in [`DOCTRINE.md`](./DOCTRINE.md). How a canvasser *sees* what to tap lives here.
 
-Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Streets Near me / scout tags and Use today as a chip shipped. **Places are Truck · Door · Roof · Prep.** After became Prep. Truck is the field log. First-run is a 5-slide sheet over Truck. Door pocket cards fill You and ship Hear this line. Settings index restyle is still open. Do not invent a sixth control type.
+Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Streets Near me / scout tags and Use today as a chip shipped. **Places are Truck · Door · Roof · Prep.** After became Prep. Truck is the field log. First-run is a 5-slide sheet over Truck. Door pocket cards fill You and ship Hear this line. Settings index is chevron Go rows; tour and sample day are outlined pills under the list. Do not invent a sixth control type.
 
 Agents: read this before you touch tabs, the FAB, Truck links, setup rows, or `src/components/ui/`.
 
@@ -14,18 +14,14 @@ The facets work. The voice works. The actions already exist. What is missing is 
 
 On a screen every pixel already affords a tap. Fill, edge, size, underline, and the dog are how we advertise the tap. Right now almost every control is drawn with the same pencil: `text-sm`, `text-muted`, `text-faint`, 1px `border-border`, underline only on hover. Hover never fires on a thumb.
 
-False signifiers that this plan already killed on Home / Today / chrome:
+False signifiers that this plan already killed:
 
 - `Ask`, `Did it`, `Pocket cards` as 12px muted captions (Home / Today).
 - Setup rows that were links *and* carried a second ghost Ask.
 - Home listing Today / Inspect / Streets under the fold.
 - Help and Menu in a second bottom rail.
 - Selected tab as “stroke 2.2 vs 1.8.”
-
-Still on Settings until that sweep:
-
-- Settings rows that still read as captions.
-- Accent used as a sticker on pages this slice did not touch.
+- Settings rows that read as captions, with tour and sample day dressed as the first tap.
 
 Score of the idea: fine. Score of “what do I tap”: the actual bug.
 
@@ -118,11 +114,11 @@ Count tiles: tap the card to +1. − is a small control. Cards and maps labels a
 - Rebuild / Census hunt is dead. Prep is the map of pins they dropped.
 - Help copy and coach prompt name Near me and Pins first.
 
-### Slice 6 — Settings / Door sweep — Door half shipped
+### Slice 6 — Settings / Door sweep — shipped
 
 - Door “Ask Roofus” stays an outlined pill. Hear this line is a second outlined Do on the filled SAY. Not a second FAB.
 - Door fills [name]/[company] from You, [year] as the age-band window, [day] as tomorrow’s weekday. Empty You is a Go. Context strip: You · street or Working loop · roofs · Keep / Use-today. Claim path names the kept zip or stays hidden.
-- Settings index: rows get chevrons. “Show the tour” and “Load a sample day” stay secondary outlined pills, below the list, not dressed as the page’s primary.
+- Settings index: rows get chevrons. Prep is a tab, not a Settings row. “Show the tour” and “Load a sample day” stay secondary outlined pills, below the list, not dressed as the page’s primary.
 - Help copy and coach prompt name the controls that actually exist after the sweep.
 
 ### Slice 7 — Prep — shipped
