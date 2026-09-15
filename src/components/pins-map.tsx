@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { PinCard } from "@/components/pin-board";
 import { Input } from "@/components/ui/input";
+import { Chip } from "@/components/ui/chip";
 import { loadGoogleMaps, mapsKey, reverseGeocode } from "@/lib/pin-geocode";
 import { pinHasPoint, pinMatchesYearFilter, type YearFilter } from "@/lib/pins";
 import { usePins } from "@/lib/pins-store";
@@ -10,6 +11,7 @@ type GMap = {
   setCenter: (c: { lat: number; lng: number }) => void;
   setZoom: (n: number) => void;
   panTo: (c: { lat: number; lng: number }) => void;
+  setMapTypeId: (id: string) => void;
   addListener: (ev: string, fn: (e: { latLng?: { lat: () => number; lng: () => number } }) => void) => unknown;
   getCenter: () => { lat: () => number; lng: () => number } | null;
 };
@@ -37,6 +39,11 @@ function gmaps(): GMapsNs | null {
   return g ?? null;
 }
 
+/** Hybrid = satellite roofs + street names. Roadmap is the drawing. */
+function mapTypeId(satellite: boolean): "hybrid" | "roadmap" {
+  return satellite ? "hybrid" : "roadmap";
+}
+
 export function PinsMap({
   yearFilter,
 }: {
@@ -53,6 +60,7 @@ export function PinsMap({
   const [ready, setReady] = useState(false);
   const [err, setErr] = useState("");
   const [picked, setPicked] = useState<string | null>(null);
+  const [satellite, setSatellite] = useState(true);
   const box = useRef<HTMLDivElement>(null);
   const search = useRef<HTMLInputElement>(null);
   const mapRef = useRef<GMap | null>(null);
@@ -97,6 +105,7 @@ export function PinsMap({
     const map = new maps.Map(box.current, {
       center,
       zoom: here || first ? 16 : 10,
+      mapTypeId: mapTypeId(satellite),
       mapTypeControl: false,
       streetViewControl: false,
       fullscreenControl: false,
@@ -124,6 +133,10 @@ export function PinsMap({
       });
     }
   }, [ready, add, setMapCenter, visible]);
+
+  useEffect(() => {
+    mapRef.current?.setMapTypeId(mapTypeId(satellite));
+  }, [satellite]);
 
   useEffect(() => {
     const maps = gmaps();
@@ -229,10 +242,10 @@ export function PinsMap({
 
   return (
     <div className="mt-3">
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <Input
           ref={search}
-          className="mt-0"
+          className="mt-0 min-w-0 flex-1"
           placeholder="Address or zip"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -248,6 +261,9 @@ export function PinsMap({
         >
           Me
         </button>
+        <Chip selected={satellite} onClick={() => setSatellite((on) => !on)}>
+          Satellite
+        </Chip>
       </div>
       {mapBox}
       {err && key ? <p className="mt-2 text-sm leading-relaxed text-muted">{err}</p> : null}
