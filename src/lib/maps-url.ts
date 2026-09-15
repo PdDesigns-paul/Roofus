@@ -1,5 +1,6 @@
 import { fipsToAbbr } from "./us-state-fips.ts";
 import { loopPlace, loopZip } from "./streets-rank.ts";
+import { pinHasPoint, pinQueryAddress, type HousePin } from "./pins.ts";
 import type { StreetLoop } from "./streets-types.ts";
 
 type MapLoop = Pick<StreetLoop, "lat" | "lon" | "streets" | "title" | "county" | "state"> & {
@@ -33,4 +34,29 @@ export function mapsLabel(
   if (zip) return `Map · ${zip}`;
   const street = loop.streets[0] || loop.title;
   return street ? `Map · ${street}` : "Open in Maps";
+}
+
+export function pinMapsUrl(p: Pick<HousePin, "lat" | "lng">): string {
+  const q = pinHasPoint(p) ? `${p.lat},${p.lng}` : "";
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+}
+
+export function pinStreetViewUrl(p: Pick<HousePin, "lat" | "lng">): string {
+  return `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${encodeURIComponent(`${p.lat},${p.lng}`)}`;
+}
+
+export function pinDirectionsUrl(p: Pick<HousePin, "lat" | "lng">): string {
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${p.lat},${p.lng}`)}`;
+}
+
+export function pinZillowUrl(p: Pick<HousePin, "address" | "city" | "state" | "zip" | "houseNumber">): string | null {
+  const q = pinQueryAddress(p);
+  if (!q) return null;
+  return `https://www.zillow.com/homes/${encodeURIComponent(q)}_rb/`;
+}
+
+export function pinRedfinUrl(p: Pick<HousePin, "address" | "city" | "state" | "zip" | "houseNumber">): string | null {
+  const q = pinQueryAddress(p);
+  if (!q) return null;
+  return `https://www.redfin.com/search?q=${encodeURIComponent(q)}`;
 }

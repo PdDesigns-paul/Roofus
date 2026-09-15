@@ -3,24 +3,26 @@ export type LoopResult = "" | "no-answer" | "not-now" | "callback" | "appointmen
 
 export type StreetLoop = {
   id: string;
-  /** Cluster label (streets, small CDP, or township fallback). Old saves may still hold a zip. */
+  /** Walk name. First street in the line, or what they typed. */
   title: string;
   zip: string;
-  /** USPS city / town for that zip. Blank on old saves until they rebuild or Streets fills it. */
+  /** City from pin addresses. */
   town: string;
-  /** Park-once name. Census streets or a small CDP — not a developer list. */
+  /** Park-once name. */
   place: string;
-  /** CouSub fence. Folder, not the card. */
   township: string;
   streets: string[];
   county: string;
   state: string;
+  /** Average of typed pin years. 0 if none — do not invent Census years. */
   medianYear: number;
   homes: number;
   lat: number;
   lon: number;
   status: LoopStatus;
   lastResult: LoopResult;
+  /** True once they rename the walk. Auto names stay in sync with the first street. */
+  named?: boolean;
 };
 
 export type StreetsBuildRequest = {

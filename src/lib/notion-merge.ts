@@ -149,6 +149,8 @@ export function sanitizeLoop(raw: Partial<StreetLoop> & { id: string }): StreetL
     : [];
   const title = s(raw.title);
   const zip = s(raw.zip) || (/^\d{5}$/.test(title) ? title : "");
+  const yearRaw = typeof raw.medianYear === "number" ? raw.medianYear : Number(raw.medianYear);
+  const medianYear = Number.isFinite(yearRaw) ? Math.max(0, Math.round(yearRaw)) : 0;
   return {
     id: raw.id,
     title,
@@ -159,12 +161,13 @@ export function sanitizeLoop(raw: Partial<StreetLoop> & { id: string }): StreetL
     streets,
     county: s(raw.county),
     state: s(raw.state),
-    medianYear: n(raw.medianYear) || new Date().getFullYear() - 20,
+    medianYear,
     homes: n(raw.homes),
     lat: typeof raw.lat === "number" && Number.isFinite(raw.lat) ? raw.lat : 0,
     lon: typeof raw.lon === "number" && Number.isFinite(raw.lon) ? raw.lon : 0,
     status: asLoopStatus(raw.status),
     lastResult: asLoopResult(raw.lastResult),
+    named: Boolean(raw.named),
   };
 }
 
@@ -410,7 +413,7 @@ export function rowsWithBody(rows: MindsetRow[]): MindsetRow[] {
 
 /** A zip with no coords is still a zip. Do not drop it on restore. */
 export function loopWorthKeeping(l: StreetLoop): boolean {
-  return Boolean(l.id && (l.zip.trim() || l.title.trim() || l.streets.length));
+  return Boolean(l.id && (l.zip.trim() || l.title.trim() || l.streets.length || l.homes > 0));
 }
 
 export function restoreTally(pulled: {

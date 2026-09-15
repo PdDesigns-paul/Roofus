@@ -291,6 +291,8 @@ describe("restore helpers", () => {
       lastResult: "",
     });
     assert.equal(loopWorthKeeping(l), true);
+    assert.equal(l.medianYear, 2005);
+    assert.equal(sanitizeLoop({ id: "z0", title: "Oak", zip: "17050", streets: [], county: "", state: "", medianYear: 0, homes: 1, lat: 0, lon: 0, status: "fresh", lastResult: "" }).medianYear, 0);
     assert.equal(loopWorthKeeping(sanitizeLoop({ id: "x", title: "", zip: "", streets: [], county: "", state: "", medianYear: 0, homes: 0, lat: 0, lon: 0, status: "fresh", lastResult: "" })), false);
   });
 

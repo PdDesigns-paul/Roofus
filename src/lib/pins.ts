@@ -1,10 +1,18 @@
-/** Sidewalk house log. Hangs on a loop, not on the day. Not a CRM. */
+/** House log. Pins are the hunt. Distance makes the loop. Not a CRM. */
 
 export const PIN_STATUSES = ["no-answer", "talked", "look", "set", "revisit", "skip"] as const;
 export type PinStatus = (typeof PIN_STATUSES)[number];
+export type PinStatusOrBlank = PinStatus | "";
 
 export const CURB_TAGS = ["3-tab", "granules", "tarp", "missing tab", "no-solicit"] as const;
 export type CurbTag = (typeof CURB_TAGS)[number];
+
+export const ROOF_LOOKS = ["original-3tab", "mixed", "replaced", "unknown"] as const;
+export type RoofLook = (typeof ROOF_LOOKS)[number];
+export type RoofLookOrBlank = RoofLook | "";
+
+export const PIN_SOURCES = ["truck", "desk"] as const;
+export type PinSource = (typeof PIN_SOURCES)[number];
 
 export const PIN_STATUS_LABEL: Record<PinStatus, string> = {
   "no-answer": "No answer",
@@ -15,23 +23,42 @@ export const PIN_STATUS_LABEL: Record<PinStatus, string> = {
   skip: "Skip",
 };
 
+export const ROOF_LOOK_LABEL: Record<RoofLook, string> = {
+  "original-3tab": "Original 3-tab",
+  mixed: "Mixed",
+  replaced: "Replaced",
+  unknown: "Unknown",
+};
+
 export type HousePin = {
   id: string;
-  loopId: string;
   lat: number;
   lng: number;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
   houseNumber: string;
+  year: string;
+  roofLook: RoofLookOrBlank;
+  damage: string;
+  nextStep: string;
   note: string;
-  status: PinStatus;
+  status: PinStatusOrBlank;
   curbTags: CurbTag[];
+  source: PinSource;
+  loopId: string;
+  walkIndex: number;
   createdAt: string;
   updatedAt: string;
 };
 
-export const MAX_BACKUP_PINS = 200;
+export const MAX_BACKUP_PINS = 500;
 
 const STATUS_SET = new Set<string>(PIN_STATUSES);
 const CURB_SET = new Set<string>(CURB_TAGS);
+const ROOF_SET = new Set<string>(ROOF_LOOKS);
+const SOURCE_SET = new Set<string>(PIN_SOURCES);
 
 function s(v: unknown) {
   return typeof v === "string" ? v : "";
@@ -42,16 +69,25 @@ function n(v: unknown) {
   return Number.isFinite(x) ? x : 0;
 }
 
-export function asPinStatus(v: unknown): PinStatus {
-  return STATUS_SET.has(String(v)) ? (v as PinStatus) : "no-answer";
+export function asPinStatus(v: unknown): PinStatusOrBlank {
+  const t = s(v).trim();
+  if (!t) return "";
+  return STATUS_SET.has(t) ? (t as PinStatus) : "";
+}
+
+export function asRoofLook(v: unknown): RoofLookOrBlank {
+  const t = s(v).trim();
+  if (!t) return "";
+  return ROOF_SET.has(t) ? (t as RoofLook) : "";
+}
+
+export function asPinSource(v: unknown): PinSource {
+  const t = s(v).trim();
+  return SOURCE_SET.has(t) ? (t as PinSource) : "truck";
 }
 
 export function asCurbTags(v: unknown): CurbTag[] {
-  const raw = Array.isArray(v)
-    ? v
-    : typeof v === "string"
-      ? v.split(",")
-      : [];
+  const raw = Array.isArray(v) ? v : typeof v === "string" ? v.split(",") : [];
   const out: CurbTag[] = [];
   for (const t of raw) {
     const x = String(t).trim();
@@ -65,24 +101,43 @@ export function newPinId() {
 }
 
 export function makePin(input: {
-  loopId: string;
   lat: number;
   lng: number;
+  source?: PinSource;
+  loopId?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
   houseNumber?: string;
+  year?: string;
+  roofLook?: RoofLookOrBlank;
+  damage?: string;
+  nextStep?: string;
   note?: string;
-  status?: PinStatus;
+  status?: PinStatusOrBlank;
   curbTags?: CurbTag[];
 }): HousePin {
   const now = new Date().toISOString();
   return serializePin({
     id: newPinId(),
-    loopId: input.loopId.trim(),
     lat: n(input.lat),
     lng: n(input.lng),
+    address: (input.address ?? "").trim(),
+    city: (input.city ?? "").trim(),
+    state: (input.state ?? "").trim(),
+    zip: (input.zip ?? "").trim(),
     houseNumber: (input.houseNumber ?? "").trim(),
+    year: (input.year ?? "").trim(),
+    roofLook: input.roofLook ?? "",
+    damage: (input.damage ?? "").trim(),
+    nextStep: (input.nextStep ?? "").trim(),
     note: (input.note ?? "").trim(),
-    status: input.status ?? "no-answer",
+    status: input.status ?? "",
     curbTags: input.curbTags ?? [],
+    source: input.source ?? "truck",
+    loopId: (input.loopId ?? "").trim(),
+    walkIndex: 0,
     createdAt: now,
     updatedAt: now,
   });
@@ -93,17 +148,26 @@ export function restorePin(raw: unknown): HousePin | null {
   if (!raw || typeof raw !== "object") return null;
   const o = raw as Record<string, unknown>;
   const id = s(o.id).trim();
-  const loopId = s(o.loopId).trim();
-  if (!id || !loopId) return null;
+  if (!id) return null;
   return serializePin({
     id,
-    loopId,
     lat: n(o.lat),
     lng: n(o.lng),
+    address: s(o.address ?? o.Address).trim(),
+    city: s(o.city ?? o.City).trim(),
+    state: s(o.state ?? o.State).trim(),
+    zip: s(o.zip ?? o.Zip).trim(),
     houseNumber: s(o.houseNumber).trim(),
+    year: s(o.year ?? o.Year).trim(),
+    roofLook: asRoofLook(o.roofLook ?? o.Roof),
+    damage: s(o.damage ?? o.Damage).trim(),
+    nextStep: s(o.nextStep ?? o.Next).trim(),
     note: s(o.note).trim(),
     status: asPinStatus(o.status),
     curbTags: asCurbTags(o.curbTags),
+    source: asPinSource(o.source),
+    loopId: s(o.loopId).trim(),
+    walkIndex: Math.max(0, Math.round(n(o.walkIndex))),
     createdAt: s(o.createdAt) || new Date().toISOString(),
     updatedAt: s(o.updatedAt) || s(o.createdAt) || new Date().toISOString(),
   });
@@ -112,13 +176,23 @@ export function restorePin(raw: unknown): HousePin | null {
 export function serializePin(p: HousePin): HousePin {
   return {
     id: p.id,
-    loopId: p.loopId,
     lat: n(p.lat),
     lng: n(p.lng),
+    address: s(p.address).trim(),
+    city: s(p.city).trim(),
+    state: s(p.state).trim(),
+    zip: s(p.zip).trim(),
     houseNumber: s(p.houseNumber).trim(),
+    year: s(p.year).trim(),
+    roofLook: asRoofLook(p.roofLook),
+    damage: s(p.damage).trim(),
+    nextStep: s(p.nextStep).trim(),
     note: s(p.note).trim(),
     status: asPinStatus(p.status),
     curbTags: asCurbTags(p.curbTags),
+    source: asPinSource(p.source),
+    loopId: s(p.loopId).trim(),
+    walkIndex: Math.max(0, Math.round(n(p.walkIndex))),
     createdAt: s(p.createdAt),
     updatedAt: s(p.updatedAt),
   };
@@ -140,7 +214,7 @@ export function restorePins(raw: unknown): HousePin[] {
 export function pinsForLoop(pins: HousePin[], loopId: string): HousePin[] {
   const id = loopId.trim();
   if (!id) return [];
-  return pins.filter((p) => p.loopId === id);
+  return pins.filter((p) => p.loopId === id).sort((a, b) => a.walkIndex - b.walkIndex || a.createdAt.localeCompare(b.createdAt));
 }
 
 export function morningPins(pins: HousePin[]): HousePin[] {
@@ -157,13 +231,27 @@ export function lastPinOnLoop(pins: HousePin[], loopId: string): HousePin | unde
   return mine.reduce((a, b) => (a.createdAt >= b.createdAt ? a : b));
 }
 
+/** Next door on the walking line: first blank status. */
+export function nextBlankOnLoop(pins: HousePin[], loopId: string): HousePin | undefined {
+  return pinsForLoop(pins, loopId).find((p) => !p.status);
+}
+
 export function pinHasPoint(p: Pick<HousePin, "lat" | "lng">): boolean {
   return Number.isFinite(p.lat) && Number.isFinite(p.lng) && !(p.lat === 0 && p.lng === 0);
 }
 
-export function pinMapsUrl(p: Pick<HousePin, "lat" | "lng">): string {
-  const q = pinHasPoint(p) ? `${p.lat},${p.lng}` : "";
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+export function pinLabel(p: Pick<HousePin, "address" | "houseNumber" | "zip">): string {
+  if (p.address.trim()) return p.address.trim();
+  if (p.houseNumber.trim() && p.zip.trim()) return `${p.houseNumber.trim()} · ${p.zip.trim()}`;
+  if (p.houseNumber.trim()) return p.houseNumber.trim();
+  return "Pin";
+}
+
+export function pinQueryAddress(p: Pick<HousePin, "address" | "city" | "state" | "zip" | "houseNumber">): string {
+  if (p.address.trim()) {
+    return [p.address.trim(), p.city.trim(), p.state.trim(), p.zip.trim()].filter(Boolean).join(", ");
+  }
+  return [p.houseNumber.trim(), p.city.trim(), p.state.trim(), p.zip.trim()].filter(Boolean).join(", ");
 }
 
 /** Phone wins non-empty fields. Incoming adds pins this phone does not have. */
@@ -179,13 +267,23 @@ export function mergePins(current: HousePin[], incoming: HousePin[]): HousePin[]
     }
     have.set(next.id, {
       ...next,
+      address: cur.address.trim() || next.address,
+      city: cur.city.trim() || next.city,
+      state: cur.state.trim() || next.state,
+      zip: cur.zip.trim() || next.zip,
       houseNumber: cur.houseNumber.trim() || next.houseNumber,
+      year: cur.year.trim() || next.year,
+      roofLook: cur.roofLook || next.roofLook,
+      damage: cur.damage.trim() || next.damage,
+      nextStep: cur.nextStep.trim() || next.nextStep,
       note: cur.note.trim() || next.note,
       status: cur.status || next.status,
       curbTags: cur.curbTags.length ? cur.curbTags : next.curbTags,
+      source: cur.source || next.source,
       lat: pinHasPoint(cur) ? cur.lat : next.lat,
       lng: pinHasPoint(cur) ? cur.lng : next.lng,
       loopId: cur.loopId || next.loopId,
+      walkIndex: cur.walkIndex || next.walkIndex,
       createdAt: cur.createdAt || next.createdAt,
       updatedAt: cur.updatedAt || next.updatedAt,
     });
@@ -193,21 +291,46 @@ export function mergePins(current: HousePin[], incoming: HousePin[]): HousePin[]
   return [...have.values()].slice(0, MAX_BACKUP_PINS);
 }
 
+export type YearFilter = "all" | "band" | "blank";
+
+export function pinYearAge(year: string, now = new Date().getFullYear()): number | null {
+  const y = Number(year.trim());
+  if (!Number.isFinite(y) || y < 1800 || y > now + 2) return null;
+  return now - Math.round(y);
+}
+
+export function pinMatchesYearFilter(
+  pin: Pick<HousePin, "year">,
+  filter: YearFilter,
+  ageMin: number,
+  ageMax: number,
+  now = new Date().getFullYear(),
+): boolean {
+  if (filter === "all") return true;
+  const age = pinYearAge(pin.year, now);
+  if (filter === "blank") return age == null;
+  if (age == null) return false;
+  return age >= ageMin && age <= ageMax;
+}
+
 export function pinsLineForCoach(pins: HousePin[]): string {
   if (!pins.length) {
-    return "# Pins\nNo house pins yet. They drop from Truck onto the Working loop. Do not invent an address or a name.";
+    return "# Pins\nNo house pins yet. They drop from Truck (GPS) or the Prep map. Do not invent an address or a name.";
   }
   const revisit = pins.filter((p) => p.status === "revisit").length;
+  const desk = pins.filter((p) => p.source === "desk").length;
+  const blank = pins.filter((p) => !p.status).length;
   const byLoop = new Map<string, { n: number; revisit: number }>();
   for (const p of pins) {
-    const cur = byLoop.get(p.loopId) ?? { n: 0, revisit: 0 };
+    const id = p.loopId || "(unclustered)";
+    const cur = byLoop.get(id) ?? { n: 0, revisit: 0 };
     cur.n += 1;
     if (p.status === "revisit") cur.revisit += 1;
-    byLoop.set(p.loopId, cur);
+    byLoop.set(id, cur);
   }
   const lines = [
-    "# Pins (houses on a loop. Not a CRM. Do not invent an address or a name.)",
-    `${pins.length} pin${pins.length === 1 ? "" : "s"}. ${revisit} revisit.`,
+    "# Pins (houses they marked. Not a CRM. Do not invent an address, a year, or a name.)",
+    `${pins.length} pin${pins.length === 1 ? "" : "s"}. ${revisit} revisit. ${blank} still blank. ${desk} desk.`,
   ];
   for (const [loopId, t] of [...byLoop.entries()].slice(0, 24)) {
     lines.push(`- loop ${loopId}: ${t.n} pin${t.n === 1 ? "" : "s"}${t.revisit ? `, ${t.revisit} revisit` : ""}`);

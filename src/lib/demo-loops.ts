@@ -1,4 +1,5 @@
-/** Sample park-once loops. Generic canvasser. A thin county stays in the list so density does not bury it. */
+/** Sample park-once loops. Generic canvasser. Pins first — walks form from these houses. */
+import { makePin, type HousePin } from "./pins.ts";
 import type { StreetLoop } from "./streets-types.ts";
 
 export const DEMO_COUNTIES = "Dauphin, Perry, Cumberland";
@@ -20,6 +21,7 @@ function loop(
   };
 }
 
+/** Leftover Census cards — tests and restore still read this shape. Sample day uses DEMO_PINS. */
 export const DEMO_LOOPS: StreetLoop[] = [
   loop({
     id: "demo-17112-a",
@@ -141,6 +143,97 @@ export const DEMO_LOOPS: StreetLoop[] = [
     lat: 40.34,
     lon: -76.93,
     homes: 50,
+  }),
+];
+
+function pin(input: Parameters<typeof makePin>[0] & { status?: HousePin["status"] }): HousePin {
+  return makePin(input);
+}
+
+/** Nearby pins on a street join. Far towns stay their own walk. */
+export const DEMO_PINS: HousePin[] = [
+  pin({
+    lat: 40.23,
+    lng: -77.0,
+    address: "12 Creekview Dr",
+    houseNumber: "12",
+    city: "Mechanicsburg",
+    state: "PA",
+    zip: "17050",
+    year: "2006",
+    status: "set",
+  }),
+  pin({
+    lat: 40.2308,
+    lng: -77.0004,
+    address: "18 Creekview Dr",
+    houseNumber: "18",
+    city: "Mechanicsburg",
+    state: "PA",
+    zip: "17050",
+    year: "2005",
+  }),
+  pin({
+    lat: 40.2314,
+    lng: -76.9996,
+    address: "9 Mill Rd",
+    houseNumber: "9",
+    city: "Mechanicsburg",
+    state: "PA",
+    zip: "17050",
+    year: "2004",
+    status: "revisit",
+    note: "Come back Saturday",
+  }),
+  pin({
+    lat: 40.24,
+    lng: -76.92,
+    address: "21 Market St",
+    houseNumber: "21",
+    city: "Camp Hill",
+    state: "PA",
+    zip: "17011",
+    year: "2008",
+    source: "desk",
+  }),
+  pin({
+    lat: 40.2406,
+    lng: -76.9205,
+    address: "33 Market St",
+    houseNumber: "33",
+    city: "Camp Hill",
+    state: "PA",
+    zip: "17011",
+  }),
+  pin({
+    lat: 40.42,
+    lng: -77.19,
+    address: "8 Main St",
+    houseNumber: "8",
+    city: "New Bloomfield",
+    state: "PA",
+    zip: "17068",
+    year: "2003",
+  }),
+  pin({
+    lat: 40.4205,
+    lng: -77.1904,
+    address: "14 High St",
+    houseNumber: "14",
+    city: "New Bloomfield",
+    state: "PA",
+    zip: "17068",
+  }),
+  pin({
+    lat: 40.34,
+    lng: -76.8,
+    address: "40 Union Deposit Rd",
+    houseNumber: "40",
+    city: "Harrisburg",
+    state: "PA",
+    zip: "17112",
+    year: "2007",
+    source: "desk",
   }),
 ];
 

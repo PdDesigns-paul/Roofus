@@ -5,12 +5,13 @@ import { AppHeader } from "@/components/app-header";
 import { HomeSetupCard } from "@/components/home-setup-card";
 import { InstallHint } from "@/components/install-hint";
 import { NotionHint } from "@/components/notion-hint";
+import { PinCard } from "@/components/pin-board";
 import { Button } from "@/components/ui/button";
 import { whenCoachReady, useCoach } from "@/lib/coach-store";
 import { abortTalk, sendRoofus } from "@/lib/roofus-talk";
 import { blankDay, localDateKey, useDayBook, type DayCounts } from "@/lib/day-book";
 import { freshKeptSentence } from "@/lib/kept-storm";
-import { lastPinOnLoop, pinsForLoop } from "@/lib/pins";
+import { lastPinOnLoop, nextBlankOnLoop, pinLabel, pinsForLoop } from "@/lib/pins";
 import { preKnock } from "@/lib/pocket-cards";
 import { companyOf, setupSnap, truckSetupOpen } from "@/lib/setup-progress";
 import { useSettings } from "@/lib/settings-store";
@@ -60,34 +61,43 @@ function DaySheet() {
   const extra = Math.max(0, clusterLines(day.cluster).length - 1);
   const keptLine = freshKeptSentence(keptStorms);
   const working = loops.find((l) => l.status === "working");
-  const pinCount = current ? pinsForLoop(allPins, current.id).length : 0;
-  const lastPin = current ? lastPinOnLoop(allPins, current.id) : undefined;
+  const pinCount = current ? pinsForLoop(allPins, current.id).length : allPins.length;
+  const lastPin = current
+    ? lastPinOnLoop(allPins, current.id)
+    : allPins.reduce<(typeof allPins)[number] | undefined>((a, b) => (!a || a.createdAt < b.createdAt ? b : a), undefined);
+  const nextDoor = working ? nextBlankOnLoop(allPins, working.id) : undefined;
+
+  function dropAt(lat: number, lng: number, fallback: string) {
+    addPin({ lat, lng, source: "truck" });
+    setPinBusy(false);
+    setPinErr(fallback);
+  }
 
   function dropPin() {
-    if (!current) {
-      setPinErr("Pick a Working loop first.");
-      return;
-    }
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      addPin({ loopId: current.id, lat: current.lat, lng: current.lon });
-      setPinErr("This phone will not share a location. Dropped on the loop.");
+      const center = useStreets.getState().mapCenter;
+      if (center) {
+        dropAt(center.lat, center.lng, "This phone will not share a location. Dropped on the map.");
+        return;
+      }
+      setPinErr("Turn on location, or drop a pin on Prep.");
       return;
     }
     setPinBusy(true);
     setPinErr("");
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        addPin({
-          loopId: current.id,
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        });
+        addPin({ lat: pos.coords.latitude, lng: pos.coords.longitude, source: "truck" });
         setPinBusy(false);
       },
       () => {
-        addPin({ loopId: current.id, lat: current.lat, lng: current.lon });
+        const center = useStreets.getState().mapCenter;
+        if (center) {
+          dropAt(center.lat, center.lng, "Could not get a location. Dropped on the map.");
+          return;
+        }
         setPinBusy(false);
-        setPinErr("Could not get a location. Dropped on the loop.");
+        setPinErr("Could not get a location. Open Prep and drop a pin.");
       },
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 15_000 },
     );
@@ -189,7 +199,7 @@ function DaySheet() {
         ) : (
           <>
             <p className="mt-1 font-display text-xl tracking-tight">No Working loop</p>
-            <p className="mt-1 text-sm leading-relaxed text-muted">Pick one on Prep. Then this page is the field log.</p>
+            <p className="mt-1 text-sm leading-relaxed text-muted">Pick one on Prep. Pin still works.</p>
             <Link to="/after" className="mt-2 inline-flex h-11 items-center text-sm text-fg underline underline-offset-4">
               Prep
             </Link>
@@ -197,39 +207,41 @@ function DaySheet() {
         )}
       </section>
 
+      {nextDoor ? (
+        <section className="mt-3 rounded-2xl border border-border bg-surface px-4 py-3">
+          <p className="text-xs font-medium uppercase tracking-wide text-faint">Next door</p>
+          <p className="mt-1 text-sm leading-relaxed">{pinLabel(nextDoor)}</p>
+          <PinCard pin={nextDoor} />
+        </section>
+      ) : null}
+
       <section className="mt-3 rounded-2xl border border-border bg-surface px-4 py-3">
         <p className="text-xs font-medium uppercase tracking-wide text-faint">Pin</p>
         <p className="mt-1 text-sm leading-relaxed">
           {lastPin
-            ? `${pinCount} pin${pinCount === 1 ? "" : "s"} · last ${lastPin.houseNumber.trim() || "dropped"}`
-            : current
-              ? "Tap Pin at the house"
-              : "Working loop first"}
+            ? `${pinCount} pin${pinCount === 1 ? "" : "s"} · last ${pinLabel(lastPin)}`
+            : "Tap Pin at the house"}
         </p>
-        <p className="mt-1 text-xs leading-snug text-muted">On this loop. Sidewalk only. Not a CRM.</p>
+        <p className="mt-1 text-xs leading-snug text-muted">GPS drop. Status stays blank until you pick. Not a CRM.</p>
         <button
           type="button"
           disabled={pinBusy}
           onClick={dropPin}
-          className={`mt-3 h-12 w-full rounded-full text-sm disabled:opacity-40 ${
-            working ? "bg-fg text-paper" : "border border-border"
-          }`}
+          className="mt-3 h-12 w-full rounded-full bg-fg text-sm text-paper disabled:opacity-40"
         >
           {pinBusy ? "Dropping pin…" : "Pin"}
         </button>
         {pinErr ? <p className="mt-2 text-sm leading-relaxed text-muted">{pinErr}</p> : null}
         {lastPin ? (
           <p className="mt-3 text-sm leading-relaxed">
-            Last: {lastPin.houseNumber.trim() || "dropped"}
+            Last: {pinLabel(lastPin)}
             {lastPin.note.trim() ? ` · ${lastPin.note.trim()}` : ""}
           </p>
         ) : (
-          <p className="mt-3 text-sm leading-relaxed text-muted">
-            {current ? "No pin yet." : "Pick a Working loop on Prep, then tap Pin at the house."}
-          </p>
+          <p className="mt-3 text-sm leading-relaxed text-muted">No pin yet. Tap Pin where you are.</p>
         )}
         {pinCount > 1 ? (
-          <p className="mt-1 text-xs text-muted">{pinCount} on this loop. Full board is on Prep.</p>
+          <p className="mt-1 text-xs text-muted">{pinCount} on this walk. Full board is on Prep.</p>
         ) : null}
       </section>
 

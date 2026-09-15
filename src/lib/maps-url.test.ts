@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { mapsLabel, mapsUrl } from "./maps-url.ts";
+import { mapsLabel, mapsUrl, pinDirectionsUrl, pinRedfinUrl, pinStreetViewUrl, pinZillowUrl } from "./maps-url.ts";
 
 const loop = {
   lat: 40.24,
@@ -47,5 +47,32 @@ describe("mapsLabel", () => {
   });
   it("names the first street when there is no zip", () => {
     assert.equal(mapsLabel({ ...loop, title: "" }), "Map · Oak St");
+  });
+});
+
+describe("pin listing links", () => {
+  const pin = {
+    lat: 40.24,
+    lng: -76.92,
+    address: "12 Oak St",
+    city: "Mechanicsburg",
+    state: "PA",
+    zip: "17050",
+    houseNumber: "12",
+  };
+  it("builds Street View and Directions from the point", () => {
+    assert.match(pinStreetViewUrl(pin), /map_action=pano/);
+    assert.match(pinStreetViewUrl(pin), /40.24/);
+    assert.match(pinDirectionsUrl(pin), /destination=40.24/);
+  });
+  it("builds Zillow and Redfin from the address", () => {
+    assert.match(pinZillowUrl(pin) ?? "", /zillow\.com\/homes/);
+    assert.match(pinZillowUrl(pin) ?? "", /12%20Oak%20St/);
+    assert.match(pinRedfinUrl(pin) ?? "", /redfin\.com\/search/);
+  });
+  it("skips listing links without an address", () => {
+    const blank = { address: "", city: "", state: "", zip: "", houseNumber: "" };
+    assert.equal(pinZillowUrl(blank), null);
+    assert.equal(pinRedfinUrl(blank), null);
   });
 });

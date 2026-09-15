@@ -6,22 +6,26 @@ import {
   makePin,
   mergePins,
   morningPins,
+  nextBlankOnLoop,
+  pinMatchesYearFilter,
   pinsForLoop,
   pinsLineForCoach,
   restorePin,
   restorePins,
   revisitPins,
   serializePin,
+  MAX_BACKUP_PINS,
 } from "./pins.ts";
 
 describe("restorePin / serializePin", () => {
-  it("roundtrips a sidewalk pin", () => {
-    const pin = makePin({ loopId: "loop-1", lat: 40.2, lng: -76.8, houseNumber: "12", note: "tarp" });
+  it("roundtrips a house pin without requiring a loop first", () => {
+    const pin = makePin({ lat: 40.2, lng: -76.8, houseNumber: "12", note: "tarp" });
     const out = restorePin(serializePin(pin));
-    assert.equal(out?.loopId, "loop-1");
     assert.equal(out?.houseNumber, "12");
     assert.equal(out?.note, "tarp");
-    assert.equal(out?.status, "no-answer");
+    assert.equal(out?.status, "");
+    assert.equal(out?.source, "truck");
+    assert.ok(out?.id);
   });
 
   it("drops owner / phone / parcel so the type cannot grow PII", () => {
@@ -47,28 +51,66 @@ describe("restorePin / serializePin", () => {
     assert.equal(out && "name" in out, false);
   });
 
-  it("rejects a pin with no loop", () => {
-    assert.equal(restorePin({ id: "p1", lat: 1, lng: 2 }), null);
+  it("reads Notion Address / Roof / Next extras", () => {
+    const out = restorePin({
+      id: "p1",
+      lat: 1,
+      lng: 2,
+      Address: "12 Oak St",
+      City: "Camp Hill",
+      State: "PA",
+      Zip: "17011",
+      Year: "2006",
+      Roof: "mixed",
+      Damage: "missing tab",
+      Next: "Call Saturday",
+      source: "desk",
+    });
+    assert.equal(out?.address, "12 Oak St");
+    assert.equal(out?.city, "Camp Hill");
+    assert.equal(out?.roofLook, "mixed");
+    assert.equal(out?.nextStep, "Call Saturday");
+    assert.equal(out?.source, "desk");
+    assert.equal(out?.status, "");
+  });
+
+  it("keeps a pin with no loop yet", () => {
+    const out = restorePin({ id: "p1", lat: 1, lng: 2 });
+    assert.equal(out?.id, "p1");
+    assert.equal(out?.loopId, "");
+    assert.equal(out?.status, "");
+  });
+
+  it("tags a desk drop", () => {
+    const pin = makePin({ lat: 1, lng: 2, source: "desk" });
+    assert.equal(pin.source, "desk");
   });
 });
 
 describe("pinsForLoop / revisitPins", () => {
   it("lists a loop’s pins and the revisit filter", () => {
-    const a = makePin({ loopId: "oak", lat: 1, lng: 1 });
-    const b = makePin({ loopId: "oak", lat: 1, lng: 1, status: "revisit" });
-    const c = makePin({ loopId: "elm", lat: 1, lng: 1, status: "revisit" });
+    const a = makePin({ lat: 1, lng: 1, loopId: "oak" });
+    a.loopId = "oak";
+    const b = makePin({ lat: 1, lng: 1, loopId: "oak", status: "revisit" });
+    b.loopId = "oak";
+    const c = makePin({ lat: 1, lng: 1, loopId: "elm", status: "revisit" });
+    c.loopId = "elm";
     const pins = [a, b, c];
     assert.equal(pinsForLoop(pins, "oak").length, 2);
     assert.equal(revisitPins(pins).length, 2);
   });
 });
 
-describe("morningPins / lastPinOnLoop", () => {
+describe("morningPins / lastPinOnLoop / nextBlankOnLoop", () => {
   it("lists only set + revisit for the 7am chip", () => {
-    const a = makePin({ loopId: "oak", lat: 1, lng: 1, status: "set" });
-    const b = makePin({ loopId: "oak", lat: 1, lng: 1, status: "revisit" });
-    const c = makePin({ loopId: "oak", lat: 1, lng: 1, status: "talked" });
-    const d = makePin({ loopId: "oak", lat: 1, lng: 1, status: "no-answer" });
+    const a = makePin({ lat: 1, lng: 1, loopId: "oak", status: "set" });
+    a.loopId = "oak";
+    const b = makePin({ lat: 1, lng: 1, loopId: "oak", status: "revisit" });
+    b.loopId = "oak";
+    const c = makePin({ lat: 1, lng: 1, loopId: "oak", status: "talked" });
+    c.loopId = "oak";
+    const d = makePin({ lat: 1, lng: 1, loopId: "oak" });
+    d.loopId = "oak";
     assert.equal(morningPins([a, b, c, d]).length, 2);
     assert.deepEqual(
       morningPins([a, b, c, d]).map((p) => p.status).sort(),
@@ -76,22 +118,43 @@ describe("morningPins / lastPinOnLoop", () => {
     );
   });
   it("returns the newest pin on a loop", () => {
-    const a = makePin({ loopId: "oak", lat: 1, lng: 1, houseNumber: "10" });
-    const b = { ...makePin({ loopId: "oak", lat: 1, lng: 1, houseNumber: "12" }), createdAt: "2099-01-01T00:00:00.000Z" };
+    const a = makePin({ lat: 1, lng: 1, loopId: "oak", houseNumber: "10" });
+    a.loopId = "oak";
+    const b = { ...makePin({ lat: 1, lng: 1, loopId: "oak", houseNumber: "12" }), loopId: "oak", createdAt: "2099-01-01T00:00:00.000Z" };
     const last = lastPinOnLoop([a, b], "oak");
     assert.equal(last?.houseNumber, "12");
     assert.equal(lastPinOnLoop([a, b], "elm"), undefined);
+  });
+  it("next door is the first blank on the walking line", () => {
+    const a = { ...makePin({ lat: 1, lng: 1, status: "talked" }), loopId: "oak", walkIndex: 1 };
+    const b = { ...makePin({ lat: 1, lng: 1 }), loopId: "oak", walkIndex: 2 };
+    assert.equal(nextBlankOnLoop([a, b], "oak")?.id, b.id);
   });
 });
 
 describe("mergePins", () => {
   it("keeps the phone’s note and adds a pin this phone does not have", () => {
-    const phone = makePin({ loopId: "oak", lat: 1, lng: 1, note: "phone note" });
+    const phone = makePin({ lat: 1, lng: 1, note: "phone note" });
     const incomingSame = { ...phone, note: "notion note" };
-    const extra = makePin({ loopId: "oak", lat: 2, lng: 2, note: "new" });
+    const extra = makePin({ lat: 2, lng: 2, note: "new" });
     const merged = mergePins([phone], [incomingSame, extra]);
     assert.equal(merged.find((p) => p.id === phone.id)?.note, "phone note");
     assert.equal(merged.some((p) => p.id === extra.id), true);
+  });
+  it("caps backup at 500", () => {
+    assert.equal(MAX_BACKUP_PINS, 500);
+  });
+});
+
+describe("pinMatchesYearFilter", () => {
+  it("filters typed years against the age band", () => {
+    const now = 2026;
+    const pin = { year: "2006" };
+    assert.equal(pinMatchesYearFilter(pin, "all", 15, 22, now), true);
+    assert.equal(pinMatchesYearFilter(pin, "band", 15, 22, now), true);
+    assert.equal(pinMatchesYearFilter(pin, "blank", 15, 22, now), false);
+    assert.equal(pinMatchesYearFilter({ year: "" }, "blank", 15, 22, now), true);
+    assert.equal(pinMatchesYearFilter({ year: "2018" }, "band", 15, 22, now), false);
   });
 });
 

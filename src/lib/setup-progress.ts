@@ -17,14 +17,14 @@ export const SETUP_ROWS = [
     label: "Territory",
     hint: "Counties and state",
     path: "/settings/territory",
-    ask: "Ask which counties I knock and which state. One at a time. Explain Streets builds park-once loops from that — you do not invent a town.",
+    ask: "Ask which counties I knock and which state. One at a time. Counties are for storms. Pins make the walks — you do not invent a town.",
   },
   {
     id: "zips",
-    label: "Zips",
-    hint: "Age-band loops from those counties",
+    label: "Pins",
+    hint: "Drop a house. Walks form from those pins.",
     path: "/after",
-    ask: "Tell me to open Prep and build loops. You cannot invent zips or subdivision names in chat. Then wait.",
+    ask: "Tell me to open Prep and pin a house, or tap Pin on Truck. You cannot invent zips or addresses in chat. Then wait.",
   },
   {
     id: "hours",

@@ -12,10 +12,10 @@ The phone is the live log. Roofus (the orange button) rides shotgun — tap fans
 
 | Surface | What it is |
 | --- | --- |
-| **Truck** | Field log. Working loop one-liner + Cards Go. Pin (drop + last pin on the Working loop). Four counts. One weather sentence, read-only from Keep / Use today. **Night** is a Go to Prep#finish (AAR · blank or AAR · done). Empty-book setup until name + company + one county exist. Ask Roofus how today went is an outline. Pin is the filled Do when a loop is Working. |
+| **Truck** | Field log. Working loop one-liner + Cards Go. **Pin** (GPS drop, works with no Working loop). **Next door** is the next blank pin on that walk. Four counts. One weather sentence, read-only from Keep / Use today. **Night** is a Go to Prep#finish (AAR · blank or AAR · done). Empty-book setup until name + company + one county exist. Ask Roofus how today went is an outline. Pin is the filled Do. |
 | **Door** | Pocket cards: Door, Pushback, i35, Set, Compass. Claim path after Keep. One-line formula on each (hook → honest reason → one open question). Compass is truck only — still on this tab. |
 | **Roof** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot. Practice shot is off the roof. CompanyCam is the report. |
-| **Prep** | Tab word **Prep**. Route still `/after`. Night-before + morning. Age-band **park-once loops** named from Census streets, grouped by township (default 15–22 year roofs). Working pinned. Near me / Morning / Revisit chips. Plan chips. Maps parks on the loop. Muted hunt tag when a scout card exists. One weather sentence on the Working loop if a kept storm matches. Use today is a chip on the card. Open a loop: that card is the pin board. **Last 48 hours Keep / Toss** lives here. Finish the day owns After Action Report and tomorrow. Settings is a Go at the bottom. Military bases are dropped. |
+| **Prep** | Tab word **Prep**. Route still `/after`. Night-before + morning. A **map of pins**. Walks form from distance (0.4 km, cap 40). Working pinned. Near me / Morning / Revisit chips. Year filter on years they typed. Plan chips. Desk drops are tagged. Use today is a chip on the card. Open a loop: that card is the pin board. **Last 48 hours Keep / Toss** lives here. Finish the day owns After Action Report and tomorrow. Settings is a Go at the bottom. No Census rebuild. |
 | **Last 48 hours** | Lives on Prep. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. Truck may show one kept sentence. |
 | **Roofus** | Orange button. Tap fans Live, Roleplay, Mindset — each is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. Hold-to-talk in Roleplay. Beats at the bottom. Score me is a button. Hear it reads his line. Practice only — do not record a homeowner. |
 | **Reference** | Reference page lists the InterNACHI index. Coach appendix is the named cards. Company pages land here when they paste a website in Settings. Tap a card to open the page. |
@@ -60,7 +60,7 @@ FAQs under “Things Roofus should remember” ship with public porch answers (D
 
 - TanStack Start + Router, React 19, Tailwind v4, Zustand
 - xAI for coach chat, speech-to-text, and text-to-speech
-- Census Reporter + TIGERweb for streets
+- Google Maps JS (Geocoder + Places) when `VITE_GOOGLE_MAPS_KEY` is set
 - NWS / IEM Local Storm Reports for season weather
 - Notion REST `2022-06-28` via a server proxy (no CORS from the phone)
 
@@ -78,9 +78,10 @@ npm run dev
 | Variable | Where | What |
 | --- | --- | --- |
 | `XAI_API_KEY` | server only | Roofus chat, transcribe, speak, Last 48 hours pulse. Never `VITE_`. |
+| `VITE_GOOGLE_MAPS_KEY` | client | Maps JS + Geocoder + Places. Restrict HTTP referrers to `https://roofus.coach/*` and `https://*.vercel.app/*`. Never commit the key. |
 | `DATABASE_URL` | unused by this app | Platform leftover. Auth and Postgres stay off. |
 
-Maps open Google Maps search links. No Maps API key. Streets come from Census TIGERweb. Weather is NWS. Notion secret is pasted in Settings and stays on the phone.
+Maps uses `VITE_GOOGLE_MAPS_KEY` on the phone (Geocoder + Places). Street View / Directions / Zillow / Redfin are outbound links — no scrape. Weather is NWS. Notion secret is pasted in Settings and stays on the phone.
 
 Loop research (WFO recap, local news, GIS clickers) is a **sidecar**, not a Streets tap. Vercel Hobby cannot run Chromium:
 

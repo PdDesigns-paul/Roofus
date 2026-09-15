@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { useScout } from "@/lib/scout-store";
-import { streetsScoutLine } from "@/lib/streets-near";
+import { walksNote } from "@/lib/pin-walks";
 import {
   clampAgeBand,
   DEFAULT_AGE_MAX,
@@ -17,6 +16,8 @@ import { useWeather } from "@/lib/weather-store";
 
 export type { StreetLoop, LoopResult, LoopStatus };
 
+type MapCenter = { lat: number; lng: number };
+
 type StreetsState = {
   loops: StreetLoop[];
   note: string;
@@ -26,11 +27,15 @@ type StreetsState = {
   ageMax: number;
   builtFor: string;
   builtAt: string;
+  mapCenter: MapCenter | null;
   replace: (loops: StreetLoop[], meta: { note: string; yearFrom: number; yearTo: number; builtFor: string }) => void;
+  replaceWalks: (loops: StreetLoop[]) => void;
   setAge: (ageMin: number, ageMax: number) => void;
   setStatus: (id: string, status: LoopStatus) => void;
   setResult: (id: string, lastResult: LoopResult) => void;
+  rename: (id: string, place: string) => void;
   setTowns: (towns: Record<string, string>) => void;
+  setMapCenter: (center: MapCenter | null) => void;
   hide: (id: string) => void;
 };
 
@@ -45,6 +50,7 @@ export const useStreets = create<StreetsState>()(
       ageMax: DEFAULT_AGE_MAX,
       builtFor: "",
       builtAt: "",
+      mapCenter: null,
       replace: (loops, meta) =>
         set({
           loops: mergeStatus(loops, get().loops),
@@ -52,6 +58,12 @@ export const useStreets = create<StreetsState>()(
           yearFrom: meta.yearFrom,
           yearTo: meta.yearTo,
           builtFor: meta.builtFor,
+          builtAt: new Date().toISOString(),
+        }),
+      replaceWalks: (loops) =>
+        set({
+          loops,
+          note: walksNote(loops),
           builtAt: new Date().toISOString(),
         }),
       setAge: (ageMin, ageMax) => {
@@ -62,6 +74,13 @@ export const useStreets = create<StreetsState>()(
         set((s) => ({ loops: s.loops.map((l) => (l.id === id ? { ...l, status } : l)) })),
       setResult: (id, lastResult) =>
         set((s) => ({ loops: s.loops.map((l) => (l.id === id ? { ...l, lastResult } : l)) })),
+      rename: (id, place) => {
+        const title = place.trim();
+        if (!title) return;
+        set((s) => ({
+          loops: s.loops.map((l) => (l.id === id ? { ...l, place: title, title, named: true } : l)),
+        }));
+      },
       setTowns: (towns) =>
         set((s) => {
           let changed = false;
@@ -75,6 +94,7 @@ export const useStreets = create<StreetsState>()(
           });
           return changed ? { loops } : s;
         }),
+      setMapCenter: (mapCenter) => set({ mapCenter }),
       hide: (id) => set((s) => ({ loops: s.loops.filter((l) => l.id !== id) })),
     }),
     {
@@ -96,6 +116,7 @@ export const useStreets = create<StreetsState>()(
         ageMax: s.ageMax,
         builtFor: s.builtFor,
         builtAt: s.builtAt,
+        mapCenter: s.mapCenter,
       }),
     },
   ),
@@ -119,29 +140,25 @@ export function suggestTomorrow(loops: StreetLoop[]): StreetLoop | null {
 }
 
 export function streetsForCoach(): string {
-  const { loops, note, yearFrom, yearTo, ageMin, ageMax } = useStreets.getState();
-  const cards = useScout.getState().cards;
+  const { loops, note, ageMin, ageMax } = useStreets.getState();
   if (!loops.length) {
-    return `# Streets\nNo loop list yet. Send them to Settings, then Prep, and build from their counties. Their age band is ${ageMin}–${ageMax} years. Age first. Do not invent a zip or a subdivision name.`;
+    return `# Streets\nNo walks yet. They drop pins from Truck or the Prep map. Walks form from those houses. Age band filter is ${ageMin}–${ageMax} years on years they typed. Do not invent a zip, an address, or a subdivision name.`;
   }
   const lines = [
-    "# Streets (park-once loops from Census, grouped by township. Storms are NOT why these are here.)",
-    note || `They set roofs about ${ageMin}–${ageMax} years old (built ${yearFrom}–${yearTo}).`,
-    "Pick tomorrow: a 48h High on a loop they keep jumps Working (restoration). Then Working. Then the next fresh loop in that township. M/L do not pick the day. Do not ask a newbie where to go. Do not rank the whole list by hail.",
-    "Near me sorts loops they already built. Empty book does not invent a zip.",
-    "Hunt footnotes (ageBand / stormBand / why) are not porch copy. Do not invent hail. Human chips own Skip.",
+    "# Streets (park-once walks of pins they dropped. Storms are NOT why these are here.)",
+    note || `Walks of marked houses. Year filter ${ageMin}–${ageMax} if they typed a year.`,
+    "Pick tomorrow: a 48h High on a loop they keep jumps Working (restoration). Then Working. Then the next fresh loop. M/L do not pick the day. Do not invent an address.",
+    "Near me sorts walks they already have. Empty book does not invent a zip.",
   ];
   for (const l of loops.slice(0, 24)) {
     const name = loopHeadline(l);
     const streets = l.streets.slice(0, 8).join(", ");
-    const twp = l.township ? ` · ${l.township}` : "";
+    const year = l.medianYear ? ` · ~${l.medianYear}` : "";
     lines.push(
-      `- ${name}${twp} · ${l.county} · ~${l.medianYear} · ${l.status}${l.lastResult ? `/${l.lastResult}` : ""} · ${streets}`,
+      `- ${name} · ${l.homes} pin${l.homes === 1 ? "" : "s"}${year} · ${l.status}${l.lastResult ? `/${l.lastResult}` : ""} · ${streets}`,
     );
-    const hunt = streetsScoutLine(cards[l.id]);
-    if (hunt) lines.push(`  hunt: ${hunt}. Not porch copy.`);
   }
   const next = suggestTomorrow(loops);
-  if (next) lines.push(`Suggested tomorrow: ${loopHeadline(next)} (${next.streets.slice(0, 4).join(", ")}).`);
+  if (next) lines.push(`Suggested tomorrow: ${loopHeadline(next)}.`);
   return lines.join("\n");
 }

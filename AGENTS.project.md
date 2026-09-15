@@ -34,11 +34,11 @@ Settings holds the book (You, territory, hours, mindset, reminders, backup). Emp
 
 Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Roof hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 
-- Prep = **park-once loops** grouped by county then township (not named subdivisions, not one card per zip, not one card per block group). Headline is cluster · zip. Township is the folder. Open from the Prep tab (route `/after`). Night-before + morning. Last 48 hours Keep / Toss lives here. After Action Report and tomorrow live on Prep. Truck Night is a Go to Prep#finish. Morning chip lists set + revisit pins. Settings is a Go at the bottom of Prep, not a fifth tab.
+- Prep = a **map of pins**. Walks form from distance (0.4 km, cap 40). Not named subdivisions, not Census cards, not one card per zip. Open from the Prep tab (route `/after`). Night-before + morning. Last 48 hours Keep / Toss lives here. After Action Report and tomorrow live on Prep. Truck Night is a Go to Prep#finish. Morning chip lists set + revisit pins. Settings is a Go at the bottom of Prep, not a fifth tab.
 - Door = pocket cards with a one-line formula (hook → honest reason → one open question). Compass stays visible — read it in the truck. Claim path shows after Keep.
 - Door / Live first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.
 - Auth OFF. Database OFF. localStorage / Zustand only. Notion is optional backup in **their** workspace (Days, Streets, Storms, Mindset, Memory, Pins).
-- Pins hang on a loop — sidewalk house log, not a CRM, not a pipeline. No takeoff, listing lookup, or apartment flow.
+- Pins are the hunt. Drop from Truck (GPS) or the Prep map (Desk). Distance makes the loop. Sidewalk house log, not a CRM, not a pipeline. No takeoff, no scrape. Street View / Zillow / Redfin are outbound links.
 
 The product path is this phone’s journal. Do not wire `better-auth`, `src/lib/db.ts`, or `src/lib/auth/*` into routes; `AuthProvider` in the root is a Grok-host passthrough. `npm run build` is Vite only — never chain `db:migrate`. What stayed for the host, and why: [`PLATFORM.md`](./PLATFORM.md).
 
@@ -99,7 +99,7 @@ Tests live in `src/lib/*.test.ts` (`node:test`). Pure functions: labels, hail gr
 
 `npm run test:app` is the product suite. `npm test` also runs Grok platform script tests — CI must not use that.
 
-Do not add login, Postgres, new API keys, Codecov, Husky, or commitlint. Conventional-commit prefixes are optional; a sentence that says what the phone does is better.
+Do not add login, Postgres, Codecov, Husky, or commitlint. Do not add new API keys except the Maps key already provided (`VITE_GOOGLE_MAPS_KEY`, never in git). Conventional-commit prefixes are optional; a sentence that says what the phone does is better.
 
 Coach context is today’s log + streets + weather + mindset + Memory FAQs + MRI titles + company site notes. Tools read the posted book only (loop, kept storms, FAQs, one named MRI card, survive snap). No web. No RAG / RAPTOR until a real backend (Prep to Launch). If a field is on the phone, Roofus may write it when they clearly set it.
 

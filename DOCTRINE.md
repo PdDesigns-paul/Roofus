@@ -15,7 +15,7 @@ How a control looks like a control lives in [`SIGNIFIERS.md`](./SIGNIFIERS.md). 
 Phone-first ride-along **journal + coach** for door-to-door roofers and storm restoration canvassers.
 
 - The phone is the live log. Notion is an optional copy so a dead phone is not a dead year.
-- First screen is Truck. Truck is the log. Roofus (the orange button) is the coach. CompanyCam is the report. This app is not AccuLynx. Pins hang on a loop — not a pipeline, not a CRM, not a notes app.
+- First screen is Truck. Truck is the log. Roofus (the orange button) is the coach. CompanyCam is the report. This app is not AccuLynx. Pins are the hunt. Distance makes the loop — not a pipeline, not a CRM, not a notes app.
 - Generic canvasser. Never assume a name, employer, West Shore loop, or 3:30 start. Truck’s log and Settings win.
 - The app is **Roofus**. One word. Capital R only. Not Rufus, not RoofUS.
 
@@ -26,8 +26,8 @@ Source of truth is the logo mark, sampled in `src/styles.css` — not the market
 ## Who we knock
 
 - Owner-pay single-family first. Fee-simple townhomes only if the **owner** pays the roof.
-- Age-band stock. Default targeting **15–22 year** original roofs (in 2026 that is roughly 2004–2011). They set the years in Prep. Targeting is for the **loop**. The house in front of them is the year they give you.
-- Clustered streets inside a zip **is the card**. Park once, walk a loop. Township is the folder, not Working today.
+- Age-band stock. Default targeting **15–22 year** original roofs (in 2026 that is roughly 2004–2011). They set the years in Prep. Targeting filters **years they typed**. The house in front of them is the year they give you.
+- A walk of pins they dropped **is the card**. Park once. Auto-group by distance (0.4 km, cap 40). Township is not a Census folder.
 - Density beats scattered houses.
 
 ## Who we skip
@@ -38,7 +38,7 @@ Source of truth is the logo mark, sampled in `src/styles.css` — not the market
 - Pre-1960 city grids on the first pass
 - Obvious rentals — leave a card for the owner, do not pitch the renter
 - Anyone who answers and does not own the roof
-- Military installations (barracks, NSA, depots). Census will name them — drop them. The town next door stays.
+- Military installations (barracks, NSA, depots). Skip them. The town next door stays.
 
 ## Age first, storms second
 
@@ -248,13 +248,13 @@ Roofus is not their lawyer.
 - Honor posted no-soliciting where they say it applies. Do not design workarounds.
 - Do not build robocall / auto-dial campaigns. Do not scrape resident names into a call list.
 - Two-party consent: do not coach recording a homeowner. Roleplay is practice in the truck.
-- Year-built from Census / web can be wrong. Confirm on the house / assessor. Do not invent street names.
+- Year they type, or the house / assessor. Do not invent a year or a street name. Do not scrape Zillow.
 
 ---
 
 ## Product map (keep the coach prompt in sync)
 
-Bottom bar: **Truck · Door · Roof · Prep**. Those are places. Truck is the field log (formerly Today). Door is the pocket cards. Roof is the inspect walk. Prep is night-before and morning: park-once loops (formerly Streets / After). After Action Report and tomorrow live on Prep. Truck Night is a Go to Prep#finish. Menu: Reference, Settings. Mindset worksheets live in Settings → Mindset. Reminders nag on open (morning storm, evening journal, Sundays pace, the 1st stack) if that box is empty — finish-setup is Settings, not a nag. Roofus is the gold button with the dog face — tap fans Live / Roleplay / Mindset. Hold starts Live. Roof hides him. Not a tab.
+Bottom bar: **Truck · Door · Roof · Prep**. Those are places. Truck is the field log (formerly Today). Door is the pocket cards. Roof is the inspect walk. Prep is night-before and morning: a map of pins; walks form from those houses (formerly Streets / After). After Action Report and tomorrow live on Prep. Truck Night is a Go to Prep#finish. Menu: Reference, Settings. Mindset worksheets live in Settings → Mindset. Reminders nag on open (morning storm, evening journal, Sundays pace, the 1st stack) if that box is empty — finish-setup is Settings, not a nag. Roofus is the gold button with the dog face — tap fans Live / Roleplay / Mindset. Hold starts Live. Roof hides him. Not a tab.
 
 Help (`?`) and Menu (`⋮`) live in the header. Back is a header control on Settings, Reference, and nested settings pages — not on the four Places. One bottom bar. Count tiles on Truck are the control — tap the tile to add one. First open is a five-slide sheet over Truck (Places, Door, Roof, the dog, age first). Skip is on every slide. It plays once; replay is Show the tour in Settings.
 
@@ -262,15 +262,15 @@ Control types — Place, Do, Chip, Go, Talk. Buttons do. Links go. Chips fork th
 
 | Surface | What it is |
 | --- | --- |
-| **Truck** | Working loop one-liner + **Cards** Go. **Pin** is the filled Do when a Working loop exists — drop plus the last pin only. Four counts (Doors, Talked, On the roof, Appointments). One weather sentence, read-only from Keep / Use today. **Night** is a Go to Prep#finish — AAR · blank or AAR · done. No Wins / Better / Plan textareas here. No Keep / Toss. No plan chips. No weather box. Empty-book Setup until name + company + one county exist; then Setup leaves Truck. Counties and hours are **not** here — Settings. Ask Roofus how today went is an outline, not the filled Do. |
+| **Truck** | Working loop one-liner + **Cards** Go. **Pin** is the filled Do — GPS drop, works with no Working loop. **Next door** is the next blank pin on the Working walk. Four counts (Doors, Talked, On the roof, Appointments). One weather sentence, read-only from Keep / Use today. **Night** is a Go to Prep#finish — AAR · blank or AAR · done. No Wins / Better / Plan textareas here. No Keep / Toss. No plan chips. No weather box. Empty-book Setup until name + company + one county exist; then Setup leaves Truck. Counties and hours are **not** here — Settings. Ask Roofus how today went is an outline, not the filled Do. |
 | **Door** | Pocket cards: Door, Pushback, i35, Set, Compass. **Claim path** shows after Keep, matching zip. One-line formula on each (hook → honest reason → one open question), distilled from this file. Set names paper, in-home or phone-review, and a text confirm they send. Compass stays visible — read it in the truck. |
-| **Prep** | Tab word **Prep**. Route still `/after`. Night-before + morning. **Where you knock** is the hunt: age-band **park-once loops** named from Census streets (or a small CDP), grouped by county then township. Working pinned. Plan chips. Search. **Near me** chip sorts loops they already built — empty book does not invent a zip. **Morning** chip lists only `set` + `revisit` pins. Rural counties still get a row. Maps parks on the loop. Muted ageBand / stormBand / why when a scout card exists (not porch copy). One weather sentence on the Working loop if a kept storm matches. **Use today** is a chip that picks the Working loop. Open a loop: that card is the pin board. **Revisit** is a chip — pins to come back to, across loops. **Last 48 hours Keep / Toss** lives here. Age first on the porch. **Finish the day** owns After Action Report and Tomorrow I start at. Truck Night is a Go. Settings is a Go row at the bottom — not a fifth Place. Military bases are dropped. Season log is **not** on this page. Not a developer-subdivision dump. Not one card per block group. |
+| **Prep** | Tab word **Prep**. Route still `/after`. Night-before + morning. **Where you knock** is the map: drop pins, drag onto the house, grab the address. Walks form from distance (0.4 km, cap 40). Working pinned. Plan chips. Search a zip or address. **Near me** chip sorts walks they already have — empty book does not invent a zip. **Morning** chip lists only `set` + `revisit` pins. Year filter (all / in band / no year) uses years they typed. Desk drops are tagged. **Use today** is a chip that picks the Working loop. Open a loop: that card is the pin board in walking order. **Revisit** is a chip — pins to come back to, across loops. **Last 48 hours Keep / Toss** lives here. Age first on the porch. **Finish the day** owns After Action Report and Tomorrow I start at. Truck Night is a Go. Settings is a Go row at the bottom — not a fifth Place. No Census rebuild. Not a developer-subdivision dump. |
 | **Last 48 hours** | Lives on Prep. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. Truck may show one kept sentence. |
 | **Roof** | Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic (what to shoot). Then This shot: Camera, Photos, or Practice. Ask about that frame. He names the i35 slot (Bad / Good / Worst / skip theater). Practice shot is a sample close-up — not this house. |
 | **Roofus** | Tap fans Live, Roleplay, Mindset. Each pick is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. New Live lives on the History sheet. Live’s first starter is the million-dollar script (B). Roleplay beats at the bottom: Walk-up, They push, After photos (talk only), The set, Whole visit. Score me is a button. Hold-to-talk in Roleplay. Hear it reads his line. Mindset is truck only. |
 | **Mindset** | Worksheets in Settings → Mindset: Why, demon, Pace, Talent stack. Chat from the orange fan. Private. Why is a ladder. Demon names the attack. Pace drops a gear. Stack is three skills. Coach appendix is Survival worksheets + compass, not pocket cards. |
 | **Reference** | Reference page lists the InterNACHI index. Coach appendix is the named cards. Plus a Company chapter when they pasted their website. Name the title. Do not paste article bodies. |
-| **Pins** | Sidewalk house log on a loop. Tap Pin on Truck (GPS). House number, note, status (no-answer · talked · look · set · revisit · skip), curb chips (3-tab · granules · tarp · missing tab · no-solicit). The loop card is the board. Not owner names. Not a pipeline. Backup is a Pins table in their Notion with the rest of the book. |
+| **Pins** | The hunt. Tap Pin on Truck (GPS) or drop on the Prep map (Desk). Address from the map + what they type. Status blank until they pick (no-answer · talked · look · set · revisit · skip). Year, roof look, damage, next step, curb chips. Go links: Street View, Directions, Zillow, Redfin, Map · this house. Distance groups pins into park-once loops. Not owner names. Not a pipeline. No scrape. Backup is a Pins table (cap 500) in their Notion. |
 | **Settings** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. Prep is its own tab. Name, counties, state, hours, company, website (crawled into Reference), warranty, mindset worksheets, optional Notion (Days, Streets, Storms, Mindset, Memory, Pins), Memory FAQs. He can write these when they clearly set them. |
 
 Tomorrow, in order: last-48h **High** on a loop they keep → Working → next fresh loop in that township → next township. Do not ask a newbie where to go. Do not invent hail.

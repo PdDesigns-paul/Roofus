@@ -25,7 +25,7 @@ import type { StreetLoop } from "@/lib/streets-types";
 import { useSurvive } from "@/lib/survive-store";
 import { useWeather } from "@/lib/weather-store";
 import { MAX_BACKUP_PINS, type HousePin } from "@/lib/pins";
-import { mergeIncomingPins, usePins } from "@/lib/pins-store";
+import { mergeIncomingPins, reclusterPins, usePins } from "@/lib/pins-store";
 import type { StormEvent } from "@/lib/weather-types";
 
 type Progress = (label: string) => void;
@@ -199,6 +199,7 @@ function applyRestore(pulled: {
     useWeather.setState((s) => ({ kept: mergeStorms(s.kept, pulled.storms) }));
   }
   if (pulled.pins.length) mergeIncomingPins(pulled.pins);
+  else reclusterPins();
 
   const unpacked = unpackMindset(pulled.mindset);
   const survivePatch = fillSurvive(useSurvive.getState(), unpacked.survive);

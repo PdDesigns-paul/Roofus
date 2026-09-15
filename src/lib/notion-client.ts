@@ -228,6 +228,18 @@ const MEM_PROPS = {
   Key: { rich_text: {} },
 };
 
+const PIN_EXTRAS = {
+  Address: { rich_text: {} },
+  City: { rich_text: {} },
+  State: { rich_text: {} },
+  Zip: { rich_text: {} },
+  Year: { rich_text: {} },
+  Roof: { rich_text: {} },
+  Damage: { rich_text: {} },
+  Next: { rich_text: {} },
+  Source: { select: { options: [{ name: "truck" }, { name: "desk" }] } },
+};
+
 const PIN_PROPS = {
   Name: { title: {} },
   Key: { rich_text: {} },
@@ -251,6 +263,7 @@ const PIN_PROPS = {
   Lng: { number: {} },
   Created: { rich_text: {} },
   Updated: { rich_text: {} },
+  ...PIN_EXTRAS,
 };
 
 function dbId(ids: NotionIds, table: NotionTable) {
@@ -294,6 +307,13 @@ export async function prepareNotion(token: string, ids: NotionIds) {
     method: "PATCH",
     body: JSON.stringify({ properties: STREET_EXTRAS }),
   });
+  if (ids.pinsDb) {
+    await sleep(RATE_MS);
+    await call(token, `/databases/${ids.pinsDb}`, {
+      method: "PATCH",
+      body: JSON.stringify({ properties: PIN_EXTRAS }),
+    });
+  }
 }
 
 async function upsert(
@@ -410,15 +430,24 @@ function faqProps(f: NotionFaq): Record<string, NotionProp> {
 }
 
 function pinProps(p: HousePin): Record<string, NotionProp> {
-  const name = p.houseNumber.trim() || "Pin";
+  const name = p.address.trim() || p.houseNumber.trim() || "Pin";
   return {
     Name: title(name),
     Key: rich(p.id),
     Loop: rich(p.loopId),
     House: rich(p.houseNumber),
+    Address: rich(p.address),
+    City: rich(p.city),
+    State: rich(p.state),
+    Zip: rich(p.zip),
+    Year: rich(p.year),
+    Roof: rich(p.roofLook),
+    Damage: rich(p.damage),
+    Next: rich(p.nextStep),
     Note: rich(p.note),
     Status: sel(p.status),
     Curb: rich(p.curbTags.join(", ")),
+    Source: sel(p.source),
     Lat: num(p.lat),
     Lng: num(p.lng),
     Created: rich(p.createdAt),
@@ -547,7 +576,7 @@ export async function pullSnapshot(token: string, ids: NotionIds): Promise<Notio
           .filter(Boolean),
         county: readRich(p, "County"),
         state: readRich(p, "State"),
-        medianYear: readNum(p, "Year") || new Date().getFullYear() - 20,
+        medianYear: readNum(p, "Year"),
         homes: readNum(p, "Homes"),
         lat: readNum(p, "Lat"),
         lon: readNum(p, "Lon"),
@@ -603,9 +632,18 @@ export async function pullSnapshot(token: string, ids: NotionIds): Promise<Notio
         id: readRich(p, "Key") || String(p.id),
         loopId: readRich(p, "Loop"),
         houseNumber: readRich(p, "House"),
+        address: readRich(p, "Address"),
+        city: readRich(p, "City"),
+        state: readRich(p, "State"),
+        zip: readRich(p, "Zip"),
+        year: readRich(p, "Year"),
+        roofLook: readRich(p, "Roof"),
+        damage: readRich(p, "Damage"),
+        nextStep: readRich(p, "Next"),
         note: readRich(p, "Note"),
         status: readSel(p, "Status"),
         curbTags: readRich(p, "Curb"),
+        source: readSel(p, "Source"),
         lat: readNum(p, "Lat"),
         lng: readNum(p, "Lng"),
         createdAt: readRich(p, "Created"),

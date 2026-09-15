@@ -1,6 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { DEMO_COUNTIES, DEMO_LOOPS, demoCountiesPresent } from "./demo-loops.ts";
+import { DEMO_COUNTIES, DEMO_LOOPS, DEMO_PINS, demoCountiesPresent } from "./demo-loops.ts";
+import { clusterPins } from "./pin-cluster.ts";
 import { groupLoopsByCounty, groupLoopsByTownship } from "./streets-rank.ts";
 import { parseList, countyBasename } from "./us-state-fips.ts";
 
@@ -24,7 +25,14 @@ describe("sample day", () => {
   });
   it("is a generic canvasser, not a named office or a Drive subdivision dump", () => {
     assert.doesNotMatch(DEMO_COUNTIES, /Alpha|West Shore|PAHIC/i);
-    const blob = JSON.stringify(DEMO_LOOPS);
+    const blob = JSON.stringify(DEMO_LOOPS) + JSON.stringify(DEMO_PINS);
     assert.doesNotMatch(blob, /Hampden Summit|Whelan Crossing|Ginger Fields|Autumn Ridge|Skyline View/i);
+  });
+  it("clusters sample pins into more than one walk", () => {
+    const { loops, pins } = clusterPins(DEMO_PINS, []);
+    assert.ok(loops.length >= 3);
+    assert.equal(pins.length, DEMO_PINS.length);
+    assert.ok(DEMO_PINS.some((p) => p.source === "desk"));
+    assert.ok(DEMO_PINS.some((p) => p.status === "set"));
   });
 });

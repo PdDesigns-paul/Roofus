@@ -112,11 +112,11 @@ Count tiles: tap the card to +1. − is a small control. Cards and maps labels a
 
 ### Slice 5 — Streets hunt + Near me — shipped
 
-- Streets card shows muted ageBand / stormBand / why when a scout card exists. Not a CRM row. Not porch copy.
-- **Near me** is a chip. Sorts loops they already built. Empty book does not invent a zip. County folders stay when the chip is off.
+- **Near me** is a chip. Sorts walks they already have. Empty book does not invent a zip.
 - **Use today** is a chip on the card — not muted text.
 - Maps label is an always-underlined Go. No `hover:underline`.
-- Help copy and coach prompt name Near me and the hunt footnote.
+- Rebuild / Census hunt is dead. Prep is the map of pins they dropped.
+- Help copy and coach prompt name Near me and Pins first.
 
 ### Slice 6 — Settings / Door sweep — open
 

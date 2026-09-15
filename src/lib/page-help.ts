@@ -10,17 +10,17 @@ export const PAGE_HELP = {
   today: {
     title: "Truck",
     body: [
-      "First time: name, company, one county on this page if those are blank. Then Setup leaves Truck. Hours live in Settings. Working loop is one line plus Cards. Pin is the filled Do when that loop is Working. Four counts sit on this page.",
+      "First time: name, company, one county on this page if those are blank. Then Setup leaves Truck. Hours live in Settings. Working loop is one line plus Cards. Pin is the filled Do — GPS, even with no Working loop. Next door is the next blank pin on that walk. Four counts sit on this page.",
       "One weather sentence, read-only from Keep or Use today. Night is a Go to Prep#finish. Formula reads AAR · blank or AAR · done. No Wins / Better / Plan textareas here. No Keep / Toss on Truck. No plan chips. No weather box. Full pin board lives on Prep.",
-      "Pick the Working loop on Prep (Use today). Ask Roofus how today went is an outline, not the filled Do. When a loop is Working, Pin is the filled Do.",
+      "Pick the Working loop on Prep (Use today). Ask Roofus how today went is an outline, not the filled Do. Pin still works on an empty book.",
     ],
   },
   streets: {
     title: "Prep",
     body: [
-      "Night-before and morning. Not a fifth Place. Where you knock is the hunt — age, build, search, Near me, Morning, Revisit, Working, county folders, plan chips. Default open until a Working loop exists. You pick the roof age — default 15–22 years. Tap Change. Chips pick a band. From and To take the number when you leave the field, not on the first digit. Each card is a park-once loop (Census streets or a small CDP). Township is the folder. Working sits at the top. Tap a county to open the rest. Search township, loop, street, zip, or county. Empty match says so. Near me is a chip — it sorts loops you already built. Empty book does not invent a zip. A rural county still gets a row even if Census found no age-band loops yet. Military bases (barracks, NSA, depots) are dropped — rebuild to take them off a list you already have.",
-      "Keep / Toss lives here. Age first on the porch. Truck may show one kept sentence. It does not host Keep / Toss. When a scout card exists, the loop shows a muted ageBand / stormBand / why. That is not porch copy. A Working loop shows one sentence if a kept storm actually hit it. Use today is a chip — it picks the Working loop and copies the sentence if the weather box is empty. Skip is still a chip you tap. Morning is a chip — only pins with status set or revisit. Same PinCard. Empty: nothing to call. Build a loop or knock. That is the 7am job, not a pipeline.",
-      "Finish the day owns the night form. After Action Report and Tomorrow I start at live here only. Truck Night is a Go to Prep#finish. Same store. Open a loop: that card is the pin board. Revisit is a chip — houses to come back to, across loops. Settings is a Go at the bottom, not a fifth tab. Pick tomorrow. Finish the journal. Do not expand the hunt.",
+      "Night-before and morning. Not a fifth Place. Where you knock is the map — drop pins, search a zip, drag onto the house. Walks form from distance. Default open until a Working loop exists. Year filter (all / in band / no year) uses years you typed. Default targeting 15–22. Tap Change. Chips pick a band. From and To take the number when you leave the field, not on the first digit. Each card is a park-once walk of pins. Working sits at the top. Search a loop, street, or zip. Empty match says so. Near me is a chip — it sorts walks you already have. Empty book does not invent a zip. Map key missing: pins still save.",
+      "Keep / Toss lives here. Age first on the porch. Truck may show one kept sentence. It does not host Keep / Toss. Use today is a chip — it picks the Working loop and copies the sentence if the weather box is empty. Skip and Done freeze that walk. Morning is a chip — only pins with status set or revisit. Same PinCard. Empty: nothing to call. Pin a house or knock. That is the 7am job, not a pipeline.",
+      "Finish the day owns the night form. After Action Report and Tomorrow I start at live here only. Truck Night is a Go to Prep#finish. Same store. Open a loop: that card is the pin board in walking order. Revisit is a chip — houses to come back to, across loops. Settings is a Go at the bottom, not a fifth tab. Pick tomorrow. Finish the journal. Desk drops are tagged.",
     ],
   },
   cards: {
@@ -58,7 +58,7 @@ export const PAGE_HELP = {
     body: [
       "Settings is a list of pages. You, Territory, Hours, Mindset, Reminders, Backup. Prep is its own tab. Back on every sub page. Tour and sample day stay on this list.",
       "You: first name, company, website, warranty. Paste a URL — we crawl it in the background. Pages land in Reference. He uses those notes when he talks product.",
-      "Territory: counties and a state. Rebuild Prep after you change them. Hours: when you knock, morning work, hard stop.",
+      "Territory: counties and a state. Counties are for storms. Pins make the walks. Hours: when you knock, morning work, hard stop.",
       "Reminders: morning storm if empty, evening After Action Report if blank, Sundays pace, the 1st talent stack. Did it is a chip. Finish-setup is Settings, not a nag.",
       "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report lives on Prep.",
       "Backup: optional Notion copy of days, streets, storms, mindset, FAQs, and pins. Do not Restore onto a full phone. Do not Backup from an empty one.",
