@@ -104,7 +104,7 @@ One setup card. Empty book: name + company + counties/state. Website / Why behin
 
 ### Slice 4 — Today — shipped
 
-Count tiles: tap the card to +1. − is a small control. Cards and maps labels are underlined Go. Empty-book setup card on Truck until name + company + one county exist. Night is a Go to Prep#finish. Truck is this page (formerly /today).
+Count tiles: tap the card to +1. − is a small control. Cards and maps labels are underlined Go. Empty-book setup card on Truck until name + company + one county exist. Night is a Go to Prep#finish. Truck is this page (formerly /today). **Pin** drops GPS and opens the house editor on that page (address, year, status, note, roof look). The map and the long board stay on Prep.
 
 ### Slice 5 — Streets hunt + Near me — shipped
 
@@ -123,7 +123,7 @@ Count tiles: tap the card to +1. − is a small control. Cards and maps labels a
 
 ### Slice 7 — Prep — shipped
 
-Tab word is **Prep**. Route stays `/after`. Hint: night-before + morning. Not a fifth Place. Keep / Toss lives on Prep. One Working loop is picked on Prep (Use today). Truck is that loop line + counts + Pin + one kept sentence. Night is a Go to Prep#finish. Empty-book Setup leaves Truck after name + company + one county.
+Tab word is **Prep**. Route stays `/after`. Hint: night-before + morning. Not a fifth Place. Keep / Toss lives on Prep. One Working loop is picked on Prep (Use today). Truck is that loop line + counts + Pin (GPS drop opens the house editor on Truck) + one kept sentence. Night is a Go to Prep#finish. Empty-book Setup leaves Truck after name + company + one county.
 
 ### Slice 8 — first-run tour — shipped
 

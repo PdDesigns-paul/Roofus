@@ -18,6 +18,20 @@ import {
   MAX_BACKUP_PINS,
 } from "./pins.ts";
 
+describe("add from truck", () => {
+  it("returns an id you can edit", () => {
+    const pin = makePin({ lat: 40.27, lng: -76.88, source: "truck" });
+    assert.ok(pin.id);
+    assert.equal(pin.status, "");
+    assert.equal(pin.source, "truck");
+    const saved = serializePin({ ...pin, year: "2006", note: "tarp" });
+    assert.equal(saved.id, pin.id);
+    assert.equal(saved.year, "2006");
+    assert.equal(saved.note, "tarp");
+    assert.equal(saved.status, "");
+  });
+});
+
 describe("restorePin / serializePin", () => {
   it("roundtrips a house pin without requiring a loop first", () => {
     const pin = makePin({ lat: 40.2, lng: -76.8, houseNumber: "12", note: "tarp" });

@@ -55,6 +55,7 @@ function DaySheet() {
   const [askErr, setAskErr] = useState<string | null>(null);
   const [pinBusy, setPinBusy] = useState(false);
   const [pinErr, setPinErr] = useState("");
+  const [editingPinId, setEditingPinId] = useState("");
   const addPin = usePins((s) => s.add);
   const allPins = usePins((s) => s.pins);
   const current = firstRemainingInPlan(loops, day.cluster);
@@ -66,18 +67,20 @@ function DaySheet() {
     ? lastPinOnLoop(allPins, current.id)
     : allPins.reduce<(typeof allPins)[number] | undefined>((a, b) => (!a || a.createdAt < b.createdAt ? b : a), undefined);
   const nextDoor = working ? nextBlankOnLoop(allPins, working.id) : undefined;
+  const editingPin = editingPinId ? allPins.find((p) => p.id === editingPinId) : undefined;
 
-  function dropAt(lat: number, lng: number, fallback: string) {
-    addPin({ lat, lng, source: "truck" });
+  function placePin(lat: number, lng: number, notice = "") {
+    const pin = addPin({ lat, lng, source: "truck" });
+    if (pin) setEditingPinId(pin.id);
     setPinBusy(false);
-    setPinErr(fallback);
+    setPinErr(notice);
   }
 
   function dropPin() {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
       const center = useStreets.getState().mapCenter;
       if (center) {
-        dropAt(center.lat, center.lng, "This phone will not share a location. Dropped on the map.");
+        placePin(center.lat, center.lng, "This phone will not share a location. Dropped on the map.");
         return;
       }
       setPinErr("Turn on location, or drop a pin on Prep.");
@@ -87,13 +90,12 @@ function DaySheet() {
     setPinErr("");
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        addPin({ lat: pos.coords.latitude, lng: pos.coords.longitude, source: "truck" });
-        setPinBusy(false);
+        placePin(pos.coords.latitude, pos.coords.longitude);
       },
       () => {
         const center = useStreets.getState().mapCenter;
         if (center) {
-          dropAt(center.lat, center.lng, "Could not get a location. Dropped on the map.");
+          placePin(center.lat, center.lng, "Could not get a location. Dropped on the map.");
           return;
         }
         setPinBusy(false);
@@ -207,7 +209,7 @@ function DaySheet() {
         )}
       </section>
 
-      {nextDoor ? (
+      {nextDoor && nextDoor.id !== editingPin?.id ? (
         <section className="mt-3 rounded-2xl border border-border bg-surface px-4 py-3">
           <p className="text-xs font-medium uppercase tracking-wide text-faint">Next door</p>
           <p className="mt-1 text-sm leading-relaxed">{pinLabel(nextDoor)}</p>
@@ -222,7 +224,9 @@ function DaySheet() {
             ? `${pinCount} pin${pinCount === 1 ? "" : "s"} · last ${pinLabel(lastPin)}`
             : "Tap Pin at the house"}
         </p>
-        <p className="mt-1 text-xs leading-snug text-muted">GPS drop. Status stays blank until you pick. Not a CRM.</p>
+        <p className="mt-1 text-xs leading-snug text-muted">
+          GPS drop. Opens this house on this page. Status stays blank until you pick. Not a CRM.
+        </p>
         <button
           type="button"
           disabled={pinBusy}
@@ -232,7 +236,11 @@ function DaySheet() {
           {pinBusy ? "Dropping pin…" : "Pin"}
         </button>
         {pinErr ? <p className="mt-2 text-sm leading-relaxed text-muted">{pinErr}</p> : null}
-        {lastPin ? (
+        {editingPin ? (
+          <div className="mt-3 border-t border-border pt-3">
+            <PinCard pin={editingPin} />
+          </div>
+        ) : lastPin ? (
           <p className="mt-3 text-sm leading-relaxed">
             Last: {pinLabel(lastPin)}
             {lastPin.note.trim() ? ` · ${lastPin.note.trim()}` : ""}
@@ -241,7 +249,7 @@ function DaySheet() {
           <p className="mt-3 text-sm leading-relaxed text-muted">No pin yet. Tap Pin where you are.</p>
         )}
         {pinCount > 1 ? (
-          <p className="mt-1 text-xs text-muted">{pinCount} on this walk. Full board is on Prep.</p>
+          <p className="mt-1 text-xs text-muted">{pinCount} on this walk. Map and long board stay on Prep.</p>
         ) : null}
       </section>
 

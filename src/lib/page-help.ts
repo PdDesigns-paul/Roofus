@@ -10,8 +10,8 @@ export const PAGE_HELP = {
   today: {
     title: "Truck",
     body: [
-      "First time: name, company, one county on this page if those are blank. Then Setup leaves Truck. Hours live in Settings. Working loop is one line plus Cards. Pin is the filled Do — GPS, even with no Working loop. Next door is the next blank pin on that walk. Four counts sit on this page.",
-      "One weather sentence, read-only from Keep or Use today. Night is a Go to Prep#finish. Formula reads AAR · blank or AAR · done. No Wins / Better / Plan textareas here. No Keep / Toss on Truck. No plan chips. No weather box. Full pin board lives on Prep.",
+      "First time: name, company, one county on this page if those are blank. Then Setup leaves Truck. Hours live in Settings. Working loop is one line plus Cards. Pin on this page drops GPS and opens the house editor here (address, year, status, note, roof look). Works with no Working loop. Next door is the next blank pin on that walk. Four counts sit on this page.",
+      "One weather sentence, read-only from Keep or Use today. Night is a Go to Prep#finish. Formula reads AAR · blank or AAR · done. No Wins / Better / Plan textareas here. No Keep / Toss on Truck. No plan chips. No weather box. The map and the long board stay on Prep.",
       "Pick the Working loop on Prep (Use today). Ask Roofus how today went is an outline, not the filled Do. Pin still works on an empty book.",
     ],
   },
