@@ -34,6 +34,7 @@ export function Sheet({
     <div
       className="fixed inset-0 flex items-end justify-center bg-fg/40"
       style={{ zIndex: z }}
+      data-no-pull
       onClick={onClose}
     >
       <div

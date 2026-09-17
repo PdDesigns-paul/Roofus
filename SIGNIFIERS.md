@@ -96,7 +96,7 @@ Chip next to Button. `default` / `outline` only. Ghost is not a content verb. Go
 
 ### Slice 2 — chrome — shipped
 
-Help (`?`) and Menu (`⋮`) in the header. One bottom bar: **Today · Door · Roof · Plan**. FAB uses `RoofusFace`. Hidden on Roof. Back is a header control on nested pages (Settings, Reference) — not on the four Places.
+Help (`?`) and Menu (`⋮`) in the header. One bottom bar: **Today · Door · Roof · Plan**. Today’s mark is a pickup. Pull down from the top of a page to reload. FAB uses `RoofusFace`. Hidden on Roof. Back is a header control on nested pages (Settings, Reference) — not on the four Places.
 
 ### Slice 3 — Home — shipped
 

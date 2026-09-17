@@ -5,6 +5,7 @@ import { AskFab } from "@/components/ask-fab";
 import { ChatHistory } from "@/components/chat-history";
 import { ChatSheet } from "@/components/chat-sheet";
 import { OnboardOverlay } from "@/components/onboard-overlay";
+import { PullToRefresh } from "@/components/pull-to-refresh";
 import { TabBar } from "@/components/tab-bar";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -53,7 +54,9 @@ export const Route = createRootRoute({
         <PreviewHostBridge />
         <AuthProvider>
           <TooltipProvider delayDuration={350} skipDelayDuration={0}>
-            <Outlet />
+            <PullToRefresh>
+              <Outlet />
+            </PullToRefresh>
             <TabBar />
             <AskFab />
             <ChatSheet />

@@ -1,12 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Camera, DoorOpen, Map, Truck } from "lucide-react";
+import { Camera, DoorOpen, Map } from "lucide-react";
+import { PickupTruck } from "@/components/pickup-truck";
 
 const TABS = [
   {
     to: "/truck",
     id: "truck",
     label: "Today",
-    icon: Truck,
+    icon: PickupTruck,
     match: (p: string) => p === "/truck" || p === "/today" || p === "/",
   },
   {

@@ -231,7 +231,7 @@ export function PinsMap({
   const keyMissing = key === "";
   const mapBox =
     key && ready ? (
-      <div ref={box} className="mt-3 h-56 w-full overflow-hidden rounded-2xl border border-border" />
+      <div ref={box} data-no-pull className="mt-3 h-56 w-full overflow-hidden rounded-2xl border border-border" />
     ) : (
       <p className="mt-3 text-sm leading-relaxed text-muted">
         {keyMissing
