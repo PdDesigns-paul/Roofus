@@ -1,8 +1,10 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   cardAsk,
   claimUnlocked,
+  COACH_MODES,
   hatToMode,
   modeBrief,
   normalizeClaimStage,
@@ -75,12 +77,26 @@ describe("threadTag", () => {
   });
 });
 
+describe("visible Truck only", () => {
+  it("Mindset chip and chat reject Truck only as a label", () => {
+    const m = COACH_MODES.find((x) => x.id === "mindset")!;
+    assert.equal(m.hint, "Off the porch");
+    for (const mode of COACH_MODES) {
+      assert.doesNotMatch(mode.hint, /Truck only/);
+      assert.doesNotMatch(mode.label, /Truck only/);
+    }
+    const chat = readFileSync(new URL("../components/coach-chat.tsx", import.meta.url), "utf8");
+    assert.doesNotMatch(chat, /Truck only/);
+  });
+});
+
 describe("modeBrief", () => {
   it("live never becomes the homeowner", () => {
     assert.match(modeBrief("live"), /not the homeowner/i);
     assert.match(modeBrief("live"), /Roof page/);
     assert.match(modeBrief("roleplay", "visit"), /WHOLE VISIT/);
-    assert.match(modeBrief("mindset"), /Truck only/);
+    assert.match(modeBrief("mindset"), /Off the porch/);
+    assert.doesNotMatch(modeBrief("mindset"), /Truck only/);
     assert.match(modeBrief("live", null, null, null, "setup"), /SETUP/);
   });
   it("live brief sends the AAR form to Plan, not Today", () => {

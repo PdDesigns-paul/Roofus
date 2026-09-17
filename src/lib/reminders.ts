@@ -1,6 +1,6 @@
 /** Nags when they open the app. Morning storm, evening journal, Sunday pace, the 1st stack. */
 import { localDateKey } from "./day-book.ts";
-import { setupScore, type SetupSnap } from "./setup-progress.ts";
+import { setupScore, truckSetupOpen, type SetupSnap } from "./setup-progress.ts";
 
 export const REMINDERS = [
   {
@@ -22,7 +22,7 @@ export const REMINDERS = [
     id: "journal",
     label: "Tracking + journal",
     when: "Evening",
-    hint: "After Action Report on Plan. After 5, if it is blank.",
+    hint: "After Action Report on Plan. After 5, if they worked today and it is blank.",
     to: "/after",
     hash: "finish",
   },
@@ -55,6 +55,18 @@ export type RemindClock = {
   day: number;
 };
 
+export type RemindExtra = {
+  afterAction: string;
+  stormFetchedOn: string;
+  stackMonth: string;
+  /** Sum of Today's Doors / Talked / On the roof / Appointments. */
+  dayTotal?: number;
+  /** Any pin created on the local date being checked. */
+  pinToday?: boolean;
+  /** Name + company + county already exist. */
+  bookFilled?: boolean;
+};
+
 export const DEFAULT_REMINDER_ON: Record<ReminderId, boolean> = {
   setup: true,
   storm: true,
@@ -79,12 +91,22 @@ function daysBetween(a: string, b: string): number {
   return Math.round((to(b) - to(a)) / 86_400_000);
 }
 
+/** Pin createdAt is ISO. Journal nag keys off the phone's local day. */
+export function pinOnDay(createdAt: string, today: string): boolean {
+  const d = new Date(createdAt);
+  return Number.isFinite(d.getTime()) && localDateKey(d) === today;
+}
+
+function journalWorked(extra: RemindExtra): boolean {
+  return (extra.dayTotal ?? 0) > 0 || Boolean(extra.pinToday) || Boolean(extra.bookFilled);
+}
+
 export function reminderDue(
   id: ReminderId,
   prefs: ReminderPrefs,
   today: string,
   _ready: boolean,
-  extra: { afterAction: string; stormFetchedOn: string; stackMonth: string },
+  extra: RemindExtra,
   clock: RemindClock,
 ): boolean {
   if (!prefs.on[id]) return false;
@@ -96,7 +118,8 @@ export function reminderDue(
   }
   if (id === "journal") {
     if (clock.hour < 17) return false;
-    return !extra.afterAction.trim();
+    if (extra.afterAction.trim()) return false;
+    return journalWorked(extra);
   }
   if (id === "pace") {
     if (clock.weekday !== 0) return false;
@@ -113,9 +136,12 @@ export function reminderDue(
 export function dueReminders(
   prefs: ReminderPrefs,
   snap: SetupSnap,
-  extra: { afterAction: string; stormFetchedOn: string; stackMonth: string },
+  extra: RemindExtra,
   today = localDateKey(),
   clock = nowClock(),
 ) {
-  return REMINDERS.filter((r) => reminderDue(r.id, prefs, today, setupScore(snap).ready, extra, clock));
+  const bookFilled = extra.bookFilled ?? !truckSetupOpen(snap);
+  return REMINDERS.filter((r) =>
+    reminderDue(r.id, prefs, today, setupScore(snap).ready, { ...extra, bookFilled }, clock),
+  );
 }

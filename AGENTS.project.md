@@ -30,7 +30,7 @@ GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at 
 
 Phone-first PWA. First screen is Today (file `truck.tsx` until a rename-the-file slice). First open is five job slides over the field log: who I am, drop a pin, what to say at the door, talk to the dog, age first. Do not list tab names on slide 1. Skip on every slide; replay in Settings. Bottom bar: Today · Door · Roof · Plan. Help and Menu live in the header; one tab bar; Back only on Settings, Reference, and nested settings pages. Do not invent a third layout.
 
-Settings holds the book (You, territory, hours, mindset, reminders, backup). Empty book: setup card on Today (name, company, counties). Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. Finish-setup is Settings, not a nag. No lock-screen.
+Settings holds the book (You, territory, hours, mindset, reminders, backup). Empty book: setup card on Today (name, company, counties). Reminders nag on open: morning storm, Sundays pace, the 1st stack — only if that box is empty. Evening journal nag only after they logged a door, a pin, or a finished setup. Blank first hour after 5pm is Setup, not AAR. Finish-setup is Settings, not a nag. No lock-screen.
 
 Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Roof hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 

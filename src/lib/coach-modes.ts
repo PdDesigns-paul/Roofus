@@ -45,7 +45,7 @@ export const COACH_MODES: CoachModeMeta[] = [
   {
     id: "mindset",
     label: "Mindset",
-    hint: "Truck only",
+    hint: "Off the porch",
     use: "Why ladder, the demon, pace, talent stack. One question at a time. Private. Never a porch line. What you already wrote in Settings is his notes.",
     starters: [],
   },

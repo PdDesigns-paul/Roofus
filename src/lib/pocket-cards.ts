@@ -109,8 +109,8 @@ export const POCKET_CARDS: PocketCard[] = [
     id: "compass",
     mode: "mindset",
     title: "Compass",
-    when: "Truck only. Never a porch line.",
-    formula: "Read this in the truck.",
+    when: "Off the porch. Never a porch line.",
+    formula: "Read this off the porch.",
     lines: [
       ...COMPASS.map((line) => ({ note: line })),
       { note: "Why is in Settings. The demon never goes on a door." },

@@ -14,6 +14,7 @@ import { freshKeptSentence } from "@/lib/kept-storm";
 import { lastPinOnLoop, nextBlankOnLoop, pinLabel, pinsForLoop } from "@/lib/pins";
 import { preKnock } from "@/lib/pocket-cards";
 import { companyOf, setupSnap, truckSetupOpen } from "@/lib/setup-progress";
+import { pinOnDay } from "@/lib/reminders";
 import { useSettings } from "@/lib/settings-store";
 import { useSurvive } from "@/lib/survive-store";
 import { clusterLines, firstRemainingInPlan, loopHeadline, loopLabel } from "@/lib/streets-rank";
@@ -159,6 +160,8 @@ function DaySheet() {
         afterAction={day.afterAction}
         stormFetchedOn={fetchedAt.slice(0, 10)}
         stackMonth={survive.stackMonth}
+        dayTotal={day.knocks + day.talks + day.looks + day.sets}
+        pinToday={allPins.some((p) => pinOnDay(p.createdAt, date))}
       />
       <p className="mt-4 text-xs font-medium uppercase tracking-wide text-faint">{day.date}</p>
       <h1 className="mt-1 font-display text-2xl leading-tight tracking-tight">

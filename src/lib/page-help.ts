@@ -18,7 +18,7 @@ export const PAGE_HELP = {
   cards: {
     title: "Door",
     body: [
-      "Five pocket cards on this tab, plus Claim path after you Keep a storm that matches this zip. Each has a formula: hook, honest reason, one open question. Door is the default knock. Pushback restates first. i35 is after photos. Set is morning or afternoon, paper, and a phone-review path. Compass stays here — read it in the truck.",
+      "Five pocket cards on this tab, plus Claim path after you Keep a storm that matches this zip. Each has a formula: hook, honest reason, one open question. Door is the default knock. Pushback restates first. i35 is after photos. Set is morning or afternoon, paper, and a phone-review path. Compass stays here — read it off the porch.",
       "The line under the title is You, the street or Working loop, the age band, and Keep or Use-today weather. Tap the name to open You. Tap the street to open Plan or Today. Empty You is a Go, not brackets. Hear this line speaks the filled SAY. Ask Roofus opens Roleplay on that beat with the filled opener. Claim path opens with the A constraint. Compass opens Mindset. This is not Reference — those are InterNACHI articles.",
     ],
   },
@@ -51,7 +51,7 @@ export const PAGE_HELP = {
       "Settings is a list of pages. You, Territory, Hours, Mindset, Reminders, Backup. Each row is a Go — title, hint, chevron. Plan is its own tab, not a row here. Back on every sub page.",
       "You: first name, company, website, warranty, packets. Paste a URL — we crawl it in the background. Pages land in Reference. Photo or File under the website: flyer, form, warranty, other. Type the porch line in notes. He quotes saved text only. No text, no “I read your flyer.”",
       "Territory: counties and a state. Counties are for storms. Pins make the walks. Hours: when you knock, morning work, hard stop.",
-      "Reminders: morning storm if empty, evening After Action Report if blank, Sundays pace, the 1st talent stack. Did it is a chip. Finish-setup is Settings, not a nag.",
+      "Reminders: morning storm if empty, evening After Action Report only after a door, a pin, or finished setup, Sundays pace, the 1st talent stack. Did it is a chip. Finish-setup is Settings, not a nag. Blank first hour after 5pm is Setup, not AAR.",
       "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report lives on Plan.",
       "Backup: optional Notion copy of days, streets, storms, mindset, FAQs, and pins. Do not Restore onto a full phone. Do not Backup from an empty one.",
       "Show the tour and Load a sample day are outlined pills under the list. Show the tour plays the five job slides again. Skip is on every slide. Load a sample day only on an empty book.",
@@ -62,7 +62,7 @@ export const PAGE_HELP = {
     body: [
       "Tap the orange button to pick a mode. That starts a fresh chat. Live, Roleplay, Mindset. Hold starts Live. Live’s first starter is the million-dollar script. The dog in the header is him — big enough to read in sun. History is the clock at the bottom. Tags by color.",
       "Roleplay: pick a beat at the bottom (Walk-up, They push, After photos, The set, Whole visit), who they are, then knock. Hold the mic. Score me grades it. Hear it plays his line. Practice only — do not record a homeowner.",
-      "Mindset is truck only. Worksheets are in Settings → Mindset. Camera is the Roof page. X closes him. The day is still underneath.",
+      "Mindset is off the porch. Worksheets are in Settings → Mindset. Camera is the Roof page. X closes him. The day is still underneath.",
     ],
   },
 } as const;

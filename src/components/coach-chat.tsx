@@ -231,9 +231,10 @@ export function CoachChat({ embedded = false }: { embedded?: boolean }) {
 }
 
 function MindsetStart({ onWalk }: { onWalk: (id: WalkId) => void }) {
+  const mindset = modeById("mindset");
   return (
     <div className="mt-2">
-      <p className="text-xs font-medium uppercase tracking-wide text-faint">Truck only</p>
+      <p className="text-xs font-medium uppercase tracking-wide text-faint">{mindset.hint}</p>
       <h1 className="mt-2 font-display text-3xl leading-tight tracking-tight">Mindset</h1>
       <p className="mt-3 text-sm leading-relaxed text-muted">
         One question at a time. Private. Never a porch line. What you wrote in Settings is his notes.

@@ -1,6 +1,7 @@
 import "./test-setup.ts";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   lastPinOnLoop,
   makePin,
@@ -99,6 +100,14 @@ describe("restorePin / serializePin", () => {
   it("tags a desk drop", () => {
     const pin = makePin({ lat: 1, lng: 2, source: "desk" });
     assert.equal(pin.source, "desk");
+  });
+
+  it("visible pin tag is Desk or nothing — never Truck", () => {
+    const src = readFileSync(new URL("../components/pin-board.tsx", import.meta.url), "utf8");
+    assert.match(src, /pin\.source === "desk"/);
+    assert.match(src, />Desk</);
+    assert.doesNotMatch(src, />Truck</);
+    assert.doesNotMatch(src, /Truck only/);
   });
 });
 

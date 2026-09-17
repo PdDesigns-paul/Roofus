@@ -1,5 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   applySetupAnswer,
   companyOf,
@@ -150,5 +151,14 @@ describe("applySetupAnswer", () => {
     const a = applySetupAnswer("you", "https://northridge.example", snap(), blankSurvive);
     assert.equal(a?.companyWebsite, "https://northridge.example/");
     assert.equal(a?.profile?.goBy, undefined);
+  });
+});
+
+describe("first-card company copy", () => {
+  it("placeholder is Name on the shirt, not truck", () => {
+    const src = readFileSync(new URL("../components/home-setup-card.tsx", import.meta.url), "utf8");
+    assert.match(src, /Name on the shirt/);
+    assert.doesNotMatch(src, /name on the truck/i);
+    assert.doesNotMatch(src, /The name on the truck/);
   });
 });

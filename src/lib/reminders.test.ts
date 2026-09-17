@@ -1,6 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { blankReminderPrefs, reminderDue, REMINDERS, type RemindClock } from "./reminders.ts";
+import { blankReminderPrefs, dueReminders, pinOnDay, reminderDue, REMINDERS, type RemindClock } from "./reminders.ts";
+import type { SetupSnap } from "./setup-progress.ts";
 
 const extra = { afterAction: "", stormFetchedOn: "", stackMonth: "" };
 const prefs = blankReminderPrefs();
@@ -24,11 +25,38 @@ describe("reminderDue", () => {
     );
   });
 
-  it("nags journal only in the evening when the After Action Report is blank", () => {
-    assert.equal(reminderDue("journal", prefs, "2026-09-10", true, extra, clock({ hour: 20 })), true);
-    assert.equal(reminderDue("journal", prefs, "2026-09-10", true, extra, clock({ hour: 9 })), false);
+  it("skips journal on an empty first-hour book after 5pm", () => {
+    assert.equal(reminderDue("journal", prefs, "2026-09-10", false, extra, clock({ hour: 18 })), false);
+    assert.equal(reminderDue("journal", prefs, "2026-09-10", true, extra, clock({ hour: 18 })), false);
+    assert.equal(reminderDue("journal", prefs, "2026-09-10", false, extra, clock({ hour: 20 })), false);
+  });
+
+  it("nags journal after 5pm once they logged a door, a pin, or a finished setup", () => {
     assert.equal(
-      reminderDue("journal", prefs, "2026-09-10", true, { ...extra, afterAction: "Wins: one set" }, clock({ hour: 20 })),
+      reminderDue("journal", prefs, "2026-09-10", false, { ...extra, dayTotal: 1 }, clock({ hour: 18 })),
+      true,
+    );
+    assert.equal(
+      reminderDue("journal", prefs, "2026-09-10", false, { ...extra, pinToday: true }, clock({ hour: 18 })),
+      true,
+    );
+    assert.equal(
+      reminderDue("journal", prefs, "2026-09-10", false, { ...extra, bookFilled: true }, clock({ hour: 18 })),
+      true,
+    );
+    assert.equal(
+      reminderDue("journal", prefs, "2026-09-10", false, { ...extra, bookFilled: true }, clock({ hour: 9 })),
+      false,
+    );
+    assert.equal(
+      reminderDue(
+        "journal",
+        prefs,
+        "2026-09-10",
+        false,
+        { ...extra, bookFilled: true, afterAction: "Wins: one set" },
+        clock({ hour: 18 }),
+      ),
       false,
     );
   });
@@ -50,6 +78,51 @@ describe("reminderDue", () => {
     assert.equal(
       reminderDue("stack", prefs, "2026-09-01", true, { ...extra, stackMonth: "2026-09" }, clock({ day: 1 })),
       false,
+    );
+  });
+});
+
+describe("pinOnDay", () => {
+  it("uses the phone's local calendar day", () => {
+    const today = "2026-09-17";
+    const noon = new Date(2026, 8, 17, 12, 0, 0);
+    const yesterday = new Date(2026, 8, 16, 18, 0, 0);
+    assert.equal(pinOnDay(noon.toISOString(), today), true);
+    assert.equal(pinOnDay(yesterday.toISOString(), today), false);
+  });
+});
+
+describe("dueReminders", () => {
+  const emptySnap: SetupSnap = {
+    goBy: "",
+    company: "",
+    counties: "",
+    states: "",
+    knockWindow: "",
+    paperWindow: "",
+    hardStop: "",
+    warranty: "",
+    zipCount: 0,
+    why: false,
+    demon: false,
+    pace: false,
+    stack: false,
+  };
+
+  it("hides Tracking + journal on a blank first-hour book after 5pm", () => {
+    const due = dueReminders(prefs, emptySnap, extra, "2026-09-10", clock({ hour: 18 }));
+    assert.equal(
+      due.some((r) => r.id === "journal"),
+      false,
+    );
+  });
+
+  it("shows Tracking + journal after name, company, and county exist", () => {
+    const filled: SetupSnap = { ...emptySnap, goBy: "Pat", company: "Field", counties: "Cumberland" };
+    const due = dueReminders(prefs, filled, extra, "2026-09-10", clock({ hour: 18 }));
+    assert.equal(
+      due.some((r) => r.id === "journal"),
+      true,
     );
   });
 });

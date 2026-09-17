@@ -14,11 +14,15 @@ export function HomeSetupCard({
   afterAction,
   stormFetchedOn,
   stackMonth,
+  dayTotal = 0,
+  pinToday = false,
 }: {
   snap: SetupSnap;
   afterAction: string;
   stormFetchedOn: string;
   stackMonth: string;
+  dayTotal?: number;
+  pinToday?: boolean;
 }) {
   const emptyBook = truckSetupOpen(snap);
   const [firstRun, setFirstRun] = useState(emptyBook);
@@ -30,7 +34,13 @@ export function HomeSetupCard({
   const on = useReminders((s) => s.on);
   const lastDone = useReminders((s) => s.lastDone);
   const markDone = useReminders((s) => s.markDone);
-  const due = dueReminders({ on, lastDone }, snap, { afterAction, stormFetchedOn, stackMonth });
+  const due = dueReminders({ on, lastDone }, snap, {
+    afterAction,
+    stormFetchedOn,
+    stackMonth,
+    dayTotal,
+    pinToday,
+  });
   const hideSetup = !emptyBook || (hidden && score.done === score.total);
 
   useEffect(() => {
@@ -133,7 +143,7 @@ function FirstRunFields() {
             className="mt-1"
             value={profile.company}
             onChange={(e) => patchProfile({ company: e.target.value })}
-            placeholder="The name on the truck"
+            placeholder="Name on the shirt"
           />
         </div>
         <div className="grid grid-cols-2 gap-2">

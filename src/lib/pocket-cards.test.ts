@@ -43,8 +43,10 @@ describe("POCKET_CARDS", () => {
   it("Compass stays off the porch", () => {
     const c = POCKET_CARDS.find((x) => x.id === "compass")!;
     assert.equal(c.mode, "mindset");
-    assert.match(c.when, /Truck only/);
-    assert.match(c.formula, /truck/i);
+    assert.match(c.when, /Off the porch/);
+    assert.doesNotMatch(c.when, /Truck only/);
+    assert.match(c.formula, /off the porch/i);
+    assert.doesNotMatch(c.formula, /Truck only/);
     assert.match(c.lines.map((l) => l.note).join(" "), /demon never/);
   });
   it("Set names paper, phone-review, and confirm — no send-text button", () => {
