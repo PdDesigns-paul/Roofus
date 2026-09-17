@@ -1,6 +1,6 @@
 import { packAfterAction, unpackAfterAction } from "@/lib/day-book";
 
-/** Lives on Prep. Truck Night is a Go to Prep#finish. One store — day.afterAction. */
+/** Lives on Plan. Night on Today opens Finish the day. One store — day.afterAction. */
 export function AarFields({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const aar = unpackAfterAction(value);
   function set(key: "wins" | "better" | "plan", next: string) {

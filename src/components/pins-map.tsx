@@ -235,7 +235,7 @@ export function PinsMap({
     ) : (
       <p className="mt-3 text-sm leading-relaxed text-muted">
         {keyMissing
-          ? "Map key missing — pins still save. Search a zip, then Pin from Truck."
+          ? "Map key missing — pins still save. Search a zip, then Pin from Today."
           : err || "Loading map…"}
       </p>
     );

@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useNotion } from "@/lib/notion-store";
 
-/** Settings, or first empty book on Truck. Not a standing Truck card. */
+/** Settings, or first empty book on Today. Not a standing Today card. */
 export function NotionHint() {
   const connected = useNotion((s) => Boolean(s.ids && s.token));
   const hidden = useNotion((s) => s.hintHidden);

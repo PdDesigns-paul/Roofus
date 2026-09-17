@@ -19,7 +19,7 @@ async function handleGet({ request }: { request: Request }) {
 }
 
 async function handlePost() {
-  return json({ error: "Loops come from pins. Pin from Truck or the Prep map." }, 410);
+  return json({ error: "Loops come from pins. Pin from Today or the Plan map." }, 410);
 }
 
 export const Route = createFileRoute("/api/streets")({

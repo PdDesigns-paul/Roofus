@@ -11,9 +11,6 @@ describe("showBack", () => {
     assert.equal(showBack("/door"), false);
     assert.equal(showBack("/roof"), false);
     assert.equal(showBack("/after"), false);
-    assert.equal(showBack("/coach/inspect"), false);
-    assert.equal(showBack("/coach/cards"), false);
-    assert.equal(showBack("/streets"), false);
   });
 
   it("shows Back on nested pages, including Settings and Reference", () => {
@@ -26,7 +23,6 @@ describe("showBack", () => {
 describe("hideTalk", () => {
   it("hides the dog on Roof, not on the other Places", () => {
     assert.equal(hideTalk("/roof"), true);
-    assert.equal(hideTalk("/coach/inspect"), true);
     assert.equal(hideTalk("/truck"), false);
     assert.equal(hideTalk("/door"), false);
     assert.equal(hideTalk("/after"), false);
@@ -48,21 +44,26 @@ describe("helpPageFor", () => {
     assert.match(PAGE_HELP.streets.body.join(" "), /Settings is a Go at the bottom/);
     assert.match(PAGE_HELP.streets.body.join(" "), /Morning/);
     assert.match(PAGE_HELP.streets.body.join(" "), /Finish the day owns the night form/);
-    assert.equal(PAGE_HELP.streets.title, "Prep");
+    assert.equal(PAGE_HELP.today.title, "Today");
+    assert.equal(PAGE_HELP.streets.title, "Plan");
     assert.match(PAGE_HELP.streets.body.join(" "), /Keep \/ Toss lives here/);
-    assert.match(PAGE_HELP.today.body.join(" "), /Night is a Go to Prep/);
-    assert.match(PAGE_HELP.today.body.join(" "), /No Keep \/ Toss on Truck/);
-    assert.match(PAGE_HELP.today.body.join(" "), /No Wins \/ Better \/ Plan textareas here/);
+    assert.match(PAGE_HELP.today.body.join(" "), /Night opens Finish the day on Plan/);
+    assert.match(PAGE_HELP.today.body.join(" "), /No Keep \/ Toss on Today/);
+    assert.match(PAGE_HELP.today.body.join(" "), /No After Action Report fields here/);
     assert.match(PAGE_HELP.today.body.join(" "), /opens the house editor here/);
+    assert.match(PAGE_HELP.today.body.join(" "), /five job slides over the field log/);
+    assert.doesNotMatch(PAGE_HELP.today.body.join(" "), /Go to Prep/);
+    assert.doesNotMatch(PAGE_HELP.today.body.join(" "), /filled Do/);
+    assert.doesNotMatch(PAGE_HELP.today.body.join(" "), /No Wins \/ Better \/ Plan textareas/);
     assert.doesNotMatch(PAGE_HELP.today.body.join(" "), /Full pin board lives on Prep/);
     assert.doesNotMatch(PAGE_HELP.today.body.join(" "), /on Truck and After/);
-    assert.match(PAGE_HELP.home.body.join(" "), /five job slides over the field log/);
+    assert.ok(!("home" in PAGE_HELP));
     assert.match(PAGE_HELP.settings.body.join(" "), /Show the tour plays the five job slides again/);
     assert.match(PAGE_HELP.settings.body.join(" "), /title, hint, chevron/);
     assert.match(PAGE_HELP.settings.body.join(" "), /outlined pills under the list/);
     assert.doesNotMatch(PAGE_HELP.settings.body.join(" "), /Tour and sample day stay on this list/);
     assert.doesNotMatch(PAGE_HELP.settings.body.join(" "), /question-mark tour/);
-    assert.match(PAGE_HELP.mindset.body.join(" "), /After Action Report lives on Prep/);
+    assert.match(PAGE_HELP.mindset.body.join(" "), /After Action Report lives on Plan/);
     assert.doesNotMatch(PAGE_HELP.mindset.body.join(" "), /on Truck and After/);
     assert.match(PAGE_HELP.cards.body.join(" "), /Claim path/);
     assert.equal(helpPageFor("/settings/you"), "settings");

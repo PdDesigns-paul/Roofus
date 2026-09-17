@@ -28,7 +28,7 @@ export function PinBoard({ loopId }: { loopId: string }) {
   const pins = usePins((s) => s.pins);
   const mine = pinsForLoop(pins, loopId);
   if (!mine.length) {
-    return <p className="mt-3 text-sm leading-relaxed text-muted">No pins on this walk yet. Drop from Truck or the map.</p>;
+    return <p className="mt-3 text-sm leading-relaxed text-muted">No pins on this walk yet. Drop from Today or the map.</p>;
   }
   return (
     <ul className="mt-3 flex flex-col gap-3">

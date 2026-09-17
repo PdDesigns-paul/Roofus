@@ -142,7 +142,7 @@ export function suggestTomorrow(loops: StreetLoop[]): StreetLoop | null {
 export function streetsForCoach(): string {
   const { loops, note, ageMin, ageMax } = useStreets.getState();
   if (!loops.length) {
-    return `# Streets\nNo walks yet. They drop pins from Truck or the Prep map. Walks form from those houses. Age band filter is ${ageMin}–${ageMax} years on years they typed. Do not invent a zip, an address, or a subdivision name.`;
+    return `# Streets\nNo walks yet. They drop pins from Today or the Plan map. Walks form from those houses. Age band filter is ${ageMin}–${ageMax} years on years they typed. Do not invent a zip, an address, or a subdivision name.`;
   }
   const lines = [
     "# Streets (park-once walks of pins they dropped. Storms are NOT why these are here.)",

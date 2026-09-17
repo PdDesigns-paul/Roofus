@@ -2,9 +2,9 @@
 
 **This file is the UI contract.** Porch words stay in [`DOCTRINE.md`](./DOCTRINE.md). How a canvasser *sees* what to tap lives here.
 
-Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Streets Near me / scout tags and Use today as a chip shipped. **Places are Truck · Door · Roof · Prep.** After became Prep. Truck is the field log. First-run is five job slides over the field log (who I am, pin, the door, the dog, age first) — no tab names on slide 1. Door pocket cards fill You and ship Hear this line. Settings index is chevron Go rows; tour and sample day are outlined pills under the list. Do not invent a sixth control type.
+Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Streets Near me / scout tags and Use today as a chip shipped. **Places on the phone are Today · Door · Roof · Plan.** Old route files may keep `/truck` and `/after`. UI copy does not say Truck or After. First-run is five job slides over the field log (who I am, pin, the door, the dog, age first) — no tab names on slide 1. Door pocket cards fill You and ship Hear this line. Settings index is chevron Go rows; tour and sample day are outlined pills under the list. Do not invent a sixth control type.
 
-Agents: read this before you touch tabs, the FAB, Truck links, setup rows, or `src/components/ui/`.
+Agents: read this before you touch tabs, the FAB, Today links, setup rows, or `src/components/ui/`.
 
 ---
 
@@ -33,10 +33,10 @@ One shape, one promise. If you cannot name the type, the user cannot either.
 
 | Type | Shape | Promise | Use for | Do not use for |
 | --- | --- | --- | --- | --- |
-| **Place** | Bottom tab. Selected = accent mark + `text-fg`. Idle = `text-faint`. | I am *in* a place. | Truck · Door · Roof · Prep | Help, Back, Menu |
+| **Place** | Bottom tab. Selected = accent mark + `text-fg`. Idle = `text-faint`. | I am *in* a place. | Today · Door · Roof · Plan | Help, Back, Menu |
 | **Do** | Pill, 48–56px. Primary = filled (`bg-fg text-paper`, or `bg-accent` when the verb is talk to Roofus). Secondary = outlined on a solid surface, same height. | One tap, something happens *here*. | Ask how today went, Pin, +, Got it, Tell Roofus, −, Load sample, Not now | Navigation a tab or Menu already owns |
 | **Toggle a token** | Chip. Idle = outline + `text-fg`. Selected / done = `bg-accent` + black type. | A token I can snap on or dismiss. | Did it, Use today, loop on the plan, Live / Roleplay / Mindset fan | The screen’s primary close |
-| **Go** | Always-underlined text, **or** a 56px row with title + hint + chevron. | I will *leave this screen*. | Prep, maps label, Settings (bottom of Prep), setup rows that open a page | Anything that writes today’s log |
+| **Go** | Always-underlined text, **or** a 56px row with title + hint + chevron. | I will *leave this screen*. | Plan, maps label, Settings (bottom of Plan), setup rows that open a page | Anything that writes today’s log |
 | **Talk** | Gold FAB, 64–80px circle. Dog face (`RoofusFace`) fills it — FAB face ≥ 56px, tour face ≥ 160px. Not `size-10`. Not a generic chat bubble. Tap fans three chips. Hold starts Live. Hidden on Roof and while the sheet is open. | The coach. | Live / Roleplay / Mindset | A second FAB |
 
 Buttons **do**. Links **go**. Chips **fork the current task**. Tabs **are places**. The FAB **is Roofus**.
@@ -49,14 +49,14 @@ Ban ghost text as an action in content. Text-only controls belong in a header to
 
 Destinations live in four places. Pick this rule and stop adding a fifth.
 
-- **Day work** = tabs (Truck, Door, Roof, Prep).
+- **Day work** = tabs (Today, Door, Roof, Plan).
 - **Kit** = Menu (Reference, Settings).
 - **Coach** = orange FAB only.
 - **Help and Back** = header. Back only on Settings, Reference, nested settings pages. Not a second bottom rail.
 
 If a screen needs a fourth way in, the first three already failed.
 
-Do not list Door or Prep again as Menu rows. Settings is the book. Prep is the loops tab.
+Do not list Door or Plan again as Menu rows. Settings is the book. Plan is the loops tab.
 
 ---
 
@@ -96,7 +96,7 @@ Chip next to Button. `default` / `outline` only. Ghost is not a content verb. Go
 
 ### Slice 2 — chrome — shipped
 
-Help (`?`) and Menu (`⋮`) in the header. One bottom bar: **Truck · Door · Roof · Prep**. FAB uses `RoofusFace`. Hidden on Roof. Back is a header control on nested pages (Settings, Reference) — not on the four Places.
+Help (`?`) and Menu (`⋮`) in the header. One bottom bar: **Today · Door · Roof · Plan**. FAB uses `RoofusFace`. Hidden on Roof. Back is a header control on nested pages (Settings, Reference) — not on the four Places.
 
 ### Slice 3 — Home — shipped
 
@@ -104,26 +104,26 @@ One setup card. Empty book: name + company + counties/state. Website / Why behin
 
 ### Slice 4 — Today — shipped
 
-Count tiles: tap the card to +1. − is a small control. Cards and maps labels are underlined Go. Empty-book setup card on Truck until name + company + one county exist. Night is a Go to Prep#finish. Truck is this page (formerly /today). **Pin** drops GPS and opens the house editor on that page (address, year, status, note, roof look). The map and the long board stay on Prep.
+Count tiles: tap the card to +1. − is a small control. Cards and maps labels are underlined Go. Empty-book setup card on Today until name + company + one county exist. Night opens Finish the day on Plan. Today is this page (route `/truck`). **Pin** drops GPS and opens the house editor on that page (address, year, status, note, roof look). The map and the long board stay on Plan.
 
 ### Slice 5 — Streets hunt + Near me — shipped
 
 - **Near me** is a chip. Sorts walks they already have. Empty book does not invent a zip.
 - **Use today** is a chip on the card — not muted text.
 - Maps label is an always-underlined Go. No `hover:underline`.
-- Rebuild / Census hunt is dead. Prep is the map of pins they dropped.
+- Rebuild / Census hunt is dead. Plan is the map of pins they dropped.
 - Help copy and coach prompt name Near me and Pins first.
 
 ### Slice 6 — Settings / Door sweep — shipped
 
 - Door “Ask Roofus” stays an outlined pill. Hear this line is a second outlined Do on the filled SAY. Not a second FAB.
 - Door fills [name]/[company] from You, [year] as the age-band window, [day] as tomorrow’s weekday. Empty You is a Go. Context strip: You · street or Working loop · roofs · Keep / Use-today. Claim path names the kept zip or stays hidden.
-- Settings index: rows get chevrons. Prep is a tab, not a Settings row. “Show the tour” and “Load a sample day” stay secondary outlined pills, below the list, not dressed as the page’s primary.
+- Settings index: rows get chevrons. Plan is a tab, not a Settings row. “Show the tour” and “Load a sample day” stay secondary outlined pills, below the list, not dressed as the page’s primary.
 - Help copy and coach prompt name the controls that actually exist after the sweep.
 
-### Slice 7 — Prep — shipped
+### Slice 7 — Plan — shipped
 
-Tab word is **Prep**. Route stays `/after`. Hint: night-before + morning. Not a fifth Place. Keep / Toss lives on Prep. One Working loop is picked on Prep (Use today). Truck is that loop line + counts + Pin (GPS drop opens the house editor on Truck) + one kept sentence. Night is a Go to Prep#finish. Empty-book Setup leaves Truck after name + company + one county.
+Tab word is **Plan**. Route stays `/after`. Hint: night-before + morning. Not a fifth Place. Keep / Toss lives on Plan. One Working loop is picked on Plan (Use today). Today is that loop line + counts + Pin (GPS drop opens the house editor on Today) + one kept sentence. Night opens Finish the day on Plan. Empty-book Setup leaves Today after name + company + one county.
 
 ### Slice 8 — first-run tour — shipped
 

@@ -329,7 +329,7 @@ export function pinMatchesYearFilter(
 
 export function pinsLineForCoach(pins: HousePin[]): string {
   if (!pins.length) {
-    return "# Pins\nNo house pins yet. They drop from Truck (GPS) or the Prep map. Do not invent an address or a name.";
+    return "# Pins\nNo house pins yet. They drop from Today (GPS) or the Plan map. Do not invent an address or a name.";
   }
   const revisit = pins.filter((p) => p.status === "revisit").length;
   const desk = pins.filter((p) => p.source === "desk").length;

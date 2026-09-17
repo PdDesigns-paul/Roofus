@@ -9,7 +9,7 @@ This file is for any agent (Grok Build, Cursor, Copilot). Porch doctrine is [`DO
 | Live | Dead |
 | --- | --- |
 | This repo (`DOCTRINE.md`, `SIGNIFIERS.md`, this file, `README.md`, the code) | Google Drive “Alpha Exteriors” / Sept 2026 zip |
-| Settings + Truck on **their** phone | Anything you assume about Paul, Alpha, West Shore, or a 3:30 start |
+| Settings + Today on **their** phone | Anything you assume about Paul, Alpha, West Shore, or a 3:30 start |
 | Storms they **Keep** in the app | `STORM_LOG.md` from the archive |
 
 The Drive folder is a research archive. Do not copy Alpha phones, PAHIC numbers, Paul/Ari territory, named subdivisions, or live storm rows into the app. Generic canvasser. Name / company / counties / hours come from Settings.
@@ -20,7 +20,7 @@ If `SIGNIFIERS.md` and a control disagree after a chrome slice, fix both in the 
 ## Resume (fresh Build chat)
 
 1. This workspace may already have the app. If it looks like a blank template, **pull** [PdDesigns-paul/Roofus](https://github.com/PdDesigns-paul/Roofus) before you write code.
-2. Read `DOCTRINE.md` only when the slice touches porch words. Read `SIGNIFIERS.md` when the slice touches tabs, the FAB, Truck actions, setup rows, or `src/components/ui/`. Do not reread the coach prompt “just in case.”
+2. Read `DOCTRINE.md` only when the slice touches porch words. Read `SIGNIFIERS.md` when the slice touches tabs, the FAB, Today actions, setup rows, or `src/components/ui/`. Do not reread the coach prompt “just in case.”
 3. Do only the slice they asked. Push back to that repo when it works.
 4. Do not paste the old chat. Do not dump the archive playbooks into new files.
 
@@ -28,17 +28,17 @@ GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at 
 
 ## Product (short)
 
-Phone-first PWA. First screen is Truck. First open is five job slides over the field log: who I am, drop a pin, what to say at the door, talk to the dog, age first. Do not list tab names on slide 1. Skip on every slide; replay in Settings. Bottom bar: Truck · Door · Roof · Prep. Help and Menu live in the header; one tab bar; Back only on Settings, Reference, and nested settings pages. Do not invent a third layout.
+Phone-first PWA. First screen is Today (file `truck.tsx` until a rename-the-file slice). First open is five job slides over the field log: who I am, drop a pin, what to say at the door, talk to the dog, age first. Do not list tab names on slide 1. Skip on every slide; replay in Settings. Bottom bar: Today · Door · Roof · Plan. Help and Menu live in the header; one tab bar; Back only on Settings, Reference, and nested settings pages. Do not invent a third layout.
 
-Settings holds the book (You, territory, hours, mindset, reminders, backup). Empty book: setup card on Truck (name, company, counties). Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. Finish-setup is Settings, not a nag. No lock-screen.
+Settings holds the book (You, territory, hours, mindset, reminders, backup). Empty book: setup card on Today (name, company, counties). Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. Finish-setup is Settings, not a nag. No lock-screen.
 
 Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Roof hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
 
-- Prep = a **map of pins**. Walks form from distance (0.4 km, cap 40). Not named subdivisions, not Census cards, not one card per zip. Open from the Prep tab (route `/after`). Night-before + morning. Last 48 hours Keep / Toss lives here. After Action Report and tomorrow live on Prep. Truck Night is a Go to Prep#finish. Morning chip lists set + revisit pins. Settings is a Go at the bottom of Prep, not a fifth tab.
+- Plan = a **map of pins**. Walks form from distance (0.4 km, cap 40). Not named subdivisions, not Census cards, not one card per zip. Open from the Plan tab (route `/after`). Night-before + morning. Last 48 hours Keep / Toss lives here. After Action Report and tomorrow live on Plan. Night on Today opens Finish the day on Plan. Morning chip lists set + revisit pins. Settings is a Go at the bottom of Plan, not a fifth tab.
 - Door = pocket cards with a one-line formula (hook → honest reason → one open question). Cards fill name and company from You. Compass stays visible — read it in the truck. Claim path shows after Keep, matching zip.
 - Door / Live first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.
 - Auth OFF. Database OFF. localStorage / Zustand only. Notion is optional backup in **their** workspace (Days, Streets, Storms, Mindset, Memory, Pins).
-- Pins are the hunt. Drop from Truck (GPS) — that opens the house editor on Truck (address, year, status, note, roof look) — or the Prep map (Desk). Distance makes the loop. Sidewalk house log, not a CRM, not a pipeline. No takeoff, no scrape. Street View / Zillow / Redfin are outbound links.
+- Pins are the hunt. Drop from Today (GPS) — that opens the house editor on Today (address, year, status, note, roof look) — or the Plan map (Desk). Distance makes the loop. Sidewalk house log, not a CRM, not a pipeline. No takeoff, no scrape. Street View / Zillow / Redfin are outbound links.
 
 The product path is this phone’s journal. Do not wire `better-auth`, `src/lib/db.ts`, or `src/lib/auth/*` into routes; `AuthProvider` in the root is a Grok-host passthrough. `npm run build` is Vite only — never chain `db:migrate`. What stayed for the host, and why: [`PLATFORM.md`](./PLATFORM.md).
 
@@ -48,7 +48,7 @@ Full book: [`SIGNIFIERS.md`](./SIGNIFIERS.md). Five types. No sixth.
 
 | Type | Promise |
 | --- | --- |
-| **Place** | Tab. I am in a place. Truck · Door · Roof · Prep. |
+| **Place** | Tab. I am in a place. Today · Door · Roof · Plan. |
 | **Do** | Pill, 48–56px. Something happens here. One filled primary per screen. |
 | **Toggle a token** | Chip. Outline off, accent fill on. |
 | **Go** | Underlined text, or a row with a chevron. Leaves this screen. |
@@ -68,7 +68,7 @@ Squint test: blur the screenshot. If the action disappears, it was never signifi
 - Invented years, prices, squares, hail, license, phone
 - Recording a homeowner
 - High-pressure one-call close as the default
-- “This phone is the book” jargon in UI copy — say After Action Report, Truck, Settings
+- “This phone is the book” jargon in UI copy — say After Action Report, Today, Settings
 - Changing doctrine in the coach prompt without changing `DOCTRINE.md` (and the other way around)
 - A new control type that is not Place / Do / Chip / Go / Talk
 - Growing Roofus chrome rules in `AGENTS.md`

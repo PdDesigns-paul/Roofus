@@ -21,7 +21,7 @@ import { useStreets } from "@/lib/streets-store";
 import { usePins } from "@/lib/pins-store";
 import { useWeather } from "@/lib/weather-store";
 
-/** Truck is the field log. Prep owns hunt, Keep / Toss, and AAR. */
+/** Today is the field log. Plan owns hunt, Keep / Toss, and AAR. Route stays /truck. */
 export const Route = createFileRoute("/truck")({
   codeSplitGroupings: [],
   component: Truck,
@@ -83,7 +83,7 @@ function DaySheet() {
         placePin(center.lat, center.lng, "This phone will not share a location. Dropped on the map.");
         return;
       }
-      setPinErr("Turn on location, or drop a pin on Prep.");
+      setPinErr("Turn on location, or drop a pin on Plan.");
       return;
     }
     setPinBusy(true);
@@ -99,7 +99,7 @@ function DaySheet() {
           return;
         }
         setPinBusy(false);
-        setPinErr("Could not get a location. Open Prep and drop a pin.");
+        setPinErr("Could not get a location. Open Plan and drop a pin.");
       },
       { enableHighAccuracy: false, timeout: 8000, maximumAge: 15_000 },
     );
@@ -153,7 +153,7 @@ function DaySheet() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <AppHeader title="Truck" />
+      <AppHeader title="Today" />
       <HomeSetupCard
         snap={snap}
         afterAction={day.afterAction}
@@ -162,7 +162,7 @@ function DaySheet() {
       />
       <p className="mt-4 text-xs font-medium uppercase tracking-wide text-faint">{day.date}</p>
       <h1 className="mt-1 font-display text-2xl leading-tight tracking-tight">
-        {profile.goBy.trim() ? `${profile.goBy.trim()}'s day` : "Truck"}
+        {profile.goBy.trim() ? `${profile.goBy.trim()}'s day` : "Today"}
       </h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         {market ? (
@@ -201,9 +201,9 @@ function DaySheet() {
         ) : (
           <>
             <p className="mt-1 font-display text-xl tracking-tight">No Working loop</p>
-            <p className="mt-1 text-sm leading-relaxed text-muted">Pick one on Prep. Pin still works.</p>
+            <p className="mt-1 text-sm leading-relaxed text-muted">Pick one on Plan. Pin still works.</p>
             <Link to="/after" className="mt-2 inline-flex h-11 items-center text-sm text-fg underline underline-offset-4">
-              Prep
+              Plan
             </Link>
           </>
         )}
@@ -249,7 +249,7 @@ function DaySheet() {
           <p className="mt-3 text-sm leading-relaxed text-muted">No pin yet. Tap Pin where you are.</p>
         )}
         {pinCount > 1 ? (
-          <p className="mt-1 text-xs text-muted">{pinCount} on this walk. Map and long board stay on Prep.</p>
+          <p className="mt-1 text-xs text-muted">{pinCount} on this walk. Map and long board stay on Plan.</p>
         ) : null}
       </section>
 

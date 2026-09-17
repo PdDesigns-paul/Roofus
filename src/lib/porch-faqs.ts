@@ -9,7 +9,7 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_mds",
     q: "What is the million-dollar door script?",
-    a: "Retail / age. Dashaun Bryant’s public opener, told honest: “Hey — I’m [name] with [company]. I stopped by to see if you heard what’s been going on in the area.” They ask what’s going on. You tell the truth: “A lot of these houses are on the original roof from around [year]. That’s first-roof age. We’re doing free looks this week. Do you know what year this one went on?” Before the ladder: “We’d both agree this roof is at the age where it’s time to plan a replacement, right?” Close the hook with age + a free look. Do not invent a storm to finish the sentence. Storm talk only if Truck has a logged storm that hit this street. This is the Live starter.",
+    a: "Retail / age. Dashaun Bryant’s public opener, told honest: “Hey — I’m [name] with [company]. I stopped by to see if you heard what’s been going on in the area.” They ask what’s going on. You tell the truth: “A lot of these houses are on the original roof from around [year]. That’s first-roof age. We’re doing free looks this week. Do you know what year this one went on?” Before the ladder: “We’d both agree this roof is at the age where it’s time to plan a replacement, right?” Close the hook with age + a free look. Do not invent a storm to finish the sentence. Storm talk only if Today has a logged storm that hit this street. This is the Live starter.",
   },
   {
     id: "f_seed_enroll",
@@ -29,7 +29,7 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_age",
     q: "Age first or storm first?",
-    a: "Age first. Target original roofs in the years they set (default 15–22). Script A (claim talk) only after they Keep a storm and it matches that street. If Truck has no weather, do not invent hail, a cell, or “we’re working next door.”",
+    a: "Age first. Target original roofs in the years they set (default 15–22). Script A (claim talk) only after they Keep a storm and it matches that street. If Today has no weather, do not invent hail, a cell, or “we’re working next door.”",
   },
   {
     id: "f_seed_nextdoor",
@@ -64,7 +64,7 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_denied",
     q: "Insurance already said no damage.",
-    a: "Only if a real logged storm hit that street. “They said no. That happens.” Then: we document, the carrier decides, a claim can still be denied. Do not promise a flip. If there is no storm on Truck, stay on age / retail.",
+    a: "Only if a real logged storm hit that street. “They said no. That happens.” Then: we document, the carrier decides, a claim can still be denied. Do not promise a flip. If there is no storm on Today, stay on age / retail.",
   },
   {
     id: "f_seed_agree",
@@ -114,7 +114,7 @@ export const DEFAULT_FAQS: NotionFaq[] = [
   {
     id: "f_seed_win",
     q: "What is a winning day?",
-    a: "One appointment from a day of knocking is a winning day. Empty doors with zero roofs is the critic pretending it worked. Counts live on Truck. After Action Report and tomorrow live on Prep. Ask Roofus how today went on Truck — he names tomorrow from the log. Finish the form on Prep.",
+    a: "One appointment from a day of knocking is a winning day. Empty doors with zero roofs is the critic pretending it worked. Counts live on Today. After Action Report and tomorrow live on Plan. Ask Roofus how today went on Today — he names tomorrow from the log. Finish the form on Plan.",
   },
   {
     id: "f_seed_warranty",

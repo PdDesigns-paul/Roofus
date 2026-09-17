@@ -5,7 +5,7 @@ const TABS = [
   {
     to: "/truck",
     id: "truck",
-    label: "Truck",
+    label: "Today",
     icon: Truck,
     match: (p: string) => p === "/truck" || p === "/today" || p === "/",
   },
@@ -26,7 +26,7 @@ const TABS = [
   {
     to: "/after",
     id: "after",
-    label: "Prep",
+    label: "Plan",
     icon: Map,
     match: (p: string) => p.startsWith("/after") || p.startsWith("/streets"),
   },

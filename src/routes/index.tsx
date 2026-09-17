@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-/** Formerly Home (porch). First Place is Truck. */
+/** Redirect organ. First Place is Today (file truck.tsx). */
 export const Route = createFileRoute("/")({
   beforeLoad: () => {
     throw redirect({ to: "/truck", replace: true });

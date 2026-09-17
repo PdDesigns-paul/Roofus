@@ -33,7 +33,7 @@ describe("reminderDue", () => {
     );
   });
 
-  it("sends storm and journal nags to Prep, not Truck", () => {
+  it("sends storm and journal nags to Plan, not Today", () => {
     const journal = REMINDERS.find((r) => r.id === "journal");
     assert.equal(journal?.to, "/after");
     assert.equal(journal?.hash, "finish");

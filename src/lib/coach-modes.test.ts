@@ -83,9 +83,9 @@ describe("modeBrief", () => {
     assert.match(modeBrief("mindset"), /Truck only/);
     assert.match(modeBrief("live", null, null, null, "setup"), /SETUP/);
   });
-  it("live brief sends the AAR form to Prep, not Truck", () => {
+  it("live brief sends the AAR form to Plan, not Today", () => {
     const live = modeBrief("live");
-    assert.match(live, /After Action Report and tomorrow write on Prep/);
+    assert.match(live, /After Action Report and tomorrow write on Plan/);
     assert.doesNotMatch(live, /on Truck and After/);
     assert.doesNotMatch(live, /AAR lives on Truck/);
   });

@@ -46,6 +46,7 @@ describe("onboard", () => {
     );
     const first = `${ONBOARD_STEPS[0].title} ${ONBOARD_STEPS[0].body}`;
     assert.doesNotMatch(first, /Truck · Door · Roof · Prep/);
+    assert.doesNotMatch(first, /Today · Door · Roof · Plan/);
     assert.doesNotMatch(first, /Keep \/ Toss/);
     assert.doesNotMatch(first, /\bAAR\b/);
     assert.doesNotMatch(first, /Places/);
@@ -67,7 +68,7 @@ describe("onboard", () => {
     assert.equal("sample" in ONBOARD_STEPS[0], false);
   });
 
-  it("shows the dog on the dog slide and sample day lands on Truck", () => {
+  it("shows the dog on the dog slide and sample day lands on Today", () => {
     assert.match(overlay, /current\.id === "dog"/);
     assert.match(overlay, /RoofusFace/);
     assert.match(overlay, /to: "\/truck"/);
@@ -78,17 +79,19 @@ describe("onboard", () => {
 describe("tour copy in the book", () => {
   it("help and the coach name the five job slides", () => {
     const settings = PAGE_HELP.settings.body.join(" ");
-    const home = PAGE_HELP.home.body.join(" ");
+    const today = PAGE_HELP.today.body.join(" ");
     assert.match(settings, /Show the tour plays the five job slides again/);
     assert.match(settings, /outlined pills under the list/);
     assert.doesNotMatch(settings, /question-mark tour/);
-    assert.match(home, /five job slides over the field log/);
-    assert.match(home, /Do not list tab names on slide 1/);
+    assert.match(today, /five job slides over the field log/);
+    assert.match(today, /Do not list tab names on slide 1/);
     assert.match(coachPrompt, /five job slides over the field log/);
     assert.match(coachPrompt, /Do not list tab names on slide 1/);
     assert.match(coachPrompt, /Skip is on every slide/);
     assert.match(coachPrompt, /outlined pills under the list/);
+    assert.match(coachPrompt, /Places: Today, Door, Roof, Plan/);
     assert.doesNotMatch(coachPrompt, /does not auto-play/);
     assert.doesNotMatch(coachPrompt, /five slides over Truck/);
+    assert.doesNotMatch(coachPrompt, /Places: Truck, Door, Roof, Prep/);
   });
 });

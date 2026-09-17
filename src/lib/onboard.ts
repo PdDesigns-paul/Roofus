@@ -1,4 +1,4 @@
-/** First-run sheet over Truck. Stays on this phone. Replay lives in Settings. */
+/** First-run sheet over Today. Stays on this phone. Replay lives in Settings. */
 
 export const ONBOARD_KEY = "roofus-onboard-v1";
 

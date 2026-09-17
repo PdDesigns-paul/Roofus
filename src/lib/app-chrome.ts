@@ -1,6 +1,6 @@
 import type { HelpPageId } from "./page-help.ts";
 
-/** Back only on nested pages. The four Places (Truck · Door · Roof · Prep) have no Back. */
+/** Back only on nested pages. The four Places (Today · Door · Roof · Plan) have no Back. */
 export function showBack(path: string): boolean {
   if (path === "/" || path === "/truck" || path === "/today") return false;
   if (path === "/door" || path.startsWith("/coach/cards")) return false;

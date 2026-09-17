@@ -24,7 +24,7 @@ export const SETUP_ROWS = [
     label: "Pins",
     hint: "Drop a house. Walks form from those pins.",
     path: "/after",
-    ask: "Tell me to open Prep and pin a house, or tap Pin on Truck. You cannot invent zips or addresses in chat. Then wait.",
+    ask: "Tell me to open Plan and pin a house, or tap Pin on Today. You cannot invent zips or addresses in chat. Then wait.",
   },
   {
     id: "hours",
@@ -177,7 +177,7 @@ export function setupScore(snap: SetupSnap): { done: number; total: number; read
   return { done, total: SETUP_ROWS.length, ready: rowDone("territory", snap) };
 }
 
-/** Truck Setup leaves once name, company, and one county exist. */
+/** Today Setup leaves once name, company, and one county exist. */
 export function truckSetupOpen(snap: SetupSnap): boolean {
   return !snap.goBy || !snap.company || !snap.counties;
 }

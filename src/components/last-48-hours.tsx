@@ -12,7 +12,7 @@ function leadIsKept(lead: PulseLead, keptLine: string) {
   return Boolean(say) && keptLine.includes(say);
 }
 
-/** Keep / Toss lives on Prep. Truck may show one kept sentence. */
+/** Keep / Toss lives on Plan. Today may show one kept sentence. */
 export function Last48Hours({
   pulse,
   pending,

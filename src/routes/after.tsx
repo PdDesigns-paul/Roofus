@@ -41,7 +41,7 @@ import {
 import { mentionOnStreet } from "@/lib/weather-match";
 import { useWeather } from "@/lib/weather-store";
 
-/** Prep is the map. Route stays /after. Walks form from pins. */
+/** Plan is the map. Route stays /after. Walks form from pins. */
 export const Route = createFileRoute("/after")({
   codeSplitGroupings: [],
   component: AfterPage,
@@ -191,10 +191,10 @@ function AfterPage() {
   if (!profile.setupDone) {
     return (
       <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-        <AppHeader title="Prep" />
+        <AppHeader title="Plan" />
         <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where you knock.</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted">
-          Night-before and morning. Pin from Truck, or search a zip. Walks form from the houses you mark. Counties in
+          Night-before and morning. Pin from Today, or search a zip. Walks form from the houses you mark. Counties in
           Settings are for storms, not a hunt rebuild.
         </p>
         <Link
@@ -219,7 +219,7 @@ function AfterPage() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <AppHeader title="Prep" />
+      <AppHeader title="Plan" />
       <ul className="mt-4 flex flex-col gap-3">
         <PlaceCard
           id="hunt"
@@ -230,7 +230,7 @@ function AfterPage() {
               ? loopHeadline(working[0])
               : loops.length
                 ? `${loops.length} loop${loops.length === 1 ? "" : "s"}`
-                : "Pin from Truck, or search a zip"
+                : "Pin from Today, or search a zip"
           }
           open={huntOpen}
           onToggle={() => setHuntOpen((v) => !v)}
@@ -377,7 +377,7 @@ function AfterPage() {
           </div>
 
           {!loops.length ? (
-            <p className="mt-6 text-sm leading-relaxed text-muted">Pin from Truck, or search a zip.</p>
+            <p className="mt-6 text-sm leading-relaxed text-muted">Pin from Today, or search a zip.</p>
           ) : null}
 
           {morning ? (

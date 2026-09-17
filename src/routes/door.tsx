@@ -102,7 +102,7 @@ function Door() {
         {" · "}
         {strip.pinNeeded ? (
           <Link to="/truck" className="text-fg underline underline-offset-4">
-            Pin this house on Truck.
+            Pin this house on Today.
           </Link>
         ) : (
           <Link to={strip.placeGo} className="text-fg underline underline-offset-4">
