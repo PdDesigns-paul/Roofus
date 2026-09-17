@@ -14,6 +14,7 @@ export type StreamCoachInput = {
   companyWebsite?: string;
   companySiteBrief?: string;
   companySitePages?: { title: string; look: string; url: string }[];
+  companyPackets?: { title: string; kind: string; notes: string; extracted: string }[];
   imageDataUrl?: string;
   dayBook?: string;
   workingLoop?: {

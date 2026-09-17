@@ -57,7 +57,7 @@ export const PAGE_HELP = {
     title: "Settings",
     body: [
       "Settings is a list of pages. You, Territory, Hours, Mindset, Reminders, Backup. Each row is a Go — title, hint, chevron. Prep is its own tab, not a row here. Back on every sub page.",
-      "You: first name, company, website, warranty. Paste a URL — we crawl it in the background. Pages land in Reference. He uses those notes when he talks product.",
+      "You: first name, company, website, warranty, packets. Paste a URL — we crawl it in the background. Pages land in Reference. Photo or File under the website: flyer, form, warranty, other. Type the porch line in notes. He quotes saved text only. No text, no “I read your flyer.”",
       "Territory: counties and a state. Counties are for storms. Pins make the walks. Hours: when you knock, morning work, hard stop.",
       "Reminders: morning storm if empty, evening After Action Report if blank, Sundays pace, the 1st talent stack. Did it is a chip. Finish-setup is Settings, not a nag.",
       "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report lives on Prep.",

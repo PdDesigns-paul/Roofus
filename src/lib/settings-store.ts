@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { siteHost, type CompanyPage } from "./company-site.ts";
+import { addPacket, packetBytes, type CompanyPacket } from "./company-packets.ts";
 
 export type ThemeMode = "light" | "dark";
 
@@ -14,6 +15,8 @@ type SettingsState = {
   companySitePages: CompanyPage[];
   companySiteReading: boolean;
   companySiteError: string;
+  companyPackets: CompanyPacket[];
+  companyPacketError: string;
   setTheme: (theme: ThemeMode) => void;
   toggleTheme: () => void;
   setCompanyName: (v: string) => void;
@@ -23,6 +26,10 @@ type SettingsState = {
   setCompanySiteReading: (v: boolean) => void;
   setCompanySiteError: (v: string) => void;
   setCompanySiteRead: (v: { url: string; brief: string; pages: CompanyPage[] }) => void;
+  addCompanyPacket: (packet: CompanyPacket) => string;
+  patchCompanyPacket: (id: string, patch: Partial<Omit<CompanyPacket, "id" | "addedAt">>) => void;
+  dropCompanyPacket: (id: string) => void;
+  setCompanyPacketError: (v: string) => void;
 };
 
 export function applyTheme(theme: ThemeMode) {
@@ -44,6 +51,8 @@ export const useSettings = create<SettingsState>()(
       companySitePages: [],
       companySiteReading: false,
       companySiteError: "",
+      companyPackets: [],
+      companyPacketError: "",
       setTheme: (theme) => {
         applyTheme(theme);
         set({ theme });
@@ -90,6 +99,25 @@ export const useSettings = create<SettingsState>()(
           companySiteReading: false,
           companySiteError: "",
         }),
+      addCompanyPacket: (packet) => {
+        const { packets, error } = addPacket(get().companyPackets, packet);
+        set({ companyPackets: packets, companyPacketError: error });
+        return error;
+      },
+      patchCompanyPacket: (id, patch) => {
+        const packets = (get().companyPackets ?? []).map((p) => {
+          if (p.id !== id) return p;
+          const next = { ...p, ...patch };
+          return { ...next, bytes: packetBytes(next) };
+        });
+        set({ companyPackets: packets });
+      },
+      dropCompanyPacket: (id) =>
+        set({
+          companyPackets: (get().companyPackets ?? []).filter((p) => p.id !== id),
+          companyPacketError: "",
+        }),
+      setCompanyPacketError: (companyPacketError) => set({ companyPacketError }),
     }),
     {
       name: "roofus-settings",
@@ -100,7 +128,16 @@ export const useSettings = create<SettingsState>()(
         companyWebsite: s.companyWebsite,
         companySiteBrief: s.companySiteBrief,
         companySitePages: s.companySitePages,
+        companyPackets: s.companyPackets,
       }),
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<SettingsState>;
+        return {
+          ...current,
+          ...p,
+          companyPackets: Array.isArray(p.companyPackets) ? p.companyPackets : [],
+        };
+      },
       onRehydrateStorage: () => (state) => {
         if (typeof window !== "undefined" && !localStorage.getItem("roofus-dark-v2")) {
           localStorage.setItem("roofus-dark-v2", "1");

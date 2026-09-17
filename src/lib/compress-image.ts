@@ -1,6 +1,11 @@
-export async function compressImage(file: File): Promise<string> {
+export async function compressImage(
+  file: File,
+  opts?: { max?: number; maxChars?: number; hard?: number },
+): Promise<string> {
+  const max = opts?.max ?? 2048;
+  const maxChars = opts?.maxChars ?? 900_000;
+  const hard = opts?.hard ?? 1_100_000;
   const bitmap = await blobToImage(file);
-  const max = 2048;
   let w = bitmap.width;
   let h = bitmap.height;
   if (w > max || h > max) {
@@ -17,11 +22,17 @@ export async function compressImage(file: File): Promise<string> {
   if ("close" in bitmap && typeof bitmap.close === "function") bitmap.close();
   let quality = 0.84;
   let url = canvas.toDataURL("image/jpeg", quality);
-  while (url.length > 900_000 && quality > 0.55) {
+  while (url.length > maxChars && quality > 0.45) {
     quality -= 0.08;
     url = canvas.toDataURL("image/jpeg", quality);
   }
-  if (url.length > 1_100_000) throw new Error("Photo is too heavy. Back up a step and shoot again.");
+  if (url.length > hard) {
+    throw new Error(
+      opts
+        ? "Photo is too heavy. Drop one packet, or skip the photo and type the line."
+        : "Photo is too heavy. Back up a step and shoot again.",
+    );
+  }
   return url;
 }
 

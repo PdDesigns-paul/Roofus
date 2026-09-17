@@ -14,7 +14,7 @@ export const Route = createFileRoute("/settings/")({
 });
 
 const PAGES = [
-  { to: "/settings/you", label: "You", hint: "First name, company, website, warranty" },
+  { to: "/settings/you", label: "You", hint: "First name, company, website, packets, warranty" },
   { to: "/settings/territory", label: "Territory", hint: "Counties and state" },
   { to: "/settings/hours", label: "Hours", hint: "When you knock" },
   { to: "/settings/mindset", label: "Mindset", hint: "Why, demon, Pace, stack" },

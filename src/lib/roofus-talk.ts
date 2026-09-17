@@ -110,6 +110,12 @@ export async function sendRoofus(
         companyWebsite: settings.companyWebsite,
         companySiteBrief: settings.companySiteBrief,
         companySitePages: settings.companySitePages,
+        companyPackets: (settings.companyPackets ?? []).map((p) => ({
+          title: p.title,
+          kind: p.kind,
+          notes: p.notes,
+          extracted: p.extracted,
+        })),
         imageDataUrl: opts?.imageDataUrl,
         dayBook: [
           dayBookForCoach(),
