@@ -29,29 +29,29 @@ export function subscribeOnboard(fn: Listener): () => void {
 
 export const ONBOARD_STEPS = [
   {
-    id: "places",
-    title: "The day",
-    body: "Truck · Door · Roof · Prep. Truck is today’s log. Prep is night-before and morning: loops, Keep / Toss, After Action Report.",
+    id: "you",
+    title: "You",
+    body: "This log is yours. Type your name and company in Setup on this page when you close this.",
+  },
+  {
+    id: "house",
+    title: "This house",
+    body: "Stand at a house. Tap Pin. Put the year and a note.",
   },
   {
     id: "door",
-    title: "Door",
-    body: "Pocket cards. First knock is age and a free look. Not a storm story unless you Kept one.",
+    title: "The door",
+    body: "First knock is the age of the roof and a free look. Not a storm story unless you kept one.",
   },
   {
-    id: "roof",
-    title: "Roof",
-    body: "Walk this house, then this shot. The dog hides so you can take the picture.",
-  },
-  {
-    id: "roofus",
-    title: "That’s Roofus",
-    body: "Gold button. Dog face. Tap Live, Roleplay, or Mindset. Hold starts Live.",
+    id: "dog",
+    title: "The dog",
+    body: "Gold button. Tap Live, Roleplay, or Mindset. Hold starts Live.",
   },
   {
     id: "age",
     title: "Age first",
-    body: "Name weather only if you Kept it. The question mark is how this page works. Settings holds the book.",
+    body: "Name weather only if you kept it. ? in the header is how this page works.",
     sample: true,
   },
 ] as const;

@@ -2,7 +2,7 @@
 
 **This file is the UI contract.** Porch words stay in [`DOCTRINE.md`](./DOCTRINE.md). How a canvasser *sees* what to tap lives here.
 
-Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Streets Near me / scout tags and Use today as a chip shipped. **Places are Truck · Door · Roof · Prep.** After became Prep. Truck is the field log. First-run is a 5-slide sheet over Truck. Door pocket cards fill You and ship Hear this line. Settings index is chevron Go rows; tour and sample day are outlined pills under the list. Do not invent a sixth control type.
+Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Streets Near me / scout tags and Use today as a chip shipped. **Places are Truck · Door · Roof · Prep.** After became Prep. Truck is the field log. First-run is five job slides over the field log (who I am, pin, the door, the dog, age first) — no tab names on slide 1. Door pocket cards fill You and ship Hear this line. Settings index is chevron Go rows; tour and sample day are outlined pills under the list. Do not invent a sixth control type.
 
 Agents: read this before you touch tabs, the FAB, Truck links, setup rows, or `src/components/ui/`.
 
@@ -127,7 +127,7 @@ Tab word is **Prep**. Route stays `/after`. Hint: night-before + morning. Not a 
 
 ### Slice 8 — first-run tour — shipped
 
-Five-slide sheet over Truck. Skip on every slide. Plays once when `roofus-onboard-v1` is missing. Replay is **Show the tour** in Settings. Last slide may offer Load a sample day on an empty book — no sample storm. Replaces the 3-dot spotlight. Not a `/tour` route. Not the PWA install tutorial.
+Five job slides over the field log: who I am, drop a pin, what to say at the door, talk to the dog, age first. Do not list tab names on slide 1. Skip on every slide. Plays once when `roofus-onboard-v1` is missing. Replay is **Show the tour** in Settings. Last slide may offer Load a sample day on an empty book — lands on `/truck`, no sample storm. Replaces the 3-dot spotlight. Not a `/tour` route. Not the PWA install tutorial.
 
 Out of scope for this plan: new facets, login, a design-token package, Playwright, restyling every page a different way.
 

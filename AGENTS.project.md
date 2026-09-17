@@ -28,7 +28,7 @@ GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at 
 
 ## Product (short)
 
-Phone-first PWA. First screen is Truck. First open is a 5-slide sheet over Truck — Skip on every slide; replay in Settings. Bottom bar: Truck · Door · Roof · Prep. Help and Menu live in the header; one tab bar; Back only on Settings, Reference, and nested settings pages. Do not invent a third layout.
+Phone-first PWA. First screen is Truck. First open is five job slides over the field log: who I am, drop a pin, what to say at the door, talk to the dog, age first. Do not list tab names on slide 1. Skip on every slide; replay in Settings. Bottom bar: Truck · Door · Roof · Prep. Help and Menu live in the header; one tab bar; Back only on Settings, Reference, and nested settings pages. Do not invent a third layout.
 
 Settings holds the book (You, territory, hours, mindset, reminders, backup). Empty book: setup card on Truck (name, company, counties). Reminders nag on open: morning storm, evening journal, Sundays pace, the 1st stack — only if that box is empty. Finish-setup is Settings, not a nag. No lock-screen.
 

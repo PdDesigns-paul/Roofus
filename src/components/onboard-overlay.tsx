@@ -70,7 +70,7 @@ export function OnboardOverlay() {
           {step + 1} of {ONBOARD_STEPS.length}
         </p>
         <div className="flex min-h-0 flex-1 flex-col justify-center">
-          {current.id === "roofus" ? (
+          {current.id === "dog" ? (
             <RoofusFace className="mx-auto mb-5 size-48" />
           ) : null}
           <h2 id="tour-title" className="font-display text-3xl leading-tight">
@@ -101,7 +101,7 @@ export function OnboardOverlay() {
             onClick={() => {
               loadDemo();
               finish();
-              void navigate({ to: "/after" });
+              void navigate({ to: "/truck" });
             }}
           >
             Load a sample day
