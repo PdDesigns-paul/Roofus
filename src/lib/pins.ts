@@ -51,7 +51,64 @@ export type HousePin = {
   walkIndex: number;
   createdAt: string;
   updatedAt: string;
+  /** Which Today tiles this pin already wrote on `day`. Not a pipeline. */
+  countedAs: PinCountedAs;
 };
+
+export type PinCountKey = "knocks" | "talks" | "looks" | "sets";
+
+export type PinCountedAs = {
+  day: string;
+  knocks: boolean;
+  talks: boolean;
+  looks: boolean;
+  sets: boolean;
+};
+
+export type PinCountBump = Partial<Record<PinCountKey, 1>>;
+
+export function blankCountedAs(day = ""): PinCountedAs {
+  return { day, knocks: false, talks: false, looks: false, sets: false };
+}
+
+export function asCountedAs(v: unknown): PinCountedAs {
+  if (!v || typeof v !== "object") return blankCountedAs();
+  const o = v as Record<string, unknown>;
+  const day = s(o.day).slice(0, 10);
+  return {
+    day: /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : "",
+    knocks: Boolean(o.knocks),
+    talks: Boolean(o.talks),
+    looks: Boolean(o.looks),
+    sets: Boolean(o.sets),
+  };
+}
+
+/** revisit / skip / blank write nothing. Toggle off does not subtract. */
+export function countKeysForStatus(status: PinStatusOrBlank): PinCountKey[] {
+  if (status === "no-answer") return ["knocks"];
+  if (status === "talked") return ["knocks", "talks"];
+  if (status === "look") return ["knocks", "looks"];
+  if (status === "set") return ["knocks", "sets"];
+  return [];
+}
+
+/** First write of each tile for this pin on this local day. A new day can count again. */
+export function applyPinCount(
+  countedAs: PinCountedAs | undefined,
+  status: PinStatusOrBlank,
+  today: string,
+): { countedAs: PinCountedAs; bump: PinCountBump } {
+  const prev = countedAs?.day === today ? countedAs : blankCountedAs(today);
+  const next: PinCountedAs = { ...prev, day: today };
+  const bump: PinCountBump = {};
+  for (const key of countKeysForStatus(status)) {
+    if (next[key]) continue;
+    next[key] = true;
+    bump[key] = 1;
+  }
+  return { countedAs: next, bump };
+}
 
 export const MAX_BACKUP_PINS = 500;
 
@@ -140,6 +197,7 @@ export function makePin(input: {
     walkIndex: 0,
     createdAt: now,
     updatedAt: now,
+    countedAs: blankCountedAs(),
   });
 }
 
@@ -170,6 +228,7 @@ export function restorePin(raw: unknown): HousePin | null {
     walkIndex: Math.max(0, Math.round(n(o.walkIndex))),
     createdAt: s(o.createdAt) || new Date().toISOString(),
     updatedAt: s(o.updatedAt) || s(o.createdAt) || new Date().toISOString(),
+    countedAs: asCountedAs(o.countedAs),
   });
 }
 
@@ -195,6 +254,7 @@ export function serializePin(p: HousePin): HousePin {
     walkIndex: Math.max(0, Math.round(n(p.walkIndex))),
     createdAt: s(p.createdAt),
     updatedAt: s(p.updatedAt),
+    countedAs: asCountedAs(p.countedAs),
   };
 }
 
@@ -300,6 +360,7 @@ export function mergePins(current: HousePin[], incoming: HousePin[]): HousePin[]
       walkIndex: cur.walkIndex || next.walkIndex,
       createdAt: cur.createdAt || next.createdAt,
       updatedAt: cur.updatedAt || next.updatedAt,
+      countedAs: cur.countedAs.day ? cur.countedAs : next.countedAs,
     });
   }
   return [...have.values()].slice(0, MAX_BACKUP_PINS);

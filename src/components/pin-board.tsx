@@ -1,5 +1,6 @@
 import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
+import { localDateKey, useDayBook } from "@/lib/day-book";
 import {
   pinDirectionsUrl,
   pinMapsUrl,
@@ -8,6 +9,7 @@ import {
   pinZillowUrl,
 } from "@/lib/maps-url";
 import {
+  applyPinCount,
   CURB_TAGS,
   PIN_STATUSES,
   PIN_STATUS_LABEL,
@@ -18,6 +20,7 @@ import {
   pinLabel,
   pinsForLoop,
   type CurbTag,
+  type PinCountKey,
   type PinStatus,
   type RoofLook,
 } from "@/lib/pins";
@@ -92,7 +95,14 @@ export function PinCard({ pin }: { pin: HousePin }) {
   const redfin = pinRedfinUrl(pin);
 
   function setStatus(status: PinStatus) {
-    update(pin.id, { status: pin.status === status ? "" : status });
+    const cur = usePins.getState().pins.find((p) => p.id === pin.id) ?? pin;
+    const nextStatus = cur.status === status ? "" : status;
+    const { countedAs, bump } = applyPinCount(cur.countedAs, nextStatus, localDateKey());
+    update(cur.id, { status: nextStatus, countedAs });
+    const credit = useDayBook.getState().bump;
+    (["knocks", "talks", "looks", "sets"] as PinCountKey[]).forEach((key) => {
+      if (bump[key]) credit(key, 1);
+    });
   }
 
   function toggleTag(tag: CurbTag) {

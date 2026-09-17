@@ -2,7 +2,7 @@ export const PAGE_HELP = {
   today: {
     title: "Today",
     body: [
-      "First time: name, company, one county on this page if those are blank. Then Setup leaves Today. Hours live in Settings. Working loop is one line plus Cards. Pin on this page drops GPS and opens the house editor here (address, year, status, note, roof look). Works with no Working loop. Next door is the next blank pin on that walk. Four counts sit on this page. First open is five job slides over the field log: who I am, drop a pin, what to say at the door, talk to the dog, age first. Do not list tab names on slide 1. Skip is on every slide.",
+      "First time: name, company, one county on this page if those are blank. Then Setup leaves Today. Hours live in Settings. Working loop is one line plus Cards. Pin on this page drops GPS and opens the house editor here (address, year, status, note, roof look). Works with no Working loop. Next door is the next blank pin on that walk. Four counts sit on this page. Pin status writes the matching Today count once. Tiles still work without a pin. First open is five job slides over the field log: who I am, drop a pin, what to say at the door, talk to the dog, age first. Do not list tab names on slide 1. Skip is on every slide.",
       "One weather sentence, read-only from Keep or Use today. Night opens Finish the day on Plan. Formula reads AAR · blank or AAR · done. No After Action Report fields here. Wins, better, and tomorrow live on Plan. No Keep / Toss on Today. No plan chips. No weather box. The map and the long board stay on Plan.",
       "Pick the Working loop on Plan (Use today). Ask Roofus how today went is an outline. Pin is the action on this page. Pin still works on an empty book.",
     ],

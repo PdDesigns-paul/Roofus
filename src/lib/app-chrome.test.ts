@@ -51,6 +51,7 @@ describe("helpPageFor", () => {
     assert.match(PAGE_HELP.today.body.join(" "), /No Keep \/ Toss on Today/);
     assert.match(PAGE_HELP.today.body.join(" "), /No After Action Report fields here/);
     assert.match(PAGE_HELP.today.body.join(" "), /opens the house editor here/);
+    assert.match(PAGE_HELP.today.body.join(" "), /Pin status writes the matching Today count once/);
     assert.match(PAGE_HELP.today.body.join(" "), /five job slides over the field log/);
     assert.doesNotMatch(PAGE_HELP.today.body.join(" "), /Go to Prep/);
     assert.doesNotMatch(PAGE_HELP.today.body.join(" "), /filled Do/);

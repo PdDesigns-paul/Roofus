@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
+  applyPinCount,
   lastPinOnLoop,
   makePin,
   mergePins,
@@ -42,6 +43,7 @@ describe("restorePin / serializePin", () => {
     assert.equal(out?.status, "");
     assert.equal(out?.source, "truck");
     assert.ok(out?.id);
+    assert.equal(out?.countedAs.knocks, false);
   });
 
   it("drops owner / phone / parcel so the type cannot grow PII", () => {
@@ -196,6 +198,57 @@ describe("streetNameOf", () => {
     assert.equal(streetNameOf({ address: "12 Oak Street", houseNumber: "" }), "Oak Street");
     assert.equal(streetNameOf({ address: "Oak Street", houseNumber: "" }), "Oak Street");
     assert.equal(streetNameOf({ address: "", houseNumber: "12" }), "");
+  });
+});
+
+describe("applyPinCount", () => {
+  const day = "2026-09-17";
+
+  it("talked writes Doors and Talked once", () => {
+    const a = applyPinCount(undefined, "talked", day);
+    assert.deepEqual(a.bump, { knocks: 1, talks: 1 });
+    const again = applyPinCount(a.countedAs, "talked", day);
+    assert.deepEqual(again.bump, {});
+    const off = applyPinCount(again.countedAs, "", day);
+    assert.deepEqual(off.bump, {});
+    const onAgain = applyPinCount(off.countedAs, "talked", day);
+    assert.deepEqual(onAgain.bump, {});
+  });
+
+  it("look after talked only adds On the roof", () => {
+    const a = applyPinCount(undefined, "talked", day);
+    const b = applyPinCount(a.countedAs, "look", day);
+    assert.deepEqual(b.bump, { looks: 1 });
+  });
+
+  it("no-answer only doors; revisit and skip write nothing", () => {
+    const a = applyPinCount(undefined, "no-answer", day);
+    assert.deepEqual(a.bump, { knocks: 1 });
+    assert.deepEqual(applyPinCount(a.countedAs, "revisit", day).bump, {});
+    assert.deepEqual(applyPinCount(undefined, "skip", day).bump, {});
+  });
+
+  it("set writes Doors and Appointments, not Talked", () => {
+    const a = applyPinCount(undefined, "set", day);
+    assert.deepEqual(a.bump, { knocks: 1, sets: 1 });
+    assert.equal(a.countedAs.talks, false);
+  });
+
+  it("a new calendar day can count again", () => {
+    const a = applyPinCount(undefined, "talked", "2026-09-16");
+    const b = applyPinCount(a.countedAs, "talked", day);
+    assert.deepEqual(b.bump, { knocks: 1, talks: 1 });
+    assert.equal(b.countedAs.day, day);
+  });
+
+  it("roundtrips countedAs on the pin, not as PII", () => {
+    const pin = makePin({ lat: 1, lng: 2 });
+    const { countedAs } = applyPinCount(pin.countedAs, "talked", day);
+    const saved = serializePin({ ...pin, countedAs, status: "talked" });
+    const out = restorePin(saved);
+    assert.equal(out?.countedAs.day, day);
+    assert.equal(out?.countedAs.talks, true);
+    assert.equal(out && "owner" in out, false);
   });
 });
 
