@@ -66,7 +66,7 @@ export function AskFab() {
   if (onRoof || sheetOpen) return null;
 
   const fabBottom = "calc(5.5rem + env(safe-area-inset-bottom))";
-  const fanBottom = "calc(9.5rem + env(safe-area-inset-bottom))";
+  const fanBottom = "calc(11rem + env(safe-area-inset-bottom))";
 
   return (
     <div ref={root}>
@@ -99,7 +99,7 @@ export function AskFab() {
           aria-label="Talk to Roofus"
           aria-haspopup="menu"
           aria-expanded={fan}
-          className="fixed right-4 z-40 flex size-14 items-center justify-center overflow-hidden rounded-full bg-accent text-paper shadow-lg ring-2 ring-paper/40"
+          className="fixed right-4 z-40 flex size-20 items-center justify-center overflow-hidden rounded-full bg-accent text-paper shadow-lg ring-2 ring-paper/40"
           style={{ bottom: fabBottom }}
           onPointerDown={onDown}
           onPointerUp={onUp}
@@ -109,7 +109,7 @@ export function AskFab() {
           }}
           onContextMenu={(e) => e.preventDefault()}
         >
-          <RoofusFace alt="" className="size-10" />
+          <RoofusFace alt="" className="size-16" />
         </button>
       </Tip>
     </div>

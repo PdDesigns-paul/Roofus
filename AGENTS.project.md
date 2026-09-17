@@ -54,6 +54,8 @@ Full book: [`SIGNIFIERS.md`](./SIGNIFIERS.md). Five types. No sixth.
 | **Go** | Underlined text, or a row with a chevron. Leaves this screen. |
 | **Talk** | Orange FAB. Dog face. Fan for mode. Hold starts Live. |
 
+RoofusFace is not size-10.
+
 Buttons do. Links go. Chips fork the current task. Ban ghost text (`Ask`, `Did it`, `Pocket cards` as 12px muted captions) in content. Always underline Go links — `hover:underline` is a desktop lie.
 
 Do not add a design-token package or 19 button variants. Do not make everything orange. Do not restyle a page before the kit in Slice 1 exists.

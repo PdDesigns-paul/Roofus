@@ -3,7 +3,7 @@ export const PAGE_HELP = {
     title: "Roofus",
     body: [
       "Bottom: Truck, Door, Roof, Prep. Setup lives in Settings — name, company, counties. Tell Roofus writes those fields. Truck is the field log. First open is five slides over Truck. Skip is on every slide.",
-      "The gold button is Roofus — dog face. Tap to pick Live, Roleplay, or Mindset. Hold starts Live. History is the clock in the chat. ? and Menu live in the header. Menu: Reference, Settings.",
+      "The gold button is Roofus — dog face, thumb-sized. Tap to pick Live, Roleplay, or Mindset. Hold starts Live. History is the clock in the chat. ? and Menu live in the header. Menu: Reference, Settings.",
       "Back is in the header on Settings, Reference, and nested settings pages. Put the app on your Home Screen so the tile says Roofus and shows the dog.",
     ],
   },
@@ -68,7 +68,7 @@ export const PAGE_HELP = {
   coach: {
     title: "Roofus",
     body: [
-      "Tap the orange button to pick a mode. That starts a fresh chat. Live, Roleplay, Mindset. Hold starts Live. Live’s first starter is the million-dollar script. The dog in the corner is him. History is the clock at the bottom. Tags by color.",
+      "Tap the orange button to pick a mode. That starts a fresh chat. Live, Roleplay, Mindset. Hold starts Live. Live’s first starter is the million-dollar script. The dog in the header is him — big enough to read in sun. History is the clock at the bottom. Tags by color.",
       "Roleplay: pick a beat at the bottom (Walk-up, They push, After photos, The set, Whole visit), who they are, then knock. Hold the mic. Score me grades it. Hear it plays his line. Practice only — do not record a homeowner.",
       "Mindset is truck only. Worksheets are in Settings → Mindset. Camera is the Roof page. X closes him. The day is still underneath.",
     ],

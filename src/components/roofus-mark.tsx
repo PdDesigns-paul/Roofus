@@ -1,7 +1,7 @@
-/** Porch-dog face. The faded mark lives in chat so they can see who they're talking to. */
+/** Porch-dog face. Default is 56px — never ship a 40px chip as the brand face. */
 
 export function RoofusFace({
-  className = "size-10",
+  className = "size-14",
   alt = "Roofus",
 }: {
   className?: string;

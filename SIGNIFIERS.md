@@ -37,7 +37,7 @@ One shape, one promise. If you cannot name the type, the user cannot either.
 | **Do** | Pill, 48–56px. Primary = filled (`bg-fg text-paper`, or `bg-accent` when the verb is talk to Roofus). Secondary = outlined on a solid surface, same height. | One tap, something happens *here*. | Ask how today went, Pin, +, Got it, Tell Roofus, −, Load sample, Not now | Navigation a tab or Menu already owns |
 | **Toggle a token** | Chip. Idle = outline + `text-fg`. Selected / done = `bg-accent` + black type. | A token I can snap on or dismiss. | Did it, Use today, loop on the plan, Live / Roleplay / Mindset fan | The screen’s primary close |
 | **Go** | Always-underlined text, **or** a 56px row with title + hint + chevron. | I will *leave this screen*. | Prep, maps label, Settings (bottom of Prep), setup rows that open a page | Anything that writes today’s log |
-| **Talk** | Gold FAB. Dog face (`RoofusFace`), not a generic chat bubble. Tap fans three chips. Hold starts Live. Hidden on Roof and while the sheet is open. | The coach. | Live / Roleplay / Mindset | A second FAB |
+| **Talk** | Gold FAB, 64–80px circle. Dog face (`RoofusFace`) fills it — FAB face ≥ 56px, tour face ≥ 160px. Not `size-10`. Not a generic chat bubble. Tap fans three chips. Hold starts Live. Hidden on Roof and while the sheet is open. | The coach. | Live / Roleplay / Mindset | A second FAB |
 
 Buttons **do**. Links **go**. Chips **fork the current task**. Tabs **are places**. The FAB **is Roofus**.
 

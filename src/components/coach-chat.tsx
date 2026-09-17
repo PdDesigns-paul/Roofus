@@ -95,7 +95,7 @@ export function CoachChat({ embedded = false }: { embedded?: boolean }) {
             <X className="size-5" />
           </button>
           <div className="flex items-center gap-2 text-sm text-muted">
-            <RoofusFace className="size-10" alt="" />
+            <RoofusFace className="size-14" alt="" />
             <span className="font-medium text-fg">Roofus</span>
             <span className="text-faint">· {mode.label}</span>
           </div>

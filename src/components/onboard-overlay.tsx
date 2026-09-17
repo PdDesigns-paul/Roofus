@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { RoofusFace } from "@/components/roofus-mark";
 import { useDayBook } from "@/lib/day-book";
 import { loadDemo } from "@/lib/demo-data";
 import { isOnboardDone, markOnboardDone, ONBOARD_STEPS, subscribeOnboard } from "@/lib/onboard";
@@ -69,6 +70,9 @@ export function OnboardOverlay() {
           {step + 1} of {ONBOARD_STEPS.length}
         </p>
         <div className="flex min-h-0 flex-1 flex-col justify-center">
+          {current.id === "roofus" ? (
+            <RoofusFace className="mx-auto mb-5 size-48" />
+          ) : null}
           <h2 id="tour-title" className="font-display text-3xl leading-tight">
             {current.title}
           </h2>
