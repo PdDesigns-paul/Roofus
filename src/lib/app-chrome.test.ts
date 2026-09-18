@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { helpPageFor, hideTalk, showBack } from "./app-chrome.ts";
-import { PAGE_HELP } from "./page-help.ts";
+import { HELP_ID_ALIAS, PAGE_HELP } from "./page-help.ts";
 
 describe("showBack", () => {
   it("hides Back on the four Places", () => {
@@ -35,18 +35,18 @@ describe("helpPageFor", () => {
     assert.equal(helpPageFor("/"), "today");
     assert.equal(helpPageFor("/truck"), "today");
     assert.equal(helpPageFor("/today"), "today");
-    assert.equal(helpPageFor("/after"), "streets");
-    assert.equal(helpPageFor("/streets"), "streets");
+    assert.equal(helpPageFor("/after"), "plan");
+    assert.equal(helpPageFor("/streets"), "plan");
     assert.equal(helpPageFor("/roof"), "roof");
     assert.equal(helpPageFor("/coach/inspect"), "roof");
     assert.equal(PAGE_HELP.roof.title, "Roof");
-    assert.match(PAGE_HELP.streets.body.join(" "), /After Action Report/);
-    assert.match(PAGE_HELP.streets.body.join(" "), /Settings is a Go at the bottom/);
-    assert.match(PAGE_HELP.streets.body.join(" "), /Morning/);
-    assert.match(PAGE_HELP.streets.body.join(" "), /Finish the day owns the night form/);
+    assert.match(PAGE_HELP.plan.body.join(" "), /After Action Report/);
+    assert.match(PAGE_HELP.plan.body.join(" "), /Settings is a Go at the bottom/);
+    assert.match(PAGE_HELP.plan.body.join(" "), /Morning/);
+    assert.match(PAGE_HELP.plan.body.join(" "), /Finish the day owns the night form/);
     assert.equal(PAGE_HELP.today.title, "Today");
-    assert.equal(PAGE_HELP.streets.title, "Plan");
-    assert.match(PAGE_HELP.streets.body.join(" "), /Keep \/ Toss lives here/);
+    assert.equal(PAGE_HELP.plan.title, "Plan");
+    assert.match(PAGE_HELP.plan.body.join(" "), /Keep \/ Toss lives here/);
     assert.match(PAGE_HELP.today.body.join(" "), /Night opens Finish the day on Plan/);
     assert.match(PAGE_HELP.today.body.join(" "), /No Keep \/ Toss on Today/);
     assert.match(PAGE_HELP.today.body.join(" "), /No After Action Report fields here/);
@@ -68,10 +68,14 @@ describe("helpPageFor", () => {
     assert.doesNotMatch(PAGE_HELP.settings.body.join(" "), /question-mark tour/);
     assert.match(PAGE_HELP.mindset.body.join(" "), /After Action Report lives on Plan/);
     assert.doesNotMatch(PAGE_HELP.mindset.body.join(" "), /on Truck and After/);
-    assert.match(PAGE_HELP.cards.body.join(" "), /Claim path/);
+    assert.match(PAGE_HELP.door.body.join(" "), /Claim path/);
     assert.equal(helpPageFor("/settings/you"), "settings");
     assert.equal(helpPageFor("/settings/mindset"), "settings");
-    assert.equal(helpPageFor("/door"), "cards");
-    assert.equal(helpPageFor("/coach/cards"), "cards");
+    assert.equal(helpPageFor("/door"), "door");
+    assert.equal(helpPageFor("/coach/cards"), "door");
+    assert.ok(!("streets" in PAGE_HELP));
+    assert.ok(!("cards" in PAGE_HELP));
+    assert.equal(HELP_ID_ALIAS.streets, "plan");
+    assert.equal(HELP_ID_ALIAS.cards, "door");
   });
 });

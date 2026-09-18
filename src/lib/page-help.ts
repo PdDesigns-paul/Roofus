@@ -7,7 +7,7 @@ export const PAGE_HELP = {
       "Pick the Working loop on Plan (Use today). Ask Roofus how today went is an outline. Pin is the action on this page. Pin still works on an empty book.",
     ],
   },
-  streets: {
+  plan: {
     title: "Plan",
     body: [
       "Night-before and morning. Not a fifth Place. Where you knock is the map — drop pins, search a zip, drag onto the house. Satellite is on so you can see the roof; chip off for the street drawing. Walks form from distance. Default open until a Working loop exists. Year filter (all / in band / no year) uses years you typed. Default targeting 15–22. Tap Change. Chips pick a band. From and To take the number when you leave the field, not on the first digit. Each card is a park-once walk of pins. Working sits at the top. Search a loop, street, or zip. Empty match says so. Near me is a chip — it sorts walks you already have. Empty book does not invent a zip. Map key missing: pins still save.",
@@ -15,7 +15,7 @@ export const PAGE_HELP = {
       "Finish the day owns the night form. After Action Report and Tomorrow I start at live here only. Night on Today opens Finish the day here. Same store. Open a loop: that card is the pin board in walking order. Revisit is a chip — houses to come back to, across loops. Settings is a Go at the bottom, not a fifth tab. Pick tomorrow. Finish the journal. Desk drops are tagged.",
     ],
   },
-  cards: {
+  door: {
     title: "Door",
     body: [
       "Five pocket cards on this tab, plus Claim path after you Keep a storm that matches this zip. Each has a formula: hook, honest reason, one open question. Door is the default knock. Pushback restates first. i35 is after photos. Set is morning or afternoon, paper, and a phone-review path. Compass stays here — read it off the porch.",
@@ -66,5 +66,8 @@ export const PAGE_HELP = {
     ],
   },
 } as const;
+
+/** leftover ids — product words are Plan / Door */
+export const HELP_ID_ALIAS = { streets: "plan", cards: "door" } as const;
 
 export type HelpPageId = keyof typeof PAGE_HELP;

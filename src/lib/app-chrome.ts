@@ -16,9 +16,9 @@ export function hideTalk(path: string): boolean {
 
 export function helpPageFor(path: string): HelpPageId {
   if (path.startsWith("/truck") || path.startsWith("/today")) return "today";
-  if (path.startsWith("/after") || path.startsWith("/streets")) return "streets";
+  if (path.startsWith("/after") || path.startsWith("/streets")) return "plan";
   if (path.startsWith("/roof") || path.startsWith("/coach/inspect")) return "roof";
-  if (path.startsWith("/door") || path.startsWith("/coach/cards")) return "cards";
+  if (path.startsWith("/door") || path.startsWith("/coach/cards")) return "door";
   if (path.startsWith("/coach/mindset")) return "mindset";
   if (path.startsWith("/coach/reference")) return "reference";
   if (path.startsWith("/settings")) return "settings";

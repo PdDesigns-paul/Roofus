@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Loader2 } from "lucide-react";
 import { PULL_THRESHOLD, pullArmed, pullBlocked, pullOffset, scrollerAtTop } from "@/lib/pull-refresh";
+import { refreshInFlight } from "@/lib/refresh-in-flight";
 
 export function PullToRefresh({ children }: { children: ReactNode }) {
   const [pull, setPull] = useState(0);
@@ -41,7 +42,11 @@ export function PullToRefresh({ children }: { children: ReactNode }) {
       if (pullArmed(pullRef.current)) {
         setBusy(true);
         setPull(PULL_THRESHOLD);
-        window.location.reload();
+        void refreshInFlight().finally(() => {
+          setBusy(false);
+          pullRef.current = 0;
+          setPull(0);
+        });
         return;
       }
       pullRef.current = 0;

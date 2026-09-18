@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
-import { phoneError, readJson } from "@/lib/read-json";
-import { applyPulseFootprints } from "@/lib/scout-store";
-import { useStreets } from "@/lib/streets-store";
-import { useWeather } from "@/lib/weather-store";
+import { phoneError } from "@/lib/read-json";
+import { refreshWeatherPulse } from "@/lib/refresh-in-flight";
 import type { PulseLead, PulseReport, StormEvent } from "@/lib/weather-types";
 
 function leadIsKept(lead: PulseLead, keptLine: string) {
@@ -38,7 +36,6 @@ export function Last48Hours({
   onKeepStorm: (id: string) => void;
   onTossStorm: (id: string) => void;
 }) {
-  const loops = useStreets((s) => s.loops);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const ready = Boolean(counties.trim() && states.trim());
@@ -50,30 +47,7 @@ export function Last48Hours({
     setBusy(true);
     setErr(null);
     try {
-      const res = await fetch("/api/weather-pulse", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          counties,
-          states,
-          loops: loops.map((l) => ({
-            id: l.id,
-            title: l.title,
-            zip: l.zip,
-            streets: l.streets,
-            county: l.county,
-            lat: l.lat,
-            lon: l.lon,
-            status: l.status,
-          })),
-        }),
-      });
-      const data = (await readJson(res)) as (PulseReport & { error?: string }) | null;
-      if (!data) throw new Error("Could not check the last 48 hours.");
-      if (!res.ok) throw new Error(phoneError(data.error, "Could not check the last 48 hours."));
-      useWeather.getState().setPulse(data);
-      const { ageMin, ageMax } = useStreets.getState();
-      applyPulseFootprints(data.footprints ?? [], loops, ageMin, ageMax, data.at);
+      await refreshWeatherPulse();
     } catch (e) {
       setErr(phoneError(e, "Could not check the last 48 hours."));
     } finally {

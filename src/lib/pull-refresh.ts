@@ -1,4 +1,4 @@
-/** Pull-down reload. Gesture, not a sixth control type. */
+/** Pull-down refresh. Gesture, not a sixth control type. Revalidates weather and geocode — not a document reload. */
 
 export const PULL_THRESHOLD = 72;
 

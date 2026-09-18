@@ -114,6 +114,14 @@ describe("restorePin / serializePin", () => {
     assert.doesNotMatch(src, />Truck</);
     assert.doesNotMatch(src, /Truck only/);
   });
+
+  it("dropping a pin opens that house on Today", () => {
+    const store = readFileSync(new URL("./pins-store.ts", import.meta.url), "utf8");
+    const truck = readFileSync(new URL("../routes/truck.tsx", import.meta.url), "utf8");
+    assert.match(store, /openPinId: pin\.id/);
+    assert.match(truck, /openPinId/);
+    assert.doesNotMatch(truck, /editingPinId/);
+  });
 });
 
 describe("pinsForLoop / revisitPins", () => {
