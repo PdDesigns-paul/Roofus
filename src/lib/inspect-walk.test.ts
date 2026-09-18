@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { ASK_STARTERS, I35_SLOTS, PRACTICE_SHOT, WALK_SLOTS, restoreWalk, serializeWalk } from "./inspect-walk.ts";
+import { ASK_STARTERS, I35_SLOTS, PRACTICE_SHOT, WALK_SLOTS, restoreWalk, serializeWalk, walkHasTicks } from "./inspect-walk.ts";
 import { INSPECT_SYSTEM } from "./inspect-system.ts";
 import { inspectKnowledgeForShot } from "./mri-index.ts";
 
@@ -90,5 +90,10 @@ describe("serializeWalk / restoreWalk", () => {
     assert.equal(out.checks["street-99"], undefined);
     assert.equal(out.openSlot, null);
     assert.deepEqual(restoreWalk(undefined), { done: {}, checks: {}, openSlot: null });
+  });
+  it("walkHasTicks is true only when a station is marked", () => {
+    assert.equal(walkHasTicks(undefined), false);
+    assert.equal(walkHasTicks(restoreWalk({})), false);
+    assert.equal(walkHasTicks({ done: { street: true }, checks: {}, openSlot: null }), true);
   });
 });

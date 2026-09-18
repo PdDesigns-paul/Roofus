@@ -7,7 +7,10 @@ import { Tip } from "@/components/ui/tooltip";
 import { compressImage } from "@/lib/compress-image";
 import { abortTalk, sendRoofus, stopRoofus } from "@/lib/roofus-talk";
 import { useCoach } from "@/lib/coach-store";
-import { ASK_STARTERS, PRACTICE_SHOT, WALK_SLOTS, type WalkSlotId } from "@/lib/inspect-walk";
+import { ASK_STARTERS, PRACTICE_SHOT, WALK_SLOTS, emptyWalk, serializeWalk, type WalkSlotId } from "@/lib/inspect-walk";
+import { openHousePin, pinLabel } from "@/lib/pins";
+import { usePins } from "@/lib/pins-store";
+import { useStreets } from "@/lib/streets-store";
 import { useDayBook } from "@/lib/day-book";
 
 const EMPTY_TURNS: { role: "user" | "assistant"; content: string }[] = [];
@@ -37,9 +40,14 @@ function RoofPage() {
   });
   const streaming = useCoach((s) => s.streaming);
   const busy = useCoach((s) => s.busy);
-  const walk = useDayBook((s) => s.inspectWalk);
+  const walkGlobal = useDayBook((s) => s.inspectWalk);
   const patchInspectWalk = useDayBook((s) => s.patchInspectWalk);
   const resetInspectWalk = useDayBook((s) => s.resetInspectWalk);
+  const pins = usePins((s) => s.pins);
+  const openPinId = usePins((s) => s.openPinId);
+  const workingId = useStreets((s) => s.loops.find((l) => l.status === "working")?.id ?? "");
+  const pin = openHousePin(pins, openPinId, workingId);
+  const walk = pin ? pin.walk : walkGlobal;
   const done = walk.done;
   const checks = walk.checks;
   const openSlot = walk.openSlot;
@@ -98,6 +106,23 @@ function RoofPage() {
     }
   }
 
+  function patchWalk(patch: Partial<typeof walk>) {
+    if (!pin) {
+      patchInspectWalk(patch);
+      return;
+    }
+    const cur = usePins.getState().pins.find((p) => p.id === pin.id) ?? pin;
+    usePins.getState().update(cur.id, { walk: serializeWalk({ ...cur.walk, ...patch }) });
+  }
+
+  function resetWalk() {
+    if (!pin) {
+      resetInspectWalk();
+      return;
+    }
+    usePins.getState().update(pin.id, { walk: emptyWalk() });
+  }
+
   async function ask(text?: string) {
     const q = (text ?? question).trim();
     if (!q || !photo || busy) return;
@@ -112,14 +137,14 @@ function RoofPage() {
   }
 
   function toggleSlot(id: WalkSlotId) {
-    patchInspectWalk({ done: { ...done, [id]: !done[id] } });
+    patchWalk({ done: { ...done, [id]: !done[id] } });
   }
 
   function toggleCheck(key: string, slot: WalkSlotId) {
     const next = { ...checks, [key]: !checks[key] };
     const slotDef = WALK_SLOTS.find((s) => s.id === slot);
     const all = slotDef ? slotDef.checks.every((_, i) => next[`${slot}-${i}`]) : false;
-    patchInspectWalk({ checks: next, done: { ...done, [slot]: all } });
+    patchWalk({ checks: next, done: { ...done, [slot]: all } });
   }
 
   return (
@@ -130,11 +155,13 @@ function RoofPage() {
         <div className="min-w-0">
           <h1 className="font-display text-xl leading-tight tracking-tight">Walk. Then the shot.</h1>
           <p className="mt-1 text-xs leading-relaxed text-muted">
-            Checklist is this house — it stays until Reset. The shot is i35. Don’t talk off the ladder.
+            {pin
+              ? `Ticks hang on ${pinLabel(pin)}. Reset clears that house.`
+              : "No pin — no “this house.” Ticks stay until Reset."}
           </p>
         </div>
         {panel === "walk" ? (
-          <button type="button" onClick={() => resetInspectWalk()} className="h-10 shrink-0 rounded-full border border-border px-3 text-xs">
+          <button type="button" onClick={() => resetWalk()} className="h-10 shrink-0 rounded-full border border-border px-3 text-xs">
             Reset
           </button>
         ) : photo || shown.length ? (
@@ -183,7 +210,7 @@ function RoofPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => patchInspectWalk({ openSlot: open ? null : s.id })}
+                      onClick={() => patchWalk({ openSlot: open ? null : s.id })}
                       className="min-w-0 flex-1 px-3 py-2.5 text-left"
                     >
                       <p className="text-sm font-medium">{s.title}</p>

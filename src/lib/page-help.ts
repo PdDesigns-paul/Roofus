@@ -25,7 +25,7 @@ export const PAGE_HELP = {
   roof: {
     title: "Roof",
     body: [
-      "Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic — tap a row for what to shoot. Ticks are this house. They stay until Reset. Not a report.",
+      "Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic — tap a row for what to shoot. Ticks hang on the open pin. Reset clears that house. Coach may quote the open pin’s year, status, note, and look. No pin, no “this house.” Not a report.",
       "This shot: Camera, Photos, or Practice. Ask what you’re looking at, whether it’s the worst, or what to say. He names the i35 slot — Bad, Good, Worst, or skip theater. Practice is not this house.",
       "Don’t announce off the ladder. Opening this page starts a blank ask — old Roof chats live under Roofus history.",
     ],

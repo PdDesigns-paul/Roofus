@@ -9,6 +9,7 @@ import {
   mergePins,
   morningPins,
   nextBlankOnLoop,
+  openHousePin,
   pinMatchesYearFilter,
   pinsForLoop,
   pinsLineForCoach,
@@ -17,6 +18,7 @@ import {
   revisitPins,
   serializePin,
   streetNameOf,
+  thisHouseForCoach,
   MAX_BACKUP_PINS,
 } from "./pins.ts";
 
@@ -44,6 +46,7 @@ describe("restorePin / serializePin", () => {
     assert.equal(out?.source, "truck");
     assert.ok(out?.id);
     assert.equal(out?.countedAs.knocks, false);
+    assert.equal(out?.walk.done.street, undefined);
   });
 
   it("drops owner / phone / parcel so the type cannot grow PII", () => {
@@ -189,6 +192,86 @@ describe("pinsLineForCoach", () => {
     const line = pinsLineForCoach(restorePins([]));
     assert.match(line, /Do not invent an address/);
     assert.doesNotMatch(line, /555-/);
+  });
+  it("does not dump every pin address", () => {
+    const pin = makePin({ lat: 1, lng: 1, address: "12 Oak Street" });
+    const line = pinsLineForCoach([pin]);
+    assert.doesNotMatch(line, /12 Oak Street/);
+    assert.match(line, /Do not invent an address/);
+  });
+});
+
+describe("thisHouseForCoach", () => {
+  it("quotes year, status, note, and look; empty fields stay empty", () => {
+    const pin = serializePin({
+      ...makePin({ lat: 1, lng: 2, address: "12 Oak Street", year: "2006", note: "tarp on south" }),
+      status: "talked",
+      roofLook: "mixed",
+    });
+    const block = thisHouseForCoach(pin);
+    assert.match(block, /# This house/);
+    assert.match(block, /12 Oak Street/);
+    assert.match(block, /Year: 2006/);
+    assert.match(block, /Status: Talked/);
+    assert.match(block, /Look: Mixed/);
+    assert.match(block, /Note: tarp on south/);
+    assert.doesNotMatch(block, /Damage:/);
+    assert.doesNotMatch(block, /Jane/);
+  });
+  it("no pin, no this house — does not invent an address", () => {
+    const block = thisHouseForCoach(undefined);
+    assert.match(block, /No pin/);
+    assert.match(block, /No “this house.”/);
+    assert.doesNotMatch(block, /Oak/);
+    assert.doesNotMatch(block, /Year:/);
+  });
+});
+
+describe("openHousePin", () => {
+  it("prefers the open pin, then Next door, then last edited", () => {
+    const older = {
+      ...makePin({ lat: 1, lng: 1, address: "10 Oak", status: "talked" }),
+      loopId: "oak",
+      updatedAt: "2026-09-16T00:00:00.000Z",
+    };
+    const next = {
+      ...makePin({ lat: 1, lng: 1, address: "12 Oak" }),
+      loopId: "oak",
+      walkIndex: 2,
+      updatedAt: "2026-09-15T00:00:00.000Z",
+    };
+    const pins = [older, next];
+    assert.equal(openHousePin(pins, older.id, "oak")?.id, older.id);
+    assert.equal(openHousePin(pins, "", "oak")?.id, next.id);
+    assert.equal(openHousePin(pins, "gone", "")?.id, older.id);
+  });
+});
+
+describe("walk ticks hang on that pin", () => {
+  it("a second pin does not inherit the first house ticks", () => {
+    const a = serializePin({
+      ...makePin({ lat: 1, lng: 1 }),
+      walk: { done: { street: true }, checks: { "street-0": true }, openSlot: "street" },
+    });
+    const b = makePin({ lat: 2, lng: 2 });
+    assert.equal(a.walk.done.street, true);
+    assert.equal(b.walk.done.street, undefined);
+    const out = restorePin(a);
+    assert.equal(out?.walk.done.street, true);
+    assert.equal(out?.walk.checks["street-0"], true);
+  });
+  it("Reset is emptying that pin’s walk, not a global wipe", () => {
+    const a = serializePin({
+      ...makePin({ lat: 1, lng: 1 }),
+      walk: { done: { street: true }, checks: {}, openSlot: null },
+    });
+    const b = serializePin({
+      ...makePin({ lat: 2, lng: 2 }),
+      walk: { done: { slopes: true }, checks: {}, openSlot: null },
+    });
+    const cleared = serializePin({ ...a, walk: { done: {}, checks: {}, openSlot: null } });
+    assert.equal(cleared.walk.done.street, undefined);
+    assert.equal(b.walk.done.slopes, true);
   });
 });
 

@@ -6,9 +6,11 @@ import { walksNote } from "./pin-walks.ts";
 import {
   makePin,
   mergePins,
+  openHousePin,
   pinsLineForCoach,
   restorePins,
   serializePin,
+  thisHouseForCoach,
   type CurbTag,
   type HousePin,
   type PinSource,
@@ -18,8 +20,10 @@ import { useStreets } from "./streets-store.ts";
 
 type PinsState = {
   pins: HousePin[];
+  openPinId: string;
   add: (input: { lat: number; lng: number; source?: PinSource }) => HousePin | null;
-  update: (id: string, patch: Partial<Omit<HousePin, "id" | "createdAt">>) => void;
+  update: (id: string, patch: Partial<Omit<HousePin, "id" | "createdAt">>, quiet?: boolean) => void;
+  open: (id: string) => void;
   drop: (id: string) => void;
   replace: (pins: HousePin[]) => void;
 };
@@ -34,19 +38,20 @@ export const usePins = create<PinsState>()(
   persist(
     (set, get) => ({
       pins: [],
+      openPinId: "",
       add: (input) => {
         const pin = makePin(input);
         const pins = applyWalks([pin, ...get().pins]);
-        set({ pins });
+        set({ pins, openPinId: pin.id });
         void reverseGeocode(pin.lat, pin.lng).then((geo) => {
           if (!geo) return;
           const cur = get().pins.find((p) => p.id === pin.id);
           if (!cur || cur.address.trim()) return;
-          get().update(pin.id, geo);
+          get().update(pin.id, geo, true);
         });
         return get().pins.find((p) => p.id === pin.id) ?? pin;
       },
-      update: (id, patch) => {
+      update: (id, patch, quiet = false) => {
         const raw = get().pins.map((p) =>
           p.id === id
             ? serializePin({
@@ -59,17 +64,28 @@ export const usePins = create<PinsState>()(
             : p,
         );
         const moved = patch.lat != null || patch.lng != null || patch.loopId != null;
-        set({ pins: moved ? applyWalks(raw) : raw });
+        set({
+          pins: moved ? applyWalks(raw) : raw,
+          ...(quiet ? {} : { openPinId: id }),
+        });
       },
-      drop: (id) => set({ pins: applyWalks(get().pins.filter((p) => p.id !== id)) }),
+      open: (id) => set({ openPinId: id }),
+      drop: (id) =>
+        set((s) => ({
+          pins: applyWalks(s.pins.filter((p) => p.id !== id)),
+          openPinId: s.openPinId === id ? "" : s.openPinId,
+        })),
       replace: (pins) => set({ pins: applyWalks(restorePins(pins)) }),
     }),
     {
       name: "roofus-pins-v1",
-      partialize: (s) => ({ pins: s.pins }),
+      partialize: (s) => ({ pins: s.pins, openPinId: s.openPinId }),
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<PinsState>;
-        return { ...current, ...p, pins: restorePins(p.pins) };
+        const pins = restorePins(p.pins);
+        const openPinId =
+          typeof p.openPinId === "string" && pins.some((pin) => pin.id === p.openPinId) ? p.openPinId : "";
+        return { ...current, ...p, pins, openPinId };
       },
     },
   ),
@@ -90,8 +106,14 @@ if (typeof window !== "undefined") {
   });
 }
 
+export function thisHouse(): HousePin | undefined {
+  const { pins, openPinId } = usePins.getState();
+  const working = useStreets.getState().loops.find((l) => l.status === "working");
+  return openHousePin(pins, openPinId, working?.id ?? "");
+}
+
 export function pinsForCoach(): string {
-  return pinsLineForCoach(usePins.getState().pins);
+  return [pinsLineForCoach(usePins.getState().pins), thisHouseForCoach(thisHouse())].join("\n\n");
 }
 
 export function mergeIncomingPins(incoming: HousePin[]) {

@@ -1,4 +1,11 @@
 /** House log. Pins are the hunt. Distance makes the loop. Not a CRM. */
+import {
+  emptyWalk,
+  restoreWalk,
+  serializeWalk,
+  walkHasTicks,
+  type InspectWalkProgress,
+} from "./inspect-walk.ts";
 
 export const PIN_STATUSES = ["no-answer", "talked", "look", "set", "revisit", "skip"] as const;
 export type PinStatus = (typeof PIN_STATUSES)[number];
@@ -53,6 +60,8 @@ export type HousePin = {
   updatedAt: string;
   /** Which Today tiles this pin already wrote on `day`. Not a pipeline. */
   countedAs: PinCountedAs;
+  /** Ticks hang on this pin. Not a photo. */
+  walk: InspectWalkProgress;
 };
 
 export type PinCountKey = "knocks" | "talks" | "looks" | "sets";
@@ -198,6 +207,7 @@ export function makePin(input: {
     createdAt: now,
     updatedAt: now,
     countedAs: blankCountedAs(),
+    walk: emptyWalk(),
   });
 }
 
@@ -229,6 +239,7 @@ export function restorePin(raw: unknown): HousePin | null {
     createdAt: s(o.createdAt) || new Date().toISOString(),
     updatedAt: s(o.updatedAt) || s(o.createdAt) || new Date().toISOString(),
     countedAs: asCountedAs(o.countedAs),
+    walk: restoreWalk(o.walk),
   });
 }
 
@@ -255,6 +266,7 @@ export function serializePin(p: HousePin): HousePin {
     createdAt: s(p.createdAt),
     updatedAt: s(p.updatedAt),
     countedAs: asCountedAs(p.countedAs),
+    walk: serializeWalk(p.walk),
   };
 }
 
@@ -361,6 +373,7 @@ export function mergePins(current: HousePin[], incoming: HousePin[]): HousePin[]
       createdAt: cur.createdAt || next.createdAt,
       updatedAt: cur.updatedAt || next.updatedAt,
       countedAs: cur.countedAs.day ? cur.countedAs : next.countedAs,
+      walk: walkHasTicks(cur.walk) ? cur.walk : next.walk,
     });
   }
   return [...have.values()].slice(0, MAX_BACKUP_PINS);
@@ -412,3 +425,33 @@ export function pinsLineForCoach(pins: HousePin[]): string {
   }
   return lines.join("\n");
 }
+
+export function lastEditedPin(pins: HousePin[]): HousePin | undefined {
+  if (!pins.length) return undefined;
+  return pins.reduce((a, b) => (a.updatedAt >= b.updatedAt ? a : b));
+}
+
+/** Last edited pin, or Next door when nothing is open. */
+export function openHousePin(pins: HousePin[], openPinId: string, workingLoopId = ""): HousePin | undefined {
+  const open = openPinId.trim() ? pins.find((p) => p.id === openPinId) : undefined;
+  if (open) return open;
+  const next = workingLoopId.trim() ? nextBlankOnLoop(pins, workingLoopId) : undefined;
+  if (next) return next;
+  return lastEditedPin(pins);
+}
+
+/** One house. Empty fields stay empty. Do not invent a name. */
+export function thisHouseForCoach(pin: HousePin | null | undefined): string {
+  if (!pin) {
+    return "# This house\nNo pin. Do not invent a house, a year, an address, or a name. No “this house.”";
+  }
+  const lines = ["# This house", pinLabel(pin)];
+  if (pin.year.trim()) lines.push(`Year: ${pin.year.trim()}`);
+  if (pin.status) lines.push(`Status: ${PIN_STATUS_LABEL[pin.status]}`);
+  if (pin.roofLook) lines.push(`Look: ${ROOF_LOOK_LABEL[pin.roofLook]}`);
+  if (pin.note.trim()) lines.push(`Note: ${pin.note.trim()}`);
+  if (pin.damage.trim()) lines.push(`Damage: ${pin.damage.trim()}`);
+  lines.push("Quote only these fields. Empty means unknown. Do not invent a name.");
+  return lines.join("\n");
+}
+

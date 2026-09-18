@@ -93,3 +93,9 @@ export function serializeWalk(progress: InspectWalkProgress): InspectWalkProgres
   return restoreWalk(progress);
 }
 
+export function walkHasTicks(w: InspectWalkProgress | undefined): boolean {
+  if (!w) return false;
+  return Object.values(w.done).some(Boolean) || Object.values(w.checks).some(Boolean);
+}
+
+

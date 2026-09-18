@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/app-header";
 import { HomeSetupCard } from "@/components/home-setup-card";
 import { InstallHint } from "@/components/install-hint";
@@ -56,9 +56,9 @@ function DaySheet() {
   const [askErr, setAskErr] = useState<string | null>(null);
   const [pinBusy, setPinBusy] = useState(false);
   const [pinErr, setPinErr] = useState("");
-  const [editingPinId, setEditingPinId] = useState("");
   const addPin = usePins((s) => s.add);
   const allPins = usePins((s) => s.pins);
+  const openPinId = usePins((s) => s.openPinId);
   const current = firstRemainingInPlan(loops, day.cluster);
   const extra = Math.max(0, clusterLines(day.cluster).length - 1);
   const keptLine = freshKeptSentence(keptStorms);
@@ -68,11 +68,15 @@ function DaySheet() {
     ? lastPinOnLoop(allPins, current.id)
     : allPins.reduce<(typeof allPins)[number] | undefined>((a, b) => (!a || a.createdAt < b.createdAt ? b : a), undefined);
   const nextDoor = working ? nextBlankOnLoop(allPins, working.id) : undefined;
-  const editingPin = editingPinId ? allPins.find((p) => p.id === editingPinId) : undefined;
+  const editingPin = openPinId ? allPins.find((p) => p.id === openPinId) : undefined;
+
+  useEffect(() => {
+    if (openPinId) return;
+    if (nextDoor) usePins.getState().open(nextDoor.id);
+  }, [openPinId, nextDoor?.id]);
 
   function placePin(lat: number, lng: number, notice = "") {
-    const pin = addPin({ lat, lng, source: "truck" });
-    if (pin) setEditingPinId(pin.id);
+    addPin({ lat, lng, source: "truck" });
     setPinBusy(false);
     setPinErr(notice);
   }
