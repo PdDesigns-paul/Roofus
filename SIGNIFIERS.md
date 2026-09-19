@@ -4,7 +4,10 @@
 
 Home, Today, and chrome now match this book: one setup card, five control types, Help/Menu in the header, one tab bar, company in the day-book. Streets Near me / scout tags and Use today as a chip shipped. **Places on the phone are Today · Door · Roof · Plan.** Old route files may keep `/truck` and `/after`. UI copy does not say Truck or After. First-run is five job slides over the field log (who I am, pin, the door, the dog, age first) — no tab names on slide 1. Door pocket cards fill You and ship Hear this line. Settings index is chevron Go rows; tour and sample day are outlined pills under the list. Do not invent a sixth control type.
 
+Brand tokens (accent, paper, mark, display font) may load from a tenant pack. Types may not. A second shop does not get a sixth control.
+
 Agents: read this before you touch tabs, the FAB, Today links, setup rows, or `src/components/ui/`.
+
 
 ---
 
@@ -29,7 +32,8 @@ Score of the idea: fine. Score of “what do I tap”: the actual bug.
 
 ## Vocabulary — five types, no sixth
 
-One shape, one promise. If you cannot name the type, the user cannot either.
+One shape, one promise. If you cannot name the type, the user cannot either. Brand may change. These five may not.
+
 
 | Type | Shape | Promise | Use for | Do not use for |
 | --- | --- | --- | --- | --- |
@@ -129,7 +133,8 @@ Tab word is **Plan**. Route stays `/after`. Hint: night-before + morning. Not a 
 
 Five job slides over the field log: who I am, drop a pin, what to say at the door, talk to the dog, age first. Do not list tab names on slide 1. Skip on every slide. Plays once when `roofus-onboard-v1` is missing. Replay is **Show the tour** in Settings. Last slide may offer Load a sample day on an empty book — lands on `/truck`, no sample storm. Replaces the 3-dot spotlight. Not a `/tour` route. Not the PWA install tutorial.
 
-Out of scope for this plan: new facets, login, a design-token package, Playwright, restyling every page a different way.
+Out of scope for this plan: new facets, `/login` as a Place, Stripe sheets, a sixth type, a design-token package, Playwright, restyling every page a different way. Brand tokens may move into a tenant pack (WL-2); types stay here.
+
 
 ---
 

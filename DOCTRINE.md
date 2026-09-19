@@ -10,6 +10,33 @@ How a control looks like a control lives in [`SIGNIFIERS.md`](./SIGNIFIERS.md). 
 
 ---
 
+## Kernel vs tenant pack
+
+White-label is a doctrine split, not a Settings row.
+
+**Kernel** — the Field OS. Do not swap these per shop.
+
+- Four Places + Settings book + Talk FAB. Today · Door · Inspect · Plan (Roofus labels Inspect **Roof**).
+- Five types: Place / Do / Chip / Go / Talk. No sixth.
+- Offline book on the phone. Cloud is a copy.
+- Talk is the coach. Not a tab.
+- Account is a key on You, not a `/login` Place. No Stripe sheet.
+
+**Tenant pack** — the shop. Roofus (this dog, this gold, this porch) is pack `roofus`.
+
+- Brand tokens, mark, PWA, product name
+- Porch words, Script B, Keep / Toss, i35, claim path
+- Inspect walk rows, activity units / labor clock
+- Optional modules: storms, InterNACHI, claim path
+
+A second tenant that still says “knock” and “On the roof” is a failed pack.
+
+Porch paragraphs below are pack `roofus` until a curriculum slice extracts them. Do not rewrite them in this slice.
+
+Coach prompt sync: this file + `src/lib/coach-prompt.ts` + pack modules (when they exist). Help copy in `src/lib/page-help.ts` may be pack-owned later.
+
+---
+
 ## What Roofus is
 
 Phone-first ride-along **journal + coach** for door-to-door roofers and storm restoration canvassers.
@@ -275,7 +302,8 @@ Control types — Place, Do, Chip, Go, Talk. Buttons do. Links go. Chips fork th
 
 Tomorrow, in order: last-48h **High** on a loop they keep → Working → next fresh loop in that township → next township. Do not ask a newbie where to go. Do not invent hail.
 
-Starter FAQs in `src/lib/porch-faqs.ts` must match this file. Coach prompt in `src/lib/coach-system.ts` must match this file **and** the buttons that exist. Help copy in `src/lib/page-help.ts` must name the chrome that is on the phone after a slice, not the chrome we wish were there.
+Starter FAQs in `src/lib/porch-faqs.ts` must match this file. Coach prompt in `src/lib/coach-prompt.ts` plus pack modules must match this file **and** the buttons that exist. (`coach-system.ts` re-exports — edit the prompt file.) Help copy in `src/lib/page-help.ts` must name the chrome that is on the phone after a slice, not the chrome we wish were there. Help may be pack-owned later.
+
 
 ---
 

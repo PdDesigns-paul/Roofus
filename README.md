@@ -1,28 +1,28 @@
 # Roofus
 
-Phone-first ride-along **journal + coach** for door-to-door roofers and storm restoration canvassers.
+Phone-first Field OS. **Kernel:** one journal, four Places, five types, Talk FAB, offline book. **Tenant pack `roofus`:** this dog, this gold, this porch — ride-along journal + coach for door-to-door roofers and storm restoration canvassers.
 
-The phone is the live log. Roofus (the orange button) rides shotgun — tap fans Live / Roleplay / Mindset, hold starts Live. Notion is an optional copy so a dead phone is not a dead year.
+The phone is the live log. Talk (Roofus: the orange dog) rides shotgun — tap fans Live / Roleplay / Mindset, hold starts Live. Notion is an optional copy so a dead phone is not a dead year.
 
-**The app is Roofus.** One word. Capital R only.
+**Pack `roofus` is named Roofus.** One word. Capital R only.
 
-**Doctrine lives in this repo.** [`DOCTRINE.md`](./DOCTRINE.md) is the only live porch + product book. [`SIGNIFIERS.md`](./SIGNIFIERS.md) is how a control looks like a control. Drive archives and old chats do not override either. Build agents read [`AGENTS.project.md`](./AGENTS.project.md). GitHub is the book. The live phone is [roofus.coach](https://roofus.coach) on Vercel Hobby. SuperGrok is the editor, not a second host.
+**Doctrine lives in this repo.** [`DOCTRINE.md`](./DOCTRINE.md) splits kernel vs tenant pack; porch paragraphs below that split are still pack `roofus`. [`SIGNIFIERS.md`](./SIGNIFIERS.md) is how a control looks like a control — five types, brand tokens may change. Drive archives and old chats do not override either. Build agents read [`AGENTS.project.md`](./AGENTS.project.md). GitHub is the book. The live phone is [roofus.coach](https://roofus.coach) on Vercel Hobby. SuperGrok is the editor, not a second host.
 
 ## What you do in it
 
-| Surface | What it is |
-| --- | --- |
-| **Today** | Field log. Working loop one-liner + Cards Go. **Pin** drops GPS and opens the house editor on this page (address, year, status, note, roof look). Works with no Working loop. **Next door** is the next blank pin on that walk. Four counts. One weather sentence, read-only from Keep / Use today. **Night** opens Finish the day on Plan (AAR · blank or AAR · done). Empty-book setup until name + company + one county exist. Ask Roofus how today went is an outline. Pin is the action on this page. The map and the long board stay on Plan. |
-| **Door** | Pocket cards: Door, Pushback, i35, Set, Compass. Fills You. Claim path after Keep, matching zip. One-line formula on each (hook → honest reason → one open question). Compass is truck only — still on this tab. |
-| **Roof** | Camera walk: Street, Four slopes, Close-up, Witnesses, Attic. Ask about that shot. He names the i35 slot. Practice shot is off the roof. CompanyCam is the report. |
-| **Plan** | Tab word **Plan**. Route still `/after`. Night-before + morning. A **map of pins**. Walks form from distance (0.4 km, cap 40). Working pinned. Near me / Morning / Revisit chips. Year filter on years they typed. Plan chips. Desk drops are tagged. Use today is a chip on the card. Open a loop: that card is the pin board. **Last 48 hours Keep / Toss** lives here. Finish the day owns After Action Report and tomorrow. Settings is a Go at the bottom. No Census rebuild. |
-| **Last 48 hours** | Lives on Plan. Cron later. Keep still gates Script A. H on a kept zip still ranks tomorrow when a pulse exists. Today may show one kept sentence. |
-| **Roofus** | Orange button. Tap fans Live, Roleplay, Mindset — each is a new chat. Hold starts Live. History is the clock in the chat, tagged by color. Hold-to-talk in Roleplay. Beats at the bottom. Score me is a button. Hear it reads his line. Practice only — do not record a homeowner. |
-| **Reference** | Reference page lists the InterNACHI index. Coach appendix is the named cards. Company pages land here when they paste a website in Settings. Tap a card to open the page. |
-| **Mindset** | Worksheets in Settings → Mindset: Why (ladder), Name the demon, Pace (gear), Talent stack. Chat from the orange fan. Private. After Action Report lives on Plan. |
-| **Settings** | Index of pages: You, Territory, Hours, Mindset, Reminders, Backup. Each row is a Go with a chevron. Plan is its own tab. Show the tour and Load a sample day are outlined pills under the list. Name, company, website (crawled into Reference), warranty, counties, hours, mindset, reminder toggles, optional Notion, Memory FAQs. Reminders nag on open if that box is empty. |
+Kernel names. Roofus examples in parentheses. Long porch map: [`DOCTRINE.md`](./DOCTRINE.md).
 
-Bottom bar: Today · Door · Roof · Plan. Help and Menu live in the header. Menu: Reference, Settings. Back only on Settings, Reference, and nested settings pages. Mindset worksheets live in Settings → Mindset.
+| Kernel | Roofus (pack `roofus`) |
+| --- | --- |
+| **Today** | Field log. Working loop + **Pin** (GPS → house editor) + four counts (Doors, Talked, On the roof, Appointments). **Night** opens Finish the day on Plan. Empty-book setup until name + company + one county. |
+| **Door** | Curriculum cards (Door, Pushback, i35, Set, Compass). Claim path after Keep, matching zip. One-line formula: hook → honest reason → one open question. |
+| **Inspect** (tab: **Roof**) | Job-walk (Street, Four slopes, Close-up, Witnesses, Attic). Ask about that shot. He names the i35 slot. |
+| **Plan** | Night-before + morning. A **map of pins**. Walks from distance (0.4 km, cap 40). Keep / Toss. Finish the day owns After Action Report. Settings is a Go at the bottom — not a fifth Place. |
+| **Talk** (orange dog FAB) | Live / Roleplay / Mindset. Hold starts Live. History is the clock. Practice only — do not record a homeowner. |
+| **Settings** | Book: You, Territory, Hours, Mindset, Reminders, Backup. Owner chip lives on You when that child ships. Not a `/login` Place. |
+
+Bottom bar: Today · Door · Inspect (Roofus: Roof) · Plan. Help and Menu live in the header. Menu: Reference, Settings. Back only on Settings, Reference, and nested settings pages. Mindset worksheets live in Settings → Mindset.
+
 
 ## Doctrine (short)
 
@@ -33,7 +33,9 @@ Full book: [`DOCTRINE.md`](./DOCTRINE.md). Tap-clues: [`SIGNIFIERS.md`](./SIGNIF
 - **Million-dollar door script** = Script B (age / free look). Live’s first starter. Script A (claim talk) only after Keep, and only on matching zips.
 - One appointment from a day of knocking is a winning day.
 - Homeowner lines: 5th-grade, plain meaning first. Coach talk can sound like a closer.
-- Five control types on the phone: Place, Do, Chip, Go, Talk. Buttons do. Links go. Ghost captions are not actions.
+- Five control types on the phone: Place, Do, Chip, Go, Talk. Buttons do. Links go. Ghost captions are not actions. Brand tokens may change; types may not.
+- Kernel vs tenant: Places, types, offline book, Talk stay. Porch words, Script B, Keep, i35 load from a pack. Roofus is pack `roofus`.
+
 
 ## Data
 
@@ -48,7 +50,8 @@ Everything lives in **this browser** (`localStorage` via Zustand):
 - `roofus-onboard-v1` — first-run five job slides. Skip writes this. Replay in Settings.
 - coach threads in the coach store
 
-There is **no login** and **no app database**. Do not put a Notion secret in the repo. The secret stays on the phone and is sent to Notion only when they tap Connect or Backup.
+The phone book is **local-first**. Cloud is a copy. An owner key may live on You later — not a `/login` Place, not Postgres as the live journal. Do not put a Notion secret in the repo. The secret stays on the phone and is sent to Notion only when they tap Connect or Backup.
+
 
 ### Notion backup (optional, recommended)
 
@@ -79,7 +82,8 @@ npm run dev
 | --- | --- | --- |
 | `XAI_API_KEY` | server only | Roofus chat, transcribe, speak, Last 48 hours pulse. Never `VITE_`. |
 | `GOOGLE_MAPS_API_KEY` | server | Maps JS + Geocoder + Places. Phone reads `/api/maps-key`. Never `VITE_` — that prefix errors on the host. Restrict HTTP referrers to `https://roofus.coach/*` and `https://*.vercel.app/*`. Never commit the key. |
-| `DATABASE_URL` | unused by this app | Platform leftover. Auth and Postgres stay off. |
+| `DATABASE_URL` | unused by this app | Platform leftover. Phone book stays local-first. Host auth/db light up only when [`PLATFORM.md`](./PLATFORM.md) names the child. |
+
 
 Maps uses `GOOGLE_MAPS_API_KEY` (Geocoder + Places). Street View / Directions / Zillow / Redfin are outbound links — no scrape. Weather is NWS. Notion secret is pasted in Settings and stays on the phone.
 
@@ -109,18 +113,20 @@ npm run scout:loop -- --demo
 ## Layout
 
 ```
-DOCTRINE.md            porch + product book (source of truth)
-SIGNIFIERS.md          tap-clues + chrome plan (source of truth for controls)
+DOCTRINE.md            kernel vs tenant + porch book (source of truth)
+SIGNIFIERS.md          tap-clues + chrome plan (five types; brand tokens may change)
 AGENTS.project.md      instructions for any agent (Grok, Cursor, Copilot)
-PLATFORM.md            Grok auth/db leftover — do not call from product code
+PLATFORM.md            when host auth/db may light up — phone book stays local-first
 src/routes/            pages + /api/* proxies
 src/components/        phone chrome (tabs, chat sheet, FAB)
 src/lib/               stores, ranking, Notion, coach prompt
 scripts/scout-loop.mjs sidecar scout — one loop, not the phone, not CI
-public/roofus.png      the dog
+public/roofus.png      the dog (pack `roofus`)
+
 ```
 
-Coach context is assembled in `src/lib/roofus-talk.ts`: today’s log, streets, weather, mindset, Notion memory, company site notes, packet files they saved (title, notes, extracted text). The system prompt in `src/lib/coach-system.ts` is the product contract — keep it in sync with [`DOCTRINE.md`](./DOCTRINE.md) and the buttons that actually exist.
+Coach context is assembled in `src/lib/roofus-talk.ts`: today’s log, streets, weather, mindset, Notion memory, company site notes, packet files they saved (title, notes, extracted text). The system prompt in `src/lib/coach-prompt.ts` is the product contract — keep it in sync with [`DOCTRINE.md`](./DOCTRINE.md), pack modules, and the buttons that actually exist.
+
 
 Backup merge rules live in `src/lib/notion-merge.ts` and are unit-tested. Writes to Notion are chunked in `src/lib/notion-client.ts` so a full copy does not time out.
 
