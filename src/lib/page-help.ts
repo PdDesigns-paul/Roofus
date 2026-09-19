@@ -1,4 +1,6 @@
+/** Header ? copy. Pack `roofus` words for now; a tenant pack may own these strings later. */
 export const PAGE_HELP = {
+
   today: {
     title: "Today",
     body: [
