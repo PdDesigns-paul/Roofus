@@ -1,37 +1,39 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Camera, DoorOpen, Map } from "lucide-react";
 import { PickupTruck } from "@/components/pickup-truck";
+import { pack } from "@/lib/tenant";
 
 const TABS = [
   {
     to: "/truck",
     id: "truck",
-    label: "Today",
+    label: pack.places.today,
     icon: PickupTruck,
     match: (p: string) => p === "/truck" || p === "/today" || p === "/",
   },
   {
     to: "/door",
     id: "door",
-    label: "Door",
+    label: pack.places.door,
     icon: DoorOpen,
     match: (p: string) => p.startsWith("/door") || p.startsWith("/coach/cards"),
   },
   {
     to: "/roof",
     id: "roof",
-    label: "Roof",
+    label: pack.places.inspect,
     icon: Camera,
     match: (p: string) => p.startsWith("/roof") || p.startsWith("/coach/inspect"),
   },
   {
     to: "/after",
     id: "after",
-    label: "Plan",
+    label: pack.places.plan,
     icon: Map,
     match: (p: string) => p.startsWith("/after") || p.startsWith("/streets"),
   },
 ] as const;
+
 
 export function TabBar() {
   const path = useRouterState({ select: (s) => s.location.pathname });

@@ -1,19 +1,28 @@
 /** Porch-dog face. Default is 56px — never ship a 40px chip as the brand face. */
 
+import { pack } from "@/lib/tenant";
+
 export function RoofusFace({
   className = "size-14",
-  alt = "Roofus",
+  alt = pack.productName,
 }: {
   className?: string;
   alt?: string;
 }) {
-  return <img src="/roofus.png" alt={alt} className={`object-contain ${className}`} />;
+  return (
+    <img
+      src={pack.markSrc}
+      alt={alt}
+      data-brand-mark=""
+      className={`object-contain ${className}`}
+    />
+  );
 }
 
 export function RoofusMark({ className = "" }: { className?: string }) {
   return (
     <img
-      src="/roofus.png"
+      src={pack.markSrc}
       alt=""
       aria-hidden
       className={

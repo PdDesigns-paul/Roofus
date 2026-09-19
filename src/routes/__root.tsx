@@ -1,4 +1,5 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import type { CSSProperties } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { AuthProvider } from "@/lib/auth/provider";
 import { AskFab } from "@/components/ask-fab";
@@ -9,22 +10,21 @@ import { PullToRefresh } from "@/components/pull-to-refresh";
 import { TabBar } from "@/components/tab-bar";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { pack, packStyle } from "@/lib/tenant";
 import appCss from "../styles.css?url";
-
-const APP_NAME = "Roofus";
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: APP_NAME },
-      { name: "theme-color", content: "#0c0c0d" },
+      { title: pack.productName },
+      { name: "theme-color", content: pack.pwa.themeColor },
       { name: "description", content: "Ride-along coach for door-to-door roofers and storm restoration crews." },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-      { name: "apple-mobile-web-app-title", content: APP_NAME },
+      { name: "apple-mobile-web-app-title", content: pack.productName },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -41,7 +41,7 @@ export const Route = createRootRoute({
     ],
   }),
   component: () => (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning style={packStyle(pack) as CSSProperties}>
       <head>
         <HeadContent />
         <script

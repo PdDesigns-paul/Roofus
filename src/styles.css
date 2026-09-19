@@ -1,24 +1,35 @@
 @import "tailwindcss";
 
+/* Pack `roofus` fallbacks. JS sets the same vars on <html> from src/lib/tenant. */
+html {
+  --pack-accent: #c28d32;
+  --pack-paper: #f3efe4;
+  --pack-display-font: "Fraunces", ui-serif, Georgia, serif;
+  --pack-gold-hi: #ffd78f;
+  --pack-gold-coin: #e0a030;
+  --pack-gold-mid: #c28d32;
+  --pack-gold-lo: #8c5e27;
+}
+
 @theme {
   --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-display: var(--pack-display-font);
   --color-fg: #0a0908;
-  --color-paper: #f3efe4;
+  --color-paper: var(--pack-paper);
   --color-muted: #6b6458;
   --color-faint: #8f8778;
   --color-border: #d6cbb4;
   --color-surface: #fffcf6;
   --color-surface-2: #e8e0d0;
-  --color-accent: #c28d32;
+  --color-accent: var(--pack-accent);
   --color-accent-ink: #8c5e27;
   --color-danger: #b42318;
-  --gold-hi: #ffd78f;
-  --gold-coin: #e0a030;
-  --gold-mid: #c28d32;
-  --gold-lo: #8c5e27;
+  --gold-hi: var(--pack-gold-hi);
+  --gold-coin: var(--pack-gold-coin);
+  --gold-mid: var(--pack-gold-mid);
+  --gold-lo: var(--pack-gold-lo);
   --gold-bronze: #53402f;
-  --gold-grad: linear-gradient(180deg, #ffd78f 0%, #e0a030 38%, #c28d32 62%, #8c5e27 100%);
+  --gold-grad: linear-gradient(180deg, var(--gold-hi) 0%, var(--gold-coin) 38%, var(--gold-mid) 62%, var(--gold-lo) 100%);
 }
 
 @layer base {
@@ -54,8 +65,8 @@
     --color-border: #2a261c;
     --color-surface: #12110f;
     --color-surface-2: #1c1a16;
-    --color-accent: #c28d32;
-    --color-accent-ink: #e0a030;
+    --color-accent: var(--pack-accent);
+    --color-accent-ink: var(--pack-gold-coin);
     --color-danger: #e85d4c;
   }
   .font-display {
@@ -77,7 +88,7 @@
 }
 
 /* Wordmark, FAB, selected tab tick. Chips stay flat Mid. */
-img[alt="Roofus"] + div > h1.font-display {
+img[data-brand-mark] + div > h1.font-display {
   background-image: var(--gold-grad);
   background-clip: text;
   color: transparent;

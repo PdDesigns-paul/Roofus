@@ -21,6 +21,8 @@ import { clusterLines, firstRemainingInPlan, loopHeadline, loopLabel } from "@/l
 import { useStreets } from "@/lib/streets-store";
 import { usePins } from "@/lib/pins-store";
 import { useWeather } from "@/lib/weather-store";
+import { pack } from "@/lib/tenant";
+
 
 /** Today is the field log. Plan owns hunt, Keep / Toss, and AAR. Route stays /truck. */
 export const Route = createFileRoute("/truck")({
@@ -158,7 +160,7 @@ function DaySheet() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <AppHeader title="Today" />
+      <AppHeader title={pack.places.today} />
       <HomeSetupCard
         snap={snap}
         afterAction={day.afterAction}
@@ -169,7 +171,7 @@ function DaySheet() {
       />
       <p className="mt-4 text-xs font-medium uppercase tracking-wide text-faint">{day.date}</p>
       <h1 className="mt-1 font-display text-2xl leading-tight tracking-tight">
-        {profile.goBy.trim() ? `${profile.goBy.trim()}'s day` : "Today"}
+        {profile.goBy.trim() ? `${profile.goBy.trim()}'s day` : pack.places.today}
       </h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         {market ? (
@@ -300,7 +302,7 @@ function DaySheet() {
       </Link>
 
       <Button type="button" variant="outline" size="lg" className="mt-4 w-full" disabled={busy} onClick={askAboutToday}>
-        Ask Roofus how today went
+        {pack.copy.askHowTodayWent}
       </Button>
       {askErr ? <p className="mt-2 text-sm text-danger">{askErr}</p> : null}
 
