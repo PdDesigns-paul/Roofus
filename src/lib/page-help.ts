@@ -1,8 +1,9 @@
-/** Header ? copy. Pack `roofus` words for now; a tenant pack may own these strings later. */
-export const PAGE_HELP = {
+/** Header ? copy. Door / Roof / Coach paragraphs are pack-owned. Settings and kernel chrome stay here. */
+import { pack } from "./tenant/index.ts";
 
+export const PAGE_HELP = {
   today: {
-    title: "Today",
+    title: pack.places.today,
     body: [
       "First time: name, company, one county on this page if those are blank. Then Setup leaves Today. Hours live in Settings. Working loop is one line plus Cards. Pin on this page drops GPS and opens the house editor here (address, year, status, note, roof look). Works with no Working loop. Next door is the next blank pin on that walk. Four counts sit on this page. Pin status writes the matching Today count once. Tiles still work without a pin. First open is five job slides over the field log: who I am, drop a pin, what to say at the door, talk to the dog, age first. Do not list tab names on slide 1. Skip is on every slide.",
       "One weather sentence, read-only from Keep or Use today. Night opens Finish the day on Plan. Formula reads AAR · blank or AAR · done. No After Action Report fields here. Wins, better, and tomorrow live on Plan. No Keep / Toss on Today. No plan chips. No weather box. The map and the long board stay on Plan.",
@@ -10,7 +11,7 @@ export const PAGE_HELP = {
     ],
   },
   plan: {
-    title: "Plan",
+    title: pack.places.plan,
     body: [
       "Night-before and morning. Not a fifth Place. Where you knock is the map — drop pins, search a zip, drag onto the house. Satellite is on so you can see the roof; chip off for the street drawing. Walks form from distance. Default open until a Working loop exists. Year filter (all / in band / no year) uses years you typed. Default targeting 15–22. Tap Change. Chips pick a band. From and To take the number when you leave the field, not on the first digit. Each card is a park-once walk of pins. Working sits at the top. Search a loop, street, or zip. Empty match says so. Near me is a chip — it sorts walks you already have. Empty book does not invent a zip. Map key missing: pins still save.",
       "Keep / Toss lives here. Age first on the porch. Today may show one kept sentence. It does not host Keep / Toss. Use today is a chip — it picks the Working loop and copies the sentence if the weather box is empty. Skip and Done freeze that walk. Morning is a chip — only pins with status set or revisit. Same PinCard. Empty: nothing to call. Pin a house or knock. That is the 7am job, not a pipeline.",
@@ -18,19 +19,12 @@ export const PAGE_HELP = {
     ],
   },
   door: {
-    title: "Door",
-    body: [
-      "Five pocket cards on this tab, plus Claim path after you Keep a storm that matches this zip. Each has a formula: hook, honest reason, one open question. Door is the default knock. Pushback restates first. i35 is after photos. Set is morning or afternoon, paper, and a phone-review path. Compass stays here — read it off the porch.",
-      "The line under the title is You, the street or Working loop, the age band, and Keep or Use-today weather. Tap the name to open You. Tap the street to open Plan or Today. Empty You is a Go, not brackets. Hear this line speaks the filled SAY. Ask Roofus opens Roleplay on that beat with the filled opener. Claim path opens with the A constraint. Compass opens Mindset. This is not Reference — those are InterNACHI articles.",
-    ],
+    title: pack.places.door,
+    body: pack.help.door,
   },
   roof: {
-    title: "Roof",
-    body: [
-      "Two jobs. Walk this house: Street, Four slopes, Close-up, Witnesses, Attic — tap a row for what to shoot. Ticks hang on the open pin. Reset clears that house. Coach may quote the open pin’s year, status, note, and look. No pin, no “this house.” Not a report.",
-      "This shot: Camera, Photos, or Practice. Ask what you’re looking at, whether it’s the worst, or what to say. He names the i35 slot — Bad, Good, Worst, or skip theater. Practice is not this house.",
-      "Don’t announce off the ladder. Opening this page starts a blank ask — old Roof chats live under Roofus history.",
-    ],
+    title: pack.places.inspect,
+    body: pack.help.inspect,
   },
   mindset: {
     title: "Mindset",
@@ -60,14 +54,10 @@ export const PAGE_HELP = {
     ],
   },
   coach: {
-    title: "Roofus",
-    body: [
-      "Tap the orange button to pick a mode. That starts a fresh chat. Live, Roleplay, Mindset. Hold starts Live. Live’s first starter is the million-dollar script. The dog in the header is him — big enough to read in sun. History is the clock at the bottom. Tags by color.",
-      "Roleplay: pick a beat at the bottom (Walk-up, They push, After photos, The set, Whole visit), who they are, then knock. Hold the mic. Score me grades it. Hear it plays his line. Practice only — do not record a homeowner.",
-      "Mindset is off the porch. Worksheets are in Settings → Mindset. Camera is the Roof page. X closes him. The day is still underneath.",
-    ],
+    title: pack.talkName,
+    body: pack.help.coach,
   },
-} as const;
+};
 
 /** leftover ids — product words are Plan / Door */
 export const HELP_ID_ALIAS = { streets: "plan", cards: "door" } as const;

@@ -4,6 +4,8 @@ import assert from "node:assert/strict";
 import { pack, packStyle, ROOFUS_PACK } from "./index.ts";
 import { PAGE_HELP } from "../page-help.ts";
 import { ONBOARD_STEPS } from "../onboard.ts";
+import { COACH_MODES } from "../coach-modes.ts";
+import { POCKET_CARDS } from "../pocket-cards.ts";
 
 const css = readFileSync(new URL("../../styles.css", import.meta.url), "utf8");
 const manifest = JSON.parse(
@@ -107,5 +109,62 @@ describe("pack roofus", () => {
     assert.match(src("../../routes/__root.tsx"), /packStyle\(pack\)/);
     assert.match(src("../../components/onboard-overlay.tsx"), /ONBOARD_STEPS/);
     assert.match(src("../onboard.ts"), /pack\.copy\.tour/);
+  });
+});
+
+describe("pack roofus curriculum", () => {
+  it("owns Door cards, claim module, and Live starters", () => {
+    assert.equal(pack.modules.claim, true);
+    assert.deepEqual(
+      pack.cards.map((c) => c.id),
+      ["door", "pushback", "i35", "set", "compass"],
+    );
+    assert.equal(pack.claimCard?.id, "claim");
+    assert.deepEqual(
+      POCKET_CARDS.map((c) => c.id),
+      pack.cards.map((c) => c.id),
+    );
+    assert.deepEqual(
+      pack.scenes.map((s) => s.id),
+      ["walkup", "claim", "push", "after", "walk", "set", "phone", "visit"],
+    );
+    assert.equal(pack.scenes.find((s) => s.id === "claim")?.claim, true);
+    assert.deepEqual(
+      COACH_MODES.find((m) => m.id === "live")?.starters,
+      [...pack.starters.live],
+    );
+    assert.match(pack.starters.live[0] ?? "", /million-dollar/);
+  });
+
+  it("Door / Roof / Coach help paragraphs are the pack", () => {
+    assert.equal(PAGE_HELP.door.body, pack.help.door);
+    assert.equal(PAGE_HELP.roof.body, pack.help.inspect);
+    assert.equal(PAGE_HELP.coach.body, pack.help.coach);
+    assert.match(pack.help.door.join(" "), /Claim path/);
+    assert.match(pack.help.inspect.join(" "), /i35/);
+  });
+
+  it("roleplay bar and Door list read the pack", () => {
+    assert.match(src("../../components/roleplay-bar.tsx"), /pack\.scenes/);
+    assert.match(src("../../components/roleplay-bar.tsx"), /pack\.modules\.claim/);
+    assert.match(src("../../components/roleplay-bar.tsx"), /claimUnlocked/);
+    assert.match(src("../pocket-cards.ts"), /pack\.cards/);
+    assert.match(src("../coach-modes.ts"), /pack\.starters\.live/);
+    assert.match(src("../coach-prompt.ts"), /pack\.promptModules/);
+  });
+
+  it("kernel has no hail golden-text; pack roofus still trains an honest porch", () => {
+    assert.doesNotMatch(src("../coach-prompt.ts"), /hail/i);
+    assert.doesNotMatch(src("../coach-modes.ts"), /hail/i);
+    assert.doesNotMatch(src("../pocket-cards.ts"), /hail/i);
+    assert.doesNotMatch(src("../coach-briefs.ts"), /hail/i);
+    assert.match(pack.promptModules, /Script B/);
+    assert.match(pack.promptModules, /i35/);
+    assert.match(pack.promptModules, /age first/i);
+    assert.match(pack.promptModules, /hail/i);
+    const door = pack.cards.find((c) => c.id === "door")!;
+    const text = door.lines.map((l) => `${l.say ?? ""} ${l.note ?? ""}`).join(" ");
+    assert.match(text, /fake hail/);
+    assert.match(text, /Script A only after Keep/);
   });
 });

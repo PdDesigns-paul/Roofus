@@ -89,7 +89,7 @@ describe("tour copy in the book", () => {
     assert.match(coachPrompt, /Do not list tab names on slide 1/);
     assert.match(coachPrompt, /Skip is on every slide/);
     assert.match(coachPrompt, /outlined pills under the list/);
-    assert.match(coachPrompt, /Places: Today, Door, Roof, Plan/);
+    assert.match(coachPrompt, /Places: \$\{today\}, \$\{door\}, \$\{inspect\}, \$\{plan\}/);
     assert.doesNotMatch(coachPrompt, /does not auto-play/);
     assert.doesNotMatch(coachPrompt, /five slides over Truck/);
     assert.doesNotMatch(coachPrompt, /Places: Truck, Door, Roof, Prep/);

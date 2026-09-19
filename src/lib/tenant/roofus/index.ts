@@ -1,4 +1,9 @@
-import type { BrandPack, TourStep } from "./pack.ts";
+import type { BrandPack, TourStep } from "../pack.ts";
+import { ROOFUS_BRIEFS, ROOFUS_STARTERS } from "./briefs.ts";
+import { ROOFUS_CARDS, ROOFUS_CLAIM_CARD } from "./cards.ts";
+import { ROOFUS_HELP } from "./help.ts";
+import { ROOFUS_PROMPT_MODULES } from "./prompt.ts";
+import { ROOFUS_CLAIM_STAGES, ROOFUS_SCENES, ROOFUS_WHO } from "./scenes.ts";
 
 /** Pack `roofus` must pixel-match the live phone. Do not restyle the dog. */
 
@@ -53,4 +58,14 @@ export const ROOFUS_PACK = {
     talkAria: "Talk to Roofus",
     tour: ROOFUS_TOUR,
   },
+  modules: { claim: true },
+  cards: ROOFUS_CARDS,
+  claimCard: ROOFUS_CLAIM_CARD,
+  scenes: ROOFUS_SCENES,
+  who: ROOFUS_WHO,
+  claimStages: ROOFUS_CLAIM_STAGES,
+  briefs: ROOFUS_BRIEFS,
+  starters: ROOFUS_STARTERS,
+  promptModules: ROOFUS_PROMPT_MODULES,
+  help: ROOFUS_HELP,
 } as const satisfies BrandPack;

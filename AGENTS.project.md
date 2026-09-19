@@ -87,7 +87,7 @@ Squint test: blur the screenshot. If the action disappears, it was never signifi
 - `src/lib/porch-faqs.ts`
 - `src/lib/page-help.ts`
 
-The long coach prompt lives in `src/lib/coach-prompt.ts` — edit there, not `coach-system.ts`. Pack modules are the white-label half of that prompt. Roofus porch words stay the default until a curriculum slice extracts them.
+The long coach prompt is kernel honesty in `src/lib/coach-prompt.ts` plus pack modules in `src/lib/tenant/roofus/`. Edit those, not `coach-system.ts`. Roofus porch words are pack `roofus`.
 
 ## Keep in sync when you touch chrome or tap-clues
 
