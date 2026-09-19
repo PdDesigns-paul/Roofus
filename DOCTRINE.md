@@ -31,9 +31,9 @@ White-label is a doctrine split, not a Settings row.
 
 A second tenant that still says “knock” and “On the roof” is a failed pack.
 
-Porch paragraphs below are pack `roofus` until a curriculum slice extracts them. Do not rewrite them in this slice.
+Porch cards, beats, briefs, and prompt modules live in pack `roofus` (`src/lib/tenant/roofus/`). This file stays the doctrine those modules must match.
 
-Coach prompt sync: this file + `src/lib/coach-prompt.ts` + pack modules (when they exist). Help copy in `src/lib/page-help.ts` may be pack-owned later.
+Coach prompt sync: this file + `src/lib/coach-prompt.ts` (kernel honesty) + pack modules. Door / Roof / Coach help copy in `src/lib/page-help.ts` is pack-owned.
 
 ---
 
@@ -302,7 +302,7 @@ Control types — Place, Do, Chip, Go, Talk. Buttons do. Links go. Chips fork th
 
 Tomorrow, in order: last-48h **High** on a loop they keep → Working → next fresh loop in that township → next township. Do not ask a newbie where to go. Do not invent hail.
 
-Starter FAQs in `src/lib/porch-faqs.ts` must match this file. Coach prompt in `src/lib/coach-prompt.ts` plus pack modules must match this file **and** the buttons that exist. (`coach-system.ts` re-exports — edit the prompt file.) Help copy in `src/lib/page-help.ts` must name the chrome that is on the phone after a slice, not the chrome we wish were there. Help may be pack-owned later.
+Starter FAQs in `src/lib/porch-faqs.ts` must match this file. Coach prompt in `src/lib/coach-prompt.ts` plus pack modules in `src/lib/tenant/roofus/` must match this file **and** the buttons that exist. (`coach-system.ts` re-exports — edit the prompt file or the pack, not the re-export.) Help copy in `src/lib/page-help.ts` must name the chrome that is on the phone after a slice, not the chrome we wish were there. Door / Roof / Coach help is pack-owned.
 
 
 ---

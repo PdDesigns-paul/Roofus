@@ -1,12 +1,6 @@
-import {
-  ROLEPLAY_CLAIM_STAGES,
-  ROLEPLAY_SCENES,
-  ROLEPLAY_WHO,
-  claimUnlocked,
-  type RoleplayPersonId,
-  type RoleplaySceneId,
-} from "@/lib/coach-modes";
+import { claimUnlocked, isClaimScene, type RoleplayPersonId, type RoleplaySceneId } from "@/lib/coach-modes";
 import { readFreshKept } from "@/lib/kept-storm";
+import { pack } from "@/lib/tenant";
 import { useWeather } from "@/lib/weather-store";
 
 export function RoleplayBar({
@@ -27,12 +21,13 @@ export function RoleplayBar({
   onKnock: () => void;
 }) {
   const keptOn = claimUnlocked(readFreshKept(useWeather((s) => s.keptStorms)));
-  const whoChips = beat === "claim" ? ROLEPLAY_CLAIM_STAGES : ROLEPLAY_WHO;
+  const scenes = pack.modules.claim ? pack.scenes : pack.scenes.filter((s) => !s.claim);
+  const whoChips = isClaimScene(beat) ? pack.claimStages : pack.who;
   return (
     <div className="mb-2 flex flex-col gap-2">
       <div className="flex flex-wrap gap-1.5">
-        {ROLEPLAY_SCENES.map((s) => {
-          const locked = s.id === "claim" && !keptOn;
+        {scenes.map((s) => {
+          const locked = Boolean(s.claim && pack.modules.claim && !keptOn);
           return (
             <button
               key={s.id}
@@ -53,7 +48,7 @@ export function RoleplayBar({
           );
         })}
       </div>
-      {!keptOn ? <p className="text-xs text-faint">Keep a storm first.</p> : null}
+      {pack.modules.claim && !keptOn ? <p className="text-xs text-faint">Keep a storm first.</p> : null}
       <div className="flex flex-wrap gap-1.5">
         {whoChips.map((w) => (
           <button
