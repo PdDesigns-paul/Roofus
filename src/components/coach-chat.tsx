@@ -16,6 +16,8 @@ import {
   roleplayKnockLine,
 } from "@/lib/coach-modes";
 import { WALKS, walkKickoff, type WalkId } from "@/lib/survive";
+import { pack } from "@/lib/tenant";
+
 
 export function CoachChat({ embedded = false }: { embedded?: boolean }) {
   const messages = useCoach((s) => s.messages);
@@ -96,7 +98,7 @@ export function CoachChat({ embedded = false }: { embedded?: boolean }) {
           </button>
           <div className="flex items-center gap-2 text-sm text-muted">
             <RoofusFace className="size-14" alt="" />
-            <span className="font-medium text-fg">Roofus</span>
+            <span className="font-medium text-fg">{pack.talkName}</span>
             <span className="text-faint">· {mode.label}</span>
           </div>
           <HelpButton page="coach" />

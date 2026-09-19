@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { RoofusFace } from "@/components/roofus-mark";
 import { Tip } from "@/components/ui/tooltip";
 import { hideTalk } from "@/lib/app-chrome";
+import { pack } from "@/lib/tenant";
 import { useCoach } from "@/lib/coach-store";
+
 import { openCoachMode } from "@/lib/open-coach";
 import { COACH_MODES, threadTag, type CoachMode } from "@/lib/coach-modes";
 
@@ -96,7 +98,7 @@ export function AskFab() {
       <Tip label="Tap to pick Live, Roleplay, or Mindset. Hold starts Live." side="left">
         <button
           type="button"
-          aria-label="Talk to Roofus"
+          aria-label={pack.copy.talkAria}
           aria-haspopup="menu"
           aria-expanded={fan}
           className="fixed right-4 z-40 flex size-20 items-center justify-center overflow-hidden rounded-full bg-accent text-paper shadow-lg ring-2 ring-paper/40"

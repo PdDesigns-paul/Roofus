@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { siteHost, type CompanyPage } from "./company-site.ts";
 import { addPacket, packetBytes, type CompanyPacket } from "./company-packets.ts";
+import { pack } from "./tenant/index.ts";
+
 
 export type ThemeMode = "light" | "dark";
 
@@ -36,7 +38,7 @@ export function applyTheme(theme: ThemeMode) {
   if (typeof document === "undefined") return;
   document.documentElement.classList.toggle("dark", theme === "dark");
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", theme === "dark" ? "#0c0c0d" : "#f2f1ee");
+  if (meta) meta.setAttribute("content", theme === "dark" ? pack.pwa.themeColor : "#f2f1ee");
 }
 
 export const useSettings = create<SettingsState>()(

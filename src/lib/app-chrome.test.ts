@@ -2,6 +2,8 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { helpPageFor, hideTalk, showBack } from "./app-chrome.ts";
 import { HELP_ID_ALIAS, PAGE_HELP } from "./page-help.ts";
+import { pack } from "./tenant/index.ts";
+
 
 describe("showBack", () => {
   it("hides Back on the four Places", () => {
@@ -40,6 +42,11 @@ describe("helpPageFor", () => {
     assert.equal(helpPageFor("/roof"), "roof");
     assert.equal(helpPageFor("/coach/inspect"), "roof");
     assert.equal(PAGE_HELP.roof.title, "Roof");
+    assert.equal(PAGE_HELP.roof.title, pack.places.inspect);
+    assert.equal(PAGE_HELP.today.title, pack.places.today);
+    assert.equal(PAGE_HELP.plan.title, pack.places.plan);
+    assert.equal(PAGE_HELP.door.title, pack.places.door);
+    assert.equal(PAGE_HELP.coach.title, pack.talkName);
     assert.match(PAGE_HELP.plan.body.join(" "), /After Action Report/);
     assert.match(PAGE_HELP.plan.body.join(" "), /Settings is a Go at the bottom/);
     assert.match(PAGE_HELP.plan.body.join(" "), /Morning/);

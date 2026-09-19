@@ -30,6 +30,7 @@ import {
 import { useStreets } from "@/lib/streets-store";
 import { morningPins, pinsForLoop, revisitPins, type YearFilter } from "@/lib/pins";
 import { reclusterPins, usePins } from "@/lib/pins-store";
+import { pack } from "@/lib/tenant";
 import {
   DEFAULT_AGE_MAX,
   DEFAULT_AGE_MIN,
@@ -191,7 +192,7 @@ function AfterPage() {
   if (!profile.setupDone) {
     return (
       <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-        <AppHeader title="Plan" />
+        <AppHeader title={pack.places.plan} />
         <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">Where you knock.</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted">
           Night-before and morning. Pin from Today, or search a zip. Walks form from the houses you mark. Counties in
@@ -219,7 +220,7 @@ function AfterPage() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <AppHeader title="Plan" />
+      <AppHeader title={pack.places.plan} />
       <ul className="mt-4 flex flex-col gap-3">
         <PlaceCard
           id="hunt"

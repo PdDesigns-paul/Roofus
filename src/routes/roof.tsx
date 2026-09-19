@@ -12,6 +12,8 @@ import { openHousePin, pinLabel } from "@/lib/pins";
 import { usePins } from "@/lib/pins-store";
 import { useStreets } from "@/lib/streets-store";
 import { useDayBook } from "@/lib/day-book";
+import { pack } from "@/lib/tenant";
+
 
 const EMPTY_TURNS: { role: "user" | "assistant"; content: string }[] = [];
 
@@ -149,7 +151,7 @@ function RoofPage() {
 
   return (
     <main className="relative z-10 mx-auto flex h-dvh w-full min-w-0 max-w-lg flex-col overflow-hidden px-4 pt-3">
-      <AppHeader title="Roof" />
+      <AppHeader title={pack.places.inspect} />
 
       <div className="mt-3 flex items-end justify-between gap-3">
         <div className="min-w-0">

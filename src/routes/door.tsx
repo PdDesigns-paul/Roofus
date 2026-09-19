@@ -26,6 +26,8 @@ import { loopHeadline, loopZip, zipFromHeadline } from "@/lib/streets-rank";
 import { useStreets } from "@/lib/streets-store";
 import { speakText } from "@/lib/speech";
 import { useWeather } from "@/lib/weather-store";
+import { pack } from "@/lib/tenant";
+
 
 /** Door cards. Formerly /coach/cards. */
 export const Route = createFileRoute("/door")({
@@ -87,7 +89,7 @@ function Door() {
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
-      <AppHeader title="Door" />
+      <AppHeader title={pack.places.door} />
       <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">In your pocket.</h1>
       <p className="mt-3 text-sm leading-relaxed">
         {strip.emptyYou ? (
@@ -159,7 +161,7 @@ function CardBody({ card, fill }: { card: PocketCard; fill: PocketFill }) {
         className="mt-4 w-full"
         onClick={() => askCard(card, fill)}
       >
-        Ask Roofus
+        {pack.copy.askTalk}
       </Button>
     </>
   );
