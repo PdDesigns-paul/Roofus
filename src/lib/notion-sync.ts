@@ -6,28 +6,12 @@ import { localDateKey, useDayBook, type DayEntry } from "@/lib/day-book";
 import { assertRestoreAllowed } from "@/lib/book-owner";
 
 import { type NotionFaq, type NotionTable } from "@/lib/notion-ids";
-import {
-  fillProfile,
-  fillSurvive,
-  loopWorthKeeping,
-  MAX_BACKUP_STREETS,
-  mergeDays,
-  mergeFaqs,
-  mergeLoops,
-  mergeStorms,
-  packMindset,
-  restoreTally,
-  rowsWithBody,
-  unpackMindset,
-} from "@/lib/notion-merge";
+import { loopWorthKeeping, restoreTally } from "@/lib/notion-merge";
+import { applyPhoneCopy, collectPhoneCopy, markLastCopy, whenHydrated, whenStoresReady } from "@/lib/office-copy";
 import { useNotion } from "@/lib/notion-store";
-import { useSettings } from "@/lib/settings-store";
-import { useStreets } from "@/lib/streets-store";
 import type { StreetLoop } from "@/lib/streets-types";
-import { useSurvive } from "@/lib/survive-store";
-import { useWeather } from "@/lib/weather-store";
-import { MAX_BACKUP_PINS, type HousePin } from "@/lib/pins";
-import { mergeIncomingPins, reclusterPins, usePins } from "@/lib/pins-store";
+import { type HousePin } from "@/lib/pins";
+import { usePins } from "@/lib/pins-store";
 import type { StormEvent } from "@/lib/weather-types";
 
 type Progress = (label: string) => void;
@@ -55,26 +39,15 @@ async function postSync(body: Record<string, unknown>) {
 }
 
 function tableItems(table: NotionTable): unknown[] {
-  if (table === "days") return Object.values(useDayBook.getState().days);
-  if (table === "streets") return useStreets.getState().loops.slice(0, MAX_BACKUP_STREETS);
-  if (table === "storms") return useWeather.getState().kept;
+  const copy = collectPhoneCopy();
+  if (table === "days") return copy.days;
+  if (table === "streets") return copy.loops;
+  if (table === "storms") return copy.storms;
   if (table === "mindset") {
-    const s = useSurvive.getState();
-    const p = useDayBook.getState().profile;
-    const streets = useStreets.getState();
-    const set = useSettings.getState();
-    return rowsWithBody(
-      packMindset(s, p, {
-        ageMin: streets.ageMin,
-        ageMax: streets.ageMax,
-        companyName: p.company,
-        warrantyLine: set.warrantyLine,
-        companyWebsite: set.companyWebsite,
-      }),
-    );
+    return Object.entries(copy.mindset).map(([name, body]) => ({ name, body }));
   }
-  if (table === "pins") return usePins.getState().pins.slice(0, MAX_BACKUP_PINS);
-  return useNotion.getState().faqs;
+  if (table === "pins") return copy.pins;
+  return copy.faqs;
 }
 
 const LABELS: Record<NotionTable, string> = {
@@ -85,19 +58,6 @@ const LABELS: Record<NotionTable, string> = {
   memory: "memory",
   pins: "pins",
 };
-
-function whenHydrated(store: {
-  persist: { hasHydrated: () => boolean; onFinishHydration: (cb: () => void) => () => void };
-}): Promise<void> {
-  if (store.persist.hasHydrated()) return Promise.resolve();
-  return new Promise((resolve) => {
-    const unsub = store.persist.onFinishHydration(() => {
-      unsub();
-      resolve();
-    });
-    window.setTimeout(resolve, 400);
-  });
-}
 
 export async function connectNotion(onProgress?: Progress) {
   const { token, pageUrl, setIds, setError } = useNotion.getState();
@@ -126,6 +86,7 @@ export async function backupNotion(onProgress?: Progress) {
     liveIds = next;
   }
   onProgress?.("Preparing…");
+  await whenStoresReady();
   await postSync({ token, ids: liveIds, mode: "prepare" });
   const tables: NotionTable[] = ["days", "streets", "storms", "mindset", "memory", "pins"];
   for (const table of tables) {
@@ -147,14 +108,16 @@ export async function backupNotion(onProgress?: Progress) {
       index = chunk.index ?? index;
     }
   }
-  markSync(new Date().toISOString());
+  const at = new Date().toISOString();
+  markSync(at);
+  markLastCopy(at);
 }
 
 export async function restoreNotion(onProgress?: Progress, confirmed = false) {
-  const { token, ids, setError, setFaqs, markSync } = useNotion.getState();
+  const { token, ids, setError, markSync } = useNotion.getState();
   if (!token || !ids) throw new Error("Connect Notion in Settings first.");
   await whenHydrated(useDayBook);
-  assertRestoreAllowed(useDayBook.getState().days, confirmed, localDateKey());
+  assertRestoreAllowed(useDayBook.getState().days, confirmed, localDateKey(), usePins.getState().pins.length);
   setError("");
   let liveIds = ids;
   if (!liveIds.pinsDb) {
@@ -164,15 +127,7 @@ export async function restoreNotion(onProgress?: Progress, confirmed = false) {
     if (!next?.pinsDb) throw new Error("Connect Notion in Settings first.");
     liveIds = next;
   }
-  await Promise.all([
-    whenHydrated(useDayBook),
-    whenHydrated(useStreets),
-    whenHydrated(useWeather),
-    whenHydrated(useSurvive),
-    whenHydrated(useNotion),
-    whenHydrated(useSettings),
-    whenHydrated(usePins),
-  ]);
+  await whenStoresReady();
   onProgress?.("Restoring…");
   const data = await postSync({ token, ids: liveIds, mode: "pull" });
   if (!data.pulled) throw new Error("Restore missed.");
@@ -181,49 +136,9 @@ export async function restoreNotion(onProgress?: Progress, confirmed = false) {
     loops: data.pulled.loops.filter(loopWorthKeeping),
     pins: data.pulled.pins ?? [],
   };
-  applyRestore(pulled);
-  setFaqs(mergeFaqs(useNotion.getState().faqs, pulled.faqs));
-  markSync(new Date().toISOString());
+  applyPhoneCopy(pulled);
+  const at = new Date().toISOString();
+  markSync(at);
+  markLastCopy(at);
   return restoreTally(pulled);
-}
-
-function applyRestore(pulled: {
-  days: DayEntry[];
-  loops: StreetLoop[];
-  storms: StormEvent[];
-  mindset: Record<string, string>;
-  pins: HousePin[];
-}) {
-  useDayBook.setState((s) => ({ days: mergeDays(s.days, pulled.days) }));
-
-  if (pulled.loops.length) {
-    useStreets.setState((s) => ({ loops: mergeLoops(s.loops, pulled.loops) }));
-  }
-  if (pulled.storms.length) {
-    useWeather.setState((s) => ({ kept: mergeStorms(s.kept, pulled.storms) }));
-  }
-  if (pulled.pins.length) mergeIncomingPins(pulled.pins);
-  else reclusterPins();
-
-  const unpacked = unpackMindset(pulled.mindset);
-  const survivePatch = fillSurvive(useSurvive.getState(), unpacked.survive);
-  if (Object.keys(survivePatch).length) useSurvive.getState().patch(survivePatch);
-
-  const nextProfile = fillProfile(useDayBook.getState().profile, unpacked.profile);
-  if (unpacked.companyName && !nextProfile.company.trim()) {
-    nextProfile.company = unpacked.companyName;
-  }
-  useDayBook.setState({ profile: nextProfile });
-
-  if (unpacked.ageMin && unpacked.ageMax && !useStreets.getState().builtFor) {
-    useStreets.getState().setAge(unpacked.ageMin, unpacked.ageMax);
-  }
-
-  const settings = useSettings.getState();
-  if (unpacked.warrantyLine && settings.warrantyLine === "See the actual Owens Corning warranty.") {
-    settings.setWarrantyLine(unpacked.warrantyLine);
-  }
-  if (unpacked.companyWebsite && !settings.companyWebsite.trim()) {
-    settings.setCompanyWebsite(unpacked.companyWebsite);
-  }
 }

@@ -12,7 +12,7 @@ function BackupPage() {
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
       <AppHeader title="Backup" />
       <p className="mt-5 text-sm leading-relaxed text-muted">
-        Do not Restore onto a full phone. Do not Backup from an empty one.
+        Copy this phone. Do not Restore onto a full book unless you type whose it is.
       </p>
       <NotionBackup />
     </main>

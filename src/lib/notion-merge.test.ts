@@ -9,11 +9,13 @@ import {
   mergeLoops,
   mergeStorms,
   packLabeled,
+  packLabor,
   packMindset,
   restoreTally,
   rowsWithBody,
   loopWorthKeeping,
   unpackLabeled,
+  unpackLabor,
   unpackMindset,
   sanitizeLoop,
   type SurviveFields,
@@ -85,6 +87,19 @@ describe("mergeDays", () => {
     assert.equal(merged["2026-09-01"]?.knocks, 10);
     assert.equal(merged["2026-09-01"]?.labor.startedAt, "2026-09-01T16:00:00.000Z");
     assert.equal(merged["2026-09-01"]?.labor.endedAt, "2026-09-01T20:00:00.000Z");
+  });
+
+  it("packs labor so a Notion / file copy can restore the clock", () => {
+    const packed = packLabor({
+      startedAt: "2026-09-19T13:00:00.000Z",
+      endedAt: "2026-09-19T20:00:00.000Z",
+      breaksMin: 15,
+    });
+    const shift = unpackLabor(packed, "2026-09-19");
+    assert.equal(shift.startedAt, "2026-09-19T13:00:00.000Z");
+    assert.equal(shift.endedAt, "2026-09-19T20:00:00.000Z");
+    assert.equal(shift.breaksMin, 15);
+    assert.equal(packLabor({ startedAt: null, endedAt: null, breaksMin: 0 }), "");
   });
 
   it("keeps the newest 60 days", () => {

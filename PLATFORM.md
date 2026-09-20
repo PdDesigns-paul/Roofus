@@ -1,8 +1,8 @@
 # Platform leftover — host organs
 
 The phone book stays **local-first**. Days, streets, storms, pins, and mindset
-live in `localStorage` / Zustand. Cloud is a copy (Notion today; office copy
-later). The journal must stay writable offline. Do not make Postgres the live
+live in `localStorage` / Zustand. Cloud is a copy (JSON file on the phone;
+optional Notion). The journal must stay writable offline. Do not make Postgres the live
 book.
 
 Grok’s scaffold still ships organs the host expects at these paths. They stay

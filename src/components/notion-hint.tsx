@@ -12,11 +12,11 @@ export function NotionHint() {
     <div className="mt-6 rounded-2xl border border-border px-4 py-3">
       <p className="text-xs font-medium uppercase tracking-wide text-faint">Recommended</p>
       <p className="mt-2 text-sm leading-relaxed text-muted">
-        Copy your days to a free Notion so a dead phone is not a dead year. Optional. Settings.
+        Copy this phone in Backup — a file, or Notion if the office uses it. Optional.
       </p>
       <div className="mt-3 flex gap-2">
         <Button asChild className="flex-1">
-          <Link to="/settings/backup">Set up backup</Link>
+          <Link to="/settings/backup">Go to Backup</Link>
         </Button>
         <Button type="button" variant="outline" className="flex-1" onClick={hide}>
           Not now

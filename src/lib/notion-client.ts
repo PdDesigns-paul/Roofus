@@ -11,7 +11,7 @@ import { restorePin, type HousePin } from "@/lib/pins";
 import { loopHeadline, townFromHeadline, zipFromHeadline } from "@/lib/streets-rank";
 import type { StormEvent } from "@/lib/weather-types";
 import type { MindsetRow } from "@/lib/notion-merge";
-import { sanitizeLoop, sanitizeStorm, loopWorthKeeping } from "@/lib/notion-merge";
+import { loopWorthKeeping, packLabor, sanitizeLoop, sanitizeStorm, unpackLabor } from "@/lib/notion-merge";
 
 const VER = "2022-06-28";
 export const NOTION_CHUNK = 8;
@@ -173,6 +173,11 @@ const DAY_PROPS = {
   Weather: { rich_text: {} },
   "After Action": { rich_text: {} },
   Tomorrow: { rich_text: {} },
+  Labor: { rich_text: {} },
+};
+
+const DAY_EXTRAS = {
+  Labor: { rich_text: {} },
 };
 
 const STREET_EXTRAS = {
@@ -298,6 +303,11 @@ export async function setupNotion(token: string, pageUrl: string): Promise<Notio
 }
 
 export async function prepareNotion(token: string, ids: NotionIds) {
+  await call(token, `/databases/${ids.daysDb}`, {
+    method: "PATCH",
+    body: JSON.stringify({ properties: DAY_EXTRAS }),
+  });
+  await sleep(RATE_MS);
   await call(token, `/databases/${ids.stormsDb}`, {
     method: "PATCH",
     body: JSON.stringify({ properties: STORM_EXTRAS }),
@@ -380,6 +390,7 @@ function dayProps(d: DayEntry): Record<string, NotionProp> {
     Weather: rich(d.storm),
     "After Action": rich(d.afterAction),
     Tomorrow: rich(d.tomorrowStreet),
+    Labor: rich(packLabor(d.labor)),
   };
 }
 
@@ -553,6 +564,7 @@ export async function pullSnapshot(token: string, ids: NotionIds): Promise<Notio
         storm: readRich(p, "Weather"),
         afterAction: readRich(p, "After Action"),
         tomorrowStreet: readRich(p, "Tomorrow"),
+        labor: unpackLabor(readRich(p, "Labor"), readTitle(p)),
       }),
     )
     .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d.date));

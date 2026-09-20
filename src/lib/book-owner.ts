@@ -92,16 +92,18 @@ export function todayHasCounts(
 export function restoreNeedsConfirm(
   days: Record<string, { knocks?: number; talks?: number; looks?: number; sets?: number }>,
   today: string,
+  pinCount = 0,
 ): boolean {
-  return todayHasCounts(days, today);
+  return todayHasCounts(days, today) || pinCount > 0;
 }
 
 export function assertRestoreAllowed(
   days: Record<string, { knocks?: number; talks?: number; looks?: number; sets?: number }>,
   confirmed: boolean,
   today: string,
+  pinCount = 0,
 ): void {
-  if (restoreNeedsConfirm(days, today) && !confirmed) {
+  if (restoreNeedsConfirm(days, today, pinCount) && !confirmed) {
     throw new Error(RESTORE_WHOSE_BOOK);
   }
 }

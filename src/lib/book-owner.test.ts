@@ -74,6 +74,14 @@ describe("restore whose book", () => {
     assert.doesNotThrow(() => assertRestoreAllowed(days, true, "2026-09-19"));
     assert.equal(restoreNeedsConfirm({ "2026-09-19": { knocks: 0 } }, "2026-09-19"), false);
   });
+
+  it("blocks Restore when pins exist even if Today is empty", () => {
+    const days = { "2026-09-19": { knocks: 0, talks: 0, looks: 0, sets: 0 } };
+    assert.equal(restoreNeedsConfirm(days, "2026-09-19", 2), true);
+    assert.throws(() => assertRestoreAllowed(days, false, "2026-09-19", 2), { message: RESTORE_WHOSE_BOOK });
+    assert.doesNotThrow(() => assertRestoreAllowed(days, true, "2026-09-19", 2));
+    assert.equal(restoreNeedsConfirm(days, "2026-09-19", 0), false);
+  });
 });
 
 describe("owner chrome", () => {
@@ -84,6 +92,7 @@ describe("owner chrome", () => {
     const setup = readFileSync(new URL("../components/home-setup-card.tsx", import.meta.url), "utf8");
     assert.match(you, /This phone/);
     assert.match(you, /OwnerChip/);
+    assert.match(you, /Go to Backup/);
     assert.match(setup, /OwnerChip/);
     assert.doesNotMatch(header, /UserButton/);
     assert.doesNotMatch(root, /UserButton/);

@@ -50,7 +50,7 @@ export const PAGE_HELP = {
       "Territory: counties and a state. Counties are for storms. Pins make the walks. Hours: usual windows stay as policy. This week is your clock, counts, and conversion — not a hidden office report.",
       "Reminders: morning storm if empty, evening After Action Report only after a door, a pin, or finished setup, Sundays pace, the 1st talent stack. Did it is a chip. Finish-setup is Settings, not a nag. Blank first hour after 5pm is Setup, not AAR.",
       "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report lives on Plan.",
-      "Backup: optional Notion copy of days, streets, storms, mindset, FAQs, and pins. Do not Restore onto a full phone. Do not Backup from an empty one.",
+      "Backup: Copy this phone. Last copy is a line on You. Save a file works offline. Notion is an optional office connector behind Use Notion. Restore onto a full day or pins asks you to type your first name or This phone.",
       "Show the tour and Load a sample day are outlined pills under the list. Show the tour plays the five job slides again. Skip is on every slide. Load a sample day only on an empty book.",
     ],
   },
