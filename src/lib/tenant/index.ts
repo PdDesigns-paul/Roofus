@@ -1,6 +1,6 @@
 import { ROOFUS_PACK } from "./roofus/index.ts";
-import { DEMO_PACK } from "./demo/index.ts";
 import { PEST_PACK } from "./pest/index.ts";
+import { SOLAR_PACK } from "./solar/index.ts";
 import type { BrandPack } from "./pack.ts";
 import { DEFAULT_PACK_ID, resolvePackId, tenantEnvId } from "./resolve.ts";
 
@@ -22,8 +22,10 @@ export type {
 export { manifestFromPack, packStyle, todayWeatherLine } from "./pack.ts";
 
 export { ROOFUS_PACK } from "./roofus/index.ts";
-export { DEMO_PACK } from "./demo/index.ts";
 export { PEST_PACK } from "./pest/index.ts";
+export { SOLAR_PACK } from "./solar/index.ts";
+/** Stride graduated. `VITE_TENANT_ID=demo` still resolves to pack `solar`. */
+export { SOLAR_PACK as DEMO_PACK } from "./solar/index.ts";
 export {
   DEFAULT_PACK_ID,
   HOST_PACK,
@@ -36,8 +38,9 @@ export {
 
 const PACKS: Record<string, BrandPack> = {
   roofus: ROOFUS_PACK,
-  demo: DEMO_PACK,
+  demo: SOLAR_PACK,
   pest: PEST_PACK,
+  solar: SOLAR_PACK,
 };
 
 export function packById(id: string): BrandPack {

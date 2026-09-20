@@ -172,7 +172,7 @@ describe("pack roofus curriculum", () => {
     );
     assert.equal(pack.inspect.reportName, "CompanyCam");
     assert.equal(pack.inspect.askStarters.length, 3);
-    assert.match(src("../inspect-walk.ts"), /DEMO_INSPECT/);
+    assert.match(src("../inspect-walk.ts"), /SOLAR_INSPECT/);
     assert.match(src("../inspect-walk.ts"), /ROOFUS_INSPECT/);
     assert.match(src("../inspect-system.ts"), /p\.inspect\.steps/);
 

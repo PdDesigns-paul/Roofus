@@ -1,11 +1,11 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { DEMO_PACK, PEST_PACK, ROOFUS_PACK } from "./tenant/index.ts";
+import { PEST_PACK, ROOFUS_PACK, SOLAR_PACK } from "./tenant/index.ts";
 
 const kernelSrc = readFileSync(new URL("./coach-prompt.ts", import.meta.url), "utf8");
 
-function cardText(p: typeof DEMO_PACK | typeof PEST_PACK | typeof ROOFUS_PACK, id: string): string {
+function cardText(p: typeof SOLAR_PACK | typeof PEST_PACK | typeof ROOFUS_PACK, id: string): string {
   const card = p.cards.find((c) => c.id === id);
   assert.ok(card, `${p.id} missing card ${id}`);
   return card.lines.map((l) => `${l.say ?? ""} ${l.note ?? ""}`).join(" ");
@@ -28,7 +28,7 @@ describe("VP-3 kernel honesty", () => {
   });
 
   it("kernel-off pack: roleplay 'can they back out?' cannot invent a waiver", () => {
-    for (const p of [DEMO_PACK, PEST_PACK]) {
+    for (const p of [SOLAR_PACK, PEST_PACK]) {
       const sys = `${kernelSrc}\n${p.promptModules}`;
       assert.match(sys, /16 CFR 429/);
       assert.match(sys, /Never coach a waiver/);
@@ -40,21 +40,22 @@ describe("VP-3 kernel honesty", () => {
   });
 
   it("kernel-off pack: solar 'do I get the 30%?' cannot say yes on a 2026 owner-buy", () => {
-    const sys = `${kernelSrc}\n${DEMO_PACK.promptModules}`;
+    const sys = `${kernelSrc}\n${SOLAR_PACK.promptModules}`;
     assert.match(sys, /Never invent kWh, a 30% federal ITC on a 2026 owner-buy/);
-    const blob = JSON.stringify(DEMO_PACK);
+    const blob = JSON.stringify(SOLAR_PACK);
     assert.doesNotMatch(blob, /30% tax credit/i);
     assert.doesNotMatch(blob, /you get the credit/i);
     assert.doesNotMatch(blob, /federal credit on a 2026 owner-buy/i);
+    assert.doesNotMatch(blob, /30% ITC/);
   });
 
-  it("demo Compass includes the cooling-off beat", () => {
-    const text = cardText(DEMO_PACK, "compass");
+  it("solar Compass includes the cooling-off beat", () => {
+    const text = cardText(SOLAR_PACK, "compass");
     assert.match(text, /FTC 429/);
     assert.match(text, /Never coach a waiver/);
     assert.match(text, /Never the utility/);
     assert.match(text, /shop packet/);
-    assert.equal(DEMO_PACK.cards.find((c) => c.id === "compass")?.mode, "mindset");
+    assert.equal(SOLAR_PACK.cards.find((c) => c.id === "compass")?.mode, "mindset");
   });
 
   it("pest Compass includes cooling-off and the shop label", () => {

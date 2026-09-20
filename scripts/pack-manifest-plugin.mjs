@@ -7,6 +7,7 @@ import { join } from "node:path";
 
 const PWA = {
   roofus: { name: "Roofus", short_name: "Roofus", theme_color: "#0c0c0d" },
+  solar: { name: "Stride", short_name: "Stride", theme_color: "#123c2e" },
   demo: { name: "Stride", short_name: "Stride", theme_color: "#123c2e" },
 };
 
