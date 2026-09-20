@@ -7,9 +7,10 @@ import { Tip } from "@/components/ui/tooltip";
 import { compressImage } from "@/lib/compress-image";
 import { abortTalk, sendRoofus, stopRoofus } from "@/lib/roofus-talk";
 import { useCoach } from "@/lib/coach-store";
-import { ASK_STARTERS, PRACTICE_SHOT, WALK_SLOTS, emptyWalk, serializeWalk, type WalkSlotId } from "@/lib/inspect-walk";
+import { PRACTICE_SHOT, emptyWalk, serializeWalk } from "@/lib/inspect-walk";
 import { openHousePin, pinLabel } from "@/lib/pins";
 import { usePins } from "@/lib/pins-store";
+
 import { useStreets } from "@/lib/streets-store";
 import { useDayBook } from "@/lib/day-book";
 import { pack } from "@/lib/tenant";
@@ -17,8 +18,9 @@ import { pack } from "@/lib/tenant";
 
 const EMPTY_TURNS: { role: "user" | "assistant"; content: string }[] = [];
 
-/** Roof walk. Formerly /coach/inspect. */
+/** Inspect walk. Formerly /coach/inspect. Rows come from the tenant pack. */
 export const Route = createFileRoute("/roof")({
+
   codeSplitGroupings: [],
   component: RoofPage,
 });
@@ -54,6 +56,8 @@ function RoofPage() {
   const checks = walk.checks;
   const openSlot = walk.openSlot;
   const looking = Boolean(liveId.current) && busy;
+  const steps = pack.inspect.steps;
+
   const shown = looking
     ? [...inspectTurns, { role: "assistant" as const, content: streaming }]
     : inspectTurns;
@@ -138,16 +142,17 @@ function RoofPage() {
     }
   }
 
-  function toggleSlot(id: WalkSlotId) {
+  function toggleSlot(id: string) {
     patchWalk({ done: { ...done, [id]: !done[id] } });
   }
 
-  function toggleCheck(key: string, slot: WalkSlotId) {
+  function toggleCheck(key: string, slot: string) {
     const next = { ...checks, [key]: !checks[key] };
-    const slotDef = WALK_SLOTS.find((s) => s.id === slot);
+    const slotDef = steps.find((s) => s.id === slot);
     const all = slotDef ? slotDef.checks.every((_, i) => next[`${slot}-${i}`]) : false;
     patchWalk({ checks: next, done: { ...done, [slot]: all } });
   }
+
 
   return (
     <main className="relative z-10 mx-auto flex h-dvh w-full min-w-0 max-w-lg flex-col overflow-hidden px-4 pt-3">
@@ -194,7 +199,7 @@ function RoofPage() {
         <section className="mt-3 min-h-0 flex-1 overflow-y-auto pb-tab">
           <p className="text-[11px] font-medium uppercase tracking-wide text-faint">What to shoot</p>
           <ul className="mt-2 flex flex-col gap-2">
-            {WALK_SLOTS.map((s) => {
+            {steps.map((s) => {
               const on = Boolean(done[s.id]);
               const open = openSlot === s.id;
               return (
@@ -306,7 +311,8 @@ function RoofPage() {
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2">
-                <Tip label="Take a photo on the roof">
+                <Tip label={pack.inspect.cameraTip}>
+
                   <button
                     type="button"
                     onClick={() => cameraRef.current?.click()}
@@ -326,7 +332,8 @@ function RoofPage() {
                     Photos
                   </button>
                 </Tip>
-                <Tip label="A close-up off the roof. Ask him the i35 slot.">
+                <Tip label={pack.inspect.practiceTip}>
+
                   <button
                     type="button"
                     onClick={() => void loadPractice()}
@@ -358,7 +365,7 @@ function RoofPage() {
                 </div>
               ) : (
                 <div className="flex flex-col gap-1.5">
-                  {ASK_STARTERS.map((s) => (
+                  {pack.inspect.askStarters.map((s) => (
                     <button
                       key={s}
                       type="button"
