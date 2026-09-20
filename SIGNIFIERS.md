@@ -123,7 +123,7 @@ Count tiles: tap the card to +1. − is a small control. Pin status on a house w
 - Door “Ask Roofus” stays an outlined pill. Hear this line is a second outlined Do on the filled SAY. Not a second FAB.
 - Roleplay Knock / mic / Score me reuse Claim-lock when `practiceOn` is false: faint, disabled, helper “Practice is on the plan.” Beat chips stay visible. Not a sixth type. No model picker.
 - Door fills [name]/[company] from You, [year] as the age-band window, [day] as tomorrow’s weekday. Empty You is a Go. Context strip: You · street or Working loop · roofs · Keep / Use-today. Claim path names the kept zip or stays hidden.
-- Settings index: rows get chevrons. Plan is a tab, not a Settings row. “Show the tour” and “Load a sample day” stay secondary outlined pills, below the list, not dressed as the page’s primary.
+- Settings index: rows get chevrons. Plan is a tab, not a Settings row. “Show the tour” and “Load a sample day” stay secondary outlined pills, below the list, not dressed as the page’s primary. You: owner chip. Switch book is a chip when another book is already on this phone — not a header UserButton.
 - Help copy and coach prompt name the controls that actually exist after the sweep.
 
 ### Slice 7 — Plan — shipped

@@ -44,7 +44,7 @@ function YouPage() {
         <div className="min-w-0">
           <p className="text-xs font-medium uppercase tracking-wide text-faint">Book</p>
           <div className="mt-2">
-            <OwnerChip />
+            <OwnerChip switchable />
           </div>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             This phone’s book. Account is a key, not a login screen.
