@@ -46,7 +46,7 @@ describe("restorePin / serializePin", () => {
     assert.equal(out?.source, "truck");
     assert.ok(out?.id);
     assert.equal(out?.countedAs.knocks, false);
-    assert.equal(out?.walk.done.street, undefined);
+    assert.equal(out?.walk.done.street, false);
   });
 
   it("drops owner / phone / parcel so the type cannot grow PII", () => {
@@ -263,7 +263,7 @@ describe("walk ticks hang on that pin", () => {
     });
     const b = makePin({ lat: 2, lng: 2 });
     assert.equal(a.walk.done.street, true);
-    assert.equal(b.walk.done.street, undefined);
+    assert.equal(b.walk.done.street, false);
     const out = restorePin(a);
     assert.equal(out?.walk.done.street, true);
     assert.equal(out?.walk.checks["street-0"], true);
@@ -278,7 +278,7 @@ describe("walk ticks hang on that pin", () => {
       walk: { done: { slopes: true }, checks: {}, openSlot: null },
     });
     const cleared = serializePin({ ...a, walk: { done: {}, checks: {}, openSlot: null } });
-    assert.equal(cleared.walk.done.street, undefined);
+    assert.equal(cleared.walk.done.street, false);
     assert.equal(b.walk.done.slopes, true);
   });
 });

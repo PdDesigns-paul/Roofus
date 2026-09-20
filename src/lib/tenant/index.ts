@@ -3,6 +3,8 @@ import { ROOFUS_PACK } from "./roofus/index.ts";
 export type {
   ActivityUnit,
   BrandPack,
+  InspectPack,
+  InspectStep,
   PackBriefs,
   PackHelp,
   PocketCard,
@@ -11,6 +13,7 @@ export type {
   RoleplayWho,
   TourStep,
 } from "./pack.ts";
+
 export { packStyle } from "./pack.ts";
 export { ROOFUS_PACK } from "./roofus/index.ts";
 

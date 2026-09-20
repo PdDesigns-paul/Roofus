@@ -16,7 +16,7 @@ Kernel names. Roofus examples in parentheses. Long porch map: [`DOCTRINE.md`](./
 | --- | --- |
 | **Today** | Field log. Working loop + **Pin** (GPS → house editor) + four counts (Doors, Talked, On the roof, Appointments). **Night** opens Finish the day on Plan. Empty-book setup until name + company + one county. |
 | **Door** | Curriculum cards (Door, Pushback, i35, Set, Compass). Claim path after Keep, matching zip. One-line formula: hook → honest reason → one open question. |
-| **Inspect** (tab: **Roof**) | Job-walk (Street, Four slopes, Close-up, Witnesses, Attic). Ask about that shot. He names the i35 slot. |
+| **Inspect** (tab: **Roof**) | Job-walk rows from the pack (Roofus: Street, Four slopes, Close-up, Witnesses, Attic). Ask about that shot. He names the i35 slot. |
 | **Plan** | Night-before + morning. A **map of pins**. Walks from distance (0.4 km, cap 40). Keep / Toss. Finish the day owns After Action Report. Settings is a Go at the bottom — not a fifth Place. |
 | **Talk** (orange dog FAB) | Live / Roleplay / Mindset. Hold starts Live. History is the clock. Practice only — do not record a homeowner. |
 | **Settings** | Book: You, Territory, Hours, Mindset, Reminders, Backup. Owner chip lives on You when that child ships. Not a `/login` Place. |

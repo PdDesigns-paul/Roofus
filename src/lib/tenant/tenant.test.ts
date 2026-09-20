@@ -106,7 +106,14 @@ describe("pack roofus", () => {
     assert.doesNotMatch(src("../../routes/truck.tsx"), /const COUNTERS/);
     assert.match(src("../../routes/door.tsx"), /pack\.places\.door/);
     assert.match(src("../../routes/roof.tsx"), /pack\.places\.inspect/);
+    assert.match(src("../../routes/roof.tsx"), /pack\.inspect\.steps/);
+    assert.match(src("../../routes/roof.tsx"), /pack\.inspect\.askStarters/);
+    assert.doesNotMatch(src("../../routes/roof.tsx"), /WALK_SLOTS/);
+    assert.doesNotMatch(src("../../routes/roof.tsx"), /Four slopes/);
+    assert.doesNotMatch(src("../../routes/roof.tsx"), /i35/);
+    assert.doesNotMatch(src("../../routes/roof.tsx"), /on the roof/);
     assert.match(src("../../routes/after.tsx"), /pack\.places\.plan/);
+
     assert.match(src("../../routes/__root.tsx"), /pack\.productName/);
     assert.match(src("../../routes/__root.tsx"), /packStyle\(pack\)/);
     assert.match(src("../../components/onboard-overlay.tsx"), /ONBOARD_STEPS/);
@@ -147,6 +154,19 @@ describe("pack roofus curriculum", () => {
       pack.labor.units.map((u) => u.label),
       ["Doors", "Talked", "On the roof", "Appointments"],
     );
+  });
+
+  it("owns inspect walk rows as pack data", () => {
+    assert.equal(pack.inspect.steps.length, 5);
+    assert.deepEqual(
+      pack.inspect.steps.map((s) => s.id),
+      ["street", "slopes", "close", "witness", "attic"],
+    );
+    assert.equal(pack.inspect.reportName, "CompanyCam");
+    assert.equal(pack.inspect.askStarters.length, 3);
+    assert.match(src("../inspect-walk.ts"), /ROOFUS_INSPECT/);
+    assert.match(src("../inspect-system.ts"), /p\.inspect\.steps/);
+
   });
 
   it("Door / Roof / Coach help paragraphs are the pack", () => {

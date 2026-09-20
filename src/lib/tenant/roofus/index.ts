@@ -1,5 +1,7 @@
 import type { BrandPack, TourStep } from "../pack.ts";
+import { ROOFUS_INSPECT } from "./inspect.ts";
 import { ROOFUS_BRIEFS, ROOFUS_STARTERS } from "./briefs.ts";
+
 import { ROOFUS_CARDS, ROOFUS_CLAIM_CARD } from "./cards.ts";
 import { ROOFUS_HELP } from "./help.ts";
 import { ROOFUS_PROMPT_MODULES } from "./prompt.ts";
@@ -76,4 +78,6 @@ export const ROOFUS_PACK = {
       { key: "sets", label: "Appointments", hint: "On the calendar" },
     ],
   },
+  inspect: ROOFUS_INSPECT,
 } as const satisfies BrandPack;
+

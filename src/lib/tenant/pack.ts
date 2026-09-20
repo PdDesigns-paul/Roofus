@@ -57,6 +57,24 @@ export type PackStarters = {
 
 export type ActivityUnit = { key: string; label: string; hint: string };
 
+export type InspectStep = {
+  id: string;
+  title: string;
+  hint: string;
+  askPrompt: string;
+  blurb: string;
+  checks: readonly string[];
+};
+
+export type InspectPack = {
+  steps: readonly InspectStep[];
+  askStarters: readonly string[];
+  cameraTip: string;
+  practiceTip: string;
+  /** Outbound report product. Kernel does not name it. */
+  reportName: string;
+};
+
 export type BrandPack = {
   id: string;
   productName: string;
@@ -93,6 +111,7 @@ export type BrandPack = {
   help: PackHelp;
   /** Today tiles. Roofus: knocks / talks / looks / sets. Storage still DayCounts. */
   labor: { units: readonly ActivityUnit[] };
+  inspect: InspectPack;
 };
 
 /** CSS variables set on <html>. Fallbacks in styles.css must match pack `roofus`. */
