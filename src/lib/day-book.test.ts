@@ -24,6 +24,7 @@ import {
   restoreShift,
   restoreStamps,
   resumeLabor,
+  setLaborTrailOn,
   shiftMinutes,
   stampsByHour,
   startWork,
@@ -63,6 +64,8 @@ describe("blankDay", () => {
     assert.equal(d.labor.breaksMin, 0);
     assert.deepEqual(d.labor.segments, []);
     assert.deepEqual(d.stamps, []);
+    assert.deepEqual(d.trail, []);
+    assert.equal(d.labor.trailOn, false);
   });
 });
 
@@ -125,6 +128,8 @@ describe("labor serialize", () => {
     const old = restoreDay("2026-09-19", { knocks: 2 });
     assert.equal(old.labor.startedAt, null);
     assert.deepEqual(old.labor.segments, []);
+    assert.deepEqual(old.trail, []);
+    assert.equal(old.labor.trailOn, false);
     assert.equal(old.knocks, 2);
     const bag = restoreDays({ "2026-09-19": raw, junk: { knocks: 1 } });
     assert.equal(bag["2026-09-19"]?.labor.breaksMin, 15);
@@ -240,6 +245,21 @@ describe("split clock", () => {
     assert.equal(shift.breaksMin, 20);
     assert.equal(shiftMinutes(shift), 180);
     assert.equal(laborIsPaused(shift), false);
+  });
+
+  it("Trail is off until they opt in; Pause keeps it; End and a second window reset it", () => {
+    let shift = startWork(restoreShift("2026-09-19", undefined), "2026-09-19T13:00:00.000Z");
+    assert.equal(shift.trailOn, false);
+    shift = setLaborTrailOn(shift, true);
+    assert.equal(shift.trailOn, true);
+    shift = pauseLabor(shift, "2026-09-19T16:00:00.000Z");
+    assert.equal(shift.trailOn, true);
+    shift = resumeLabor(shift, "2026-09-19T16:20:00.000Z");
+    assert.equal(shift.trailOn, true);
+    shift = endLabor(shift, "2026-09-19T20:00:00.000Z");
+    assert.equal(shift.trailOn, false);
+    shift = startWork(shift, "2026-09-19T20:30:00.000Z");
+    assert.equal(shift.trailOn, false);
   });
 });
 

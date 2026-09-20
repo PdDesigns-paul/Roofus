@@ -3,6 +3,7 @@ import { PinCard } from "@/components/pin-board";
 import { Input } from "@/components/ui/input";
 import { Chip } from "@/components/ui/chip";
 import { loadGoogleMaps, mapsKey, reverseGeocode } from "@/lib/pin-geocode";
+import { findOpenLabor, localDateKey, useDayBook } from "@/lib/day-book";
 import { pinHasPoint, pinMatchesYearFilter, type YearFilter } from "@/lib/pins";
 import { usePins } from "@/lib/pins-store";
 import { useStreets } from "@/lib/streets-store";
@@ -23,9 +24,15 @@ type GMarker = {
   getPosition: () => { lat: () => number; lng: () => number } | null;
 };
 
+type GPoly = {
+  setPath: (path: { lat: number; lng: number }[]) => void;
+  setMap: (m: GMap | null) => void;
+};
+
 type GMapsNs = {
   Map: new (el: HTMLElement, opts: Record<string, unknown>) => GMap;
   Marker: new (opts: Record<string, unknown>) => GMarker;
+  Polyline: new (opts: Record<string, unknown>) => GPoly;
   places?: {
     Autocomplete: new (el: HTMLInputElement, opts: Record<string, unknown>) => {
       addListener: (ev: string, fn: () => void) => unknown;
@@ -65,6 +72,8 @@ export function PinsMap({
   const search = useRef<HTMLInputElement>(null);
   const mapRef = useRef<GMap | null>(null);
   const marks = useRef<Map<string, GMarker>>(new Map());
+  const lines = useRef<Map<string, GPoly>>(new Map());
+  const days = useDayBook((s) => s.days);
 
   const visible = pins.filter((p) => pinMatchesYearFilter(p, yearFilter, ageMin, ageMax) && pinHasPoint(p));
   const workingId = loops.find((l) => l.status === "working")?.id;
@@ -187,6 +196,42 @@ export function PinsMap({
       marks.current.set(pin.id, mark);
     }
   }, [ready, visible, workingId, update, setMapCenter]);
+
+  useEffect(() => {
+    const maps = gmaps();
+    const map = mapRef.current;
+    if (!ready || !maps || !map) return;
+    const keep = new Set<string>();
+    const dates = new Set<string>([localDateKey()]);
+    const open = findOpenLabor(days);
+    if (open) dates.add(open.date);
+    for (const date of dates) {
+      const path = (days[date]?.trail ?? []).map((p) => ({ lat: p.lat, lng: p.lng }));
+      if (path.length < 2) continue;
+      keep.add(date);
+      const existing = lines.current.get(date);
+      if (existing) {
+        existing.setPath(path);
+        continue;
+      }
+      const line = new maps.Polyline({
+        map,
+        path,
+        strokeColor: "#6B6560",
+        strokeOpacity: 0.5,
+        strokeWeight: 3,
+        clickable: false,
+        zIndex: 0,
+      });
+      lines.current.set(date, line);
+    }
+    for (const [date, line] of lines.current) {
+      if (!keep.has(date)) {
+        line.setMap(null);
+        lines.current.delete(date);
+      }
+    }
+  }, [ready, days]);
 
   function centerMe() {
     if (typeof navigator === "undefined" || !navigator.geolocation) {

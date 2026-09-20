@@ -8,6 +8,7 @@ import { persist } from "zustand/middleware";
 import { clusterPlanLabel } from "./streets-rank.ts";
 import { emptyWalk, restoreWalk, serializeWalk, type InspectWalkProgress } from "./inspect-walk.ts";
 import { ANON_OWNER, bookKey, writeOwner } from "./book-owner.ts";
+import { restoreTrail, appendTrailPoint, type TrailPoint } from "./trail.ts";
 
 
 
@@ -39,6 +40,8 @@ export type LaborSegment = {
   endedAt: string | null;
 };
 
+export type { TrailPoint } from "./trail.ts";
+
 /** v0 fields stay written so office restore still works. breaksMin is derived. */
 export type LaborShift = {
   date: string;
@@ -46,6 +49,7 @@ export type LaborShift = {
   endedAt: string | null;
   breaksMin: number;
   segments: LaborSegment[];
+  trailOn: boolean;
 };
 
 
@@ -57,6 +61,7 @@ export type DayEntry = DayCounts & {
   tomorrowStreet: string;
   labor: LaborShift;
   stamps: DayStamp[];
+  trail: TrailPoint[];
 };
 
 export function unpackAfterAction(body: string): AfterAction {
@@ -152,7 +157,7 @@ const MAX_DAYS = 60;
 export const EMPTY_COUNTS: DayCounts = { knocks: 0, talks: 0, looks: 0, sets: 0 };
 
 export function emptyShift(date: string): LaborShift {
-  return { date, startedAt: null, endedAt: null, breaksMin: 0, segments: [] };
+  return { date, startedAt: null, endedAt: null, breaksMin: 0, segments: [], trailOn: false };
 }
 
 function isoOrNull(v: unknown): string | null {
@@ -207,7 +212,7 @@ function closeOpenSegment(segments: LaborSegment[], at: string): LaborSegment[] 
 }
 
 /** Write derived v0 fields. Keep stored breaksMin when the blob has no break segments. */
-export function sealShift(date: string, segments: LaborSegment[], fallbackBreaks = 0): LaborShift {
+export function sealShift(date: string, segments: LaborSegment[], fallbackBreaks = 0, trailOn = false): LaborShift {
   const firstWork = segments.find((seg) => seg.kind === "work") ?? segments[0];
   const open = lastOpenSegment(segments);
   const last = segments[segments.length - 1];
@@ -219,6 +224,7 @@ export function sealShift(date: string, segments: LaborSegment[], fallbackBreaks
     startedAt: firstWork?.startedAt ?? null,
     endedAt: open ? null : (last?.endedAt ?? null),
     breaksMin: hasBreak ? closedBreaksMin(segments) : stored,
+    trailOn: Boolean(trailOn),
   };
 }
 
@@ -239,16 +245,18 @@ export function restoreShift(date: string, raw: unknown): LaborShift {
   if (segments.length === 0 && startedAt) {
     segments = [{ kind: "work", startedAt, endedAt }];
   }
-  return sealShift(date, segments, fallback);
+  return sealShift(date, segments, fallback, r.trailOn === true);
 }
 
 export function startWork(shift: LaborShift, at: string): LaborShift {
   const cur = liveShift(shift);
   if (lastOpenSegment(cur.segments)) return cur;
+  const trailOn = cur.endedAt ? false : Boolean(cur.trailOn);
   return sealShift(
     cur.date,
     [...cur.segments, { kind: "work", startedAt: at, endedAt: null }],
     cur.breaksMin,
+    trailOn,
   );
 }
 
@@ -260,6 +268,7 @@ export function pauseLabor(shift: LaborShift, at: string): LaborShift {
     cur.date,
     [...closeOpenSegment(cur.segments, at), { kind: "break", startedAt: at, endedAt: null }],
     cur.breaksMin,
+    cur.trailOn,
   );
 }
 
@@ -271,13 +280,20 @@ export function resumeLabor(shift: LaborShift, at: string): LaborShift {
     cur.date,
     [...closeOpenSegment(cur.segments, at), { kind: "work", startedAt: at, endedAt: null }],
     cur.breaksMin,
+    cur.trailOn,
   );
 }
 
 export function endLabor(shift: LaborShift, at: string): LaborShift {
   const cur = liveShift(shift);
   if (!lastOpenSegment(cur.segments)) return cur;
-  return sealShift(cur.date, closeOpenSegment(cur.segments, at), cur.breaksMin);
+  return sealShift(cur.date, closeOpenSegment(cur.segments, at), cur.breaksMin, false);
+}
+
+export function setLaborTrailOn(shift: LaborShift, on: boolean): LaborShift {
+  const cur = liveShift(shift);
+  if (!lastOpenSegment(cur.segments)) return cur;
+  return { ...cur, trailOn: Boolean(on) };
 }
 
 export function laborIsPaused(shift: LaborShift): boolean {
@@ -360,6 +376,7 @@ export function restoreDay(date: string, raw: unknown): DayEntry {
     tomorrowStreet: typeof r.tomorrowStreet === "string" ? r.tomorrowStreet : "",
     labor: restoreShift(date, r.labor),
     stamps: restoreStamps(r.stamps),
+    trail: restoreTrail((r as { trail?: unknown }).trail),
   };
 }
 
@@ -390,6 +407,7 @@ export function blankDay(date: string): DayEntry {
     tomorrowStreet: "",
     labor: emptyShift(date),
     stamps: [],
+    trail: [],
   };
 }
 
@@ -612,6 +630,8 @@ type DayBookState = {
   pauseDay: () => void;
   resumeDay: () => void;
   endDay: () => void;
+  setTrailOn: (on: boolean) => void;
+  addTrailPoint: (point: TrailPoint) => void;
   patchInspectWalk: (patch: Partial<InspectWalkProgress>) => void;
   resetInspectWalk: () => void;
 };
@@ -711,6 +731,23 @@ export const useDayBook = create<DayBookState>()(
           const cur = s.days[open.date] ?? blankDay(open.date);
           const labor = endLabor(cur.labor, new Date().toISOString());
           return { days: { ...s.days, [open.date]: { ...cur, labor } } };
+        }),
+      setTrailOn: (on) =>
+        set((s) => {
+          const open = findOpenLabor(s.days);
+          if (!open) return s;
+          const cur = s.days[open.date] ?? blankDay(open.date);
+          const labor = setLaborTrailOn(cur.labor, on);
+          return { days: { ...s.days, [open.date]: { ...cur, labor } } };
+        }),
+      addTrailPoint: (point) =>
+        set((s) => {
+          const open = findOpenLabor(s.days);
+          if (!open || !open.trailOn || !laborIsRunning(open)) return s;
+          const cur = s.days[open.date] ?? blankDay(open.date);
+          const trail = appendTrailPoint(Array.isArray(cur.trail) ? cur.trail : [], point);
+          if (trail === cur.trail) return s;
+          return { days: { ...s.days, [open.date]: { ...cur, trail } } };
         }),
       patchInspectWalk: (patch) =>
         set((s) => ({

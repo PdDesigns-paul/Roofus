@@ -4,6 +4,7 @@
  */
 import type { DayEntry, DayProfile } from "./day-book.ts";
 import { blankDay, restoreShift, restoreStamps } from "./day-book.ts";
+import { restoreTrail } from "./trail.ts";
 import type { NotionFaq } from "./notion-ids.ts";
 import type { LoopResult, LoopStatus, StreetLoop } from "./streets-types.ts";
 import type { StormEvent } from "./weather-types.ts";
@@ -145,6 +146,7 @@ export function mergeDays(current: Record<string, DayEntry>, incoming: DayEntry[
       tomorrowStreet: s(raw.tomorrowStreet),
       labor: restoreShift(date, raw.labor),
       stamps: restoreStamps(raw.stamps),
+      trail: restoreTrail(raw.trail),
     };
     days[date] = cur
       ? {
@@ -164,6 +166,7 @@ export function mergeDays(current: Record<string, DayEntry>, incoming: DayEntry[
                 ? next.labor
                 : cur.labor,
           stamps: (cur.stamps?.length ? cur.stamps : next.stamps) ?? [],
+          trail: (cur.trail?.length ? cur.trail : next.trail) ?? [],
         }
       : { ...emptyDay(date), ...next };
   }

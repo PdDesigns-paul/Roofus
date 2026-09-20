@@ -39,7 +39,7 @@ One shape, one promise. If you cannot name the type, the user cannot either. Bra
 | --- | --- | --- | --- | --- |
 | **Place** | Bottom tab. Selected = accent mark + `text-fg`. Idle = `text-faint`. | I am *in* a place. | Today · Door · Roof · Plan | Help, Back, Menu |
 | **Do** | Pill, 48–56px. Primary = filled (`bg-fg text-paper`, or `bg-accent` when the verb is talk to Roofus). Secondary = outlined on a solid surface, same height. | One tap, something happens *here*. | Ask how today went, Pin, +, Got it, Tell Roofus, −, Load sample, Not now | Navigation a tab or Menu already owns |
-| **Toggle a token** | Chip. Idle = outline + `text-fg`. Selected / done = `bg-accent` + black type. | A token I can snap on or dismiss. | Did it, Use today, loop on the plan, Live / Roleplay / Mindset fan, Hours This week / Last 30 | The screen’s primary close |
+| **Toggle a token** | Chip. Idle = outline + `text-fg`. Selected / done = `bg-accent` + black type. | A token I can snap on or dismiss. | Did it, Use today, loop on the plan, Live / Roleplay / Mindset fan, Hours This week / Last 30, Trail | The screen’s primary close |
 | **Go** | Always-underlined text, **or** a 56px row with title + hint + chevron. | I will *leave this screen*. | Plan, maps label, Settings (bottom of Plan), setup rows that open a page | Anything that writes today’s log |
 | **Talk** | Gold FAB, 64–80px circle. Dog face (`RoofusFace`) fills it — FAB face ≥ 56px, tour face ≥ 160px. Not `size-10`. Not a generic chat bubble. Tap fans three chips. Hold starts Live. Hidden on Roof and while the sheet is open. | The coach. | Live / Roleplay / Mindset | A second FAB |
 
@@ -108,7 +108,7 @@ One setup card. Empty book: name + company + counties/state. Website / Why behin
 
 ### Slice 4 — Today — shipped
 
-Count tiles: tap the card to +1. − is a small control. Pin status on a house writes the matching Today count once. Tiles still work without a pin. Two logs of the same talk is a bug. Cards and maps labels are underlined Go. Empty-book setup card on Today until name + company + one county exist. Night opens Finish the day on Plan. Today is this page (route `/truck`). **Start day** / **End day** sit under the date — one labor Do, elapsed on this page. **Pause** is a chip, not a second Do. **Pin** drops GPS and opens the house editor on that page (address, year, status, note, roof look). The map and the long board stay on Plan.
+Count tiles: tap the card to +1. − is a small control. Pin status on a house writes the matching Today count once. Tiles still work without a pin. Two logs of the same talk is a bug. Cards and maps labels are underlined Go. Empty-book setup card on Today until name + company + one county exist. Night opens Finish the day on Plan. Today is this page (route `/truck`). **Start day** / **End day** sit under the date — one labor Do, elapsed on this page. **Pause** is a chip, not a second Do. **Trail** is a chip next to Pause — off until they tap it. Foreground only: works while Today is open; locked phone / killed tab / Precise Location off stops the line, not the clock. **Pin** drops GPS and opens the house editor on that page (address, year, status, note, roof look). The map and the long board stay on Plan. The trail is a quiet line under pins, not a pin.
 
 ### Slice 5 — Streets hunt + Near me — shipped
 
