@@ -22,7 +22,7 @@ import {
 } from "./notion-merge.ts";
 import { BLANK_PROFILE } from "./day-book.ts";
 
-import { blankDay, emptyShift, type DayEntry } from "./day-book.ts";
+import { blankDay, emptyShift, restoreShift, type DayEntry } from "./day-book.ts";
 import type { StreetLoop } from "./streets-types.ts";
 import { DEFAULT_FAQS } from "./porch-faqs.ts";
 
@@ -75,12 +75,12 @@ describe("mergeDays", () => {
     const cur = {
       "2026-09-01": day("2026-09-01", {
         knocks: 4,
-        labor: {
+        labor: restoreShift("2026-09-01", {
           date: "2026-09-01",
           startedAt: "2026-09-01T16:00:00.000Z",
           endedAt: "2026-09-01T20:00:00.000Z",
           breaksMin: 0,
-        },
+        }),
       }),
     };
     const merged = mergeDays(cur, [day("2026-09-01", { knocks: 10 })]);
@@ -100,6 +100,27 @@ describe("mergeDays", () => {
     assert.equal(shift.endedAt, "2026-09-19T20:00:00.000Z");
     assert.equal(shift.breaksMin, 15);
     assert.equal(packLabor({ startedAt: null, endedAt: null, breaksMin: 0 }), "");
+  });
+
+  it("keeps segments on the labor payload and still writes v0 fields", () => {
+    const packed = packLabor({
+      startedAt: "2026-09-19T13:00:00.000Z",
+      endedAt: "2026-09-19T20:00:00.000Z",
+      breaksMin: 30,
+      segments: [
+        { kind: "work", startedAt: "2026-09-19T13:00:00.000Z", endedAt: "2026-09-19T16:00:00.000Z" },
+        { kind: "break", startedAt: "2026-09-19T16:00:00.000Z", endedAt: "2026-09-19T16:30:00.000Z" },
+        { kind: "work", startedAt: "2026-09-19T16:30:00.000Z", endedAt: "2026-09-19T20:00:00.000Z" },
+      ],
+    });
+    assert.match(packed, /startedAt:/);
+    assert.match(packed, /breaksMin: 30/);
+    assert.match(packed, /"kind":"break"/);
+    const shift = unpackLabor(packed, "2026-09-19");
+    assert.equal(shift.segments.length, 3);
+    assert.equal(shift.breaksMin, 30);
+    assert.equal(shift.startedAt, "2026-09-19T13:00:00.000Z");
+    assert.equal(shift.endedAt, "2026-09-19T20:00:00.000Z");
   });
 
   it("keeps the newest 60 days", () => {

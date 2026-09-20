@@ -1,7 +1,7 @@
 /**
  * Sample day for an empty phone. Generic canvasser — not a real office.
  */
-import { localDateKey, packAfterAction, useDayBook } from "./day-book.ts";
+import { localDateKey, packAfterAction, restoreShift, useDayBook } from "./day-book.ts";
 import { DEMO_COUNTIES, DEMO_PINS, DEMO_STATES } from "./demo-loops.ts";
 import { useSettings } from "./settings-store.ts";
 import { reclusterPins, usePins } from "./pins-store.ts";
@@ -41,12 +41,12 @@ export function loadDemo(): void {
           plan: "One open question. Then wait.",
         }),
         tomorrowStreet: "Creekview Dr · 17050",
-        labor: {
+        labor: restoreShift(date, {
           date,
           startedAt: new Date(new Date().setHours(16, 0, 0, 0)).toISOString(),
           endedAt: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(),
           breaksMin: 0,
-        },
+        }),
       },
     },
   });

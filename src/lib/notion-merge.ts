@@ -75,23 +75,38 @@ export function unpackLabeled(body: string): Record<string, string> {
   return out;
 }
 
-/** Labor rides in the copy payload (JSON + Notion Days.Labor). */
-export function packLabor(shift: { startedAt: string | null; endedAt: string | null; breaksMin: number }): string {
-  if (!shift.startedAt && !shift.endedAt && !(shift.breaksMin > 0)) return "";
+/** Labor rides in the copy payload (JSON + Notion Days.Labor). Keep v0 fields. */
+export function packLabor(shift: {
+  startedAt: string | null;
+  endedAt: string | null;
+  breaksMin: number;
+  segments?: { kind: "work" | "break"; startedAt: string; endedAt: string | null }[];
+}): string {
+  if (!shift.startedAt && !shift.endedAt && !(shift.breaksMin > 0) && !shift.segments?.length) return "";
   return packLabeled({
     startedAt: shift.startedAt ?? "",
     endedAt: shift.endedAt ?? "",
     breaksMin: shift.breaksMin > 0 ? shift.breaksMin : undefined,
+    segments: shift.segments?.length ? JSON.stringify(shift.segments) : undefined,
   });
 }
 
 export function unpackLabor(body: string, date: string) {
   if (!body.trim()) return restoreShift(date, undefined);
   const u = unpackLabeled(body);
+  let segments: unknown;
+  if (u.segments) {
+    try {
+      segments = JSON.parse(u.segments);
+    } catch {
+      segments = undefined;
+    }
+  }
   return restoreShift(date, {
     startedAt: u.startedAt || null,
     endedAt: u.endedAt || null,
     breaksMin: u.breaksMin ? n(u.breaksMin) : 0,
+    segments,
   });
 }
 

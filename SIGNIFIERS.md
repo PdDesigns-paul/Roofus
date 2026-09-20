@@ -108,7 +108,7 @@ One setup card. Empty book: name + company + counties/state. Website / Why behin
 
 ### Slice 4 — Today — shipped
 
-Count tiles: tap the card to +1. − is a small control. Pin status on a house writes the matching Today count once. Tiles still work without a pin. Two logs of the same talk is a bug. Cards and maps labels are underlined Go. Empty-book setup card on Today until name + company + one county exist. Night opens Finish the day on Plan. Today is this page (route `/truck`). **Start day** / **End day** sit under the date — one labor Do, elapsed on this page. **Pin** drops GPS and opens the house editor on that page (address, year, status, note, roof look). The map and the long board stay on Plan.
+Count tiles: tap the card to +1. − is a small control. Pin status on a house writes the matching Today count once. Tiles still work without a pin. Two logs of the same talk is a bug. Cards and maps labels are underlined Go. Empty-book setup card on Today until name + company + one county exist. Night opens Finish the day on Plan. Today is this page (route `/truck`). **Start day** / **End day** sit under the date — one labor Do, elapsed on this page. **Pause** is a chip, not a second Do. **Pin** drops GPS and opens the house editor on that page (address, year, status, note, roof look). The map and the long board stay on Plan.
 
 ### Slice 5 — Streets hunt + Near me — shipped
 

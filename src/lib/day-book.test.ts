@@ -4,17 +4,22 @@ import assert from "node:assert/strict";
 import {
   blankDay,
   EMPTY_COUNTS,
+  endLabor,
   findOpenLabor,
   formatElapsed,
   laborForCoach,
+  laborIsPaused,
+  laborIsRunning,
   localDateKey,
   packAfterAction,
+  pauseLabor,
   restoreDay,
   restoreDays,
   restoreProfile,
   restoreShift,
-
+  resumeLabor,
   shiftMinutes,
+  startWork,
   unpackAfterAction,
   weekLaborMinutes,
   weekLaborView,
@@ -49,6 +54,7 @@ describe("blankDay", () => {
     assert.equal(d.labor.startedAt, null);
     assert.equal(d.labor.endedAt, null);
     assert.equal(d.labor.breaksMin, 0);
+    assert.deepEqual(d.labor.segments, []);
   });
 });
 
@@ -105,9 +111,12 @@ describe("labor serialize", () => {
     const d = restoreDay("2026-09-19", raw);
     assert.equal(d.labor.startedAt, "2026-09-19T16:00:00.000Z");
     assert.equal(d.labor.endedAt, "2026-09-19T20:00:00.000Z");
+    assert.equal(d.labor.segments.length, 1);
+    assert.equal(d.labor.segments[0]?.kind, "work");
     assert.equal(shiftMinutes(d.labor), 225);
     const old = restoreDay("2026-09-19", { knocks: 2 });
     assert.equal(old.labor.startedAt, null);
+    assert.deepEqual(old.labor.segments, []);
     assert.equal(old.knocks, 2);
     const bag = restoreDays({ "2026-09-19": raw, junk: { knocks: 1 } });
     assert.equal(bag["2026-09-19"]?.labor.breaksMin, 15);
@@ -120,6 +129,19 @@ describe("labor serialize", () => {
     assert.equal(shiftMinutes(shift, Date.parse("2026-09-19T19:30:00")), null);
     assert.match(laborForCoach(shift), /Clock is empty/);
     assert.doesNotMatch(laborForCoach(shift), /3:30/);
+    assert.doesNotMatch(laborForCoach(shift), /Started:/);
+  });
+
+  it("v0 blob still minutes-minus-breaksMin", () => {
+    const shift = restoreShift("2026-09-19", {
+      startedAt: "2026-09-19T16:00:00.000Z",
+      endedAt: "2026-09-19T20:00:00.000Z",
+      breaksMin: 15,
+    });
+    assert.equal(shift.segments.length, 1);
+    assert.equal(shift.segments[0]?.kind, "work");
+    assert.equal(shift.breaksMin, 15);
+    assert.equal(shiftMinutes(shift), 225);
   });
 
   it("open shift counts minutes until now and findOpenLabor prefers today", () => {
@@ -129,12 +151,87 @@ describe("labor serialize", () => {
     assert.equal(shiftMinutes(open, now), 120);
     assert.equal(formatElapsed(120), "2h 00m");
     const days = {
-      "2026-09-18": { ...blankDay("2026-09-18"), labor: restoreShift("2026-09-18", { startedAt: "2026-09-18T12:00:00.000Z" }) },
+      "2026-09-18": {
+        ...blankDay("2026-09-18"),
+        labor: restoreShift("2026-09-18", { startedAt: "2026-09-18T12:00:00.000Z" }),
+      },
       "2026-09-19": { ...blankDay("2026-09-19"), labor: open },
     };
     assert.equal(findOpenLabor(days, "2026-09-19")?.date, "2026-09-19");
     assert.match(laborForCoach(open), /Started: 2026-09-19T16:00:00.000Z/);
     assert.doesNotMatch(laborForCoach(open), /Ended:/);
+  });
+
+  it("open overnight still finds yesterday when today is blank", () => {
+    const overnight = restoreShift("2026-09-18", {
+      startedAt: "2026-09-18T22:00:00.000Z",
+      endedAt: null,
+    });
+    const days = {
+      "2026-09-18": { ...blankDay("2026-09-18"), labor: overnight },
+      "2026-09-19": blankDay("2026-09-19"),
+    };
+    const open = findOpenLabor(days, "2026-09-19");
+    assert.equal(open?.date, "2026-09-18");
+    assert.equal(shiftMinutes(overnight, Date.parse("2026-09-19T02:00:00.000Z")), 240);
+  });
+});
+
+describe("split clock", () => {
+  it("two work segments skip the lunch break", () => {
+    let shift = restoreShift("2026-09-19", undefined);
+    shift = startWork(shift, "2026-09-19T13:00:00.000Z");
+    shift = pauseLabor(shift, "2026-09-19T16:00:00.000Z");
+    shift = resumeLabor(shift, "2026-09-19T16:30:00.000Z");
+    shift = endLabor(shift, "2026-09-19T20:00:00.000Z");
+    assert.equal(shift.segments.length, 3);
+    assert.equal(shift.segments[0]?.kind, "work");
+    assert.equal(shift.segments[1]?.kind, "break");
+    assert.equal(shift.segments[2]?.kind, "work");
+    assert.equal(shift.startedAt, "2026-09-19T13:00:00.000Z");
+    assert.equal(shift.endedAt, "2026-09-19T20:00:00.000Z");
+    assert.equal(shift.breaksMin, 30);
+    assert.equal(shiftMinutes(shift), 390);
+    assert.equal(laborIsPaused(shift), false);
+    assert.equal(laborIsRunning(shift), false);
+  });
+
+  it("Pause freezes work minutes; Resume opens a second work segment", () => {
+    let shift = startWork(restoreShift("2026-09-19", undefined), "2026-09-19T13:00:00.000Z");
+    shift = pauseLabor(shift, "2026-09-19T16:00:00.000Z");
+    assert.equal(laborIsPaused(shift), true);
+    assert.equal(shift.endedAt, null);
+    assert.equal(shiftMinutes(shift, Date.parse("2026-09-19T16:45:00.000Z")), 180);
+    assert.match(laborForCoach(shift), /Paused/);
+    assert.doesNotMatch(laborForCoach(shift), /3:30/);
+    shift = resumeLabor(shift, "2026-09-19T16:45:00.000Z");
+    assert.equal(laborIsRunning(shift), true);
+    assert.equal(shift.segments.filter((s) => s.kind === "work").length, 2);
+    assert.equal(shiftMinutes(shift, Date.parse("2026-09-19T17:45:00.000Z")), 240);
+  });
+
+  it("startDay after End opens a second window the same date", () => {
+    let shift = startWork(restoreShift("2026-09-19", undefined), "2026-09-19T13:00:00.000Z");
+    shift = endLabor(shift, "2026-09-19T16:00:00.000Z");
+    assert.equal(shift.endedAt, "2026-09-19T16:00:00.000Z");
+    shift = startWork(shift, "2026-09-19T17:00:00.000Z");
+    assert.equal(laborIsRunning(shift), true);
+    assert.equal(shift.segments.length, 2);
+    assert.equal(shift.startedAt, "2026-09-19T13:00:00.000Z");
+    assert.equal(shift.endedAt, null);
+    shift = endLabor(shift, "2026-09-19T20:00:00.000Z");
+    assert.equal(shiftMinutes(shift), 360);
+    assert.equal(shift.endedAt, "2026-09-19T20:00:00.000Z");
+  });
+
+  it("endDay closes an open break", () => {
+    let shift = startWork(restoreShift("2026-09-19", undefined), "2026-09-19T13:00:00.000Z");
+    shift = pauseLabor(shift, "2026-09-19T16:00:00.000Z");
+    shift = endLabor(shift, "2026-09-19T16:20:00.000Z");
+    assert.equal(shift.endedAt, "2026-09-19T16:20:00.000Z");
+    assert.equal(shift.breaksMin, 20);
+    assert.equal(shiftMinutes(shift), 180);
+    assert.equal(laborIsPaused(shift), false);
   });
 });
 

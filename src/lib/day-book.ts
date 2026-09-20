@@ -28,12 +28,21 @@ export function isCountKey(key: string): key is CountKey {
 export type AfterAction = { wins: string; better: string; plan: string };
 
 /** One local shift on a calendar day. No payroll. Breaks stored, not a UI yet. */
+export type LaborSegment = {
+  kind: "work" | "break";
+  startedAt: string;
+  endedAt: string | null;
+};
+
+/** v0 fields stay written so office restore still works. breaksMin is derived. */
 export type LaborShift = {
   date: string;
   startedAt: string | null;
   endedAt: string | null;
   breaksMin: number;
+  segments: LaborSegment[];
 };
+
 
 export type DayEntry = DayCounts & {
   date: string;
@@ -137,7 +146,7 @@ const MAX_DAYS = 60;
 export const EMPTY_COUNTS: DayCounts = { knocks: 0, talks: 0, looks: 0, sets: 0 };
 
 export function emptyShift(date: string): LaborShift {
-  return { date, startedAt: null, endedAt: null, breaksMin: 0 };
+  return { date, startedAt: null, endedAt: null, breaksMin: 0, segments: [] };
 }
 
 function isoOrNull(v: unknown): string | null {
@@ -150,16 +159,129 @@ function nCount(v: unknown): number {
   return Number.isFinite(x) ? Math.max(0, Math.round(x)) : 0;
 }
 
-export function restoreShift(date: string, raw: unknown): LaborShift {
-  const r = raw && typeof raw === "object" ? (raw as Partial<LaborShift>) : {};
-  const breaks = Number(r.breaksMin);
+function restoreSegment(raw: unknown): LaborSegment | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as { kind?: unknown; startedAt?: unknown; endedAt?: unknown };
+  const kind = r.kind === "break" ? "break" : r.kind === "work" ? "work" : null;
+  const startedAt = isoOrNull(r.startedAt);
+  if (!kind || !startedAt) return null;
+  return { kind, startedAt, endedAt: isoOrNull(r.endedAt) };
+}
+
+function spanMin(startIso: string, endMs: number): number {
+  const start = Date.parse(startIso);
+  if (!Number.isFinite(start) || !Number.isFinite(endMs)) return 0;
+  return Math.max(0, Math.round((endMs - start) / 60000));
+}
+
+function closedBreaksMin(segments: LaborSegment[]): number {
+  let n = 0;
+  for (const seg of segments) {
+    if (seg.kind !== "break" || !seg.endedAt) continue;
+    n += spanMin(seg.startedAt, Date.parse(seg.endedAt));
+  }
+  return n;
+}
+
+function lastOpenSegment(segments: LaborSegment[] | undefined): LaborSegment | null {
+  if (!segments?.length) return null;
+  const last = segments[segments.length - 1];
+  return last && !last.endedAt ? last : null;
+}
+
+/** Old clocks in memory may still be v0 until persist merge. */
+function liveShift(shift: LaborShift): LaborShift {
+  return Array.isArray(shift.segments) ? shift : restoreShift(shift.date, shift);
+}
+
+function closeOpenSegment(segments: LaborSegment[], at: string): LaborSegment[] {
+  const last = segments[segments.length - 1];
+  if (!last || last.endedAt) return segments;
+  return segments.map((seg, i) => (i === segments.length - 1 ? { ...seg, endedAt: at } : seg));
+}
+
+/** Write derived v0 fields. Keep stored breaksMin when the blob has no break segments. */
+export function sealShift(date: string, segments: LaborSegment[], fallbackBreaks = 0): LaborShift {
+  const firstWork = segments.find((seg) => seg.kind === "work") ?? segments[0];
+  const open = lastOpenSegment(segments);
+  const last = segments[segments.length - 1];
+  const hasBreak = segments.some((seg) => seg.kind === "break");
+  const stored = Number.isFinite(fallbackBreaks) ? Math.max(0, Math.round(fallbackBreaks)) : 0;
   return {
     date,
-    startedAt: isoOrNull(r.startedAt),
-    endedAt: isoOrNull(r.endedAt),
-    breaksMin: Number.isFinite(breaks) ? Math.max(0, Math.round(breaks)) : 0,
+    segments,
+    startedAt: firstWork?.startedAt ?? null,
+    endedAt: open ? null : (last?.endedAt ?? null),
+    breaksMin: hasBreak ? closedBreaksMin(segments) : stored,
   };
 }
+
+export function restoreShift(date: string, raw: unknown): LaborShift {
+  const r = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+  const startedAt = isoOrNull(r.startedAt);
+  const endedAt = isoOrNull(r.endedAt);
+  const breaks = Number(r.breaksMin);
+  const fallback = Number.isFinite(breaks) ? Math.max(0, Math.round(breaks)) : 0;
+  let segments: LaborSegment[] = [];
+  if (Array.isArray(r.segments)) {
+    for (const item of r.segments) {
+      const seg = restoreSegment(item);
+      if (seg) segments.push(seg);
+    }
+  }
+  // v0 blob → one work segment. Do not wipe a clock that only has startedAt/endedAt.
+  if (segments.length === 0 && startedAt) {
+    segments = [{ kind: "work", startedAt, endedAt }];
+  }
+  return sealShift(date, segments, fallback);
+}
+
+export function startWork(shift: LaborShift, at: string): LaborShift {
+  const cur = liveShift(shift);
+  if (lastOpenSegment(cur.segments)) return cur;
+  return sealShift(
+    cur.date,
+    [...cur.segments, { kind: "work", startedAt: at, endedAt: null }],
+    cur.breaksMin,
+  );
+}
+
+export function pauseLabor(shift: LaborShift, at: string): LaborShift {
+  const cur = liveShift(shift);
+  const open = lastOpenSegment(cur.segments);
+  if (!open || open.kind !== "work") return cur;
+  return sealShift(
+    cur.date,
+    [...closeOpenSegment(cur.segments, at), { kind: "break", startedAt: at, endedAt: null }],
+    cur.breaksMin,
+  );
+}
+
+export function resumeLabor(shift: LaborShift, at: string): LaborShift {
+  const cur = liveShift(shift);
+  const open = lastOpenSegment(cur.segments);
+  if (!open || open.kind !== "break") return cur;
+  return sealShift(
+    cur.date,
+    [...closeOpenSegment(cur.segments, at), { kind: "work", startedAt: at, endedAt: null }],
+    cur.breaksMin,
+  );
+}
+
+export function endLabor(shift: LaborShift, at: string): LaborShift {
+  const cur = liveShift(shift);
+  if (!lastOpenSegment(cur.segments)) return cur;
+  return sealShift(cur.date, closeOpenSegment(cur.segments, at), cur.breaksMin);
+}
+
+export function laborIsPaused(shift: LaborShift): boolean {
+  return lastOpenSegment(liveShift(shift).segments)?.kind === "break";
+}
+
+export function laborIsRunning(shift: LaborShift): boolean {
+  return lastOpenSegment(liveShift(shift).segments)?.kind === "work";
+}
+
 
 export function restoreDay(date: string, raw: unknown): DayEntry {
   const r = raw && typeof raw === "object" ? (raw as Partial<DayEntry>) : {};
@@ -208,12 +330,26 @@ export function blankDay(date: string): DayEntry {
 
 /** Worked minutes. Null when they never started — never invent a 3:30. */
 export function shiftMinutes(shift: LaborShift, now = Date.now()): number | null {
-  if (!shift.startedAt) return null;
-  const start = Date.parse(shift.startedAt);
-  if (!Number.isFinite(start)) return null;
-  const end = shift.endedAt ? Date.parse(shift.endedAt) : now;
-  if (!Number.isFinite(end)) return null;
-  return Math.max(0, Math.round((end - start) / 60000) - (shift.breaksMin || 0));
+  const live = liveShift(shift);
+  const work = live.segments.filter((seg) => seg.kind === "work");
+  if (work.length === 0) {
+    if (!live.startedAt) return null;
+    const start = Date.parse(live.startedAt);
+    if (!Number.isFinite(start)) return null;
+    const end = live.endedAt ? Date.parse(live.endedAt) : now;
+    if (!Number.isFinite(end)) return null;
+    return Math.max(0, Math.round((end - start) / 60000) - (live.breaksMin || 0));
+  }
+  let min = 0;
+  for (const seg of work) {
+    const end = seg.endedAt ? Date.parse(seg.endedAt) : now;
+    min += spanMin(seg.startedAt, end);
+  }
+  // v0 stored a number, not a break segment. Subtract only until Pause exists.
+  if (!live.segments.some((seg) => seg.kind === "break")) {
+    min = Math.max(0, min - (live.breaksMin || 0));
+  }
+  return min;
 }
 
 export function formatElapsed(min: number): string {
@@ -232,11 +368,15 @@ export function formatClockTime(iso: string | null): string {
 
 export function findOpenLabor(days: Record<string, DayEntry>, today = localDateKey()): LaborShift | null {
   const todayRow = days[today];
+  if (todayRow && lastOpenSegment(todayRow.labor.segments)) return todayRow.labor;
   if (todayRow?.labor.startedAt && !todayRow.labor.endedAt) return todayRow.labor;
   const keys = Object.keys(days).sort().reverse();
   for (const k of keys) {
     const row = days[k];
-    if (row?.labor.startedAt && !row.labor.endedAt) return row.labor;
+    if (!row) continue;
+    if (lastOpenSegment(row.labor.segments) || (row.labor.startedAt && !row.labor.endedAt)) {
+      return row.labor;
+    }
   }
   return null;
 }
@@ -322,7 +462,8 @@ export function laborForCoach(shift: LaborShift): string {
   const parts = [`Started: ${shift.startedAt}`];
   if (shift.endedAt) parts.push(`Ended: ${shift.endedAt}`);
   if (min != null) parts.push(`Minutes on the clock: ${min}`);
-  return parts.join(" / ");
+  const line = parts.join(" / ");
+  return laborIsPaused(shift) ? `Paused. ${line}` : line;
 }
 
 type DayBookState = {
@@ -336,6 +477,8 @@ type DayBookState = {
   bump: (key: keyof DayCounts, delta: number) => void;
   patchToday: (patch: Partial<Omit<DayEntry, "date">>) => void;
   startDay: () => void;
+  pauseDay: () => void;
+  resumeDay: () => void;
   endDay: () => void;
   patchInspectWalk: (patch: Partial<InspectWalkProgress>) => void;
   resetInspectWalk: () => void;
@@ -410,22 +553,31 @@ export const useDayBook = create<DayBookState>()(
           if (findOpenLabor(s.days)) return s;
           const date = localDateKey();
           const cur = s.days[date] ?? blankDay(date);
-          if (cur.labor.startedAt) return s;
-          const labor: LaborShift = {
-            date,
-            startedAt: new Date().toISOString(),
-            endedAt: null,
-            breaksMin: cur.labor.breaksMin,
-          };
+          const labor = startWork(cur.labor, new Date().toISOString());
           return { days: prune({ ...s.days, [date]: { ...cur, labor } }, date) };
+        }),
+      pauseDay: () =>
+        set((s) => {
+          const open = findOpenLabor(s.days);
+          if (!open) return s;
+          const cur = s.days[open.date] ?? blankDay(open.date);
+          const labor = pauseLabor(cur.labor, new Date().toISOString());
+          return { days: { ...s.days, [open.date]: { ...cur, labor } } };
+        }),
+      resumeDay: () =>
+        set((s) => {
+          const open = findOpenLabor(s.days);
+          if (!open) return s;
+          const cur = s.days[open.date] ?? blankDay(open.date);
+          const labor = resumeLabor(cur.labor, new Date().toISOString());
+          return { days: { ...s.days, [open.date]: { ...cur, labor } } };
         }),
       endDay: () =>
         set((s) => {
           const open = findOpenLabor(s.days);
           if (!open) return s;
           const cur = s.days[open.date] ?? blankDay(open.date);
-          if (!cur.labor.startedAt || cur.labor.endedAt) return s;
-          const labor: LaborShift = { ...cur.labor, endedAt: new Date().toISOString() };
+          const labor = endLabor(cur.labor, new Date().toISOString());
           return { days: { ...s.days, [open.date]: { ...cur, labor } } };
         }),
       patchInspectWalk: (patch) =>

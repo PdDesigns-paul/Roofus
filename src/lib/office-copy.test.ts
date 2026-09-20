@@ -2,7 +2,7 @@ import "./test-setup.ts";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { blankDay, restoreDay } from "./day-book.ts";
+import { blankDay, restoreDay, restoreShift } from "./day-book.ts";
 import { mergeDays } from "./notion-merge.ts";
 import {
   PHONE_COPY_KIND,
@@ -97,12 +97,12 @@ describe("phone copy JSON", () => {
       "2026-09-19": {
         ...blankDay("2026-09-19"),
         knocks: 4,
-        labor: {
+        labor: restoreShift("2026-09-19", {
           date: "2026-09-19",
           startedAt: "2026-09-19T14:00:00.000Z",
           endedAt: null,
           breaksMin: 0,
-        },
+        }),
       },
     };
     const merged = mergeDays(cur, incoming.days);
