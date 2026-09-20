@@ -4,10 +4,15 @@ export const DEFAULT_PACK_ID = "roofus";
 export const PACK_IDS = ["roofus", "pest", "solar"] as const;
 export type PackId = (typeof PACK_IDS)[number];
 
-/** Build env wins. Host map is for a later edge lookup — not a second Vercel site. */
+/**
+ * Host allowlist. One Vercel project. grok.me / *.grok.me / *.vercel.app stay unmapped.
+ * Real shop hosts land when a tenant exists. Map stays code, not a Settings row.
+ */
 export const HOST_PACK: Record<string, PackId> = {
   "roofus.coach": "roofus",
   "www.roofus.coach": "roofus",
+  // Documented proof host — not a second Vercel site.
+  "stride.example": "solar",
 };
 
 export function normalizeHost(host?: string | null): string {
@@ -27,15 +32,36 @@ function canonicalPackId(id: string): PackId | "" {
 }
 
 /**
- * VITE_TENANT_ID → host allowlist → roofus.
- * `demo` is an alias for `solar` (Stride graduated). Unknown ids fall through. grok.me is not a pack host.
+ * Proof env (`pest` / `solar` / `demo`). Default `roofus` is not explicit —
+ * a custom-domain alias on the shared project must still hit HOST_PACK.
+ */
+export function explicitEnvId(envId?: string | null): PackId | "" {
+  const id = canonicalPackId(envId ?? "");
+  if (!id || id === DEFAULT_PACK_ID) return "";
+  return id;
+}
+
+/**
+ * Proof env wins. Shared prod (empty or default `roofus`): host allowlist, then roofus.
+ * grok.me is not a pack host.
  */
 export function resolvePackId(envId?: string | null, host?: string | null): PackId {
-  const fromEnv = canonicalPackId(envId ?? "");
-  if (fromEnv) return fromEnv;
+  const explicit = explicitEnvId(envId);
+  if (explicit) return explicit;
   const fromHost = HOST_PACK[normalizeHost(host)];
   if (fromHost) return fromHost;
-  return DEFAULT_PACK_ID;
+  return canonicalPackId(envId ?? "") || DEFAULT_PACK_ID;
+}
+
+export function hostFromHeaders(headers?: Headers | null): string | null {
+  if (!headers) return null;
+  const h = normalizeHost(headers.get("x-forwarded-host") ?? headers.get("host"));
+  return h || null;
+}
+
+export function runtimeHost(): string | null {
+  if (typeof window !== "undefined") return normalizeHost(window.location.hostname);
+  return null;
 }
 
 export function tenantEnvId(): string {

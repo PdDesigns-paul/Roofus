@@ -21,7 +21,7 @@ import { useDayBook } from "@/lib/day-book";
 import { lastCopyAtFrom, lastCopyLine, useOfficeCopy } from "@/lib/office-copy";
 import { useNotion } from "@/lib/notion-store";
 import { useSettings } from "@/lib/settings-store";
-import { pack } from "@/lib/tenant";
+import { currentPack } from "@/lib/tenant";
 import { OwnerChip } from "@/components/owner-chip";
 
 
@@ -32,6 +32,7 @@ export const Route = createFileRoute("/settings/you")({
 });
 
 function YouPage() {
+  const pack = currentPack();
   const s = useSettings();
   const profile = useDayBook((st) => st.profile);
   const patchProfile = useDayBook((st) => st.patchProfile);

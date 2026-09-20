@@ -10,7 +10,7 @@ import {
   TOOLS_BRIEF,
   type ToolCall,
 } from "@/lib/coach-tools";
-import { pack } from "@/lib/tenant";
+import { hostFromHeaders, resolvePack, tenantEnvId } from "@/lib/tenant";
 
 
 function json(body: unknown, status = 200) {
@@ -121,6 +121,7 @@ function pipeXaiSse(upstream: Response) {
 }
 
 async function handlePost({ request }: { request: Request }) {
+  const pack = resolvePack(tenantEnvId(), hostFromHeaders(request.headers));
   const apiKey = process.env.XAI_API_KEY;
   if (!apiKey) return json({ error: "Roofus is asleep. AI is not available here." }, 503);
 

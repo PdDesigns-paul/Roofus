@@ -28,7 +28,7 @@ import { loopHeadline, loopZip, zipFromHeadline } from "@/lib/streets-rank";
 import { useStreets } from "@/lib/streets-store";
 import { speakText } from "@/lib/speech";
 import { useWeather } from "@/lib/weather-store";
-import { pack } from "@/lib/tenant";
+import { currentPack } from "@/lib/tenant";
 
 
 /** Door cards. Formerly /coach/cards. */
@@ -42,6 +42,7 @@ function lastPin(pins: HousePin[]): HousePin | undefined {
 }
 
 function Door() {
+  const pack = currentPack();
   const profile = useDayBook((s) => s.profile);
   const date = localDateKey();
   const day = useDayBook((s) => s.days[date]) ?? blankDay(date);
@@ -137,6 +138,7 @@ function Door() {
 }
 
 function CardBody({ card, fill }: { card: PocketCard; fill: PocketFill }) {
+  const pack = currentPack();
   const firstSay = card.lines.findIndex((l) => l.say && !hasOpenToken(l.say));
   return (
     <>

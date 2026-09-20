@@ -6,7 +6,7 @@ import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { hoursSeries, isCountKey, localDateKey, useDayBook, type CountKey, type HoursRange } from "@/lib/day-book";
-import { pack } from "@/lib/tenant";
+import { currentPack } from "@/lib/tenant";
 
 export const Route = createFileRoute("/settings/hours")({
   codeSplitGroupings: [],
@@ -14,6 +14,7 @@ export const Route = createFileRoute("/settings/hours")({
 });
 
 function HoursPage() {
+  const pack = currentPack();
   const profile = useDayBook((st) => st.profile);
   const patchProfile = useDayBook((st) => st.patchProfile);
   const days = useDayBook((st) => st.days);

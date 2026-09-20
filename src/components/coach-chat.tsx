@@ -19,10 +19,11 @@ import {
 } from "@/lib/coach-modes";
 import { useSettings } from "@/lib/settings-store";
 import { WALKS, walkKickoff, type WalkId } from "@/lib/survive";
-import { pack } from "@/lib/tenant";
+import { currentPack } from "@/lib/tenant";
 
 
 export function CoachChat({ embedded = false }: { embedded?: boolean }) {
+  const pack = currentPack();
   const messages = useCoach((s) => s.messages);
   const modeId = useCoach((s) => s.mode);
   const scene = useCoach((s) => s.scene);

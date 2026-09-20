@@ -1,7 +1,7 @@
 import { PEST_INSPECT } from "./tenant/pest/inspect.ts";
 import { ROOFUS_INSPECT } from "./tenant/roofus/inspect.ts";
 import { SOLAR_INSPECT } from "./tenant/solar/inspect.ts";
-import { resolvePackId, tenantEnvId } from "./tenant/resolve.ts";
+import { resolvePackId, runtimeHost, tenantEnvId } from "./tenant/resolve.ts";
 
 export type WalkSlotId = string;
 
@@ -24,7 +24,7 @@ const INSPECT_BY_PACK = {
 } as const;
 
 function inspectSteps() {
-  const id = resolvePackId(tenantEnvId());
+  const id = resolvePackId(tenantEnvId(), runtimeHost());
   return (INSPECT_BY_PACK[id] ?? ROOFUS_INSPECT).steps;
 }
 

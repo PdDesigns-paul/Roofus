@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
 import { REMINDERS } from "@/lib/reminders";
 import { useReminders } from "@/lib/reminders-store";
-import { pack } from "@/lib/tenant";
+import { currentPack } from "@/lib/tenant";
 
 
 export const Route = createFileRoute("/settings/reminders")({
@@ -24,6 +24,7 @@ function RemindersPage() {
 }
 
 function ReminderToggles() {
+  const pack = currentPack();
   const on = useReminders((s) => s.on);
   const toggle = useReminders((s) => s.toggle);
   return (

@@ -12,6 +12,9 @@ import {
   PEST_PACK,
   ROOFUS_PACK,
   SOLAR_PACK,
+  currentPack,
+  explicitEnvId,
+  hostFromHeaders,
   manifestFromPack,
   pack,
   packById,
@@ -30,7 +33,7 @@ const manifest = JSON.parse(
 const SOLAR_WALK = ["curb", "roof", "shade", "meter", "access"];
 
 describe("resolvePackId", () => {
-  it("VITE_TENANT_ID wins, then host, then roofus", () => {
+  it("proof env wins; default roofus yields to a known host", () => {
     assert.equal(resolvePackId(), DEFAULT_PACK_ID);
     assert.equal(resolvePackId(""), "roofus");
     assert.equal(resolvePackId("nope"), "roofus");
@@ -45,7 +48,17 @@ describe("resolvePackId", () => {
     assert.equal(resolvePackId("", "app.other.com"), "roofus");
     assert.equal(resolvePackId("demo", "roofus.coach"), "solar");
     assert.equal(resolvePackId("solar", "roofus.coach"), "solar");
+    assert.equal(resolvePackId("", "stride.example"), "solar");
+    assert.equal(resolvePackId("roofus", "stride.example"), "solar");
+    assert.equal(resolvePackId("roofus", "roofus.coach"), "roofus");
+    assert.equal(resolvePackId("roofus", "grok.me"), "roofus");
+    assert.equal(resolvePackId("", "grok.me"), "roofus");
+    assert.equal(resolvePackId("pest", "stride.example"), "pest");
+    assert.equal(explicitEnvId("roofus"), "");
+    assert.equal(explicitEnvId("solar"), "solar");
+    assert.equal(explicitEnvId("demo"), "solar");
     assert.equal(HOST_PACK["roofus.coach"], "roofus");
+    assert.equal(HOST_PACK["stride.example"], "solar");
     assert.equal(HOST_PACK["grok.me"], undefined);
   });
 
@@ -324,7 +337,7 @@ describe("VP-4 proof builds", () => {
     assert.match(ci, /npm run test:app/);
     assert.doesNotMatch(ci, /VITE_TENANT_ID:\s*pest/);
     assert.doesNotMatch(ci, /VITE_TENANT_ID:\s*solar/);
-    assert.deepEqual(Object.keys(HOST_PACK).sort(), ["roofus.coach", "www.roofus.coach"]);
+    assert.deepEqual(Object.keys(HOST_PACK).sort(), ["roofus.coach", "stride.example", "www.roofus.coach"]);
     assert.equal(manifest.name, "Roofus");
     assert.equal(pack.id, "roofus");
   });
@@ -359,5 +372,34 @@ describe("VP-4 proof builds", () => {
     assert.doesNotMatch(JSON.stringify(solar), /On the roof/);
     assert.doesNotMatch(JSON.stringify(solar), /Keep a storm first/);
     assert.doesNotMatch(JSON.stringify(solar), /30% tax credit/i);
+  });
+
+  it("shared prod host stride.example is Stride places, not On the roof", () => {
+    const stride = currentPack("stride.example");
+    assert.equal(stride.id, "solar");
+    assert.equal(stride.productName, "Stride");
+    assert.deepEqual(stride.places, { today: "Today", door: "Pitch", inspect: "Site", plan: "Route" });
+    assert.equal(
+      stride.labor.units.some((u) => /on the roof/i.test(u.label)),
+      false,
+    );
+    assert.equal(currentPack("roofus.coach").id, "roofus");
+    assert.equal(currentPack("grok.me").id, "roofus");
+    assert.equal(pack.id, "roofus");
+    const headers = new Headers({ host: "stride.example" });
+    assert.equal(hostFromHeaders(headers), "stride.example");
+    assert.equal(hostFromHeaders(new Headers({ "x-forwarded-host": "www.roofus.coach:443" })), "www.roofus.coach");
+    const apiPack = src("../../routes/api/pack.ts");
+    const apiManifest = src("../../routes/api/manifest.ts");
+    assert.match(apiPack, /resolvePackId\(tenantEnvId\(\), hostFromHeaders/);
+    assert.match(apiManifest, /manifestFromPack/);
+    assert.doesNotMatch(apiPack, /better-auth|from "@\/lib\/db/);
+    assert.doesNotMatch(apiManifest, /better-auth|from "@\/lib\/db/);
+    assert.match(src("../../routes/__root.tsx"), /currentPack\(\)/);
+    assert.match(src("../../routes/__root.tsx"), /\/api\/manifest/);
+    assert.match(src("../../components/tab-bar.tsx"), /currentPack\(\)/);
+    assert.match(src("../../routes/truck.tsx"), /currentPack\(\)/);
+    assert.doesNotMatch(src("./index.ts"), /from "\.\/db/);
+    assert.equal(manifest.name, "Roofus");
   });
 });
