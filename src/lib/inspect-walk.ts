@@ -1,4 +1,5 @@
-import { ROOFUS_INSPECT } from "./tenant/roofus/inspect.ts";
+import { DEMO_INSPECT } from "./tenant/demo/inspect.ts";
+import { ROOFUS_INSPECT } from "./tenant/roofus/inspect.ts";import { resolvePackId, tenantEnvId } from "./tenant/resolve.ts";
 
 export type WalkSlotId = string;
 
@@ -13,9 +14,9 @@ export type InspectWalkProgress = {
   openSlot: string | null;
 };
 
-/** Leaf pack rows — not `pack` from the barrel, which would cycle day-book ↔ tenant. */
+/** Leaf inspect rows — not the tenant barrel (that would cycle day-book ↔ survive). */
 function inspectSteps() {
-  return ROOFUS_INSPECT.steps;
+  return resolvePackId(tenantEnvId()) === "demo" ? DEMO_INSPECT.steps : ROOFUS_INSPECT.steps;
 }
 
 function slotIds(): Set<string> {

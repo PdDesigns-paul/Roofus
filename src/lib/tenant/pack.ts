@@ -137,6 +137,25 @@ export function packStyle(pack: BrandPack): Record<string, string> {
   };
 }
 
+/** PWA fields the shell and the built manifest read. Icons stay the committed files. */
+export function manifestFromPack(p: BrandPack) {
+  return {
+    name: p.pwa.name,
+    short_name: p.productName,
+    id: "/",
+    start_url: "/",
+    scope: "/",
+    display: "standalone",
+    background_color: p.pwa.themeColor,
+    theme_color: p.pwa.themeColor,
+    icons: [
+      { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
+      { src: "/icon-180.png", sizes: "180x180", type: "image/png" },
+    ],
+  };
+}
+
 /** Today’s weather sentence. Storms off → pack fallback. Never invent hail. */
 export function todayWeatherLine(storm: string, keptLine: string, p: BrandPack): string {
   const fallback = p.copy.todayFallback.trim() || "Age first.";

@@ -20,7 +20,7 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: pack.productName },
       { name: "theme-color", content: pack.pwa.themeColor },
-      { name: "description", content: "Ride-along coach for door-to-door roofers and storm restoration crews." },
+      { name: "description", content: `${pack.productName} field coach on this phone.` },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },

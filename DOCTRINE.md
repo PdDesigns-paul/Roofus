@@ -30,7 +30,7 @@ White-label is a doctrine split, not a Settings row.
 - Inspect walk rows, activity units / labor clock
 - Optional modules: storms, InterNACHI, claim path
 
-A second tenant that still says “knock” and “On the roof” is a failed pack.
+A second tenant that still says “knock” and “On the roof” is a failed pack. Pack `demo` (Stride) is the proof: Pitch / Site / Route, Surveys not On the roof, storms off. Built with `VITE_TENANT_ID=demo`. roofus.coach stays pack `roofus`.
 
 Porch cards, beats, briefs, and prompt modules live in pack `roofus` (`src/lib/tenant/roofus/`). This file stays the doctrine those modules must match.
 

@@ -28,7 +28,7 @@ If `SIGNIFIERS.md` and a control disagree after a chrome slice, fix both in the 
 3. Do only the slice they asked. Push back to that repo when it works.
 4. Do not paste the old chat. Do not dump the archive playbooks into new files.
 
-GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at **roofus.coach**. Do **not** create a second Vercel project. Do not move the custom domain onto grok.me unless they ask. Pack resolution is a later child (build env / host), not a second site.
+GitHub (`PdDesigns-paul/Roofus`) is the book. Live phone URL is Vercel Hobby at **roofus.coach**. Do **not** create a second Vercel project. Do not move the custom domain onto grok.me unless they ask. Pack resolution: `VITE_TENANT_ID` → host allowlist → `roofus`. Proof tenant is pack `demo` (`VITE_TENANT_ID=demo`). CI tests pack `roofus` only.
 
 ## Product (short)
 
