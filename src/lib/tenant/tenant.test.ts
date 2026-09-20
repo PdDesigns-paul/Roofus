@@ -99,8 +99,9 @@ describe("pack roofus", () => {
     assert.match(src("../../components/tab-bar.tsx"), /pack\.places\.today/);
     assert.match(src("../../components/tab-bar.tsx"), /pack\.places\.inspect/);
     assert.match(src("../../components/ask-fab.tsx"), /pack\.copy\.talkAria/);
-    assert.match(src("../../components/roofus-mark.tsx"), /pack\.markSrc/);
-    assert.match(src("../../components/roofus-mark.tsx"), /pack\.productName/);
+    assert.match(src("../../components/roofus-mark.tsx"), /useChromePack\(pack\)/);
+    assert.match(src("../../components/roofus-mark.tsx"), /chrome\.markSrc/);
+    assert.match(src("../../components/roofus-mark.tsx"), /chrome\.productName/);
     assert.match(src("../../routes/truck.tsx"), /pack\.copy\.askHowTodayWent/);
     assert.match(src("../../routes/truck.tsx"), /pack\.places\.today/);
     assert.match(src("../../routes/truck.tsx"), /pack\.labor\.units/);
@@ -119,7 +120,7 @@ describe("pack roofus", () => {
     assert.match(src("../../routes/settings.you.tsx"), /modules\.packets/);
 
 
-    assert.match(src("../../routes/__root.tsx"), /pack\.productName/);
+    assert.match(src("../../routes/__root.tsx"), /applyOfficeMark\(pack\)/);
     assert.match(src("../../routes/__root.tsx"), /packStyle\(pack\)/);
     assert.match(src("../../components/onboard-overlay.tsx"), /ONBOARD_STEPS/);
     assert.match(src("../onboard.ts"), /pack\.copy\.tour/);

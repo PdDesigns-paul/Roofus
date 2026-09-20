@@ -45,7 +45,7 @@ Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold star
 
 - Pins are the hunt. Drop from Today (GPS) — that opens the house editor on Today (address, year, status, note, roof look) — or the Plan map (Desk). Pin status writes the matching Today count once. Tiles still work without a pin. Ticks hang on the open pin. Reset clears that house. Coach may quote the open pin’s year, status, note, and look. No pin, no “this house.” Distance makes the loop. Sidewalk house log, not a CRM, not a pipeline. No takeoff, no scrape. Street View / Zillow / Redfin are outbound links.
 
-The product path is this phone’s journal. Do not wire `better-auth`, `src/lib/db.ts`, or `src/lib/auth/*` into Place routes until a named child in [`PLATFORM.md`](./PLATFORM.md) turns accounts on. `AuthProvider` in the root is a passthrough. `ownerFromSession` refuses the disabled-auth `DEV_USER`. `npm run build` is Vite only — never chain `db:migrate`. What stayed for the host, and when it may light up: [`PLATFORM.md`](./PLATFORM.md).
+The product path is this phone’s journal. Do not wire `better-auth`, `src/lib/db.ts`, or `src/lib/auth/*` into Place routes until a named child in [`PLATFORM.md`](./PLATFORM.md) turns accounts on. `AuthProvider` in the root is a passthrough. `ownerFromSession` refuses the disabled-auth `DEV_USER`. `npm run build` is Vite only — never chain `db:migrate`. Office mark is localStorage, not Postgres. What stayed for the host, and when it may light up: [`PLATFORM.md`](./PLATFORM.md).
 
 
 ## Signifiers (short)

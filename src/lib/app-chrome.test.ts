@@ -19,6 +19,7 @@ describe("showBack", () => {
   it("shows Back on nested pages, including Settings and Reference", () => {
     assert.equal(showBack("/settings"), true);
     assert.equal(showBack("/settings/you"), true);
+    assert.equal(showBack("/settings/office"), true);
     assert.equal(showBack("/coach/reference"), true);
   });
 });
@@ -77,6 +78,7 @@ describe("helpPageFor", () => {
     assert.match(PAGE_HELP.settings.body.join(" "), /Copy this phone/);
     assert.match(PAGE_HELP.settings.body.join(" "), /Use Notion/);
     assert.match(PAGE_HELP.settings.body.join(" "), /Switch book is a chip/);
+    assert.match(PAGE_HELP.settings.body.join(" "), /Office is a desk URL/);
     assert.match(PAGE_HELP.settings.body.join(" "), /A picture of the week sits under the numbers/);
     assert.match(PAGE_HELP.settings.body.join(" "), /Last 30 is a chip/);
     assert.match(PAGE_HELP.today.body.join(" "), /Each tile writes a time/);
@@ -89,6 +91,7 @@ describe("helpPageFor", () => {
     assert.doesNotMatch(PAGE_HELP.mindset.body.join(" "), /on Truck and After/);
     assert.match(PAGE_HELP.door.body.join(" "), /Claim path/);
     assert.equal(helpPageFor("/settings/you"), "settings");
+    assert.equal(helpPageFor("/settings/office"), "settings");
     assert.equal(helpPageFor("/settings/mindset"), "settings");
     assert.equal(helpPageFor("/door"), "door");
     assert.equal(helpPageFor("/coach/cards"), "door");

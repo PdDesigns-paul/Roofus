@@ -24,5 +24,7 @@ from porch stores until a named child lights them.**
 
 Pack id is `VITE_TENANT_ID` at build (default `roofus`). Proof ids: `pest`, `solar` (`demo` aliases solar). Host allowlist is `roofus.coach` → `roofus`. CI stays pack `roofus`. Do not stand up a second Vercel project. Do not move roofus.coach onto grok.me.
 
+Office mark + PWA name for a non-roofus tenant live in `localStorage` (`roofus-office-mark-v1`). Not Postgres. Pack `roofus` metal is frozen. `src/lib/db.ts` stays dark.
+
 If a real backend is the job, that is **Prep to Launch** — a named child, not
 quietly wiring these files. The phone book stays local-first after that too.
