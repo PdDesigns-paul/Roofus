@@ -73,6 +73,7 @@ Squint test: blur the screenshot. If the action disappears, it was never signifi
 - Fake storm, fake neighbor, “working next door” unless true today
 - Invented years, prices, squares, hail, license, phone
 - Recording a homeowner
+- Coaching a cooling-off waiver. Claiming to be the utility. Invented kWh, a 30% ITC on a 2026 owner-buy, a named chemical, or an infestation
 - High-pressure one-call close as the default
 - “This phone is the book” jargon in UI copy — say After Action Report, Today, Settings
 - Changing doctrine in the coach prompt without changing `DOCTRINE.md` (and the other way around)

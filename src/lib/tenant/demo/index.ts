@@ -87,7 +87,11 @@ const CARDS: PocketCard[] = [
     title: "Compass",
     when: "Off the porch.",
     formula: "Why this work → who it is for → one drill",
-    lines: [{ note: "Private. Never a porch line." }],
+    lines: [
+      { note: "Private. Never a porch line." },
+      { note: "Three business days to cancel (FTC 429). Hand the shop’s form. Never coach a waiver." },
+      { note: "Never the utility. Credit, tariff, and kWh live in the shop packet." },
+    ],
   },
 ];
 

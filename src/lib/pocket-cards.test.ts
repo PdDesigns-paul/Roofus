@@ -47,7 +47,11 @@ describe("POCKET_CARDS", () => {
     assert.doesNotMatch(c.when, /Truck only/);
     assert.match(c.formula, /off the porch/i);
     assert.doesNotMatch(c.formula, /Truck only/);
-    assert.match(c.lines.map((l) => l.note).join(" "), /demon never/);
+    const notes = c.lines.map((l) => l.note).join(" ");
+    assert.match(notes, /demon never/);
+    assert.match(notes, /personal growth that pays/);
+    assert.match(notes, /three business days to cancel/);
+    assert.match(notes, /Never coach a waiver/);
   });
   it("Set names paper, phone-review, and confirm — no send-text button", () => {
     const set = POCKET_CARDS.find((c) => c.id === "set")!;

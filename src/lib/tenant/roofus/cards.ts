@@ -102,6 +102,9 @@ export const ROOFUS_CARDS: PocketCard[] = [
     lines: [
       ...COMPASS.map((line) => ({ note: line })),
       { note: "Why is in Settings. The demon never goes on a door." },
+      {
+        note: "Door-to-door over $25: three business days to cancel. Hand the shop’s form. Never coach a waiver.",
+      },
     ],
   },
 ];
