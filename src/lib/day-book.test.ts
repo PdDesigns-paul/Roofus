@@ -9,6 +9,7 @@ import {
   endLabor,
   findOpenLabor,
   compactElapsed,
+  emptyShift,
   formatElapsed,
   hoursSeries,
   laborForCoach,
@@ -31,13 +32,17 @@ import {
   setLaborTrailOn,
   shiftMinutes,
   stampsByHour,
+  stampsForCoach,
   startWork,
+  trailForCoach,
   unpackAfterAction,
+  weekForCoach,
   weekLaborMinutes,
   weekLaborView,
   weekTally,
   weekTallyLine,
 } from "./day-book.ts";
+import { pack } from "./tenant/index.ts";
 
 describe("localDateKey", () => {
   it("is YYYY-MM-DD in local time", () => {
@@ -175,8 +180,10 @@ describe("labor serialize", () => {
       "2026-09-19": { ...blankDay("2026-09-19"), labor: open },
     };
     assert.equal(findOpenLabor(days, "2026-09-19")?.date, "2026-09-19");
-    assert.match(laborForCoach(open), /Started: 2026-09-19T16:00:00.000Z/);
-    assert.doesNotMatch(laborForCoach(open), /Ended:/);
+    assert.match(laborForCoach(open, now), /1 work window/);
+    assert.match(laborForCoach(open, now), /120 minutes/);
+    assert.doesNotMatch(laborForCoach(open, now), /Started:/);
+    assert.doesNotMatch(laborForCoach(open, now), /Ended:/);
   });
 
   it("open overnight still finds yesterday when today is blank", () => {
@@ -506,5 +513,76 @@ describe("day rollup", () => {
     assert.equal(merged["2026-09-01"]?.minutes, 120);
     const phoneWins = mergeRollup(merged, [{ date: "2026-09-01", minutes: 9, counts: { ...EMPTY_COUNTS, knocks: 1 } }]);
     assert.equal(phoneWins["2026-09-01"]?.minutes, 120);
+  });
+});
+
+describe("coach field trail", () => {
+  it("lists work windows and minutes, not a fake ISO start", () => {
+    const v0 = restoreShift("2026-09-19", {
+      startedAt: "2026-09-19T16:00:00.000Z",
+      endedAt: "2026-09-19T20:00:00.000Z",
+      breaksMin: 15,
+    });
+    const line = laborForCoach(v0);
+    assert.match(line, /1 work window/);
+    assert.match(line, /225 minutes/);
+    assert.doesNotMatch(line, /Started:/);
+    assert.doesNotMatch(line, /T16:00:00/);
+    let split = startWork(restoreShift("2026-09-19", undefined), "2026-09-19T13:00:00.000Z");
+    split = pauseLabor(split, "2026-09-19T16:00:00.000Z");
+    split = resumeLabor(split, "2026-09-19T16:30:00.000Z");
+    split = endLabor(split, "2026-09-19T20:00:00.000Z");
+    assert.match(laborForCoach(split), /2 work windows/);
+    assert.match(laborForCoach(split), /390 minutes/);
+  });
+
+  it("trail off is a sentence; on is a sample count, never lat/lng", () => {
+    const off = trailForCoach(blankDay("2026-09-19"));
+    assert.equal(off, "Trail is off.");
+    const on = trailForCoach({
+      ...blankDay("2026-09-19"),
+      labor: { ...emptyShift("2026-09-19"), trailOn: true },
+      trail: [{ lat: 40.273, lng: -76.884, at: "2026-09-19T16:00:00.000Z" }],
+      cluster: "walk-1",
+    });
+    assert.match(on, /Trail is on/);
+    assert.match(on, /1 sample/);
+    assert.doesNotMatch(on, /40\.273/);
+    assert.doesNotMatch(on, /-76\.884/);
+    assert.doesNotMatch(on, /lat/);
+  });
+
+  it("quotes after 6pm only when stamps exist, with pack labels", () => {
+    const empty = stampsForCoach(blankDay("2026-09-19"));
+    assert.equal(empty, null);
+    const stamped = stampsForCoach(
+      {
+        ...blankDay("2026-09-19"),
+        knocks: 40,
+        stamps: [
+          { at: new Date(2026, 8, 19, 14, 0, 0).toISOString(), unit: "knocks" },
+          { at: new Date(2026, 8, 19, 19, 10, 0).toISOString(), unit: "knocks" },
+          { at: new Date(2026, 8, 19, 20, 0, 0).toISOString(), unit: "knocks" },
+        ],
+      },
+      pack.labor.units,
+    );
+    assert.match(stamped ?? "", /2 of 40 doors after 6pm/);
+    assert.match(stamped ?? "", /Do not invent an hour split/);
+    const week = weekForCoach(
+      {
+        minutes: 240,
+        hoursLabel: "4h 00m",
+        counts: { knocks: 40, talks: 10, looks: 2, sets: 1 },
+        talkOfDoors: "25%",
+        lookOfTalks: "20%",
+        setOfLooks: "50%",
+        doorsPerHour: "10.0",
+      },
+      pack.labor.units,
+    );
+    assert.match(week, /doors/);
+    assert.match(week, /4h 00m/);
+    assert.doesNotMatch(week, /lat/);
   });
 });

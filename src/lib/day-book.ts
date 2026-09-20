@@ -611,8 +611,14 @@ export function weekTally(days: Record<string, DayEntry>, today = localDateKey()
   return out;
 }
 
-export function weekTallyLine(t: DayCounts): string {
-  return `Last 7 days: ${t.knocks} doors · ${t.talks} talks · ${t.looks} looks · ${t.sets} sets`;
+export function weekTallyLine(t: DayCounts, units?: readonly { key: string; label: string }[]): string {
+  const rows = (units ?? [
+    { key: "knocks", label: "doors" },
+    { key: "talks", label: "talks" },
+    { key: "looks", label: "looks" },
+    { key: "sets", label: "sets" },
+  ]).filter((u): u is { key: CountKey; label: string } => isCountKey(u.key));
+  return `Last 7 days: ${rows.map((u) => `${t[u.key]} ${u.label.toLowerCase()}`).join(" · ")}`;
 }
 
 export function weekLaborMinutes(days: Record<string, DayEntry>, today = localDateKey(), now = Date.now()): number {
@@ -748,14 +754,56 @@ export function weekLaborView(
   };
 }
 
-export function laborForCoach(shift: LaborShift): string {
+export function laborForCoach(shift: LaborShift, now = Date.now()): string {
   if (!shift.startedAt) return "Clock is empty. Do not invent a start time.";
-  const min = shiftMinutes(shift);
-  const parts = [`Started: ${shift.startedAt}`];
-  if (shift.endedAt) parts.push(`Ended: ${shift.endedAt}`);
-  if (min != null) parts.push(`Minutes on the clock: ${min}`);
-  const line = parts.join(" / ");
-  return laborIsPaused(shift) ? `Paused. ${line}` : line;
+  const workWindows = shift.segments.filter((s) => s.kind === "work").length || 1;
+  const min = shiftMinutes(shift, now);
+  const windowWord = workWindows === 1 ? "work window" : "work windows";
+  const parts = [`${workWindows} ${windowWord}`];
+  if (min != null) parts.push(`${min} minutes`);
+  if (shift.breaksMin > 0) parts.push(`${shift.breaksMin} minutes break`);
+  const body = `Clock: ${parts.join(" · ")}.`;
+  return laborIsPaused(shift) ? `Paused. ${body}` : body;
+}
+
+export function trailForCoach(day: Pick<DayEntry, "trail" | "labor" | "cluster">): string {
+  const samples = Array.isArray(day.trail) ? day.trail.length : 0;
+  if (!day.labor.trailOn) return "Trail is off.";
+  const loop = day.cluster.trim() ? ` Loop: ${clusterPlanLabel(day.cluster)}.` : "";
+  const sampleWord = samples === 1 ? "sample" : "samples";
+  return `Trail is on. ${samples} ${sampleWord}.${loop} Do not quote coordinates.`;
+}
+
+export function stampsForCoach(day: DayEntry, units?: readonly { key: string; label: string }[]): string | null {
+  if (!day.stamps.length) return null;
+  const list = units ?? [{ key: "knocks", label: "doors" }];
+  const unit = list.find((u) => isCountKey(u.key)) ?? list[0];
+  const key = unit && isCountKey(unit.key) ? unit.key : "knocks";
+  const label = (unit?.label ?? "doors").toLowerCase();
+  const hours = stampsByHour(day.stamps, key);
+  let afterSix = 0;
+  for (let h = 18; h < 24; h++) afterSix += hours[h] ?? 0;
+  if (afterSix > 0) {
+    return `${afterSix} of ${day[key]} ${label} after 6pm. Do not invent an hour split beyond that.`;
+  }
+  return `${label} stamped today. Do not invent an hour split.`;
+}
+
+export function weekForCoach(view: WeekLaborView, units?: readonly { key: string; label: string }[]): string {
+  const rows = (units ?? [
+    { key: "knocks", label: "doors" },
+    { key: "talks", label: "talks" },
+    { key: "looks", label: "looks" },
+    { key: "sets", label: "sets" },
+  ]).filter((u): u is { key: CountKey; label: string } => isCountKey(u.key));
+  const hours = view.hoursLabel ? `${view.hoursLabel} on the clock` : "no clock this week";
+  const counts = rows.map((u) => `${view.counts[u.key]} ${u.label.toLowerCase()}`).join(" · ");
+  const rates = [
+    view.talkOfDoors && rows[1] && rows[0] ? `${rows[1].label} ${view.talkOfDoors} of ${rows[0].label.toLowerCase()}` : "",
+    view.lookOfTalks && rows[2] && rows[1] ? `${rows[2].label} ${view.lookOfTalks} of ${rows[1].label.toLowerCase()}` : "",
+    view.setOfLooks && rows[3] && rows[2] ? `${rows[3].label} ${view.setOfLooks} of ${rows[2].label.toLowerCase()}` : "",
+  ].filter(Boolean);
+  return [`This week: ${hours}. ${counts}.`, ...rates].join(" ").trim();
 }
 
 type DayBookState = {
@@ -921,9 +969,15 @@ if (typeof window !== "undefined") {
   });
 }
 
-export function dayBookForCoach(): string {
+export function dayBookForCoach(units?: readonly { key: string; label: string }[]): string {
   const { profile } = useDayBook.getState();
   const day = useDayBook.getState().today();
+  const rows = (units ?? [
+    { key: "knocks", label: "doors" },
+    { key: "talks", label: "conversations" },
+    { key: "looks", label: "roofs" },
+    { key: "sets", label: "appointments" },
+  ]).filter((u): u is { key: CountKey; label: string } => isCountKey(u.key));
   const lines: string[] = [
     "# Today's log (this beats any named person or town in the rest of the prompt)",
   ];
@@ -935,9 +989,13 @@ export function dayBookForCoach(): string {
   if (profile.knockWindow.trim()) lines.push(`When they knock: ${profile.knockWindow.trim()}`);
   if (profile.hardStop.trim()) lines.push(`When they stop: ${profile.hardStop.trim()}`);
   lines.push(laborForCoach(day.labor));
-  lines.push(
-    `Today (${day.date}): ${day.knocks} doors, ${day.talks} conversations, ${day.looks} roofs, ${day.sets} appointments.`,
-  );
+  lines.push(trailForCoach(day));
+  const stampLine = stampsForCoach(day, units);
+  if (stampLine) lines.push(stampLine);
+  const week = weekLaborView(useDayBook.getState().days, day.date, Date.now(), useDayBook.getState().rollup);
+  lines.push(weekForCoach(week, units));
+  const todayCounts = rows.map((u) => `${day[u.key]} ${u.label.toLowerCase()}`).join(", ");
+  lines.push(`Today (${day.date}): ${todayCounts}.`);
   if (day.cluster.trim()) lines.push(`Neighborhood today: ${clusterPlanLabel(day.cluster)}`);
   if (day.storm.trim()) {
     lines.push(`Weather they wrote down (only use this; do not invent):\n${day.storm.trim()}`);

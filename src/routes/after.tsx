@@ -123,7 +123,7 @@ function AfterPage() {
     return window.location.hash === "#pulse";
   });
   const week = weekTally(days, date);
-  const weekLine = week.knocks || week.talks || week.looks || week.sets ? weekTallyLine(week) : "";
+  const weekLine = week.knocks || week.talks || week.looks || week.sets ? weekTallyLine(week, pack.labor.units) : "";
   const { working, rest, searching } = searchStreetLoops(loops, q);
   const nearRest = nearMe ? nearMeList(rest, here) : [];
   const plan = day.cluster;

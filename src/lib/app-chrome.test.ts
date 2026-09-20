@@ -1,5 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { helpPageFor, hideTalk, showBack } from "./app-chrome.ts";
 import { HELP_ID_ALIAS, PAGE_HELP } from "./page-help.ts";
 import { pack } from "./tenant/index.ts";
@@ -78,7 +79,9 @@ describe("helpPageFor", () => {
     assert.match(PAGE_HELP.settings.body.join(" "), /This phone/);
     assert.match(PAGE_HELP.settings.body.join(" "), /A picture of the week sits under the numbers/);
     assert.match(PAGE_HELP.settings.body.join(" "), /Last 30 is a chip/);
-    assert.match(PAGE_HELP.settings.body.join(" "), /Those numbers stay after old days prune/);
+    assert.match(PAGE_HELP.today.body.join(" "), /Each tile writes a time/);
+    assert.match(PAGE_HELP.settings.body.join(" "), /Each door tile writes a time/);
+    assert.match(PAGE_HELP.settings.body.join(" "), /Trail is opt-in, foreground only/);
     assert.match(PAGE_HELP.settings.body.join(" "), /outlined pills under the list/);
     assert.doesNotMatch(PAGE_HELP.settings.body.join(" "), /Tour and sample day stay on this list/);
     assert.doesNotMatch(PAGE_HELP.settings.body.join(" "), /question-mark tour/);
@@ -93,5 +96,17 @@ describe("helpPageFor", () => {
     assert.ok(!("cards" in PAGE_HELP));
     assert.equal(HELP_ID_ALIAS.streets, "plan");
     assert.equal(HELP_ID_ALIAS.cards, "door");
+  });
+});
+
+describe("coach prompt field trail", () => {
+  it("names work windows, pack units, and trail off — not a fake start", () => {
+    const prompt = readFileSync(new URL("./coach-prompt.ts", import.meta.url), "utf8");
+    assert.match(prompt, /work windows and minutes/);
+    assert.match(prompt, /Trail is off/);
+    assert.match(prompt, /unitLabels/);
+    assert.match(prompt, /primaryUnit/);
+    assert.match(prompt, /sample count/);
+    assert.doesNotMatch(prompt, /started \/ ended \/ minutes/);
   });
 });

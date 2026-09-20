@@ -4,6 +4,7 @@
  * so Roofus talks about THIS canvasser, not a fictional one.
  */
 import { dayBookForCoach, useDayBook } from "@/lib/day-book";
+import { pack } from "@/lib/tenant";
 import { useCoach } from "@/lib/coach-store";
 import { useSettings } from "@/lib/settings-store";
 import { streetsForCoach, useStreets } from "@/lib/streets-store";
@@ -19,8 +20,6 @@ import { surviveForCoach, useSurvive, whyFilled } from "@/lib/survive-store";
 import { weatherForCoach, useWeather } from "@/lib/weather-store";
 import { readFreshKept } from "@/lib/kept-storm";
 import { claimUnlocked, PRACTICE_PLAN_COPY, practiceUnlocked } from "@/lib/coach-modes";
-import { pack } from "@/lib/tenant";
-
 
 let liveAbort: AbortController | null = null;
 let raf = 0;
@@ -123,7 +122,7 @@ export async function sendRoofus(
         })),
         imageDataUrl: opts?.imageDataUrl,
         dayBook: [
-          dayBookForCoach(),
+          dayBookForCoach(pack.labor.units),
           streetsForCoach(),
           pinsForCoach(),
           weatherForCoach(),
