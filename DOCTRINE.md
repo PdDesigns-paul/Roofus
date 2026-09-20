@@ -30,7 +30,7 @@ White-label is a doctrine split, not a Settings row.
 - Inspect walk rows, activity units / labor clock
 - Optional modules: storms, InterNACHI, claim path
 
-A second tenant that still says “knock” and “On the roof” is a failed pack. Pack `solar` (Stride) is the solar proof: Pitch / Site / Route, Surveys, four qualifiers then leave. `demo` is an alias. Pack `pest` (Stoop) is the pest proof: Stops / Inspects / Starts, foundations not storms. Built with `VITE_TENANT_ID=solar`, `demo`, or `pest`. roofus.coach stays pack `roofus`.
+A second tenant that still says “knock” and “On the roof” is a failed pack. Pack `solar` (Stride) is the solar proof: Pitch / Site / Route, Surveys, four qualifiers then leave. `demo` is an alias. Pack `pest` (Stoop) is the pest proof: Stops / Inspects / Starts, foundations not storms. Built with `VITE_TENANT_ID=solar`, `demo`, or `pest`. roofus.coach stays pack `roofus`. Custom-domain aliases on this same project read `HOST_PACK`. grok.me is not a pack host.
 
 Porch cards, beats, briefs, and prompt modules live in pack `roofus` (`src/lib/tenant/roofus/`). This file stays the doctrine those modules must match.
 

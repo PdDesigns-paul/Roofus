@@ -122,6 +122,7 @@ describe("pack roofus", () => {
 
     assert.match(src("../../routes/__root.tsx"), /applyOfficeMark\(pack\)/);
     assert.match(src("../../routes/__root.tsx"), /packStyle\(pack\)/);
+    assert.match(src("../../routes/__root.tsx"), /currentPack\(\)/);
     assert.match(src("../../components/onboard-overlay.tsx"), /ONBOARD_STEPS/);
     assert.match(src("../onboard.ts"), /pack\.copy\.tour/);
   });

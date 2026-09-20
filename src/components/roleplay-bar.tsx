@@ -1,7 +1,7 @@
 import { claimUnlocked, isClaimScene, PRACTICE_PLAN_COPY, practiceUnlocked, type RoleplayPersonId, type RoleplaySceneId } from "@/lib/coach-modes";
 import { readFreshKept } from "@/lib/kept-storm";
 import { useSettings } from "@/lib/settings-store";
-import { pack } from "@/lib/tenant";
+import { currentPack } from "@/lib/tenant";
 import { useWeather } from "@/lib/weather-store";
 
 export function RoleplayBar({
@@ -21,6 +21,7 @@ export function RoleplayBar({
   onYear: (year: string) => void;
   onKnock: () => void;
 }) {
+  const pack = currentPack();
   const keptOn = claimUnlocked(readFreshKept(useWeather((s) => s.keptStorms)));
   const practiceOn = practiceUnlocked(useSettings((s) => s.practiceOn));
   const scenes = pack.modules.claim ? pack.scenes : pack.scenes.filter((s) => !s.claim);

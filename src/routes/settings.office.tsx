@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { compressImage } from "@/lib/compress-image";
 import { useChromePack, useOfficeMark, writeOfficeMark } from "@/lib/office-mark";
-import { pack } from "@/lib/tenant";
+import { currentPack } from "@/lib/tenant";
 
 export const Route = createFileRoute("/settings/office")({
   codeSplitGroupings: [],
@@ -15,6 +15,7 @@ export const Route = createFileRoute("/settings/office")({
 });
 
 function OfficePage() {
+  const pack = currentPack();
   const frozen = pack.id === "roofus";
   const saved = useOfficeMark((s) => s.byPack[pack.id] ?? null);
   const chrome = useChromePack(pack);

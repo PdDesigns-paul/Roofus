@@ -31,7 +31,7 @@ import {
 import { useStreets } from "@/lib/streets-store";
 import { morningPins, pinsForLoop, revisitPins, type YearFilter } from "@/lib/pins";
 import { reclusterPins, usePins } from "@/lib/pins-store";
-import { pack } from "@/lib/tenant";
+import { currentPack } from "@/lib/tenant";
 import {
   DEFAULT_AGE_MAX,
   DEFAULT_AGE_MIN,
@@ -76,6 +76,7 @@ const YEAR_CHIPS: { id: YearFilter; label: string }[] = [
 ];
 
 function AfterPage() {
+  const pack = currentPack();
   const profile = useDayBook((s) => s.profile);
   const date = localDateKey();
   const stored = useDayBook((s) => s.days[date]);
@@ -557,6 +558,7 @@ function LoopCard({
   plan: string;
   miles?: number;
 }) {
+  const pack = currentPack();
   const [open, setOpen] = useState(false);
   const setStatus = useStreets((s) => s.setStatus);
   const setResult = useStreets((s) => s.setResult);

@@ -2,7 +2,7 @@ import { ROOFUS_PACK } from "./roofus/index.ts";
 import { PEST_PACK } from "./pest/index.ts";
 import { SOLAR_PACK } from "./solar/index.ts";
 import type { BrandPack } from "./pack.ts";
-import { DEFAULT_PACK_ID, resolvePackId, tenantEnvId } from "./resolve.ts";
+import { DEFAULT_PACK_ID, resolvePackId, runtimeHost, tenantEnvId } from "./resolve.ts";
 
 export type {
   ActivityUnit,
@@ -30,11 +30,15 @@ export {
   DEFAULT_PACK_ID,
   HOST_PACK,
   PACK_IDS,
+  explicitEnvId,
+  hostFromHeaders,
   normalizeHost,
   resolvePackId,
+  runtimeHost,
   tenantEnvId,
   type PackId,
 } from "./resolve.ts";
+
 
 const PACKS: Record<string, BrandPack> = {
   roofus: ROOFUS_PACK,
@@ -51,4 +55,9 @@ export function resolvePack(envId = tenantEnvId(), host?: string | null): BrandP
   return packById(resolvePackId(envId, host));
 }
 
-export const pack = resolvePack();
+/** This request. Client uses the hostname. Node tests have no window — env only. */
+export function currentPack(host?: string | null): BrandPack {
+  return resolvePack(tenantEnvId(), host ?? runtimeHost());
+}
+
+export const pack = currentPack();

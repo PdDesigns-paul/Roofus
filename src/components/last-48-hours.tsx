@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import { phoneError } from "@/lib/read-json";
 import { refreshWeatherPulse } from "@/lib/refresh-in-flight";
-import { pack } from "@/lib/tenant";
+import { currentPack } from "@/lib/tenant";
 import type { PulseLead, PulseReport, StormEvent } from "@/lib/weather-types";
 
 
@@ -38,6 +38,7 @@ export function Last48Hours({
   onKeepStorm: (id: string) => void;
   onTossStorm: (id: string) => void;
 }) {
+  const pack = currentPack();
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   if (!pack.modules.storms) return null;

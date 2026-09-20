@@ -13,7 +13,7 @@ import { usePins } from "@/lib/pins-store";
 
 import { useStreets } from "@/lib/streets-store";
 import { useDayBook } from "@/lib/day-book";
-import { pack } from "@/lib/tenant";
+import { currentPack } from "@/lib/tenant";
 
 
 const EMPTY_TURNS: { role: "user" | "assistant"; content: string }[] = [];
@@ -26,6 +26,7 @@ export const Route = createFileRoute("/roof")({
 });
 
 function RoofPage() {
+  const pack = currentPack();
   const cameraRef = useRef<HTMLInputElement>(null);
   const rollRef = useRef<HTMLInputElement>(null);
   const liveId = useRef<string | null>(null);

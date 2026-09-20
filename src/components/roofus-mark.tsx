@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useChromePack } from "@/lib/office-mark";
-import { pack } from "@/lib/tenant";
+import { currentPack } from "@/lib/tenant";
 
 export function RoofusFace({
   className = "size-14",
@@ -11,6 +11,7 @@ export function RoofusFace({
   className?: string;
   alt?: string;
 }) {
+  const pack = currentPack();
   const chrome = useChromePack(pack);
   return (
     <img
@@ -23,6 +24,7 @@ export function RoofusFace({
 }
 
 export function RoofusMark({ className = "" }: { className?: string }) {
+  const pack = currentPack();
   const chrome = useChromePack(pack);
   return (
     <img
@@ -39,6 +41,7 @@ export function RoofusMark({ className = "" }: { className?: string }) {
 
 /** Title / apple-mobile-web-app-title follow the office name after hydrate. */
 export function OfficeChrome() {
+  const pack = currentPack();
   const chrome = useChromePack(pack);
   useEffect(() => {
     document.title = chrome.productName;

@@ -12,11 +12,12 @@ import { OfficeChrome } from "@/components/roofus-mark";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { applyOfficeMark } from "@/lib/office-mark";
-import { pack, packStyle } from "@/lib/tenant";
+import { currentPack, packStyle } from "@/lib/tenant";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
   head: () => {
+    const pack = currentPack();
     const chrome = applyOfficeMark(pack);
     return {
       meta: [
@@ -40,39 +41,42 @@ export const Route = createRootRoute({
         { rel: "icon", type: "image/png", href: "/favicon.png" },
         { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
         { rel: "stylesheet", href: appCss },
-        { rel: "manifest", href: "/manifest.webmanifest" },
+        { rel: "manifest", href: "/api/manifest" },
         { rel: "apple-touch-icon", href: "/icon-180.png" },
       ],
     };
   },
-  component: () => (
-    <html lang="en" suppressHydrationWarning style={packStyle(pack) as CSSProperties}>
-      <head>
-        <HeadContent />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `try{var v=localStorage.getItem("roofus-dark-v2");var s=JSON.parse(localStorage.getItem("roofus-settings")||"{}");var t=s.state&&s.state.theme;if(!v||t==="dark"||!t)document.documentElement.classList.add("dark")}catch(e){document.documentElement.classList.add("dark")}`,
-          }}
-        />
-      </head>
-      <body>
-        <PreviewHostBridge />
-        <OfficeChrome />
-        <AuthProvider>
-          <TooltipProvider delayDuration={350} skipDelayDuration={0}>
-            <PullToRefresh>
-              <Outlet />
-            </PullToRefresh>
-            <TabBar />
-            <AskFab />
-            <ChatSheet />
-            <ChatHistory />
-            <OnboardOverlay />
-          </TooltipProvider>
-        </AuthProvider>
-        <Scripts />
-        <Analytics />
-      </body>
-    </html>
-  ),
+  component: () => {
+    const pack = currentPack();
+    return (
+      <html lang="en" suppressHydrationWarning style={packStyle(pack) as CSSProperties}>
+        <head>
+          <HeadContent />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `try{var v=localStorage.getItem("roofus-dark-v2");var s=JSON.parse(localStorage.getItem("roofus-settings")||"{}");var t=s.state&&s.state.theme;if(!v||t==="dark"||!t)document.documentElement.classList.add("dark")}catch(e){document.documentElement.classList.add("dark")}`,
+            }}
+          />
+        </head>
+        <body>
+          <PreviewHostBridge />
+          <OfficeChrome />
+          <AuthProvider>
+            <TooltipProvider delayDuration={350} skipDelayDuration={0}>
+              <PullToRefresh>
+                <Outlet />
+              </PullToRefresh>
+              <TabBar />
+              <AskFab />
+              <ChatSheet />
+              <ChatHistory />
+              <OnboardOverlay />
+            </TooltipProvider>
+          </AuthProvider>
+          <Scripts />
+          <Analytics />
+        </body>
+      </html>
+    );
+  },
 });

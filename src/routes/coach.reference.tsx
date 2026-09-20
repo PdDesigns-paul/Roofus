@@ -7,7 +7,7 @@ import { companyChapter } from "@/lib/company-site";
 import { MRI_CHAPTERS, MRI_COUNT, mriSearchHay, type MriChapter } from "@/lib/mri-index";
 import { useDayBook } from "@/lib/day-book";
 import { useSettings } from "@/lib/settings-store";
-import { pack } from "@/lib/tenant";
+import { currentPack } from "@/lib/tenant";
 
 
 export const Route = createFileRoute("/coach/reference")({
@@ -16,6 +16,7 @@ export const Route = createFileRoute("/coach/reference")({
 });
 
 function ReferencePage() {
+  const pack = currentPack();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const hash = useRouterState({ select: (st) => st.location.hash.replace(/^#/, "") });

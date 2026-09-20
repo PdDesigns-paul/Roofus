@@ -20,9 +20,11 @@ import { Route as TodayRouteImport } from './routes/today'
 import { Route as TruckRouteImport } from './routes/truck'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
 import { Route as ApiCompanySiteRouteImport } from './routes/api/company-site'
+import { Route as ApiManifestRouteImport } from './routes/api/manifest'
 import { Route as ApiMapsKeyRouteImport } from './routes/api/maps-key'
 import { Route as ApiNotionSetupRouteImport } from './routes/api/notion-setup'
 import { Route as ApiNotionSyncRouteImport } from './routes/api/notion-sync'
+import { Route as ApiPackRouteImport } from './routes/api/pack'
 import { Route as ApiSpeechRouteImport } from './routes/api/speech'
 import { Route as ApiStreetsRouteImport } from './routes/api/streets'
 import { Route as ApiTranscribeRouteImport } from './routes/api/transcribe'
@@ -97,6 +99,11 @@ const ApiCompanySiteRoute = ApiCompanySiteRouteImport.update({
   path: '/api/company-site',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiManifestRoute = ApiManifestRouteImport.update({
+  id: '/api/manifest',
+  path: '/api/manifest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiMapsKeyRoute = ApiMapsKeyRouteImport.update({
   id: '/api/maps-key',
   path: '/api/maps-key',
@@ -110,6 +117,11 @@ const ApiNotionSetupRoute = ApiNotionSetupRouteImport.update({
 const ApiNotionSyncRoute = ApiNotionSyncRouteImport.update({
   id: '/api/notion-sync',
   path: '/api/notion-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPackRoute = ApiPackRouteImport.update({
+  id: '/api/pack',
+  path: '/api/pack',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSpeechRoute = ApiSpeechRouteImport.update({
@@ -215,9 +227,11 @@ export interface FileRoutesByFullPath {
   '/truck': typeof TruckRoute
   '/api/coach': typeof ApiCoachRoute
   '/api/company-site': typeof ApiCompanySiteRoute
+  '/api/manifest': typeof ApiManifestRoute
   '/api/maps-key': typeof ApiMapsKeyRoute
   '/api/notion-setup': typeof ApiNotionSetupRoute
   '/api/notion-sync': typeof ApiNotionSyncRoute
+  '/api/pack': typeof ApiPackRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/streets': typeof ApiStreetsRoute
   '/api/transcribe': typeof ApiTranscribeRoute
@@ -247,9 +261,11 @@ export interface FileRoutesByTo {
   '/truck': typeof TruckRoute
   '/api/coach': typeof ApiCoachRoute
   '/api/company-site': typeof ApiCompanySiteRoute
+  '/api/manifest': typeof ApiManifestRoute
   '/api/maps-key': typeof ApiMapsKeyRoute
   '/api/notion-setup': typeof ApiNotionSetupRoute
   '/api/notion-sync': typeof ApiNotionSyncRoute
+  '/api/pack': typeof ApiPackRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/streets': typeof ApiStreetsRoute
   '/api/transcribe': typeof ApiTranscribeRoute
@@ -282,9 +298,11 @@ export interface FileRoutesById {
   '/truck': typeof TruckRoute
   '/api/coach': typeof ApiCoachRoute
   '/api/company-site': typeof ApiCompanySiteRoute
+  '/api/manifest': typeof ApiManifestRoute
   '/api/maps-key': typeof ApiMapsKeyRoute
   '/api/notion-setup': typeof ApiNotionSetupRoute
   '/api/notion-sync': typeof ApiNotionSyncRoute
+  '/api/pack': typeof ApiPackRoute
   '/api/speech': typeof ApiSpeechRoute
   '/api/streets': typeof ApiStreetsRoute
   '/api/transcribe': typeof ApiTranscribeRoute
@@ -318,9 +336,11 @@ export interface FileRouteTypes {
     | '/truck'
     | '/api/coach'
     | '/api/company-site'
+    | '/api/manifest'
     | '/api/maps-key'
     | '/api/notion-setup'
     | '/api/notion-sync'
+    | '/api/pack'
     | '/api/speech'
     | '/api/streets'
     | '/api/transcribe'
@@ -350,9 +370,11 @@ export interface FileRouteTypes {
     | '/truck'
     | '/api/coach'
     | '/api/company-site'
+    | '/api/manifest'
     | '/api/maps-key'
     | '/api/notion-setup'
     | '/api/notion-sync'
+    | '/api/pack'
     | '/api/speech'
     | '/api/streets'
     | '/api/transcribe'
@@ -384,9 +406,11 @@ export interface FileRouteTypes {
     | '/truck'
     | '/api/coach'
     | '/api/company-site'
+    | '/api/manifest'
     | '/api/maps-key'
     | '/api/notion-setup'
     | '/api/notion-sync'
+    | '/api/pack'
     | '/api/speech'
     | '/api/streets'
     | '/api/transcribe'
@@ -419,9 +443,11 @@ export interface RootRouteChildren {
   TruckRoute: typeof TruckRoute
   ApiCoachRoute: typeof ApiCoachRoute
   ApiCompanySiteRoute: typeof ApiCompanySiteRoute
+  ApiManifestRoute: typeof ApiManifestRoute
   ApiMapsKeyRoute: typeof ApiMapsKeyRoute
   ApiNotionSetupRoute: typeof ApiNotionSetupRoute
   ApiNotionSyncRoute: typeof ApiNotionSyncRoute
+  ApiPackRoute: typeof ApiPackRoute
   ApiSpeechRoute: typeof ApiSpeechRoute
   ApiStreetsRoute: typeof ApiStreetsRoute
   ApiTranscribeRoute: typeof ApiTranscribeRoute
@@ -508,6 +534,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCompanySiteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/manifest': {
+      id: '/api/manifest'
+      path: '/api/manifest'
+      fullPath: '/api/manifest'
+      preLoaderRoute: typeof ApiManifestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/maps-key': {
       id: '/api/maps-key'
       path: '/api/maps-key'
@@ -527,6 +560,13 @@ declare module '@tanstack/react-router' {
       path: '/api/notion-sync'
       fullPath: '/api/notion-sync'
       preLoaderRoute: typeof ApiNotionSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/pack': {
+      id: '/api/pack'
+      path: '/api/pack'
+      fullPath: '/api/pack'
+      preLoaderRoute: typeof ApiPackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/speech': {
@@ -714,9 +754,11 @@ const rootRouteChildren: RootRouteChildren = {
   TruckRoute: TruckRoute,
   ApiCoachRoute: ApiCoachRoute,
   ApiCompanySiteRoute: ApiCompanySiteRoute,
+  ApiManifestRoute: ApiManifestRoute,
   ApiMapsKeyRoute: ApiMapsKeyRoute,
   ApiNotionSetupRoute: ApiNotionSetupRoute,
   ApiNotionSyncRoute: ApiNotionSyncRoute,
+  ApiPackRoute: ApiPackRoute,
   ApiSpeechRoute: ApiSpeechRoute,
   ApiStreetsRoute: ApiStreetsRoute,
   ApiTranscribeRoute: ApiTranscribeRoute,

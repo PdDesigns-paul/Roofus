@@ -22,7 +22,7 @@ import { clusterLines, firstRemainingInPlan, loopHeadline, loopLabel } from "@/l
 import { useStreets } from "@/lib/streets-store";
 import { usePins } from "@/lib/pins-store";
 import { useWeather } from "@/lib/weather-store";
-import { pack, todayWeatherLine } from "@/lib/tenant";
+import { currentPack, todayWeatherLine } from "@/lib/tenant";
 
 
 
@@ -37,6 +37,7 @@ function Truck() {
 }
 
 function DaySheet() {
+  const pack = currentPack();
   const date = localDateKey();
   const stored = useDayBook((s) => s.days[date]);
   const day = stored ?? blankDay(date);

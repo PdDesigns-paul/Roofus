@@ -1,9 +1,11 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Camera, DoorOpen, Map } from "lucide-react";
 import { PickupTruck } from "@/components/pickup-truck";
-import { pack } from "@/lib/tenant";
+import { currentPack } from "@/lib/tenant";
 
-const TABS = [
+function placeTabs() {
+  const pack = currentPack();
+  return [
   {
     to: "/truck",
     id: "truck",
@@ -33,10 +35,12 @@ const TABS = [
     match: (p: string) => p.startsWith("/after") || p.startsWith("/streets"),
   },
 ] as const;
+}
 
 
 export function TabBar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const TABS = placeTabs();
 
   return (
     <div
