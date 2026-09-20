@@ -2,6 +2,8 @@ import "./test-setup.ts";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
+  appendStamp,
+  applyCountWrite,
   blankDay,
   EMPTY_COUNTS,
   endLabor,
@@ -11,14 +13,17 @@ import {
   laborIsPaused,
   laborIsRunning,
   localDateKey,
+  MAX_DAY_STAMPS,
   packAfterAction,
   pauseLabor,
   restoreDay,
   restoreDays,
   restoreProfile,
   restoreShift,
+  restoreStamps,
   resumeLabor,
   shiftMinutes,
+  stampsByHour,
   startWork,
   unpackAfterAction,
   weekLaborMinutes,
@@ -55,6 +60,7 @@ describe("blankDay", () => {
     assert.equal(d.labor.endedAt, null);
     assert.equal(d.labor.breaksMin, 0);
     assert.deepEqual(d.labor.segments, []);
+    assert.deepEqual(d.stamps, []);
   });
 });
 
@@ -232,6 +238,68 @@ describe("split clock", () => {
     assert.equal(shift.breaksMin, 20);
     assert.equal(shiftMinutes(shift), 180);
     assert.equal(laborIsPaused(shift), false);
+  });
+});
+
+describe("day stamps", () => {
+  it("restores old days with no stamps", () => {
+    const d = restoreDay("2026-09-19", { knocks: 4 });
+    assert.deepEqual(d.stamps, []);
+    assert.equal(d.knocks, 4);
+    assert.deepEqual(restoreStamps(undefined), []);
+  });
+
+  it("plus writes a pack key, not a Roofus noun; pinId is optional", () => {
+    const at = new Date(2026, 8, 19, 18, 0, 0).toISOString();
+    const d = applyCountWrite(blankDay("2026-09-19"), "knocks", 1, at);
+    assert.equal(d.knocks, 1);
+    assert.equal(d.stamps.length, 1);
+    assert.equal(d.stamps[0]?.unit, "knocks");
+    assert.notEqual(d.stamps[0]?.unit, "Doors");
+    assert.equal(d.stamps[0]?.pinId, undefined);
+    const pinned = applyCountWrite(d, "talks", 1, at, "pin-9");
+    assert.equal(pinned.stamps[1]?.unit, "talks");
+    assert.equal(pinned.stamps[1]?.pinId, "pin-9");
+  });
+
+  it("minus does not invent a negative stamp or rewrite when", () => {
+    const at = "2026-09-19T18:00:00.000Z";
+    const up = applyCountWrite(blankDay("2026-09-19"), "knocks", 1, at);
+    const down = applyCountWrite(up, "knocks", -1, "2026-09-19T18:01:00.000Z");
+    assert.equal(down.knocks, 0);
+    assert.equal(down.stamps.length, 1);
+    assert.equal(down.stamps[0]?.at, at);
+  });
+
+  it("caps at 200 and drops the oldest first", () => {
+    let stamps = restoreStamps(
+      Array.from({ length: 3 }, (_, i) => ({ at: `2026-09-19T12:00:0${i}.000Z`, unit: "knocks" })),
+    );
+    for (let i = 0; i < MAX_DAY_STAMPS; i++) {
+      stamps = appendStamp(stamps, { at: "2026-09-19T13:00:00.000Z", unit: "talks" });
+    }
+    assert.equal(stamps.length, MAX_DAY_STAMPS);
+    assert.equal(stamps[0]?.unit, "talks");
+    assert.equal(stamps.every((s) => s.unit === "talks"), true);
+  });
+
+  it("stampsByHour buckets local hours for one unit", () => {
+    const six = new Date(2026, 8, 19, 18, 5, 0).toISOString();
+    const seven = new Date(2026, 8, 19, 19, 10, 0).toISOString();
+    const hours = stampsByHour(
+      [
+        { at: six, unit: "knocks" },
+        { at: six, unit: "knocks" },
+        { at: seven, unit: "knocks" },
+        { at: six, unit: "talks" },
+      ],
+      "knocks",
+    );
+    assert.equal(hours.length, 24);
+    assert.equal(hours[18], 2);
+    assert.equal(hours[19], 1);
+    assert.equal(hours[17], 0);
+    assert.equal(stampsByHour([{ at: six, unit: "knocks" }], "talks")[18], 0);
   });
 });
 

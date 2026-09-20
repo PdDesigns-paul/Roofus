@@ -1,7 +1,7 @@
 /**
  * Sample day for an empty phone. Generic canvasser — not a real office.
  */
-import { localDateKey, packAfterAction, restoreShift, useDayBook } from "./day-book.ts";
+import { localDateKey, packAfterAction, restoreDay, restoreShift, useDayBook } from "./day-book.ts";
 import { DEMO_COUNTIES, DEMO_PINS, DEMO_STATES } from "./demo-loops.ts";
 import { useSettings } from "./settings-store.ts";
 import { reclusterPins, usePins } from "./pins-store.ts";
@@ -27,7 +27,7 @@ export function loadDemo(): void {
 
     },
     days: {
-      [date]: {
+      [date]: restoreDay(date, {
         date,
         knocks: 22,
         talks: 7,
@@ -47,7 +47,7 @@ export function loadDemo(): void {
           endedAt: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(),
           breaksMin: 0,
         }),
-      },
+      }),
     },
   });
   useSettings.getState().setWarrantyLine("See the actual Owens Corning warranty.");

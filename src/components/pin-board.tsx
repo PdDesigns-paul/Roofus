@@ -18,9 +18,9 @@ import {
   morningPins,
   pinHasPoint,
   pinLabel,
+  stampsFromPinBump,
   pinsForLoop,
   type CurbTag,
-  type PinCountKey,
   type PinStatus,
   type RoofLook,
 } from "@/lib/pins";
@@ -100,9 +100,10 @@ export function PinCard({ pin }: { pin: HousePin }) {
     const { countedAs, bump } = applyPinCount(cur.countedAs, nextStatus, localDateKey());
     update(cur.id, { status: nextStatus, countedAs });
     const credit = useDayBook.getState().bump;
-    (["knocks", "talks", "looks", "sets"] as PinCountKey[]).forEach((key) => {
-      if (bump[key]) credit(key, 1);
-    });
+    const at = new Date().toISOString();
+    for (const stamp of stampsFromPinBump(bump, cur.id, at)) {
+      credit(stamp.unit, 1, stamp.pinId);
+    }
   }
 
   function toggleTag(tag: CurbTag) {

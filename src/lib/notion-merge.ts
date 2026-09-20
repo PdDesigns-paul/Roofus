@@ -3,7 +3,7 @@
  * Counts take the max. Newest 60 days. FAQs union by id or question.
  */
 import type { DayEntry, DayProfile } from "./day-book.ts";
-import { blankDay, restoreShift } from "./day-book.ts";
+import { blankDay, restoreShift, restoreStamps } from "./day-book.ts";
 import type { NotionFaq } from "./notion-ids.ts";
 import type { LoopResult, LoopStatus, StreetLoop } from "./streets-types.ts";
 import type { StormEvent } from "./weather-types.ts";
@@ -144,6 +144,7 @@ export function mergeDays(current: Record<string, DayEntry>, incoming: DayEntry[
       afterAction: s(raw.afterAction),
       tomorrowStreet: s(raw.tomorrowStreet),
       labor: restoreShift(date, raw.labor),
+      stamps: restoreStamps(raw.stamps),
     };
     days[date] = cur
       ? {
@@ -162,6 +163,7 @@ export function mergeDays(current: Record<string, DayEntry>, incoming: DayEntry[
               : next.labor.startedAt || next.labor.endedAt
                 ? next.labor
                 : cur.labor,
+          stamps: (cur.stamps?.length ? cur.stamps : next.stamps) ?? [],
         }
       : { ...emptyDay(date), ...next };
   }

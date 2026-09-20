@@ -89,6 +89,18 @@ describe("mergeDays", () => {
     assert.equal(merged["2026-09-01"]?.labor.endedAt, "2026-09-01T20:00:00.000Z");
   });
 
+  it("phone stamps win; empty incoming stamps do not wipe", () => {
+    const cur = {
+      "2026-09-01": day("2026-09-01", {
+        knocks: 4,
+        stamps: [{ at: "2026-09-01T18:00:00.000Z", unit: "knocks" }],
+      }),
+    };
+    const merged = mergeDays(cur, [day("2026-09-01", { knocks: 10 })]);
+    assert.equal(merged["2026-09-01"]?.stamps.length, 1);
+    assert.equal(merged["2026-09-01"]?.stamps[0]?.unit, "knocks");
+  });
+
   it("packs labor so a Notion / file copy can restore the clock", () => {
     const packed = packLabor({
       startedAt: "2026-09-19T13:00:00.000Z",

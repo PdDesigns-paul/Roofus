@@ -27,6 +27,11 @@ export function isCountKey(key: string): key is CountKey {
 
 export type AfterAction = { wins: string; better: string; plan: string };
 
+/** When a tile or pin status wrote. Not a CRM. Counts stay the day total. */
+export type DayStamp = { at: string; unit: string; pinId?: string };
+
+export const MAX_DAY_STAMPS = 200;
+
 /** One local shift on a calendar day. No payroll. Breaks stored, not a UI yet. */
 export type LaborSegment = {
   kind: "work" | "break";
@@ -51,6 +56,7 @@ export type DayEntry = DayCounts & {
   afterAction: string;
   tomorrowStreet: string;
   labor: LaborShift;
+  stamps: DayStamp[];
 };
 
 export function unpackAfterAction(body: string): AfterAction {
@@ -282,9 +288,66 @@ export function laborIsRunning(shift: LaborShift): boolean {
   return lastOpenSegment(liveShift(shift).segments)?.kind === "work";
 }
 
+export function restoreStamp(raw: unknown): DayStamp | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as { at?: unknown; unit?: unknown; pinId?: unknown };
+  const at = isoOrNull(r.at);
+  const unit = typeof r.unit === "string" ? r.unit.trim() : "";
+  if (!at || !unit || unit.length > 32) return null;
+  const pinId = typeof r.pinId === "string" ? r.pinId.trim() : "";
+  return pinId ? { at, unit, pinId } : { at, unit };
+}
+
+export function restoreStamps(raw: unknown): DayStamp[] {
+  if (!Array.isArray(raw)) return [];
+  const out: DayStamp[] = [];
+  for (const item of raw) {
+    const stamp = restoreStamp(item);
+    if (stamp) out.push(stamp);
+  }
+  return out.length > MAX_DAY_STAMPS ? out.slice(out.length - MAX_DAY_STAMPS) : out;
+}
+
+/** Oldest drop first. One stamp per plus, not a timeline of edits. */
+export function appendStamp(stamps: DayStamp[], stamp: DayStamp, cap = MAX_DAY_STAMPS): DayStamp[] {
+  const next = [...stamps, stamp];
+  return next.length > cap ? next.slice(next.length - cap) : next;
+}
+
+export function applyCountWrite(
+  day: DayEntry,
+  key: CountKey,
+  delta: number,
+  at: string,
+  pinId?: string,
+): DayEntry {
+  const nextCount = Math.max(0, day[key] + delta);
+  const stamps = Array.isArray(day.stamps) ? day.stamps : [];
+  if (delta <= 0) {
+    // Minus does not invent a negative stamp and does not rewrite when.
+    return { ...day, [key]: nextCount, stamps };
+  }
+  const stamp: DayStamp = { at, unit: key };
+  const id = pinId?.trim();
+  if (id) stamp.pinId = id;
+  return { ...day, [key]: nextCount, stamps: appendStamp(stamps, stamp) };
+}
+
+/** Local hours 0–23. Pack labels belong at render, not here. */
+export function stampsByHour(stamps: DayStamp[], unit?: string): number[] {
+  const hours = Array.from({ length: 24 }, () => 0);
+  for (const stamp of stamps) {
+    if (unit && stamp.unit !== unit) continue;
+    const t = Date.parse(stamp.at);
+    if (!Number.isFinite(t)) continue;
+    hours[new Date(t).getHours()] += 1;
+  }
+  return hours;
+}
+
 
 export function restoreDay(date: string, raw: unknown): DayEntry {
-  const r = raw && typeof raw === "object" ? (raw as Partial<DayEntry>) : {};
+  const r = raw && typeof raw === "object" ? (raw as Partial<DayEntry> & { stamps?: unknown }) : {};
   return {
     date,
     knocks: nCount(r.knocks),
@@ -296,6 +359,7 @@ export function restoreDay(date: string, raw: unknown): DayEntry {
     afterAction: typeof r.afterAction === "string" ? r.afterAction : "",
     tomorrowStreet: typeof r.tomorrowStreet === "string" ? r.tomorrowStreet : "",
     labor: restoreShift(date, r.labor),
+    stamps: restoreStamps(r.stamps),
   };
 }
 
@@ -325,6 +389,7 @@ export function blankDay(date: string): DayEntry {
     afterAction: "",
     tomorrowStreet: "",
     labor: emptyShift(date),
+    stamps: [],
   };
 }
 
@@ -474,7 +539,7 @@ type DayBookState = {
   today: () => DayEntry;
   patchProfile: (patch: Partial<DayProfile>) => void;
   finishSetup: (profile: Partial<DayProfile>) => void;
-  bump: (key: keyof DayCounts, delta: number) => void;
+  bump: (key: keyof DayCounts, delta: number, pinId?: string) => void;
   patchToday: (patch: Partial<Omit<DayEntry, "date">>) => void;
   startDay: () => void;
   pauseDay: () => void;
@@ -535,11 +600,11 @@ export const useDayBook = create<DayBookState>()(
           return { profile: restoreProfile({ ...s.profile, ...patch, setupDone: true }), days };
 
         }),
-      bump: (key, delta) =>
+      bump: (key, delta, pinId) =>
         set((s) => {
           const date = localDateKey();
           const cur = s.days[date] ?? blankDay(date);
-          const next = { ...cur, [key]: Math.max(0, cur[key] + delta) };
+          const next = applyCountWrite(cur, key, delta, new Date().toISOString(), pinId);
           return { days: prune({ ...s.days, [date]: next }, date) };
         }),
       patchToday: (patch) =>

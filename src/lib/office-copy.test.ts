@@ -36,6 +36,7 @@ function sampleCopy(extra: Partial<PhoneCopy> = {}): PhoneCopy {
           endedAt: "2026-09-19T20:00:00.000Z",
           breaksMin: 15,
         },
+        stamps: [{ at: "2026-09-19T18:00:00.000Z", unit: "knocks", pinId: "pin-1" }],
       }),
     ],
     loops: [],
@@ -87,6 +88,8 @@ describe("phone copy JSON", () => {
     assert.equal(parsed.days[0]?.labor.startedAt, "2026-09-19T13:00:00.000Z");
     assert.equal(parsed.days[0]?.labor.endedAt, "2026-09-19T20:00:00.000Z");
     assert.equal(parsed.days[0]?.labor.breaksMin, 15);
+    assert.equal(parsed.days[0]?.stamps[0]?.unit, "knocks");
+    assert.equal(parsed.days[0]?.stamps[0]?.pinId, "pin-1");
     assert.equal(parsed.faqs[0]?.q, "Warranty?");
     assert.equal(copyFilename(parsed.copiedAt), "roofus-copy-2026-09-19.json");
   });

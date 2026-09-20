@@ -76,6 +76,21 @@ export type PinCountedAs = {
 
 export type PinCountBump = Partial<Record<PinCountKey, 1>>;
 
+/** Stamp units from a pin-status write. Keys, not Roofus nouns. pinId rides. */
+export function stampsFromPinBump(
+  bump: PinCountBump,
+  pinId: string,
+  at: string,
+): { at: string; unit: PinCountKey; pinId: string }[] {
+  const out: { at: string; unit: PinCountKey; pinId: string }[] = [];
+  const id = pinId.trim();
+  for (const key of ["knocks", "talks", "looks", "sets"] as const) {
+    if (!bump[key] || !id) continue;
+    out.push({ at, unit: key, pinId: id });
+  }
+  return out;
+}
+
 export function blankCountedAs(day = ""): PinCountedAs {
   return { day, knocks: false, talks: false, looks: false, sets: false };
 }

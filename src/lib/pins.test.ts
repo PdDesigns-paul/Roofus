@@ -17,6 +17,7 @@ import {
   restorePins,
   revisitPins,
   serializePin,
+  stampsFromPinBump,
   streetNameOf,
   thisHouseForCoach,
   MAX_BACKUP_PINS,
@@ -340,6 +341,19 @@ describe("applyPinCount", () => {
     assert.equal(out?.countedAs.day, day);
     assert.equal(out?.countedAs.talks, true);
     assert.equal(out && "owner" in out, false);
+  });
+
+  it("stamp units are pack keys with optional pinId, not Doors", () => {
+    const at = "2026-09-19T18:00:00.000Z";
+    const stamps = stampsFromPinBump({ knocks: 1, talks: 1 }, "pin-3", at);
+    assert.deepEqual(
+      stamps.map((s) => s.unit),
+      ["knocks", "talks"],
+    );
+    assert.equal(stamps[0]?.pinId, "pin-3");
+    assert.equal(stamps.some((s) => (s.unit as string) === "Doors"), false);
+    assert.deepEqual(stampsFromPinBump({}, "pin-3", at), []);
+    assert.deepEqual(stampsFromPinBump({ knocks: 1 }, "", at), []);
   });
 });
 
