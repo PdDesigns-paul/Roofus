@@ -12,17 +12,22 @@ export const PACK_PWA = {
   solar: { name: "Stride", short_name: "Stride", theme_color: "#123c2e" },
 };
 
-/** VITE_TENANT_ID → PWA fields. Unknown ids fall through to roofus. */
+/**
+ * VITE_TENANT_ID → PWA fields. Unknown ids fall through to roofus.
+ * @param {string | undefined} [envId]
+ */
 export function pwaForTenant(envId) {
   const k = String(envId ?? "").trim().toLowerCase();
   const id = k === "demo" ? "solar" : k;
-  return PACK_PWA[id] ?? PACK_PWA.roofus;
+  if (id === "pest" || id === "solar" || id === "roofus") return PACK_PWA[id];
+  return PACK_PWA.roofus;
 }
 
 export function packManifestPlugin() {
   return {
     name: "pack-manifest",
     apply: "build",
+    /** @param {{ dir?: string }} options */
     writeBundle(options) {
       if (!options.dir) return;
       const pwa = pwaForTenant(process.env.VITE_TENANT_ID);
