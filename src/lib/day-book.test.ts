@@ -16,14 +16,18 @@ import {
   laborIsRunning,
   localDateKey,
   MAX_DAY_STAMPS,
+  mergeRollup,
   packAfterAction,
   pauseLabor,
+  pruneDays,
   restoreDay,
   restoreDays,
   restoreProfile,
+  restoreRollup,
   restoreShift,
   restoreStamps,
   resumeLabor,
+  rollupFromDay,
   setLaborTrailOn,
   shiftMinutes,
   stampsByHour,
@@ -433,5 +437,74 @@ describe("hoursSeries", () => {
     const month = hoursSeries(days, "30", "2026-09-18");
     assert.equal(month.points.length, 30);
     assert.equal(month.counts.knocks, 12);
+  });
+});
+
+describe("day rollup", () => {
+  it("omits empty clocks and keeps pack keys, not labels", () => {
+    const empty = blankDay("2026-09-02");
+    empty.knocks = 99;
+    assert.equal(rollupFromDay(empty), null);
+    const clocked = {
+      ...blankDay("2026-09-01"),
+      knocks: 20,
+      talks: 6,
+      labor: restoreShift("2026-09-01", {
+        startedAt: "2026-09-01T16:00:00.000Z",
+        endedAt: "2026-09-01T20:00:00.000Z",
+      }),
+    };
+    const row = rollupFromDay(clocked);
+    assert.equal(row?.minutes, 240);
+    assert.equal(row?.counts.knocks, 20);
+    assert.equal(Object.hasOwn(row?.counts ?? {}, "Doors"), false);
+  });
+
+  it("pruned clocked days still feed Last 30; live row wins over rollup", () => {
+    const keep = "2026-09-18";
+    const clocked = {
+      ...blankDay("2026-09-01"),
+      knocks: 20,
+      talks: 6,
+      labor: restoreShift("2026-09-01", {
+        startedAt: "2026-09-01T16:00:00.000Z",
+        endedAt: "2026-09-01T20:00:00.000Z",
+      }),
+    };
+    const empty = { ...blankDay("2026-09-02"), knocks: 99 };
+    const today = blankDay(keep);
+    const pruned = pruneDays(
+      { "2026-09-01": clocked, "2026-09-02": empty, [keep]: today },
+      {},
+      keep,
+      1,
+    );
+    assert.equal(pruned.days["2026-09-01"], undefined);
+    assert.equal(pruned.days["2026-09-02"], undefined);
+    assert.equal(pruned.rollup["2026-09-01"]?.minutes, 240);
+    assert.equal(pruned.rollup["2026-09-02"], undefined);
+    const month = hoursSeries(pruned.days, "30", keep, Date.now(), pruned.rollup);
+    assert.equal(month.counts.knocks, 20);
+    assert.equal(month.minutes, 240);
+    assert.equal(month.hoursLabel, "4h 00m");
+    const live = {
+      ...blankDay("2026-09-01"),
+      knocks: 3,
+      labor: restoreShift("2026-09-01", {
+        startedAt: "2026-09-01T16:00:00.000Z",
+        endedAt: "2026-09-01T17:00:00.000Z",
+      }),
+    };
+    const withLive = hoursSeries({ "2026-09-01": live }, "week", "2026-09-01", Date.now(), pruned.rollup);
+    assert.equal(withLive.counts.knocks, 3);
+    assert.equal(withLive.minutes, 60);
+  });
+
+  it("old persist without rollup restores empty; incoming fills gaps", () => {
+    assert.deepEqual(restoreRollup(undefined), {});
+    const merged = mergeRollup({}, [{ date: "2026-09-01", minutes: 120, counts: { ...EMPTY_COUNTS, knocks: 8 } }]);
+    assert.equal(merged["2026-09-01"]?.minutes, 120);
+    const phoneWins = mergeRollup(merged, [{ date: "2026-09-01", minutes: 9, counts: { ...EMPTY_COUNTS, knocks: 1 } }]);
+    assert.equal(phoneWins["2026-09-01"]?.minutes, 120);
   });
 });

@@ -152,7 +152,15 @@ export function restoreProfile(raw: unknown): DayProfile {
 }
 
 
-const MAX_DAYS = 60;
+export const MAX_DAYS = 60;
+export const MAX_ROLLUP_DAYS = 120;
+
+/** Compact Hours memory. Fat days (stamps, trail, AAR) may prune. Empty clocks are omitted. */
+export type DayRollup = {
+  date: string;
+  minutes: number;
+  counts: DayCounts;
+};
 
 export const EMPTY_COUNTS: DayCounts = { knocks: 0, talks: 0, looks: 0, sets: 0 };
 
@@ -380,6 +388,120 @@ export function restoreDay(date: string, raw: unknown): DayEntry {
   };
 }
 
+export function restoreDayRollup(date: string, raw: unknown): DayRollup | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+  const minutes = typeof r.minutes === "number" ? r.minutes : Number(r.minutes);
+  if (!Number.isFinite(minutes) || minutes < 0) return null;
+  const countsRaw = r.counts && typeof r.counts === "object" ? (r.counts as Record<string, unknown>) : r;
+  return {
+    date,
+    minutes: Math.round(minutes),
+    counts: {
+      knocks: nCount(countsRaw.knocks),
+      talks: nCount(countsRaw.talks),
+      looks: nCount(countsRaw.looks),
+      sets: nCount(countsRaw.sets),
+    },
+  };
+}
+
+export function restoreRollup(raw: unknown): Record<string, DayRollup> {
+  if (!raw || typeof raw !== "object") return {};
+  const out: Record<string, DayRollup> = {};
+  const rec = raw as Record<string, unknown>;
+  if (Array.isArray(raw)) {
+    for (const item of raw) {
+      const date = item && typeof item === "object" ? (item as { date?: unknown }).date : "";
+      if (typeof date !== "string") continue;
+      const row = restoreDayRollup(date, item);
+      if (row) out[date] = row;
+    }
+    return out;
+  }
+  for (const [k, v] of Object.entries(rec)) {
+    const row = restoreDayRollup(k, v);
+    if (row) out[k] = row;
+  }
+  return out;
+}
+
+export function rollupFromDay(day: DayEntry, now = Date.now()): DayRollup | null {
+  const minutes = shiftMinutes(day.labor, now);
+  if (minutes == null) return null;
+  return {
+    date: day.date,
+    minutes,
+    counts: { knocks: day.knocks, talks: day.talks, looks: day.looks, sets: day.sets },
+  };
+}
+
+export function rememberRollup(
+  rollup: Record<string, DayRollup>,
+  day: DayEntry,
+  now = Date.now(),
+): Record<string, DayRollup> {
+  const row = rollupFromDay(day, now);
+  if (!row) return rollup;
+  return pruneRollup({ ...rollup, [day.date]: row });
+}
+
+export function mergeRollup(
+  current: Record<string, DayRollup>,
+  incoming: DayRollup[] | Record<string, DayRollup>,
+): Record<string, DayRollup> {
+  const out = { ...current };
+  const rows = Array.isArray(incoming) ? incoming : Object.values(incoming);
+  for (const row of rows) {
+    if (!out[row.date]) out[row.date] = row;
+  }
+  return pruneRollup(out);
+}
+
+function pruneRollup(rollup: Record<string, DayRollup>, max = MAX_ROLLUP_DAYS): Record<string, DayRollup> {
+  const keys = Object.keys(rollup).sort();
+  if (keys.length <= max) return rollup;
+  const keep = keys.slice(-max);
+  const next: Record<string, DayRollup> = {};
+  for (const k of keep) {
+    const row = rollup[k];
+    if (row) next[k] = row;
+  }
+  return next;
+}
+
+/** Drop oldest fat days. Clocked days land in rollup. Empty clocks do not. */
+export function pruneDays(
+  days: Record<string, DayEntry>,
+  rollup: Record<string, DayRollup>,
+  keep: string,
+  max = MAX_DAYS,
+): { days: Record<string, DayEntry>; rollup: Record<string, DayRollup> } {
+  const keys = Object.keys(days).sort();
+  if (keys.length <= max) return { days, rollup };
+  const next = { ...days };
+  let nextRoll = { ...rollup };
+  for (const k of keys) {
+    if (k === keep) continue;
+    if (Object.keys(next).length <= max) break;
+    const gone = next[k];
+    if (gone) nextRoll = rememberRollup(nextRoll, gone);
+    delete next[k];
+  }
+  return { days: next, rollup: nextRoll };
+}
+
+function commitDay(
+  days: Record<string, DayEntry>,
+  rollup: Record<string, DayRollup>,
+  date: string,
+  next: DayEntry,
+  keep = date,
+): { days: Record<string, DayEntry>; rollup: Record<string, DayRollup> } {
+  return pruneDays({ ...days, [date]: next }, rememberRollup(rollup, next), keep);
+}
+
 export function restoreDays(days: unknown): Record<string, DayEntry> {
   if (!days || typeof days !== "object") return {};
   const out: Record<string, DayEntry> = {};
@@ -553,17 +675,32 @@ export function hoursSeries(
   range: HoursRange,
   today = localDateKey(),
   now = Date.now(),
+  rollup: Record<string, DayRollup> = {},
 ): HoursSeries {
   const keys = rangeDateKeys(today, range === "week" ? 7 : 30);
   const points: HoursPoint[] = keys.map((date) => {
     const row = days[date];
-    return {
-      date,
-      minutes: row ? shiftMinutes(row.labor, now) : null,
-      counts: row
-        ? { knocks: row.knocks, talks: row.talks, looks: row.looks, sets: row.sets }
-        : { ...EMPTY_COUNTS },
-    };
+    if (row) {
+      return {
+        date,
+        minutes: shiftMinutes(row.labor, now),
+        counts: { knocks: row.knocks, talks: row.talks, looks: row.looks, sets: row.sets },
+      };
+    }
+    const frozen = rollup[date];
+    if (frozen) {
+      return {
+        date,
+        minutes: frozen.minutes,
+        counts: {
+          knocks: frozen.counts.knocks,
+          talks: frozen.counts.talks,
+          looks: frozen.counts.looks,
+          sets: frozen.counts.sets,
+        },
+      };
+    }
+    return { date, minutes: null, counts: { ...EMPTY_COUNTS } };
   });
   const counts: DayCounts = { ...EMPTY_COUNTS };
   let minutes = 0;
@@ -593,8 +730,13 @@ export function hoursSeries(
 }
 
 /** First-party week: hours + conversion. Same payload a trainer would read. */
-export function weekLaborView(days: Record<string, DayEntry>, today = localDateKey(), now = Date.now()): WeekLaborView {
-  const series = hoursSeries(days, "week", today, now);
+export function weekLaborView(
+  days: Record<string, DayEntry>,
+  today = localDateKey(),
+  now = Date.now(),
+  rollup: Record<string, DayRollup> = {},
+): WeekLaborView {
+  const series = hoursSeries(days, "week", today, now, rollup);
   return {
     minutes: series.minutes,
     hoursLabel: series.hoursLabel,
@@ -619,6 +761,7 @@ export function laborForCoach(shift: LaborShift): string {
 type DayBookState = {
   profile: DayProfile;
   days: Record<string, DayEntry>;
+  rollup: Record<string, DayRollup>;
   inspectWalk: InspectWalkProgress;
   ensureToday: () => DayEntry;
   today: () => DayEntry;
@@ -636,31 +779,20 @@ type DayBookState = {
   resetInspectWalk: () => void;
 };
 
-function prune(days: Record<string, DayEntry>, keep: string) {
-  const keys = Object.keys(days).sort();
-  if (keys.length <= MAX_DAYS) return days;
-  const next = { ...days };
-  for (const k of keys) {
-    if (k === keep) continue;
-    if (Object.keys(next).length <= MAX_DAYS) break;
-    delete next[k];
-  }
-  return next;
-}
-
 export const useDayBook = create<DayBookState>()(
   persist(
     (set, get) => ({
       profile: { ...BLANK_PROFILE },
 
       days: {},
+      rollup: {},
       inspectWalk: emptyWalk(),
       ensureToday: () => {
         const date = localDateKey();
         const existing = get().days[date];
         if (existing) return existing;
         const day = blankDay(date);
-        set((s) => ({ days: prune({ ...s.days, [date]: day }, date) }));
+        set((s) => pruneDays({ ...s.days, [date]: day }, s.rollup, date));
         return day;
       },
       today: () => {
@@ -683,22 +815,26 @@ export const useDayBook = create<DayBookState>()(
       finishSetup: (patch) =>
         set((s) => {
           const date = localDateKey();
-          const days = s.days[date] ? s.days : prune({ ...s.days, [date]: blankDay(date) }, date);
-          return { profile: restoreProfile({ ...s.profile, ...patch, setupDone: true }), days };
-
+          if (s.days[date]) {
+            return { profile: restoreProfile({ ...s.profile, ...patch, setupDone: true }) };
+          }
+          return {
+            profile: restoreProfile({ ...s.profile, ...patch, setupDone: true }),
+            ...pruneDays({ ...s.days, [date]: blankDay(date) }, s.rollup, date),
+          };
         }),
       bump: (key, delta, pinId) =>
         set((s) => {
           const date = localDateKey();
           const cur = s.days[date] ?? blankDay(date);
           const next = applyCountWrite(cur, key, delta, new Date().toISOString(), pinId);
-          return { days: prune({ ...s.days, [date]: next }, date) };
+          return commitDay(s.days, s.rollup, date, next);
         }),
       patchToday: (patch) =>
         set((s) => {
           const date = localDateKey();
           const cur = s.days[date] ?? blankDay(date);
-          return { days: prune({ ...s.days, [date]: { ...cur, ...patch } }, date) };
+          return commitDay(s.days, s.rollup, date, { ...cur, ...patch });
         }),
       startDay: () =>
         set((s) => {
@@ -706,7 +842,7 @@ export const useDayBook = create<DayBookState>()(
           const date = localDateKey();
           const cur = s.days[date] ?? blankDay(date);
           const labor = startWork(cur.labor, new Date().toISOString());
-          return { days: prune({ ...s.days, [date]: { ...cur, labor } }, date) };
+          return commitDay(s.days, s.rollup, date, { ...cur, labor });
         }),
       pauseDay: () =>
         set((s) => {
@@ -730,7 +866,7 @@ export const useDayBook = create<DayBookState>()(
           if (!open) return s;
           const cur = s.days[open.date] ?? blankDay(open.date);
           const labor = endLabor(cur.labor, new Date().toISOString());
-          return { days: { ...s.days, [open.date]: { ...cur, labor } } };
+          return commitDay(s.days, s.rollup, open.date, { ...cur, labor }, open.date);
         }),
       setTrailOn: (on) =>
         set((s) => {
@@ -757,12 +893,13 @@ export const useDayBook = create<DayBookState>()(
     }),
     {
       name: bookKey("roofus-day-v1"),
-      partialize: (s) => ({ profile: s.profile, days: s.days, inspectWalk: s.inspectWalk }),
+      partialize: (s) => ({ profile: s.profile, days: s.days, inspectWalk: s.inspectWalk, rollup: s.rollup }),
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<{
           profile: DayProfile;
           days: Record<string, DayEntry>;
           inspectWalk: unknown;
+          rollup: unknown;
         }>;
         return {
           ...current,
@@ -770,6 +907,7 @@ export const useDayBook = create<DayBookState>()(
           profile: restoreProfile(p.profile ?? current.profile),
           days: restoreDays(p.days ?? current.days),
           inspectWalk: restoreWalk(p.inspectWalk),
+          rollup: restoreRollup(p.rollup ?? current.rollup),
         };
       },
     },

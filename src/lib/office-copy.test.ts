@@ -44,6 +44,7 @@ function sampleCopy(extra: Partial<PhoneCopy> = {}): PhoneCopy {
     mindset: { Profile: "goBy: Jordan" },
     faqs: [{ id: "f1", q: "Warranty?", a: "See the sheet." }],
     pins: [],
+    rollup: [],
     ...extra,
   };
 }
@@ -90,7 +91,30 @@ describe("phone copy JSON", () => {
     assert.equal(parsed.days[0]?.labor.breaksMin, 15);
     assert.equal(parsed.days[0]?.stamps[0]?.unit, "knocks");
     assert.equal(parsed.days[0]?.stamps[0]?.pinId, "pin-1");
+    assert.equal(parsed.rollup.length, 0);
     assert.equal(parsed.faqs[0]?.q, "Warranty?");
+    const withRollup = parsePhoneCopy(
+      stringifyPhoneCopy(
+        sampleCopy({
+          rollup: [{ date: "2026-08-01", minutes: 180, counts: { knocks: 10, talks: 2, looks: 0, sets: 1 } }],
+        }),
+      ),
+    );
+    assert.equal(withRollup.rollup[0]?.date, "2026-08-01");
+    assert.equal(withRollup.rollup[0]?.minutes, 180);
+    assert.equal(withRollup.rollup[0]?.counts.knocks, 10);
+    const oldFile = parsePhoneCopy({
+      kind: PHONE_COPY_KIND,
+      version: 1,
+      copiedAt: "2026-09-19T16:00:00.000Z",
+      days: [],
+      loops: [],
+      storms: [],
+      mindset: {},
+      faqs: [],
+      pins: [],
+    });
+    assert.deepEqual(oldFile.rollup, []);
     assert.equal(copyFilename(parsed.copiedAt), "roofus-copy-2026-09-19.json");
   });
 

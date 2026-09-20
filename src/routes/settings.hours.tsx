@@ -17,8 +17,9 @@ function HoursPage() {
   const profile = useDayBook((st) => st.profile);
   const patchProfile = useDayBook((st) => st.patchProfile);
   const days = useDayBook((st) => st.days);
+  const rollup = useDayBook((st) => st.rollup);
   const [range, setRange] = useState<HoursRange>("week");
-  const series = hoursSeries(days, range, localDateKey());
+  const series = hoursSeries(days, range, localDateKey(), Date.now(), rollup);
   const units = pack.labor.units;
   const countUnits = units.filter((u): u is (typeof units)[number] & { key: CountKey } => isCountKey(u.key));
   const primary = countUnits[0] ?? units[0];

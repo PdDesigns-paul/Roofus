@@ -4,7 +4,7 @@
  */
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { localDateKey, useDayBook, type DayEntry } from "./day-book.ts";
+import { localDateKey, mergeRollup, useDayBook, type DayEntry, type DayRollup } from "./day-book.ts";
 import { assertRestoreAllowed } from "./book-owner.ts";
 import { MAX_BACKUP_PINS, serializePin, type HousePin } from "./pins.ts";
 import { mergeIncomingPins, reclusterPins, usePins } from "./pins-store.ts";
@@ -125,6 +125,7 @@ export function collectPhoneCopy(copiedAt = new Date().toISOString()): PhoneCopy
     version: PHONE_COPY_VERSION,
     copiedAt,
     days: Object.values(useDayBook.getState().days),
+    rollup: Object.values(useDayBook.getState().rollup),
     loops: streets.loops.slice(0, MAX_BACKUP_STREETS),
     storms: useWeather.getState().kept,
     mindset,
@@ -135,13 +136,17 @@ export function collectPhoneCopy(copiedAt = new Date().toISOString()): PhoneCopy
 
 export function applyPhoneCopy(pulled: {
   days: DayEntry[];
+  rollup?: DayRollup[];
   loops: StreetLoop[];
   storms: StormEvent[];
   mindset: Record<string, string>;
   faqs?: NotionFaq[];
   pins: HousePin[];
 }): void {
-  useDayBook.setState((s) => ({ days: mergeDays(s.days, pulled.days) }));
+  useDayBook.setState((s) => ({
+    days: mergeDays(s.days, pulled.days),
+    rollup: mergeRollup(s.rollup, pulled.rollup ?? []),
+  }));
 
   if (pulled.loops.length) {
     useStreets.setState((s) => ({ loops: mergeLoops(s.loops, pulled.loops) }));

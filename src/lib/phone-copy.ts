@@ -2,7 +2,7 @@
  * Pure office-copy payload. Phone is the live book.
  * Merge lives in notion-merge.ts. Stores live in office-copy.ts.
  */
-import { restoreDay, type DayEntry } from "./day-book.ts";
+import { restoreDay, restoreRollup, type DayEntry, type DayRollup } from "./day-book.ts";
 import type { NotionFaq } from "./notion-ids.ts";
 import { loopWorthKeeping, sanitizeLoop, sanitizeStorm } from "./notion-merge.ts";
 import { restorePins, type HousePin } from "./pins.ts";
@@ -20,6 +20,7 @@ export type PhoneCopy = {
   version: number;
   copiedAt: string;
   days: DayEntry[];
+  rollup: DayRollup[];
   loops: StreetLoop[];
   storms: StormEvent[];
   mindset: Record<string, string>;
@@ -119,6 +120,7 @@ export function parsePhoneCopy(raw: unknown): PhoneCopy {
     mindset,
     faqs,
     pins: restorePins(rec.pins),
+    rollup: Object.values(restoreRollup(rec.rollup)),
   };
 }
 
