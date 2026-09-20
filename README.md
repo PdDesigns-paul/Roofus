@@ -82,6 +82,8 @@ npm run dev
 | --- | --- | --- |
 | `XAI_API_KEY` | server only | Roofus chat, transcribe, speak, Last 48 hours pulse. Never `VITE_`. |
 | `GOOGLE_MAPS_API_KEY` | server | Maps JS + Geocoder + Places. Phone reads `/api/maps-key`. Never `VITE_` — that prefix errors on the host. Restrict HTTP referrers to `https://roofus.coach/*` and `https://*.vercel.app/*`. Never commit the key. |
+| `VITE_TENANT_ID` | build | Pack id. Default `roofus` (roofus.coach). `demo` is the proof tenant (Stride). Never a secret. |
+| `VITE_AUTH_ENABLED` | build | Stays `false` on Roofus. Not a login Place. |
 | `DATABASE_URL` | unused by this app | Platform leftover. Phone book stays local-first. Host auth/db light up only when [`PLATFORM.md`](./PLATFORM.md) names the child. |
 
 
@@ -97,6 +99,18 @@ node --experimental-strip-types scripts/scout-loop.mjs --demo
 `--demo` uses a generic Cumberland County park-once loop. Missing `XAI_API_KEY` is IEM-only and still success. `--playwright` is only when that feed is mute (one adapter, one loop). Captcha or login → unknown, not a guessed year or hail size. Do not add this to CI. Do not import it from `src/routes`.
 
 Do not commit a `.env`. Do not put keys in the client.
+
+### Tenants
+
+One Vercel project. Pack at build, not a second site.
+
+```bash
+npm run build                         # pack roofus (roofus.coach)
+VITE_TENANT_ID=demo npm run build     # pack demo (Stride) — proof of white-label
+```
+
+Resolution: `VITE_TENANT_ID` → host allowlist (`roofus.coach` → `roofus`) → `roofus`. grok.me is not a pack host. CI runs `test:app` against pack `roofus` only.
+
 
 ### Scripts
 

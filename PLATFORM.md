@@ -22,5 +22,7 @@ from porch stores until a named child lights them.**
 
 `VITE_AUTH_ENABLED` stays false on Roofus. Stripe / paywall chrome never. A sixth Place never.
 
+Pack id is `VITE_TENANT_ID` at build (default `roofus`). Host allowlist is `roofus.coach` → `roofus`. Do not stand up a second Vercel project. Do not move roofus.coach onto grok.me.
+
 If a real backend is the job, that is **Prep to Launch** — a named child, not
 quietly wiring these files. The phone book stays local-first after that too.

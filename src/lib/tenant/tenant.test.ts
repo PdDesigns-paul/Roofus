@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { pack, packStyle, ROOFUS_PACK } from "./index.ts";
+import { pack, packStyle, ROOFUS_PACK, manifestFromPack } from "./index.ts";
 import { PAGE_HELP } from "../page-help.ts";
 import { ONBOARD_STEPS } from "../onboard.ts";
 import { COACH_MODES } from "../coach-modes.ts";
@@ -66,9 +66,10 @@ describe("pack roofus", () => {
   });
 
   it("PWA and share card name the pack", () => {
-    assert.equal(manifest.name, pack.pwa.name);
-    assert.equal(manifest.short_name, pack.productName);
-    assert.equal(manifest.theme_color, pack.pwa.themeColor);
+    const pwa = manifestFromPack(pack);
+    assert.equal(manifest.name, pwa.name);
+    assert.equal(manifest.short_name, pwa.short_name);
+    assert.equal(manifest.theme_color, pwa.theme_color);
     assert.equal(site.title, pack.productName);
   });
 
@@ -171,6 +172,7 @@ describe("pack roofus curriculum", () => {
     );
     assert.equal(pack.inspect.reportName, "CompanyCam");
     assert.equal(pack.inspect.askStarters.length, 3);
+    assert.match(src("../inspect-walk.ts"), /DEMO_INSPECT/);
     assert.match(src("../inspect-walk.ts"), /ROOFUS_INSPECT/);
     assert.match(src("../inspect-system.ts"), /p\.inspect\.steps/);
 
