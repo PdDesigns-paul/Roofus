@@ -75,6 +75,26 @@ export function unpackLabeled(body: string): Record<string, string> {
   return out;
 }
 
+/** Labor rides in the copy payload (JSON + Notion Days.Labor). */
+export function packLabor(shift: { startedAt: string | null; endedAt: string | null; breaksMin: number }): string {
+  if (!shift.startedAt && !shift.endedAt && !(shift.breaksMin > 0)) return "";
+  return packLabeled({
+    startedAt: shift.startedAt ?? "",
+    endedAt: shift.endedAt ?? "",
+    breaksMin: shift.breaksMin > 0 ? shift.breaksMin : undefined,
+  });
+}
+
+export function unpackLabor(body: string, date: string) {
+  if (!body.trim()) return restoreShift(date, undefined);
+  const u = unpackLabeled(body);
+  return restoreShift(date, {
+    startedAt: u.startedAt || null,
+    endedAt: u.endedAt || null,
+    breaksMin: u.breaksMin ? n(u.breaksMin) : 0,
+  });
+}
+
 function n(v: unknown) {
   const x = typeof v === "number" ? v : Number(v);
   return Number.isFinite(x) ? Math.max(0, Math.round(x)) : 0;
@@ -414,14 +434,17 @@ export function loopWorthKeeping(l: StreetLoop): boolean {
   return Boolean(l.id && (l.zip.trim() || l.title.trim() || l.streets.length || l.homes > 0));
 }
 
-export function restoreTally(pulled: {
-  days: DayEntry[];
-  loops: StreetLoop[];
-  storms: StormEvent[];
-  mindset: Record<string, string>;
-  faqs: NotionFaq[];
-  pins?: { id: string }[];
-}): string {
+export function restoreTally(
+  pulled: {
+    days: DayEntry[];
+    loops: StreetLoop[];
+    storms: StormEvent[];
+    mindset: Record<string, string>;
+    faqs: NotionFaq[];
+    pins?: { id: string }[];
+  },
+  emptyMessage?: string,
+): string {
   const bits: string[] = [];
   if (pulled.days.length) {
     bits.push(`${pulled.days.length} day${pulled.days.length === 1 ? "" : "s"}`);
@@ -438,7 +461,10 @@ export function restoreTally(pulled: {
   if (Object.values(pulled.mindset).some((v) => v.trim())) bits.push("mindset");
   if (pulled.faqs.length) bits.push("memory");
   if (!bits.length) {
-    return "Notion had nothing to copy onto this phone. Backup from the phone that has the day, then Restore here.";
+    return (
+      emptyMessage ??
+      "Notion had nothing to copy onto this phone. Backup from the phone that has the day, then Restore here."
+    );
   }
   return `Brought back ${bits.join(", ")}.`;
 }

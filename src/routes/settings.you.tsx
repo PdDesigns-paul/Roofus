@@ -18,6 +18,8 @@ import {
   type CompanyPacket,
 } from "@/lib/company-packets";
 import { useDayBook } from "@/lib/day-book";
+import { lastCopyAtFrom, lastCopyLine, useOfficeCopy } from "@/lib/office-copy";
+import { useNotion } from "@/lib/notion-store";
 import { useSettings } from "@/lib/settings-store";
 import { pack } from "@/lib/tenant";
 import { OwnerChip } from "@/components/owner-chip";
@@ -47,6 +49,7 @@ function YouPage() {
           <p className="mt-2 text-sm leading-relaxed text-muted">
             This phone’s book. Account is a key, not a login screen.
           </p>
+          <LastCopyLine />
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div className="min-w-0">
@@ -84,6 +87,21 @@ function YouPage() {
 
       </div>
     </main>
+  );
+}
+
+function LastCopyLine() {
+  const copyAt = useOfficeCopy((s) => s.lastCopyAt);
+  const notionAt = useNotion((s) => s.lastSyncAt);
+  return (
+    <>
+      <p className="mt-2 text-sm leading-relaxed text-muted">
+        {lastCopyLine(lastCopyAtFrom(copyAt, notionAt))}
+      </p>
+      <Link to="/settings/backup" className="mt-1 inline-block text-sm text-fg underline underline-offset-4">
+        Go to Backup
+      </Link>
+    </>
   );
 }
 

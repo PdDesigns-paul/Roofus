@@ -51,13 +51,11 @@ Everything lives in **this browser** (`localStorage` via Zustand):
 - `roofus-onboard-v1` — first-run five job slides. Skip writes this. Replay in Settings.
 - coach threads in the coach store
 
-The phone book is **local-first**. Cloud is a copy. Whose book lives on You as a chip (**This phone** when signed out) — not a `/login` Place, not Postgres as the live journal. Do not put a Notion secret in the repo. The secret stays on the phone and is sent to Notion only when they tap Connect or Backup.
+The phone book is **local-first**. Cloud is a copy. Whose book lives on You as a chip (**This phone** when signed out) — not a `/login` Place, not Postgres as the live journal. Do not put a Notion secret in the repo. The secret stays on the phone and is sent to Notion only when they tap Connect or Copy this phone.
 
+### Backup (file first, Notion optional)
 
-
-### Notion backup (optional, recommended)
-
-Free Notion account. Internal integration. They paste the secret and a page link. We build **Days, Streets, Storms, Mindset, Memory, Pins** in *their* workspace. Restore fills blanks and keeps the higher counts. It does not wipe what they already tapped.
+Copy this phone. Last copy is a line on You. **Save a file** is the offline lifeboat (same merge as Notion). Restore onto a day that already has counts, or onto pins, needs a typed confirm — first name or `This phone.` Notion stays behind **Use Notion** (secret + page + Connect). We build **Days, Streets, Storms, Mindset, Memory, Pins** in *their* workspace. Labor shifts ride in the same payload. Restore fills blanks and keeps the higher counts. It does not wipe what they already tapped.
 
 FAQs under “Things Roofus should remember” ship with public porch answers (Dashaun Bryant / Adam Bensman). He reads them in chat. Edit or drop. Your office rules win. They work even before they connect Notion.
 
