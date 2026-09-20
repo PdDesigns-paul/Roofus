@@ -68,4 +68,12 @@ export const ROOFUS_PACK = {
   starters: ROOFUS_STARTERS,
   promptModules: ROOFUS_PROMPT_MODULES,
   help: ROOFUS_HELP,
+  labor: {
+    units: [
+      { key: "knocks", label: "Doors", hint: "I knocked" },
+      { key: "talks", label: "Talked", hint: "Someone answered" },
+      { key: "looks", label: "On the roof", hint: "I went up" },
+      { key: "sets", label: "Appointments", hint: "On the calendar" },
+    ],
+  },
 } as const satisfies BrandPack;

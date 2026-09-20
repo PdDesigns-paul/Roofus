@@ -102,6 +102,8 @@ describe("pack roofus", () => {
     assert.match(src("../../components/roofus-mark.tsx"), /pack\.productName/);
     assert.match(src("../../routes/truck.tsx"), /pack\.copy\.askHowTodayWent/);
     assert.match(src("../../routes/truck.tsx"), /pack\.places\.today/);
+    assert.match(src("../../routes/truck.tsx"), /pack\.labor\.units/);
+    assert.doesNotMatch(src("../../routes/truck.tsx"), /const COUNTERS/);
     assert.match(src("../../routes/door.tsx"), /pack\.places\.door/);
     assert.match(src("../../routes/roof.tsx"), /pack\.places\.inspect/);
     assert.match(src("../../routes/after.tsx"), /pack\.places\.plan/);
@@ -134,6 +136,17 @@ describe("pack roofus curriculum", () => {
       [...pack.starters.live],
     );
     assert.match(pack.starters.live[0] ?? "", /million-dollar/);
+  });
+
+  it("owns labor units as the four Today tiles", () => {
+    assert.deepEqual(
+      pack.labor.units.map((u) => u.key),
+      ["knocks", "talks", "looks", "sets"],
+    );
+    assert.deepEqual(
+      pack.labor.units.map((u) => u.label),
+      ["Doors", "Talked", "On the roof", "Appointments"],
+    );
   });
 
   it("Door / Roof / Coach help paragraphs are the pack", () => {

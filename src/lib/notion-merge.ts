@@ -3,6 +3,7 @@
  * Counts take the max. Newest 60 days. FAQs union by id or question.
  */
 import type { DayEntry, DayProfile } from "./day-book.ts";
+import { blankDay, restoreShift } from "./day-book.ts";
 import type { NotionFaq } from "./notion-ids.ts";
 import type { LoopResult, LoopStatus, StreetLoop } from "./streets-types.ts";
 import type { StormEvent } from "./weather-types.ts";
@@ -50,17 +51,7 @@ export type RestoreMindset = {
 };
 
 function emptyDay(date: string): DayEntry {
-  return {
-    date,
-    knocks: 0,
-    talks: 0,
-    looks: 0,
-    sets: 0,
-    cluster: "",
-    storm: "",
-    afterAction: "",
-    tomorrowStreet: "",
-  };
+  return blankDay(date);
 }
 
 export function packLabeled(fields: Record<string, string | number | undefined>) {
@@ -117,6 +108,7 @@ export function mergeDays(current: Record<string, DayEntry>, incoming: DayEntry[
       storm: s(raw.storm),
       afterAction: s(raw.afterAction),
       tomorrowStreet: s(raw.tomorrowStreet),
+      labor: restoreShift(date, raw.labor),
     };
     days[date] = cur
       ? {
@@ -129,6 +121,12 @@ export function mergeDays(current: Record<string, DayEntry>, incoming: DayEntry[
           storm: cur.storm || next.storm,
           afterAction: cur.afterAction || next.afterAction,
           tomorrowStreet: cur.tomorrowStreet || next.tomorrowStreet,
+          labor:
+            cur.labor.startedAt || cur.labor.endedAt
+              ? cur.labor
+              : next.labor.startedAt || next.labor.endedAt
+                ? next.labor
+                : cur.labor,
         }
       : { ...emptyDay(date), ...next };
   }

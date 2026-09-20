@@ -5,9 +5,9 @@ export const PAGE_HELP = {
   today: {
     title: pack.places.today,
     body: [
-      "First time: name, company, one county on this page if those are blank. Then Setup leaves Today. Hours live in Settings. Working loop is one line plus Cards. Pin on this page drops GPS and opens the house editor here (address, year, status, note, roof look). Works with no Working loop. Next door is the next blank pin on that walk. Four counts sit on this page. Pin status writes the matching Today count once. Tiles still work without a pin. First open is five job slides over the field log: who I am, drop a pin, what to say at the door, talk to the dog, age first. Do not list tab names on slide 1. Skip is on every slide.",
-      "One weather sentence, read-only from Keep or Use today. Night opens Finish the day on Plan. Formula reads AAR · blank or AAR · done. No After Action Report fields here. Wins, better, and tomorrow live on Plan. No Keep / Toss on Today. No plan chips. No weather box. The map and the long board stay on Plan.",
-      "Pick the Working loop on Plan (Use today). Ask Roofus how today went is an outline. Pin is the action on this page. Pin still works on an empty book.",
+      "First time: name, company, one county on this page if those are blank. Then Setup leaves Today. Hours live in Settings. Working loop is one line plus Cards. Start day / End day sit under the date. Elapsed is on this page — your clock, not a manager report. Pin on this page drops GPS and opens the house editor here (address, year, status, note, roof look). Works with no Working loop. Next door is the next blank pin on that walk. Four counts sit on this page. Pin status writes the matching Today count once. Tiles still work without a pin. First open is five job slides over the field log: who I am, drop a pin, what to say at the door, talk to the dog, age first. Do not list tab names on slide 1. Skip is on every slide.",
+      "One weather sentence, read-only from Keep or Use today. Night opens Finish the day on Plan. Formula reads AAR · blank or AAR · done. If the clock is open, End day is on Finish the day too. No After Action Report fields here. Wins, better, and tomorrow live on Plan. No Keep / Toss on Today. No plan chips. No weather box. The map and the long board stay on Plan.",
+      "Pick the Working loop on Plan (Use today). Ask Roofus how today went is an outline. Start day is the clock. Pin drops the house. Pin still works on an empty book.",
     ],
   },
   plan: {
@@ -15,7 +15,7 @@ export const PAGE_HELP = {
     body: [
       "Night-before and morning. Not a fifth Place. Where you knock is the map — drop pins, search a zip, drag onto the house. Satellite is on so you can see the roof; chip off for the street drawing. Walks form from distance. Default open until a Working loop exists. Year filter (all / in band / no year) uses years you typed. Default targeting 15–22. Tap Change. Chips pick a band. From and To take the number when you leave the field, not on the first digit. Each card is a park-once walk of pins. Working sits at the top. Search a loop, street, or zip. Empty match says so. Near me is a chip — it sorts walks you already have. Empty book does not invent a zip. Map key missing: pins still save.",
       "Keep / Toss lives here. Age first on the porch. Today may show one kept sentence. It does not host Keep / Toss. Use today is a chip — it picks the Working loop and copies the sentence if the weather box is empty. Skip and Done freeze that walk. Morning is a chip — only pins with status set or revisit. Same PinCard. Empty: nothing to call. Pin a house or knock. That is the 7am job, not a pipeline.",
-      "Finish the day owns the night form. After Action Report and Tomorrow I start at live here only. Night on Today opens Finish the day here. Same store. Open a loop: that card is the pin board in walking order. Revisit is a chip — houses to come back to, across loops. Settings is a Go at the bottom, not a fifth tab. Pick tomorrow. Finish the journal. Desk drops are tagged.",
+      "Finish the day owns the night form. After Action Report and Tomorrow I start at live here only. Night on Today opens Finish the day here. If the clock is still open, End day is here too. Same store. Open a loop: that card is the pin board in walking order. Revisit is a chip — houses to come back to, across loops. Settings is a Go at the bottom, not a fifth tab. Pick tomorrow. Finish the journal. Desk drops are tagged.",
     ],
   },
   door: {
@@ -46,7 +46,7 @@ export const PAGE_HELP = {
     body: [
       "Settings is a list of pages. You, Territory, Hours, Mindset, Reminders, Backup. Each row is a Go — title, hint, chevron. Plan is its own tab, not a row here. Back on every sub page.",
       "You: first name, company, website, warranty, packets. Paste a URL — we crawl it in the background. Pages land in Reference. Photo or File under the website: flyer, form, warranty, other. Type the porch line in notes. He quotes saved text only. No text, no “I read your flyer.”",
-      "Territory: counties and a state. Counties are for storms. Pins make the walks. Hours: when you knock, morning work, hard stop.",
+      "Territory: counties and a state. Counties are for storms. Pins make the walks. Hours: usual windows stay as policy. This week is your clock, counts, and conversion — not a hidden office report.",
       "Reminders: morning storm if empty, evening After Action Report only after a door, a pin, or finished setup, Sundays pace, the 1st talent stack. Did it is a chip. Finish-setup is Settings, not a nag. Blank first hour after 5pm is Setup, not AAR.",
       "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report lives on Plan.",
       "Backup: optional Notion copy of days, streets, storms, mindset, FAQs, and pins. Do not Restore onto a full phone. Do not Backup from an empty one.",

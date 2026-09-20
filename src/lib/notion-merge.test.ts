@@ -18,22 +18,15 @@ import {
   sanitizeLoop,
   type SurviveFields,
 } from "./notion-merge.ts";
-import type { DayEntry } from "./day-book.ts";
+import { blankDay, emptyShift, type DayEntry } from "./day-book.ts";
 import type { StreetLoop } from "./streets-types.ts";
 import { DEFAULT_FAQS } from "./porch-faqs.ts";
 
 function day(date: string, extra: Partial<DayEntry> = {}): DayEntry {
   return {
-    date,
-    knocks: 0,
-    talks: 0,
-    looks: 0,
-    sets: 0,
-    cluster: "",
-    storm: "",
-    afterAction: "",
-    tomorrowStreet: "",
+    ...blankDay(date),
     ...extra,
+    labor: extra.labor ?? emptyShift(date),
   };
 }
 
@@ -72,6 +65,24 @@ describe("mergeDays", () => {
     assert.equal(merged["2026-09-01"]?.talks, 3);
     assert.equal(merged["2026-09-01"]?.afterAction, "won the set");
     assert.equal(merged["2026-09-01"]?.cluster, "Oak");
+  });
+
+  it("phone labor wins; empty Notion clock does not wipe a shift", () => {
+    const cur = {
+      "2026-09-01": day("2026-09-01", {
+        knocks: 4,
+        labor: {
+          date: "2026-09-01",
+          startedAt: "2026-09-01T16:00:00.000Z",
+          endedAt: "2026-09-01T20:00:00.000Z",
+          breaksMin: 0,
+        },
+      }),
+    };
+    const merged = mergeDays(cur, [day("2026-09-01", { knocks: 10 })]);
+    assert.equal(merged["2026-09-01"]?.knocks, 10);
+    assert.equal(merged["2026-09-01"]?.labor.startedAt, "2026-09-01T16:00:00.000Z");
+    assert.equal(merged["2026-09-01"]?.labor.endedAt, "2026-09-01T20:00:00.000Z");
   });
 
   it("keeps the newest 60 days", () => {

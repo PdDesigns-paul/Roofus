@@ -5,7 +5,7 @@
  * of 60 days + 120 streets does not blow a serverless time limit.
  */
 import { parseNotionId, type NotionFaq, type NotionIds, type NotionTable } from "@/lib/notion-ids";
-import type { DayEntry } from "@/lib/day-book";
+import { restoreDay, type DayEntry } from "@/lib/day-book";
 import type { StreetLoop } from "@/lib/streets-types";
 import { restorePin, type HousePin } from "@/lib/pins";
 import { loopHeadline, townFromHeadline, zipFromHeadline } from "@/lib/streets-rank";
@@ -542,17 +542,19 @@ export type NotionRestore = {
 export async function pullSnapshot(token: string, ids: NotionIds): Promise<NotionRestore> {
   const daysRaw = await queryAll(token, ids.daysDb);
   const days: DayEntry[] = daysRaw
-    .map((p) => ({
-      date: readTitle(p),
-      knocks: readNum(p, "Doors"),
-      talks: readNum(p, "Talked"),
-      looks: readNum(p, "Roofs"),
-      sets: readNum(p, "Appointments"),
-      cluster: readRich(p, "Neighborhood"),
-      storm: readRich(p, "Weather"),
-      afterAction: readRich(p, "After Action"),
-      tomorrowStreet: readRich(p, "Tomorrow"),
-    }))
+    .map((p) =>
+      restoreDay(readTitle(p), {
+        date: readTitle(p),
+        knocks: readNum(p, "Doors"),
+        talks: readNum(p, "Talked"),
+        looks: readNum(p, "Roofs"),
+        sets: readNum(p, "Appointments"),
+        cluster: readRich(p, "Neighborhood"),
+        storm: readRich(p, "Weather"),
+        afterAction: readRich(p, "After Action"),
+        tomorrowStreet: readRich(p, "Tomorrow"),
+      }),
+    )
     .filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d.date));
 
   const streetRaw = await queryAll(token, ids.streetsDb);
