@@ -20,6 +20,8 @@ import {
 import { useDayBook } from "@/lib/day-book";
 import { useSettings } from "@/lib/settings-store";
 import { pack } from "@/lib/tenant";
+import { OwnerChip } from "@/components/owner-chip";
+
 
 
 export const Route = createFileRoute("/settings/you")({
@@ -37,6 +39,15 @@ function YouPage() {
       <AppHeader title="You" />
 
       <div className="mt-5 flex flex-col gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-medium uppercase tracking-wide text-faint">Book</p>
+          <div className="mt-2">
+            <OwnerChip />
+          </div>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
+            This phone’s book. Account is a key, not a login screen.
+          </p>
+        </div>
         <div className="grid grid-cols-2 gap-2">
           <div className="min-w-0">
             <Label htmlFor="goBy">First name</Label>

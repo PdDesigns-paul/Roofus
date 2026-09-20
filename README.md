@@ -47,10 +47,12 @@ Everything lives in **this browser** (`localStorage` via Zustand):
 - `roofus-survive-v1` — mindset worksheets
 - `roofus-notion-v1` — optional integration secret, table ids, FAQs
 - `roofus-settings` — theme, company, warranty, website, crawled pages
+- `roofus-owner-v1` — whose book (`ownerId`). Empty = this phone. Journal stores prefix with the id when present; current names stay the anonymous default.
 - `roofus-onboard-v1` — first-run five job slides. Skip writes this. Replay in Settings.
 - coach threads in the coach store
 
-The phone book is **local-first**. Cloud is a copy. An owner key may live on You later — not a `/login` Place, not Postgres as the live journal. Do not put a Notion secret in the repo. The secret stays on the phone and is sent to Notion only when they tap Connect or Backup.
+The phone book is **local-first**. Cloud is a copy. Whose book lives on You as a chip (**This phone** when signed out) — not a `/login` Place, not Postgres as the live journal. Do not put a Notion secret in the repo. The secret stays on the phone and is sent to Notion only when they tap Connect or Backup.
+
 
 
 ### Notion backup (optional, recommended)

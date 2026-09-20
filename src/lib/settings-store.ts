@@ -3,6 +3,8 @@ import { persist } from "zustand/middleware";
 import { siteHost, type CompanyPage } from "./company-site.ts";
 import { addPacket, packetBytes, type CompanyPacket } from "./company-packets.ts";
 import { pack } from "./tenant/index.ts";
+import { ANON_OWNER, writeOwner } from "./book-owner.ts";
+
 
 
 export type ThemeMode = "light" | "dark";
@@ -19,6 +21,8 @@ type SettingsState = {
   companySiteError: string;
   companyPackets: CompanyPacket[];
   companyPacketError: string;
+  ownerId: string | null;
+  ownerLabel: string;
   setTheme: (theme: ThemeMode) => void;
   toggleTheme: () => void;
   setCompanyName: (v: string) => void;
@@ -32,7 +36,9 @@ type SettingsState = {
   patchCompanyPacket: (id: string, patch: Partial<Omit<CompanyPacket, "id" | "addedAt">>) => void;
   dropCompanyPacket: (id: string) => void;
   setCompanyPacketError: (v: string) => void;
+  setOwner: (ownerId: string | null, ownerLabel: string) => void;
 };
+
 
 export function applyTheme(theme: ThemeMode) {
   if (typeof document === "undefined") return;
@@ -55,7 +61,10 @@ export const useSettings = create<SettingsState>()(
       companySiteError: "",
       companyPackets: [],
       companyPacketError: "",
+      ownerId: ANON_OWNER.ownerId,
+      ownerLabel: ANON_OWNER.ownerLabel,
       setTheme: (theme) => {
+
         applyTheme(theme);
         set({ theme });
       },
@@ -120,6 +129,14 @@ export const useSettings = create<SettingsState>()(
           companyPacketError: "",
         }),
       setCompanyPacketError: (companyPacketError) => set({ companyPacketError }),
+      setOwner: (ownerId, ownerLabel) => {
+        const next = {
+          ownerId: ownerId && ownerId.trim() ? ownerId.trim() : null,
+          ownerLabel: (ownerLabel.trim() || (ownerId ? "Signed in" : ANON_OWNER.ownerLabel)).trim(),
+        };
+        writeOwner(next);
+        set(next);
+      },
     }),
     {
       name: "roofus-settings",
@@ -131,6 +148,8 @@ export const useSettings = create<SettingsState>()(
         companySiteBrief: s.companySiteBrief,
         companySitePages: s.companySitePages,
         companyPackets: s.companyPackets,
+        ownerId: s.ownerId,
+        ownerLabel: s.ownerLabel,
       }),
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<SettingsState>;
@@ -138,7 +157,11 @@ export const useSettings = create<SettingsState>()(
           ...current,
           ...p,
           companyPackets: Array.isArray(p.companyPackets) ? p.companyPackets : [],
+          ownerId: typeof p.ownerId === "string" && p.ownerId.trim() ? p.ownerId.trim() : current.ownerId,
+          ownerLabel:
+            typeof p.ownerLabel === "string" && p.ownerLabel.trim() ? p.ownerLabel.trim() : current.ownerLabel,
         };
+
       },
       onRehydrateStorage: () => (state) => {
         if (typeof window !== "undefined" && !localStorage.getItem("roofus-dark-v2")) {

@@ -41,10 +41,12 @@ Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold star
 - Plan = a **map of pins**. Walks form from distance (0.4 km, cap 40). Not named subdivisions, not Census cards, not one card per zip. Open from the Plan tab (route `/after`). Night-before + morning. Last 48 hours Keep / Toss lives here. After Action Report and tomorrow live on Plan. Night on Today opens Finish the day on Plan. Morning chip lists set + revisit pins. Settings is a Go at the bottom of Plan, not a fifth tab.
 - Door = pocket cards with a one-line formula (hook → honest reason → one open question). Cards fill name and company from You. Compass stays visible — read it in the truck. Claim path shows after Keep, matching zip.
 - Door / Live first starter = million-dollar **retail / age** script (Script B). Script A = claim talk after Keep.
-- Phone book stays **local-first** (`localStorage` / Zustand). Cloud is a copy. Notion is optional backup in **their** workspace (Days, Streets, Storms, Mindset, Memory, Pins). Do not mount `/login` as a Place. An owner key may live on You when that child ships.
+- Phone book stays **local-first** (`localStorage` / Zustand). Cloud is a copy. Notion is optional backup in **their** workspace (Days, Streets, Storms, Mindset, Memory, Pins). Do not mount `/login` as a Place. Owner chip lives on You — **This phone** when signed out.
+
 - Pins are the hunt. Drop from Today (GPS) — that opens the house editor on Today (address, year, status, note, roof look) — or the Plan map (Desk). Pin status writes the matching Today count once. Tiles still work without a pin. Ticks hang on the open pin. Reset clears that house. Coach may quote the open pin’s year, status, note, and look. No pin, no “this house.” Distance makes the loop. Sidewalk house log, not a CRM, not a pipeline. No takeoff, no scrape. Street View / Zillow / Redfin are outbound links.
 
-The product path is this phone’s journal. Do not wire `better-auth`, `src/lib/db.ts`, or `src/lib/auth/*` into routes until a named child in [`PLATFORM.md`](./PLATFORM.md) lights them (WL-7 owner key / Prep-to-Launch). `AuthProvider` in the root is a Grok-host passthrough until then. `npm run build` is Vite only — never chain `db:migrate`. What stayed for the host, and when it may light up: [`PLATFORM.md`](./PLATFORM.md).
+The product path is this phone’s journal. Do not wire `better-auth`, `src/lib/db.ts`, or `src/lib/auth/*` into Place routes until a named child in [`PLATFORM.md`](./PLATFORM.md) turns accounts on. `AuthProvider` in the root is a passthrough. `ownerFromSession` refuses the disabled-auth `DEV_USER`. `npm run build` is Vite only — never chain `db:migrate`. What stayed for the host, and when it may light up: [`PLATFORM.md`](./PLATFORM.md).
+
 
 ## Signifiers (short)
 

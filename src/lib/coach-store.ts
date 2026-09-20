@@ -14,6 +14,8 @@ import {
 import type { ChatTurn } from "./stream-coach.ts";
 import type { WalkId } from "./survive.ts";
 import type { SetupRowId } from "./setup-progress.ts";
+import { bookKey } from "./book-owner.ts";
+
 
 export type ThreadOrigin = "porch" | "help" | "house" | "inspect" | "mindset" | "setup";
 
@@ -499,7 +501,7 @@ export const useCoach = create<CoachState>()(
       clearStreaming: () => set({ streaming: "", busy: false }),
     }),
     {
-      name: "roofus-threads-v1",
+      name: bookKey("roofus-threads-v1"),
       skipHydration: true,
       partialize: (s) => ({
         threads: s.threads,

@@ -11,7 +11,7 @@ from porch stores until a named child lights them.**
 
 | Path | Why it is still here | When it may light up |
 | --- | --- | --- |
-| `src/lib/auth/` | `__root.tsx` mounts `AuthProvider` (a passthrough). Vite serves `/auth/popup` in preview. | **WL-7** (book owner) may bind a host session to `ownerId` on You. **Prep-to-Launch** if a real backend is the job. Still no `/login` Place. Still no UserButton. Until then: do not add `/login` or `/api/auth`. Do not import `better-auth` from a route. |
+| `src/lib/auth/` | `__root.tsx` mounts `AuthProvider` (a passthrough). Vite serves `/auth/popup` in preview. | **WL-7** shipped `ownerId` / `ownerLabel` on You and `bookKey()` on the journal stores. `ownerFromSession` binds a real host id only — never the disabled-auth `DEV_USER` (that would rename every persist key). `VITE_AUTH_ENABLED` stays false. Still no `/login` Place. Still no UserButton. Do not import `better-auth` from a Place route. |
 | `src/lib/db.ts` | Vite’s preview plugin can load it. | **Prep-to-Launch** — office copy / crew backup, never the phone’s source of truth. Until then: do not `getSql()`. |
 | `src/lib/app-data/` | Grok connector gate for other apps. | Not the day book. Leave dark. |
 | `scripts/migrate.mjs` (`db:migrate`) | Host leftover for apps that turn a database on. | **Not** chained to `npm run build`. Prep-to-Launch may use it. |
@@ -20,8 +20,7 @@ from porch stores until a named child lights them.**
 
 `npm run build` is Vite only. It must not talk to Postgres or PGLite.
 
-`VITE_AUTH_ENABLED` stays false on Roofus until WL-7 lights it. Stripe /
-paywall chrome never. A sixth Place never.
+`VITE_AUTH_ENABLED` stays false on Roofus. Stripe / paywall chrome never. A sixth Place never.
 
 If a real backend is the job, that is **Prep to Launch** — a named child, not
 quietly wiring these files. The phone book stays local-first after that too.

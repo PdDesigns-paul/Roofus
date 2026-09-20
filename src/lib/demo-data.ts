@@ -22,6 +22,9 @@ export function loadDemo(): void {
       knockWindow: "After work, 4–7",
       paperWindow: "Morning calls",
       hardStop: "When it gets dark",
+      ownerId: null,
+      ownerLabel: "This phone",
+
     },
     days: {
       [date]: {

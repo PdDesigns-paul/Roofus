@@ -7,6 +7,9 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { clusterPlanLabel } from "./streets-rank.ts";
 import { emptyWalk, restoreWalk, serializeWalk, type InspectWalkProgress } from "./inspect-walk.ts";
+import { ANON_OWNER, bookKey, writeOwner } from "./book-owner.ts";
+
+
 
 export type DayCounts = {
   knocks: number;
@@ -93,7 +96,41 @@ export type DayProfile = {
   knockWindow: string;
   paperWindow: string;
   hardStop: string;
+  ownerId: string | null;
+  ownerLabel: string;
 };
+
+export const BLANK_PROFILE: DayProfile = {
+  setupDone: false,
+  goBy: "",
+  company: "",
+  counties: "",
+  states: "",
+  knockWindow: "",
+  paperWindow: "",
+  hardStop: "",
+  ownerId: null,
+  ownerLabel: ANON_OWNER.ownerLabel,
+};
+
+export function restoreProfile(raw: unknown): DayProfile {
+  const r = raw && typeof raw === "object" ? (raw as Partial<DayProfile>) : {};
+  const ownerId = typeof r.ownerId === "string" && r.ownerId.trim() ? r.ownerId.trim() : null;
+  const label = typeof r.ownerLabel === "string" ? r.ownerLabel.trim() : "";
+  return {
+    setupDone: Boolean(r.setupDone),
+    goBy: typeof r.goBy === "string" ? r.goBy : "",
+    company: typeof r.company === "string" ? r.company : "",
+    counties: typeof r.counties === "string" ? r.counties : "",
+    states: typeof r.states === "string" ? r.states : "",
+    knockWindow: typeof r.knockWindow === "string" ? r.knockWindow : "",
+    paperWindow: typeof r.paperWindow === "string" ? r.paperWindow : "",
+    hardStop: typeof r.hardStop === "string" ? r.hardStop : "",
+    ownerId,
+    ownerLabel: label || (ownerId ? "Signed in" : ANON_OWNER.ownerLabel),
+  };
+}
+
 
 const MAX_DAYS = 60;
 
@@ -319,16 +356,8 @@ function prune(days: Record<string, DayEntry>, keep: string) {
 export const useDayBook = create<DayBookState>()(
   persist(
     (set, get) => ({
-      profile: {
-        setupDone: false,
-        goBy: "",
-        company: "",
-        counties: "",
-        states: "",
-        knockWindow: "",
-        paperWindow: "",
-        hardStop: "",
-      },
+      profile: { ...BLANK_PROFILE },
+
       days: {},
       inspectWalk: emptyWalk(),
       ensureToday: () => {
@@ -345,17 +374,23 @@ export const useDayBook = create<DayBookState>()(
       },
       patchProfile: (patch) =>
         set((s) => {
-          const profile = { ...s.profile, ...patch };
+          const profile = restoreProfile({ ...s.profile, ...patch });
           if (!profile.setupDone && profile.counties.trim() && profile.states.trim()) {
             profile.setupDone = true;
           }
+          if (patch.ownerId !== undefined || patch.ownerLabel !== undefined) {
+            writeOwner({ ownerId: profile.ownerId, ownerLabel: profile.ownerLabel });
+          }
           return { profile };
         }),
+
+
       finishSetup: (patch) =>
         set((s) => {
           const date = localDateKey();
           const days = s.days[date] ? s.days : prune({ ...s.days, [date]: blankDay(date) }, date);
-          return { profile: { ...s.profile, ...patch, setupDone: true }, days };
+          return { profile: restoreProfile({ ...s.profile, ...patch, setupDone: true }), days };
+
         }),
       bump: (key, delta) =>
         set((s) => {
@@ -400,7 +435,7 @@ export const useDayBook = create<DayBookState>()(
       resetInspectWalk: () => set({ inspectWalk: emptyWalk() }),
     }),
     {
-      name: "roofus-day-v1",
+      name: bookKey("roofus-day-v1"),
       partialize: (s) => ({ profile: s.profile, days: s.days, inspectWalk: s.inspectWalk }),
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<{
@@ -411,6 +446,7 @@ export const useDayBook = create<DayBookState>()(
         return {
           ...current,
           ...p,
+          profile: restoreProfile(p.profile ?? current.profile),
           days: restoreDays(p.days ?? current.days),
           inspectWalk: restoreWalk(p.inspectWalk),
         };
