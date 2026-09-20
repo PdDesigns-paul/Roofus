@@ -11,6 +11,9 @@ import {
 import { leadToStorm } from "@/lib/weather-grade";
 import type { PulseLead, PulseReport, StormEvent } from "@/lib/weather-types";
 import { pack } from "@/lib/tenant";
+import { bookKey } from "./book-owner.ts";
+
+
 
 
 type WeatherState = {
@@ -118,7 +121,7 @@ export const useWeather = create<WeatherState>()(
         })),
     }),
     {
-      name: "roofus-weather-v1",
+      name: bookKey("roofus-weather-v1"),
       partialize: (s) => ({
         pending: s.pending,
         kept: s.kept,

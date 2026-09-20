@@ -20,7 +20,8 @@ White-label is a doctrine split, not a Settings row.
 - Five types: Place / Do / Chip / Go / Talk. No sixth.
 - Offline book on the phone. Cloud is a copy.
 - Talk is the coach. Not a tab.
-- Account is a key on You, not a `/login` Place. No Stripe sheet.
+- Account is a key on You, not a `/login` Place. Chip reads **This phone** when signed out. No Stripe sheet.
+
 
 **Tenant pack** — the shop. Roofus (this dog, this gold, this porch) is pack `roofus`.
 

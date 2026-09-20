@@ -13,6 +13,9 @@ import {
 import { loopHeadline, mergeStatus, nextFreshInTownship } from "@/lib/streets-rank";
 import { hOverrideLoop, pulseIsFresh } from "@/lib/weather-grade";
 import { useWeather } from "@/lib/weather-store";
+import { bookKey } from "./book-owner.ts";
+
+
 
 export type { StreetLoop, LoopResult, LoopStatus };
 
@@ -98,7 +101,7 @@ export const useStreets = create<StreetsState>()(
       hide: (id) => set((s) => ({ loops: s.loops.filter((l) => l.id !== id) })),
     }),
     {
-      name: "roofus-streets-v1",
+      name: bookKey("roofus-streets-v1"),
       version: 2,
       migrate: (persisted, from) => {
         const p = persisted as { ageMin?: number; ageMax?: number };

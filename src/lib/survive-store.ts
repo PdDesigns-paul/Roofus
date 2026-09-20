@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { bookKey } from "./book-owner.ts";
+
 
 export type SurviveState = {
   earned: string;
@@ -79,7 +81,7 @@ export const useSurvive = create<SurviveState>()(
       patch: (p) => set(p),
     }),
     {
-      name: "roofus-survive-v1",
+      name: bookKey("roofus-survive-v1"),
       partialize: (s) => {
         const out: Record<string, string> = {};
         for (const k of FIELDS) out[k] = s[k];

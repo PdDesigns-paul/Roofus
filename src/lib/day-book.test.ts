@@ -11,7 +11,9 @@ import {
   packAfterAction,
   restoreDay,
   restoreDays,
+  restoreProfile,
   restoreShift,
+
   shiftMinutes,
   unpackAfterAction,
   weekLaborMinutes,
@@ -23,6 +25,15 @@ import {
 describe("localDateKey", () => {
   it("is YYYY-MM-DD in local time", () => {
     assert.equal(localDateKey(new Date(2026, 8, 9, 22, 0, 0)), "2026-09-09");
+  });
+});
+
+describe("restoreProfile", () => {
+  it("fills This phone when an old book has no owner", () => {
+    const out = restoreProfile({ goBy: "Jordan", company: "North Ridge", setupDone: true });
+    assert.equal(out.goBy, "Jordan");
+    assert.equal(out.ownerId, null);
+    assert.equal(out.ownerLabel, "This phone");
   });
 });
 

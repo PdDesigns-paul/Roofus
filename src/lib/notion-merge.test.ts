@@ -18,6 +18,8 @@ import {
   sanitizeLoop,
   type SurviveFields,
 } from "./notion-merge.ts";
+import { BLANK_PROFILE } from "./day-book.ts";
+
 import { blankDay, emptyShift, type DayEntry } from "./day-book.ts";
 import type { StreetLoop } from "./streets-types.ts";
 import { DEFAULT_FAQS } from "./porch-faqs.ts";
@@ -170,15 +172,16 @@ describe("mindset pack / unpack", () => {
     const packed = packMindset(
       { ...emptySurvive(), earned: "80k", byDate: "Dec", why3: "kids", radar: "listen", attack: "fear" },
       {
+        ...BLANK_PROFILE,
         setupDone: true,
         goBy: "Deshaun",
         company: "Ridge",
         counties: "Cumberland",
         states: "PA",
         knockWindow: "after work",
-        paperWindow: "",
         hardStop: "dark",
       },
+
       { ageMin: 17, ageMax: 25, companyName: "Ridge", warrantyLine: "see OC" },
     );
     const rows: Record<string, string> = {};
@@ -211,18 +214,10 @@ describe("mindset pack / unpack", () => {
 
   it("marks setup done when counties come back", () => {
     const next = fillProfile(
-      {
-        setupDone: false,
-        goBy: "",
-        company: "",
-        counties: "",
-        states: "",
-        knockWindow: "",
-        paperWindow: "",
-        hardStop: "",
-      },
+      { ...BLANK_PROFILE },
       { counties: "Cumberland", states: "PA", goBy: "D" },
     );
+
     assert.equal(next.setupDone, true);
     assert.equal(next.goBy, "D");
   });
@@ -273,16 +268,8 @@ describe("sanitizeLoop zip", () => {
 
 describe("restore helpers", () => {
   it("does not push blank mindset rows", () => {
-    const packed = packMindset(emptySurvive(), {
-      setupDone: false,
-      goBy: "",
-      company: "",
-      counties: "",
-      states: "",
-      knockWindow: "",
-      paperWindow: "",
-      hardStop: "",
-    }, { ageMin: 17, ageMax: 25, companyName: "Roofus", warrantyLine: "" });
+    const packed = packMindset(emptySurvive(), { ...BLANK_PROFILE }, { ageMin: 17, ageMax: 25, companyName: "Roofus", warrantyLine: "" });
+
     assert.equal(rowsWithBody(packed).length, 0);
   });
 

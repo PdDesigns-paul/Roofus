@@ -2,7 +2,9 @@
  * Client-side Notion backup. Phone is source of truth.
  * Restore fills blanks and takes the higher counts — it does not wipe today.
  */
-import { useDayBook, type DayEntry } from "@/lib/day-book";
+import { localDateKey, useDayBook, type DayEntry } from "@/lib/day-book";
+import { assertRestoreAllowed } from "@/lib/book-owner";
+
 import { type NotionFaq, type NotionTable } from "@/lib/notion-ids";
 import {
   fillProfile,
@@ -148,9 +150,11 @@ export async function backupNotion(onProgress?: Progress) {
   markSync(new Date().toISOString());
 }
 
-export async function restoreNotion(onProgress?: Progress) {
+export async function restoreNotion(onProgress?: Progress, confirmed = false) {
   const { token, ids, setError, setFaqs, markSync } = useNotion.getState();
   if (!token || !ids) throw new Error("Connect Notion in Settings first.");
+  await whenHydrated(useDayBook);
+  assertRestoreAllowed(useDayBook.getState().days, confirmed, localDateKey());
   setError("");
   let liveIds = ids;
   if (!liveIds.pinsDb) {

@@ -4,6 +4,9 @@ import { Label } from "@/components/ui/label";
 import { looksLikeNotionToken, parseNotionId } from "@/lib/notion-ids";
 import { useNotion } from "@/lib/notion-store";
 import { backupNotion, connectNotion, restoreNotion } from "@/lib/notion-sync";
+import { RESTORE_WHOSE_BOOK, restoreNeedsConfirm } from "@/lib/book-owner";
+import { localDateKey, useDayBook } from "@/lib/day-book";
+
 
 export function NotionBackup() {
   const token = useNotion((s) => s.token);
@@ -22,6 +25,10 @@ export function NotionBackup() {
   const [ok, setOk] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const [a, setA] = useState("");
+  const [confirmRestore, setConfirmRestore] = useState(false);
+  const days = useDayBook((s) => s.days);
+  const fullPhone = restoreNeedsConfirm(days, localDateKey());
+
 
   const connected = Boolean(token && ids);
   const canConnect = looksLikeNotionToken(token) && Boolean(parseNotionId(pageUrl));
@@ -122,13 +129,25 @@ export function NotionBackup() {
           <button
             type="button"
             disabled={Boolean(busy)}
-            onClick={() => void run("Restoring…", restoreNotion)}
+            onClick={() => {
+              if (fullPhone && !confirmRestore) {
+                setConfirmRestore(true);
+                return;
+              }
+              void run("Restoring…", (onProgress) => restoreNotion(onProgress, true));
+            }}
             className="h-12 rounded-full border border-border text-sm disabled:opacity-40"
           >
-            {busy?.startsWith("Restor") ? busy : "Restore onto this phone"}
+            {busy?.startsWith("Restor")
+              ? busy
+              : fullPhone && !confirmRestore
+                ? "This is my book — restore"
+                : "Restore onto this phone"}
           </button>
           <p className="text-xs leading-relaxed text-faint">
-            Restore fills blanks and keeps the higher counts. It does not wipe what you already tapped.
+            {fullPhone
+              ? RESTORE_WHOSE_BOOK
+              : "Restore fills blanks and keeps the higher counts. It does not wipe what you already tapped."}
           </p>
           <button type="button" className="h-10 text-sm text-muted" onClick={() => disconnect()}>
             Disconnect

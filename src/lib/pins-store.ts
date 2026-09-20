@@ -17,6 +17,8 @@ import {
   type PinStatus,
 } from "./pins.ts";
 import { useStreets } from "./streets-store.ts";
+import { bookKey } from "./book-owner.ts";
+
 
 type PinsState = {
   pins: HousePin[];
@@ -78,7 +80,7 @@ export const usePins = create<PinsState>()(
       replace: (pins) => set({ pins: applyWalks(restorePins(pins)) }),
     }),
     {
-      name: "roofus-pins-v1",
+      name: bookKey("roofus-pins-v1"),
       partialize: (s) => ({ pins: s.pins, openPinId: s.openPinId }),
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<PinsState>;

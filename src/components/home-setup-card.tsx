@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Chip } from "@/components/ui/chip";
+import { OwnerChip } from "@/components/owner-chip";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useDayBook } from "@/lib/day-book";
@@ -86,6 +88,9 @@ export function HomeSetupCard({
                 {score.ready ? "Ready to knock." : "Counties first. Then you can knock."} {score.done} of{" "}
                 {score.total}
               </p>
+              <span className="mt-2 inline-flex">
+                <OwnerChip />
+              </span>
             </button>
             {score.done === score.total ? (
               <Chip
@@ -124,6 +129,10 @@ function FirstRunFields() {
     <div className="rounded-2xl border border-border bg-surface px-4 py-4">
       <p className="text-xs font-medium uppercase tracking-wide text-faint">Setup</p>
       <p className="mt-1 text-sm text-fg">Name, company, counties. Then you can knock.</p>
+      <span className="mt-2 inline-flex">
+        <OwnerChip />
+      </span>
+
       <div className="mt-3 flex flex-col gap-3">
         <div className="min-w-0">
           <Label htmlFor="home-goBy">First name</Label>
