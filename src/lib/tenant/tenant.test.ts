@@ -113,6 +113,10 @@ describe("pack roofus", () => {
     assert.doesNotMatch(src("../../routes/roof.tsx"), /i35/);
     assert.doesNotMatch(src("../../routes/roof.tsx"), /on the roof/);
     assert.match(src("../../routes/after.tsx"), /pack\.places\.plan/);
+    assert.match(src("../../routes/after.tsx"), /modules\.storms/);
+    assert.match(src("../../routes/coach.reference.tsx"), /modules\.internachi/);
+    assert.match(src("../../routes/settings.you.tsx"), /modules\.packets/);
+
 
     assert.match(src("../../routes/__root.tsx"), /pack\.productName/);
     assert.match(src("../../routes/__root.tsx"), /packStyle\(pack\)/);
@@ -124,6 +128,9 @@ describe("pack roofus", () => {
 describe("pack roofus curriculum", () => {
   it("owns Door cards, claim module, and Live starters", () => {
     assert.equal(pack.modules.claim, true);
+    assert.deepEqual(pack.modules, { storms: true, claim: true, internachi: true, packets: true });
+    assert.equal(pack.copy.todayFallback, "Age first.");
+
     assert.deepEqual(
       pack.cards.map((c) => c.id),
       ["door", "pushback", "i35", "set", "compass"],

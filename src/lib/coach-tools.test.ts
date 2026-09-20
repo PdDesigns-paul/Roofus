@@ -2,6 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { DEFAULT_FAQS } from "./porch-faqs.ts";
 import {
+  coachToolDefs,
   getFaq,
   getKeptStorm,
   getMriCard,
@@ -11,6 +12,10 @@ import {
   toolsOnFor,
   TOOL_ROUND_CAP,
 } from "./coach-tools.ts";
+import { pack } from "./tenant/index.ts";
+import type { BrandPack } from "./tenant/pack.ts";
+import { todayWeatherLine } from "./tenant/pack.ts";
+
 
 describe("get_kept_storm", () => {
   it("returns none when only Tossed rows are on the book", () => {
@@ -101,5 +106,39 @@ describe("toolsOnFor", () => {
       true,
     );
     assert.equal(toolsOnFor({ mode: "live" }), true);
+  });
+});
+
+function packOff(): BrandPack {
+  return {
+    ...pack,
+    modules: { storms: false, claim: false, internachi: false, packets: true },
+  };
+}
+
+describe("pack without storms", () => {
+  it("does not mention hail", () => {
+    const off = packOff();
+    const line = todayWeatherLine("hail on Oak", "Kept: hail on Creekview", off);
+    assert.equal(line, "Age first.");
+    assert.doesNotMatch(line, /hail/i);
+    const storm = getKeptStorm(
+      { keptStorms: [{ zip: "17050", say: "hail on Oak", status: "keep" }] },
+      "17050",
+      off,
+    );
+    assert.deepEqual(storm, { storms: "none" });
+    assert.doesNotMatch(JSON.stringify(storm), /hail/i);
+    const mri = getMriCard("What a hit looks like", undefined, off);
+    assert.deepEqual(mri, { error: "not on the phone" });
+    assert.equal(
+      coachToolDefs(off).some((d) => d.function.name === "get_kept_storm"),
+      false,
+    );
+    assert.equal(
+      coachToolDefs(off).some((d) => d.function.name === "get_mri_card"),
+      false,
+    );
+    assert.equal(coachToolDefs(pack).some((d) => d.function.name === "get_kept_storm"), true);
   });
 });

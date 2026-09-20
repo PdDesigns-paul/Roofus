@@ -1,6 +1,9 @@
 /** Read-only tools against the book the phone posted. No web. No SMS. No RAG. */
 
 import { COACH_MRI, MRI_CHAPTERS } from "./mri-index.ts";
+import { pack } from "./tenant/index.ts";
+import type { BrandPack } from "./tenant/pack.ts";
+
 
 export function lookupCoachMri(titleOrId: string): { id: string; title: string; look: string } | null {
   const q = titleOrId.trim().toLowerCase();
@@ -106,8 +109,10 @@ export function getWorkingLoop(book: CoachBook) {
   };
 }
 
-export function getKeptStorm(book: CoachBook, zip?: string) {
+export function getKeptStorm(book: CoachBook, zip?: string, p: BrandPack = pack) {
+  if (!p.modules.storms) return { storms: "none" as const };
   const rows = (book.keptStorms ?? []).filter(isKept);
+
   const want = str(zip) || str(book.workingLoop?.zip);
   const hits = want ? rows.filter((row) => zipOf(row) === want) : rows;
   if (!hits.length) return { storms: "none" as const };
@@ -146,8 +151,10 @@ export function getFaq(book: CoachBook, q?: string) {
   return { faqs: ranked };
 }
 
-export function getMriCard(title?: string, id?: string) {
+export function getMriCard(title?: string, id?: string, p: BrandPack = pack) {
+  if (!p.modules.internachi) return MISS;
   const want = str(title) || str(id);
+
   if (!want) return MISS;
   const card = lookupCoachMri(want);
   if (!card) return { error: "not-found", title: want };
@@ -202,6 +209,7 @@ export function runCoachTool(name: string, rawArgs: unknown, book: CoachBook): u
       return getFaq(book, str(args.q));
     case "get_mri_card":
       return getMriCard(str(args.title), str(args.id));
+
     case "get_survive":
       return getSurvive(book);
     case "score_knock":
@@ -312,4 +320,14 @@ export const COACH_TOOL_DEFS = [
   },
 ];
 
+/** Storm and InterNACHI tools drop when those modules are off. */
+export function coachToolDefs(p: BrandPack = pack) {
+  return COACH_TOOL_DEFS.filter((d) => {
+    if (d.function.name === "get_kept_storm") return p.modules.storms;
+    if (d.function.name === "get_mri_card") return p.modules.internachi;
+    return true;
+  });
+}
+
 export const TOOLS_BRIEF = `You have tools that read the book they posted. Use a tool instead of guessing a kept storm, a Memory FAQ, a Working-loop zip, or an MRI title. After a tool miss say “Not on the phone.” Then coach. In-character Roleplay: do not call tools. Score me / Live / Mindset / Setup may. Tools do not replace Script B. You cannot browse the web or send SMS.`;
+

@@ -7,6 +7,8 @@ import { companyChapter } from "@/lib/company-site";
 import { MRI_CHAPTERS, MRI_COUNT, mriSearchHay, type MriChapter } from "@/lib/mri-index";
 import { useDayBook } from "@/lib/day-book";
 import { useSettings } from "@/lib/settings-store";
+import { pack } from "@/lib/tenant";
+
 
 export const Route = createFileRoute("/coach/reference")({
   codeSplitGroupings: [],
@@ -20,10 +22,13 @@ function ReferencePage() {
   const pages = useSettings((s) => s.companySitePages);
   const companyName = useDayBook((s) => s.profile.company);
   const needle = q.trim().toLowerCase();
+  const internachi = pack.modules.internachi;
   const library = useMemo<MriChapter[]>(() => {
-    if (!pages.length) return MRI_CHAPTERS;
-    return [companyChapter(companyName, pages), ...MRI_CHAPTERS];
-  }, [pages, companyName]);
+    const mri = internachi ? MRI_CHAPTERS : [];
+    if (!pages.length) return mri;
+    return [companyChapter(companyName, pages), ...mri];
+  }, [pages, companyName, internachi]);
+
   const chapters = useMemo(() => {
     if (!needle) return library;
     return library
@@ -46,16 +51,21 @@ function ReferencePage() {
 
       <h1 className="mt-4 font-display text-2xl leading-tight tracking-tight">The library.</h1>
       <p className="mt-2 text-sm leading-snug text-muted">
-        {MRI_COUNT} InterNACHI articles
-        {pages.length ? ` plus ${pages.length} from their site` : ""}. Search, open a chapter.
-        Roofus has the same list.
+        {internachi
+          ? `${MRI_COUNT} InterNACHI articles${pages.length ? ` plus ${pages.length} from their site` : ""}. Search, open a chapter.`
+          : pages.length
+            ? `${pages.length} from their site. Search, open a chapter.`
+            : "Paste a company site on You. Search, open a chapter."}{" "}
+        {pack.talkName} has the same list.
       </p>
+
 
       <Input
         className="mt-4"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="Hail, kickout, Duration, attic…"
+        placeholder={internachi ? "Hail, kickout, Duration, attic…" : "Search…"}
+
         type="search"
       />
 

@@ -10,6 +10,8 @@ import {
 } from "@/lib/kept-storm";
 import { leadToStorm } from "@/lib/weather-grade";
 import type { PulseLead, PulseReport, StormEvent } from "@/lib/weather-types";
+import { pack } from "@/lib/tenant";
+
 
 type WeatherState = {
   pending: StormEvent[];
@@ -152,7 +154,9 @@ export function weatherMarketKey(counties: string, states: string) {
 }
 
 export function weatherForCoach(): string {
+  if (!pack.modules.storms) return "";
   const { kept, pending, note, pulse, keptStorms } = useWeather.getState();
+
   const lines = [
     "# Weather (NWS log they confirmed = porch language. 48h High = where they drive tomorrow.)",
   ];

@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppHeader } from "@/components/app-header";
 import { REMINDERS } from "@/lib/reminders";
 import { useReminders } from "@/lib/reminders-store";
+import { pack } from "@/lib/tenant";
+
 
 export const Route = createFileRoute("/settings/reminders")({
   codeSplitGroupings: [],
@@ -26,7 +28,8 @@ function ReminderToggles() {
   const toggle = useReminders((s) => s.toggle);
   return (
     <ul className="mt-3 flex flex-col">
-      {REMINDERS.map((r) => (
+      {REMINDERS.filter((r) => r.id !== "storm" || pack.modules.storms).map((r) => (
+
         <li key={r.id} className="flex min-h-14 items-center justify-between gap-3 border-b border-border last:border-0 py-3">
           <span className="min-w-0">
             <span className="block text-sm text-fg">{r.label}</span>

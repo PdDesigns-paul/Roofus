@@ -19,6 +19,8 @@ import {
 } from "@/lib/company-packets";
 import { useDayBook } from "@/lib/day-book";
 import { useSettings } from "@/lib/settings-store";
+import { pack } from "@/lib/tenant";
+
 
 export const Route = createFileRoute("/settings/you")({
   codeSplitGroupings: [],
@@ -67,7 +69,8 @@ function YouPage() {
           />
         </div>
         <WebsiteField />
-        <PacketsField />
+        {pack.modules.packets ? <PacketsField /> : null}
+
       </div>
     </main>
   );

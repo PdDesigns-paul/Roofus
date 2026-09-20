@@ -13,6 +13,8 @@ import {
   roleplayKnockLine,
   threadTag,
 } from "./coach-modes.ts";
+import { pack } from "./tenant/index.ts";
+
 
 describe("normalizeMode", () => {
   it("maps old hats onto three modes", () => {
@@ -62,6 +64,14 @@ describe("claim scene", () => {
     assert.equal(claimUnlocked([{ say: "kept" }]), true);
     assert.equal(claimUnlocked(0), false);
     assert.equal(claimUnlocked(1), true);
+  });
+  it("claimUnlocked is unused when the claim module is off", () => {
+    const off = {
+      ...pack,
+      modules: { storms: false, claim: false, internachi: false, packets: true },
+    };
+    assert.equal(claimUnlocked([{ say: "kept" }], off), false);
+    assert.equal(claimUnlocked(1, off), false);
   });
 });
 

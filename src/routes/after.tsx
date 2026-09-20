@@ -455,6 +455,7 @@ function AfterPage() {
           )}
         </PlaceCard>
 
+        {pack.modules.storms ? (
         <PlaceCard
           id="pulse"
           when="Last 48 hours"
@@ -478,6 +479,7 @@ function AfterPage() {
             onTossStorm={toss}
           />
         </PlaceCard>
+        ) : null}
 
         <PlaceCard
           id="finish"
@@ -565,7 +567,8 @@ function LoopCard({
   const zip = loopZip(loop);
   const place = loopPlace(loop) || loopHeadline(loop);
   const twp = (loop.township ?? "").trim();
-  const mention = loop.status === "working" ? mentionOnStreet(kept, loop) : "";
+  const mention = pack.modules.storms && loop.status === "working" ? mentionOnStreet(kept, loop) : "";
+
   const onPlan = loopInPlan(loop, plan);
   const year = loop.medianYear ? ` · ~${loop.medianYear}` : "";
   const sub = [twp, zip].filter(Boolean).join(" · ");

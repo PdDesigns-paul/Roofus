@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import { phoneError } from "@/lib/read-json";
 import { refreshWeatherPulse } from "@/lib/refresh-in-flight";
+import { pack } from "@/lib/tenant";
 import type { PulseLead, PulseReport, StormEvent } from "@/lib/weather-types";
+
 
 function leadIsKept(lead: PulseLead, keptLine: string) {
   const say = lead.say.trim();
@@ -38,7 +40,9 @@ export function Last48Hours({
 }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  if (!pack.modules.storms) return null;
   const ready = Boolean(counties.trim() && states.trim());
+
   const leads = (pulse?.leads ?? []).filter((l) => l.say.trim() && !tossed.includes(l.id));
   const openStorms = pending.filter((s) => !tossed.includes(s.id));
 
