@@ -76,7 +76,7 @@ describe("helpPageFor", () => {
     assert.ok(!("home" in PAGE_HELP));
     assert.match(PAGE_HELP.settings.body.join(" "), /Copy this phone/);
     assert.match(PAGE_HELP.settings.body.join(" "), /Use Notion/);
-    assert.match(PAGE_HELP.settings.body.join(" "), /This phone/);
+    assert.match(PAGE_HELP.settings.body.join(" "), /Switch book is a chip/);
     assert.match(PAGE_HELP.settings.body.join(" "), /A picture of the week sits under the numbers/);
     assert.match(PAGE_HELP.settings.body.join(" "), /Last 30 is a chip/);
     assert.match(PAGE_HELP.today.body.join(" "), /Each tile writes a time/);

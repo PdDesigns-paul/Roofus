@@ -60,6 +60,10 @@ export function ownerChipLabel(owner: BookOwner = readOwner()): string {
   return owner.ownerLabel.trim() || ANON_OWNER.ownerLabel;
 }
 
+export function sameOwner(a: BookOwner, b: BookOwner): boolean {
+  return (a.ownerId ?? "") === (b.ownerId ?? "");
+}
+
 /** Real host session only. Never the disabled-auth DEV_USER. */
 export function ownerFromSession(user: {
   id?: string | null;
@@ -106,4 +110,84 @@ export function assertRestoreAllowed(
   if (restoreNeedsConfirm(days, today, pinCount) && !confirmed) {
     throw new Error(RESTORE_WHOSE_BOOK);
   }
+}
+
+export function parseOwnedStorageKey(key: string): { base: (typeof BOOK_BASES)[number]; ownerId: string | null } | null {
+  for (const base of BOOK_BASES) {
+    if (key === base) return { base, ownerId: null };
+    const prefix = `${base}:`;
+    if (key.startsWith(prefix)) {
+      const ownerId = key.slice(prefix.length).trim();
+      return { base, ownerId: ownerId || null };
+    }
+  }
+  return null;
+}
+
+function ownerLabelFromPersist(raw: string | null, fallback: string): string {
+  if (!raw) return fallback;
+  try {
+    const parsed = JSON.parse(raw) as { state?: { profile?: { ownerLabel?: unknown } } };
+    const label = parsed.state?.profile?.ownerLabel;
+    return typeof label === "string" && label.trim() ? label.trim() : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/** This phone first, then named owners already on disk. Does not invent a roster. */
+export function listBooksOnDisk(): BookOwner[] {
+  const named = new Map<string, BookOwner>();
+  const add = (ownerId: string, label: string) => {
+    const id = sanitizeOwnerId(ownerId.trim());
+    if (!id) return;
+    const nice = label.trim() || id;
+    const prev = named.get(id);
+    if (!prev) {
+      named.set(id, { ownerId: id, ownerLabel: nice });
+      return;
+    }
+    if (prev.ownerLabel === id && nice !== id) named.set(id, { ownerId: id, ownerLabel: nice });
+  };
+
+  const current = readOwner();
+  if (current.ownerId) add(current.ownerId, current.ownerLabel);
+
+  if (typeof localStorage === "undefined") {
+    return current.ownerId ? [{ ...ANON_OWNER }, ...named.values()] : [{ ...ANON_OWNER }];
+  }
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key) continue;
+    const parsed = parseOwnedStorageKey(key);
+    if (!parsed?.ownerId) continue;
+    const fromProfile =
+      parsed.base === "roofus-day-v1" ? ownerLabelFromPersist(localStorage.getItem(key), parsed.ownerId) : parsed.ownerId;
+    add(parsed.ownerId, fromProfile);
+  }
+
+  return [{ ...ANON_OWNER }, ...named.values()];
+}
+
+export type SwitchBookOpts = {
+  confirmed: boolean;
+  days: Record<string, { knocks?: number; talks?: number; looks?: number; sets?: number }>;
+  today: string;
+  pinCount?: number;
+};
+
+/**
+ * Bind the next owner. Does not merge journal keys — persist names recompute on reload.
+ * Full Today or pins need the same confirm as Restore.
+ */
+export function switchBook(next: BookOwner, opts: SwitchBookOpts): BookOwner {
+  const owner: BookOwner = {
+    ownerId: typeof next.ownerId === "string" && next.ownerId.trim() ? next.ownerId.trim() : null,
+    ownerLabel: (next.ownerLabel.trim() || (next.ownerId ? "Signed in" : ANON_OWNER.ownerLabel)).trim(),
+  };
+  if (sameOwner(readOwner(), owner)) return readOwner();
+  assertRestoreAllowed(opts.days, opts.confirmed, opts.today, opts.pinCount ?? 0);
+  writeOwner(owner);
+  return owner;
 }

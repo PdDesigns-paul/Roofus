@@ -51,7 +51,7 @@ Everything lives in **this browser** (`localStorage` via Zustand):
 - `roofus-onboard-v1` — first-run five job slides. Skip writes this. Replay in Settings.
 - coach threads in the coach store
 
-The phone book is **local-first**. Cloud is a copy. Whose book lives on You as a chip (**This phone** when signed out) — not a `/login` Place, not Postgres as the live journal. Do not put a Notion secret in the repo. The secret stays on the phone and is sent to Notion only when they tap Connect or Copy this phone.
+The phone book is **local-first**. Cloud is a copy. Whose book lives on You as a chip (**This phone** when signed out). Switch book is a chip when another owner is already on this phone — not a `/login` Place, not Postgres as the live journal. Do not put a Notion secret in the repo. The secret stays on the phone and is sent to Notion only when they tap Connect or Copy this phone.
 
 ### Backup (file first, Notion optional)
 
