@@ -1,5 +1,7 @@
 import { DEMO_INSPECT } from "./tenant/demo/inspect.ts";
-import { ROOFUS_INSPECT } from "./tenant/roofus/inspect.ts";import { resolvePackId, tenantEnvId } from "./tenant/resolve.ts";
+import { PEST_INSPECT } from "./tenant/pest/inspect.ts";
+import { ROOFUS_INSPECT } from "./tenant/roofus/inspect.ts";
+import { resolvePackId, tenantEnvId } from "./tenant/resolve.ts";
 
 export type WalkSlotId = string;
 
@@ -15,8 +17,15 @@ export type InspectWalkProgress = {
 };
 
 /** Leaf inspect rows — not the tenant barrel (that would cycle day-book ↔ survive). */
+const INSPECT_BY_PACK = {
+  roofus: ROOFUS_INSPECT,
+  demo: DEMO_INSPECT,
+  pest: PEST_INSPECT,
+} as const;
+
 function inspectSteps() {
-  return resolvePackId(tenantEnvId()) === "demo" ? DEMO_INSPECT.steps : ROOFUS_INSPECT.steps;
+  const id = resolvePackId(tenantEnvId());
+  return (INSPECT_BY_PACK[id] ?? ROOFUS_INSPECT).steps;
 }
 
 function slotIds(): Set<string> {

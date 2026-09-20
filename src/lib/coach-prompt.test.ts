@@ -1,11 +1,11 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { DEMO_PACK, ROOFUS_PACK } from "./tenant/index.ts";
+import { DEMO_PACK, PEST_PACK, ROOFUS_PACK } from "./tenant/index.ts";
 
 const kernelSrc = readFileSync(new URL("./coach-prompt.ts", import.meta.url), "utf8");
 
-function cardText(p: typeof DEMO_PACK | typeof ROOFUS_PACK, id: string): string {
+function cardText(p: typeof DEMO_PACK | typeof PEST_PACK | typeof ROOFUS_PACK, id: string): string {
   const card = p.cards.find((c) => c.id === id);
   assert.ok(card, `${p.id} missing card ${id}`);
   return card.lines.map((l) => `${l.say ?? ""} ${l.note ?? ""}`).join(" ");
@@ -28,13 +28,15 @@ describe("VP-3 kernel honesty", () => {
   });
 
   it("kernel-off pack: roleplay 'can they back out?' cannot invent a waiver", () => {
-    const sys = `${kernelSrc}\n${DEMO_PACK.promptModules}`;
-    assert.match(sys, /16 CFR 429/);
-    assert.match(sys, /Never coach a waiver/);
-    assert.doesNotMatch(sys, /waive the three days/i);
-    const blob = JSON.stringify(DEMO_PACK);
-    assert.doesNotMatch(blob, /waive the three days/i);
-    assert.doesNotMatch(blob, /skip the cooling-off/i);
+    for (const p of [DEMO_PACK, PEST_PACK]) {
+      const sys = `${kernelSrc}\n${p.promptModules}`;
+      assert.match(sys, /16 CFR 429/);
+      assert.match(sys, /Never coach a waiver/);
+      assert.doesNotMatch(sys, /waive the three days/i);
+      const blob = JSON.stringify(p);
+      assert.doesNotMatch(blob, /waive the three days/i);
+      assert.doesNotMatch(blob, /skip the cooling-off/i);
+    }
   });
 
   it("kernel-off pack: solar 'do I get the 30%?' cannot say yes on a 2026 owner-buy", () => {
@@ -53,6 +55,14 @@ describe("VP-3 kernel honesty", () => {
     assert.match(text, /Never the utility/);
     assert.match(text, /shop packet/);
     assert.equal(DEMO_PACK.cards.find((c) => c.id === "compass")?.mode, "mindset");
+  });
+
+  it("pest Compass includes cooling-off and the shop label", () => {
+    const text = cardText(PEST_PACK, "compass");
+    assert.match(text, /FTC 429/);
+    assert.match(text, /Never coach a waiver/);
+    assert.match(text, /label \/ license/);
+    assert.equal(PEST_PACK.cards.find((c) => c.id === "compass")?.mode, "mindset");
   });
 
   it("roofus Compass mentions cooling-off without losing storm voice", () => {

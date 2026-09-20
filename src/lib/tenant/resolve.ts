@@ -1,7 +1,7 @@
 /** Pack id only. Keep pack objects out so inspect-walk cannot cycle through day-book. */
 
 export const DEFAULT_PACK_ID = "roofus";
-export const PACK_IDS = ["roofus", "demo"] as const;
+export const PACK_IDS = ["roofus", "demo", "pest"] as const;
 export type PackId = (typeof PACK_IDS)[number];
 
 /** Build env wins. Host map is for a later edge lookup — not a second Vercel site. */

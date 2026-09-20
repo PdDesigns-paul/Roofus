@@ -6,6 +6,7 @@ import {
   DEFAULT_PACK_ID,
   DEMO_PACK,
   HOST_PACK,
+  PEST_PACK,
   ROOFUS_PACK,
   manifestFromPack,
   pack,
@@ -29,6 +30,8 @@ describe("resolvePackId", () => {
     assert.equal(resolvePackId("nope"), "roofus");
     assert.equal(resolvePackId("demo"), "demo");
     assert.equal(resolvePackId("DEMO"), "demo");
+    assert.equal(resolvePackId("pest"), "pest");
+    assert.equal(resolvePackId("PEST"), "pest");
     assert.equal(resolvePackId("", "roofus.coach"), "roofus");
     assert.equal(resolvePackId("", "www.roofus.coach:443"), "roofus");
     assert.equal(resolvePackId("", "app.other.com"), "roofus");
@@ -42,6 +45,7 @@ describe("resolvePackId", () => {
     assert.equal(resolvePack(), ROOFUS_PACK);
     assert.equal(packById("roofus"), ROOFUS_PACK);
     assert.equal(packById("demo"), DEMO_PACK);
+    assert.equal(packById("pest"), PEST_PACK);
     assert.equal(packById("nope"), ROOFUS_PACK);
   });
 });
@@ -105,6 +109,7 @@ describe("pack demo", () => {
     assert.match(src("../../../.github/workflows/ci.yml"), /VITE_AUTH_ENABLED: "false"/);
     assert.doesNotMatch(src("../inspect-walk.ts"), /tenant\/index/);
     assert.match(src("../inspect-walk.ts"), /tenant\/demo\/inspect/);
+    assert.match(src("../inspect-walk.ts"), /tenant\/pest\/inspect/);
     assert.match(src("../inspect-walk.ts"), /tenant\/roofus\/inspect/);
   });
 
@@ -113,6 +118,89 @@ describe("pack demo", () => {
     process.env.VITE_TENANT_ID = "demo";
     try {
       assert.deepEqual(Object.keys(emptyWalk().done), ["curb", "array", "inverter", "access"]);
+    } finally {
+      if (prev === undefined) delete process.env.VITE_TENANT_ID;
+      else process.env.VITE_TENANT_ID = prev;
+    }
+    assert.equal(emptyWalk().done.street, false);
+  });
+});
+
+describe("pack pest", () => {
+  it("is a different shop: name, places, cards, inspect, labor", () => {
+    assert.equal(PEST_PACK.id, "pest");
+    assert.equal(PEST_PACK.productName, "Stoop");
+    assert.notEqual(PEST_PACK.productName, ROOFUS_PACK.productName);
+    assert.notEqual(PEST_PACK.productName, DEMO_PACK.productName);
+    assert.deepEqual(PEST_PACK.places, { today: "Today", door: "Pitch", inspect: "Site", plan: "Route" });
+    assert.deepEqual(PEST_PACK.modules, { storms: false, claim: false, internachi: false, packets: true });
+    assert.deepEqual(
+      PEST_PACK.cards.map((c) => c.id),
+      ["door", "pushback", "after", "set", "compass"],
+    );
+    assert.deepEqual(
+      PEST_PACK.cards.map((c) => c.title),
+      ["Opening", "Pushback", "Site walk", "The start", "Compass"],
+    );
+    assert.equal(PEST_PACK.claimCard, undefined);
+    assert.deepEqual(PEST_PACK.claimStages, []);
+    assert.deepEqual(
+      PEST_PACK.inspect.steps.map((s) => s.id),
+      ["curb", "foundation", "eaves", "harbor", "access"],
+    );
+    assert.deepEqual(
+      PEST_PACK.labor.units.map((u) => u.key),
+      ["knocks", "talks", "looks", "sets"],
+    );
+    assert.deepEqual(
+      PEST_PACK.labor.units.map((u) => u.label),
+      ["Stops", "Talks", "Inspects", "Starts"],
+    );
+    assert.equal(PEST_PACK.copy.todayFallback, "Walk the foundation.");
+  });
+
+  it("does not say On the roof, Keep a storm first, or pest lies", () => {
+    const blob = JSON.stringify(PEST_PACK);
+    assert.doesNotMatch(blob, /On the roof/);
+    assert.doesNotMatch(blob, /Keep a storm first/);
+    assert.doesNotMatch(blob, /Keep \/ Toss/);
+    assert.doesNotMatch(blob, /hail/i);
+    assert.doesNotMatch(blob, /Script A/);
+    assert.doesNotMatch(blob, /claim path/i);
+    assert.doesNotMatch(blob, /Mrs\. Jones/);
+    assert.doesNotMatch(blob, /we are the utility/i);
+    assert.doesNotMatch(blob, /waive the three days/i);
+    assert.doesNotMatch(blob, /mix rate/);
+    assert.doesNotMatch(blob, /oz per gallon/);
+    assert.doesNotMatch(blob, /safe for the dog/);
+    assert.doesNotMatch(blob, /you have an infestation/i);
+    assert.doesNotMatch(blob, /I can see termites from here/);
+    assert.doesNotMatch(blob, /quarterly is a waste/i);
+    assert.doesNotMatch(blob, /cancel their contract today/i);
+    assert.doesNotMatch(blob, /sign now/i);
+    assert.equal(
+      PEST_PACK.labor.units.some((u) => /on the roof/i.test(u.label)),
+      false,
+    );
+  });
+
+  it("Compass and who-chips carry cooling-off and honest exits", () => {
+    const compass = PEST_PACK.cards.find((c) => c.id === "compass")!;
+    const text = compass.lines.map((l) => `${l.say ?? ""} ${l.note ?? ""}`).join(" ");
+    assert.match(text, /FTC 429/);
+    assert.match(text, /Never coach a waiver/);
+    assert.match(text, /label \/ license/);
+    assert.equal(compass.mode, "mindset");
+    const who = PEST_PACK.who.map((w) => w.id);
+    assert.deepEqual(who, ["busy", "spouse", "skeptic", "nope", "quarterly", "nobugs", "price", "card"]);
+    assert.ok(PEST_PACK.scenes.every((s) => !s.claim));
+  });
+
+  it("inspect walk rows follow VITE_TENANT_ID at call time", () => {
+    const prev = process.env.VITE_TENANT_ID;
+    process.env.VITE_TENANT_ID = "pest";
+    try {
+      assert.deepEqual(Object.keys(emptyWalk().done), ["curb", "foundation", "eaves", "harbor", "access"]);
     } finally {
       if (prev === undefined) delete process.env.VITE_TENANT_ID;
       else process.env.VITE_TENANT_ID = prev;
