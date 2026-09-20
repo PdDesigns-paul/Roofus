@@ -91,7 +91,7 @@ describe("pack solar", () => {
       SOLAR_PACK.cards.map((c) => c.title),
       ["Opening", "Pushback", "Site / survey walk", "The set", "Compass"],
     );
-    assert.equal(SOLAR_PACK.claimCard, undefined);
+    assert.equal(packById("solar").claimCard, undefined);
     assert.deepEqual(SOLAR_PACK.claimStages, []);
     assert.notDeepEqual(
       SOLAR_PACK.inspect.steps.map((s) => s.id),
@@ -213,7 +213,7 @@ describe("pack pest", () => {
       PEST_PACK.cards.map((c) => c.title),
       ["Opening", "Pushback", "Site walk", "The start", "Compass"],
     );
-    assert.equal(PEST_PACK.claimCard, undefined);
+    assert.equal(packById("pest").claimCard, undefined);
     assert.deepEqual(PEST_PACK.claimStages, []);
     assert.deepEqual(
       PEST_PACK.inspect.steps.map((s) => s.id),
