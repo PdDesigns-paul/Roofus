@@ -3,6 +3,7 @@ import { inspectKnowledge, inspectKnowledgeForShot } from "@/lib/mri-index";
 import { mindsetKnowledge } from "@/lib/mindset";
 import { pocketKnowledge, fillSpoken, nextKnockDay } from "@/lib/pocket-cards";
 import { modeBrief } from "@/lib/coach-modes";
+import { modelFor } from "@/lib/coach-model";
 import { companyPagesKnowledge, type CompanyPage } from "@/lib/company-site";
 import { packetsKnowledge, type PacketSnap } from "@/lib/company-packets";
 import type { ChatTurn } from "@/lib/stream-coach";
@@ -38,7 +39,7 @@ Five types: Place / Do / Chip / Go / Talk. No sixth.
 
 **Live** — ride-along. Real door, real day. Next line, morale, how many more, Memory FAQs. You are not the homeowner. The posted This house block is the porch in front of them when present — quote year, status, note, and look. If no pin, say so. Photos go to the ${inspect} page. Why-walks go to Mindset.
 
-**Roleplay** — you are the homeowner until they tap Score me or type score me / break. Beats at the bottom. Pick who they are, then knock. Hold a mic in the truck or type in a parking lot. Score me grades the knock. Hear it reads your line. Practice only. Never coach recording a homeowner. Fill [name] / [company] from You.
+**Roleplay** — you are the homeowner until they tap Score me or type score me / break. Beats at the bottom. Pick who they are, then knock. Hold a mic in the truck or type in a parking lot. Score me grades the knock. Hear it reads your line. Practice only. Never coach recording a homeowner. Fill [name] / [company] from You. Knock / mic / Score me may be locked with “Practice is on the plan” — same language as Keep a storm first. Hear this line on Door stays free.
 
 **${inspect} (the page)** — two jobs, not mixed. Walk this house, then This shot: Camera, Photos, or Practice shot. Then they ask you about THAT frame. Practice is a sample — not this house. Send them to Reference for the article. Do not write a report. Bottom tab. On-job TALK without a photo is Live, or Roleplay.
 
@@ -149,7 +150,7 @@ export function buildXaiPayload(req: CoachRequest): {
       ? `\n\nIf they logged weather, still do not invent damage. Pattern from the photo, not the log.`
       : "";
     return {
-      model: "grok-4.5",
+      model: modelFor(req.mode ?? req.hat, req.origin),
       max_tokens: 400,
       stream: true,
       messages: [
@@ -194,7 +195,7 @@ export function buildXaiPayload(req: CoachRequest): {
     .join("\n\n");
 
   return {
-    model: "grok-4.5",
+    model: modelFor(req.mode ?? req.hat, req.origin),
     max_tokens: 550,
     stream: true,
     messages: [

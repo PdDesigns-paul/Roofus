@@ -23,6 +23,7 @@ type SettingsState = {
   companyPacketError: string;
   ownerId: string | null;
   ownerLabel: string;
+  practiceOn: boolean;
   setTheme: (theme: ThemeMode) => void;
   toggleTheme: () => void;
   setCompanyName: (v: string) => void;
@@ -37,6 +38,7 @@ type SettingsState = {
   dropCompanyPacket: (id: string) => void;
   setCompanyPacketError: (v: string) => void;
   setOwner: (ownerId: string | null, ownerLabel: string) => void;
+  setPracticeOn: (on: boolean) => void;
 };
 
 
@@ -63,6 +65,7 @@ export const useSettings = create<SettingsState>()(
       companyPacketError: "",
       ownerId: ANON_OWNER.ownerId,
       ownerLabel: ANON_OWNER.ownerLabel,
+      practiceOn: true,
       setTheme: (theme) => {
 
         applyTheme(theme);
@@ -137,6 +140,7 @@ export const useSettings = create<SettingsState>()(
         writeOwner(next);
         set(next);
       },
+      setPracticeOn: (practiceOn) => set({ practiceOn: Boolean(practiceOn) }),
     }),
     {
       name: "roofus-settings",
@@ -150,6 +154,7 @@ export const useSettings = create<SettingsState>()(
         companyPackets: s.companyPackets,
         ownerId: s.ownerId,
         ownerLabel: s.ownerLabel,
+        practiceOn: s.practiceOn,
       }),
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<SettingsState>;
@@ -160,6 +165,7 @@ export const useSettings = create<SettingsState>()(
           ownerId: typeof p.ownerId === "string" && p.ownerId.trim() ? p.ownerId.trim() : current.ownerId,
           ownerLabel:
             typeof p.ownerLabel === "string" && p.ownerLabel.trim() ? p.ownerLabel.trim() : current.ownerLabel,
+          practiceOn: p.practiceOn !== false,
         };
 
       },

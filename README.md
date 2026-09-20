@@ -46,7 +46,7 @@ Everything lives in **this browser** (`localStorage` via Zustand):
 - `roofus-weather-v1` — kept / tossed storms and the 48h pulse
 - `roofus-survive-v1` — mindset worksheets
 - `roofus-notion-v1` — optional integration secret, table ids, FAQs
-- `roofus-settings` — theme, company, warranty, website, crawled pages
+- `roofus-settings` — theme, company, warranty, website, crawled pages, `practiceOn` (Roleplay Knock / Score me). Missing = on. No model picker.
 - `roofus-owner-v1` — whose book (`ownerId`). Empty = this phone. Journal stores prefix with the id when present; current names stay the anonymous default.
 - `roofus-onboard-v1` — first-run five job slides. Skip writes this. Replay in Settings.
 - coach threads in the coach store

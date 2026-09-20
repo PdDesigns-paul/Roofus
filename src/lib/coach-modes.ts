@@ -100,6 +100,13 @@ export function claimUnlocked(keptStorms: unknown, p: BrandPack = pack): boolean
   return Boolean(keptStorms);
 }
 
+/** Roleplay Knock / mic / Score me. Missing book stays on so this phone keeps practice. */
+export const PRACTICE_PLAN_COPY = "Practice is on the plan.";
+
+export function practiceUnlocked(practiceOn: unknown): boolean {
+  return practiceOn !== false;
+}
+
 
 export function modeById(id: string | null | undefined): CoachModeMeta {
   const want = normalizeMode(id);

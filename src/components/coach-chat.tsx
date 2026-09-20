@@ -13,8 +13,11 @@ import { RoleplayBar } from "@/components/roleplay-bar";
 import {
   modeById,
   personForScene,
+  PRACTICE_PLAN_COPY,
+  practiceUnlocked,
   roleplayKnockLine,
 } from "@/lib/coach-modes";
+import { useSettings } from "@/lib/settings-store";
 import { WALKS, walkKickoff, type WalkId } from "@/lib/survive";
 import { pack } from "@/lib/tenant";
 
@@ -38,6 +41,7 @@ export function CoachChat({ embedded = false }: { embedded?: boolean }) {
   const mode = modeById(modeId);
   const beat = scene ?? "walkup";
   const person = personForScene(beat, who);
+  const practiceOn = practiceUnlocked(useSettings((s) => s.practiceOn));
 
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "end" });
@@ -122,7 +126,13 @@ export function CoachChat({ embedded = false }: { embedded?: boolean }) {
                     <button
                       key={s}
                       type="button"
-                      className="min-h-11 rounded-2xl border border-border bg-surface px-4 py-3 text-left text-sm leading-relaxed text-fg hover:bg-surface-2"
+                      disabled={roleplay && !practiceOn}
+                      title={roleplay && !practiceOn ? PRACTICE_PLAN_COPY : undefined}
+                      className={
+                        roleplay && !practiceOn
+                          ? "min-h-11 rounded-2xl border border-border bg-surface px-4 py-3 text-left text-sm leading-relaxed text-faint opacity-50"
+                          : "min-h-11 rounded-2xl border border-border bg-surface px-4 py-3 text-left text-sm leading-relaxed text-fg hover:bg-surface-2"
+                      }
                       onClick={() => void onSend(s)}
                     >
                       {s}
@@ -174,13 +184,22 @@ export function CoachChat({ embedded = false }: { embedded?: boolean }) {
           />
         ) : null}
         {roleplay && !empty && !busy ? (
-          <button
-            type="button"
-            onClick={() => void onSend("score me")}
-            className="mb-2 h-11 w-full rounded-full border border-border text-sm"
-          >
-            Score me
-          </button>
+          <>
+            {!practiceOn ? <p className="mb-2 text-xs text-faint">{PRACTICE_PLAN_COPY}</p> : null}
+            <button
+              type="button"
+              onClick={() => void onSend("score me")}
+              disabled={!practiceOn}
+              title={!practiceOn ? PRACTICE_PLAN_COPY : undefined}
+              className={
+                practiceOn
+                  ? "mb-2 h-11 w-full rounded-full border border-border text-sm"
+                  : "mb-2 h-11 w-full rounded-full border border-border bg-surface text-sm text-faint opacity-50"
+              }
+            >
+              Score me
+            </button>
+          </>
         ) : null}
         <div className="flex items-center gap-2">
           <Tip label="Past chats">
@@ -220,7 +239,8 @@ export function CoachChat({ embedded = false }: { embedded?: boolean }) {
           ) : (
             <button
               type="submit"
-              disabled={!draft.trim()}
+              disabled={!draft.trim() || (roleplay && !practiceOn)}
+              title={roleplay && !practiceOn ? PRACTICE_PLAN_COPY : undefined}
               className="h-12 rounded-full bg-fg px-5 text-sm text-paper disabled:opacity-40"
             >
               Send

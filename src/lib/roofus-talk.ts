@@ -18,7 +18,7 @@ import { nextIncomplete, setupSnap, companyOf } from "@/lib/setup-progress";
 import { surviveForCoach, useSurvive, whyFilled } from "@/lib/survive-store";
 import { weatherForCoach, useWeather } from "@/lib/weather-store";
 import { readFreshKept } from "@/lib/kept-storm";
-import { claimUnlocked } from "@/lib/coach-modes";
+import { claimUnlocked, PRACTICE_PLAN_COPY, practiceUnlocked } from "@/lib/coach-modes";
 import { pack } from "@/lib/tenant";
 
 
@@ -43,6 +43,9 @@ export async function sendRoofus(
   const coach = useCoach.getState();
   if (!coach.activeId) coach.startNew();
   const live = useCoach.getState();
+  if (live.mode === "roleplay" && !practiceUnlocked(useSettings.getState().practiceOn)) {
+    throw new Error(PRACTICE_PLAN_COPY);
+  }
   const thread = live.activeId ? live.threads[live.activeId] : null;
   if (!opts?.kickoff && thread?.mode === "mindset" && thread.walkId) {
     const patch = applyWalkAnswer(thread.walkId, content, useSurvive.getState(), {

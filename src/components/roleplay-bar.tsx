@@ -1,5 +1,6 @@
-import { claimUnlocked, isClaimScene, type RoleplayPersonId, type RoleplaySceneId } from "@/lib/coach-modes";
+import { claimUnlocked, isClaimScene, PRACTICE_PLAN_COPY, practiceUnlocked, type RoleplayPersonId, type RoleplaySceneId } from "@/lib/coach-modes";
 import { readFreshKept } from "@/lib/kept-storm";
+import { useSettings } from "@/lib/settings-store";
 import { pack } from "@/lib/tenant";
 import { useWeather } from "@/lib/weather-store";
 
@@ -21,6 +22,7 @@ export function RoleplayBar({
   onKnock: () => void;
 }) {
   const keptOn = claimUnlocked(readFreshKept(useWeather((s) => s.keptStorms)));
+  const practiceOn = practiceUnlocked(useSettings((s) => s.practiceOn));
   const scenes = pack.modules.claim ? pack.scenes : pack.scenes.filter((s) => !s.claim);
   const whoChips = isClaimScene(beat) ? pack.claimStages : pack.who;
   return (
@@ -49,6 +51,7 @@ export function RoleplayBar({
         })}
       </div>
       {pack.modules.claim && !keptOn ? <p className="text-xs text-faint">Keep a storm first.</p> : null}
+      {!practiceOn ? <p className="text-xs text-faint">{PRACTICE_PLAN_COPY}</p> : null}
       <div className="flex flex-wrap gap-1.5">
         {whoChips.map((w) => (
           <button
@@ -79,7 +82,13 @@ export function RoleplayBar({
         <button
           type="button"
           onClick={onKnock}
-          className="h-12 shrink-0 rounded-full bg-accent px-5 text-sm text-paper"
+          disabled={!practiceOn}
+          title={!practiceOn ? PRACTICE_PLAN_COPY : undefined}
+          className={
+            practiceOn
+              ? "h-12 shrink-0 rounded-full bg-accent px-5 text-sm text-paper"
+              : "h-12 shrink-0 rounded-full border border-border bg-surface px-5 text-sm text-faint opacity-50"
+          }
         >
           Knock
         </button>

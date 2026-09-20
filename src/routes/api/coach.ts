@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { buildXaiPayload, type CoachRequest } from "@/lib/coach-prompt";
 import { bookFromRequest } from "@/lib/coach-book";
+import { modelFor } from "@/lib/coach-model";
 import {
   runToolRound,
   toolsOnFor,
@@ -147,6 +148,7 @@ async function handlePost({ request }: { request: Request }) {
   const system = built.messages[0];
   const payload = {
     ...built,
+    model: modelFor(req.mode ?? req.hat, req.origin),
     stream: !useTools,
     messages:
       useTools && system && "content" in system && typeof system.content === "string"

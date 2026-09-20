@@ -36,7 +36,7 @@ Phone-first PWA. First screen is Today (file `truck.tsx` until a rename-the-file
 
 Settings holds the book (You, territory, hours, mindset, reminders, backup). Empty book: setup card on Today (name, company, counties). Reminders nag on open: morning storm, Sundays pace, the 1st stack — only if that box is empty. Evening journal nag only after they logged a door, a pin, or a finished setup. Blank first hour after 5pm is Setup, not AAR. Finish-setup is Settings, not a nag. No lock-screen. Owner chip, when it ships, lives on You — not a fifth tab.
 
-Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Roof hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet.
+Orange tap fans Live / Roleplay / Mindset — each pick is a new chat. Hold starts Live. Roof hides the dog so it does not cover the shutter. History is the clock in the chat. New Live lives on the History sheet. Roleplay Knock / mic / Score me lock like Claim when `practiceOn` is false — “Practice is on the plan.” Beat chips stay visible. No model picker.
 
 - Plan = a **map of pins**. Walks form from distance (0.4 km, cap 40). Not named subdivisions, not Census cards, not one card per zip. Open from the Plan tab (route `/after`). Night-before + morning. Last 48 hours Keep / Toss lives here. After Action Report and tomorrow live on Plan. Night on Today opens Finish the day on Plan. Morning chip lists set + revisit pins. Settings is a Go at the bottom of Plan, not a fifth tab.
 - Door = pocket cards with a one-line formula (hook → honest reason → one open question). Cards fill name and company from You. Compass stays visible — read it in the truck. Claim path shows after Keep, matching zip.

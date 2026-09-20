@@ -7,6 +7,8 @@ import { whenCoachReady, useCoach } from "@/lib/coach-store";
 import { blankDay, localDateKey, useDayBook } from "@/lib/day-book";
 import { readFreshKept } from "@/lib/kept-storm";
 import { abortTalk, sendRoofus } from "@/lib/roofus-talk";
+import { practiceUnlocked } from "@/lib/coach-modes";
+import { useSettings } from "@/lib/settings-store";
 import { lastPinOnLoop, nextBlankOnLoop, streetNameOf, type HousePin } from "@/lib/pins";
 import { usePins } from "@/lib/pins-store";
 import {
@@ -204,7 +206,7 @@ function askCard(card: PocketCard, fill: PocketFill) {
     });
     useCoach.getState().openSheet();
     const opener = card.lines.find((l) => l.say && !hasOpenToken(l.say))?.say?.trim();
-    if (card.mode === "roleplay" && opener) {
+    if (card.mode === "roleplay" && opener && practiceUnlocked(useSettings.getState().practiceOn)) {
       void sendRoofus(fillSpoken(opener, fill), { kickoff: true }).catch(() => undefined);
     }
   });

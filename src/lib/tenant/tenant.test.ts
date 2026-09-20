@@ -188,6 +188,8 @@ describe("pack roofus curriculum", () => {
     assert.match(src("../../components/roleplay-bar.tsx"), /pack\.scenes/);
     assert.match(src("../../components/roleplay-bar.tsx"), /pack\.modules\.claim/);
     assert.match(src("../../components/roleplay-bar.tsx"), /claimUnlocked/);
+    assert.match(src("../../components/roleplay-bar.tsx"), /practiceUnlocked/);
+    assert.match(src("../../components/roleplay-mic.tsx"), /practiceUnlocked/);
     assert.match(src("../pocket-cards.ts"), /pack\.cards/);
     assert.match(src("../coach-modes.ts"), /pack\.starters\.live/);
     assert.match(src("../coach-prompt.ts"), /pack\.promptModules/);

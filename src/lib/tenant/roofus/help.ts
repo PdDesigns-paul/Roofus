@@ -13,7 +13,7 @@ export const ROOFUS_HELP: PackHelp = {
   ],
   coach: [
     "Tap the orange button to pick a mode. That starts a fresh chat. Live, Roleplay, Mindset. Hold starts Live. Live’s first starter is the million-dollar script. The dog in the header is him — big enough to read in sun. History is the clock at the bottom. Tags by color.",
-    "Roleplay: pick a beat at the bottom (Walk-up, They push, After photos, The set, Whole visit), who they are, then knock. Hold the mic. Score me grades it. Hear it plays his line. Practice only — do not record a homeowner.",
+    "Roleplay: pick a beat at the bottom (Walk-up, They push, After photos, The set, Whole visit), who they are, then knock. Hold the mic. Score me grades it. Hear it plays his line. Practice only — do not record a homeowner. Knock, the mic, and Score me lock like Claim when practice is off — Practice is on the plan. Hear this line on Door stays free.",
     "Mindset is off the porch. Worksheets are in Settings → Mindset. Camera is the Roof page. X closes him. The day is still underneath.",
   ],
 };

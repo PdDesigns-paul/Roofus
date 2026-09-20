@@ -1,6 +1,8 @@
 import { Mic } from "lucide-react";
 import { useRef, useState } from "react";
 import { MicConsent } from "@/components/mic-consent";
+import { PRACTICE_PLAN_COPY, practiceUnlocked } from "@/lib/coach-modes";
+import { useSettings } from "@/lib/settings-store";
 import { pickRecorderMime, transcribeBlob } from "@/lib/speech";
 
 const CONSENT_KEY = "roofus-mic-ok-v1";
@@ -14,6 +16,8 @@ export function RoleplayMic({
   onText: (text: string) => void;
   onError: (msg: string | null) => void;
 }) {
+  const practiceOn = practiceUnlocked(useSettings((s) => s.practiceOn));
+  const locked = !practiceOn;
   const [consent, setConsent] = useState(false);
   const [holding, setHolding] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -31,7 +35,7 @@ export function RoleplayMic({
   }
 
   async function startHold() {
-    if (disabled || busy) return;
+    if (disabled || locked || busy) return;
     if (!consented()) {
       setConsent(true);
       return;
@@ -86,12 +90,15 @@ export function RoleplayMic({
     <>
       <button
         type="button"
-        disabled={disabled || busy}
-        aria-label={holding ? "Release to send" : "Hold and knock"}
+        disabled={disabled || locked || busy}
+        title={locked ? PRACTICE_PLAN_COPY : undefined}
+        aria-label={locked ? PRACTICE_PLAN_COPY : holding ? "Release to send" : "Hold and knock"}
         className={
           holding
             ? "h-12 shrink-0 rounded-full bg-accent px-4 text-sm text-paper"
-            : "h-12 shrink-0 rounded-full border border-border px-4 text-sm disabled:opacity-40"
+            : locked
+              ? "h-12 shrink-0 rounded-full border border-border bg-surface px-4 text-sm text-faint opacity-50"
+              : "h-12 shrink-0 rounded-full border border-border px-4 text-sm disabled:opacity-40"
         }
         onPointerDown={(e) => {
           e.preventDefault();

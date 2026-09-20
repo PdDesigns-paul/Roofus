@@ -10,6 +10,8 @@ import {
   normalizeClaimStage,
   normalizeMode,
   normalizeScene,
+  PRACTICE_PLAN_COPY,
+  practiceUnlocked,
   roleplayKnockLine,
   threadTag,
 } from "./coach-modes.ts";
@@ -72,6 +74,12 @@ describe("claim scene", () => {
     };
     assert.equal(claimUnlocked([{ say: "kept" }], off), false);
     assert.equal(claimUnlocked(1, off), false);
+  });
+  it("practice stays on unless the book says false", () => {
+    assert.equal(practiceUnlocked(undefined), true);
+    assert.equal(practiceUnlocked(true), true);
+    assert.equal(practiceUnlocked(false), false);
+    assert.equal(PRACTICE_PLAN_COPY, "Practice is on the plan.");
   });
 });
 
