@@ -16,7 +16,7 @@ export const Route = createFileRoute("/settings/")({
 const PAGES = [
   { to: "/settings/you", label: "You", hint: "First name, company, website, packets, warranty" },
   { to: "/settings/territory", label: "Territory", hint: "Counties and state" },
-  { to: "/settings/hours", label: "Hours", hint: "Usual hours and this week's clock" },
+  { to: "/settings/hours", label: "Hours", hint: "Usual hours, this week's clock, a picture" },
   { to: "/settings/mindset", label: "Mindset", hint: "Why, demon, Pace, stack" },
   { to: "/settings/reminders", label: "Reminders", hint: "The four nags" },
   { to: "/settings/backup", label: "Backup", hint: "Copy this phone. File or optional Notion." },

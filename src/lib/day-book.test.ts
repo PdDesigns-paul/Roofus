@@ -8,7 +8,9 @@ import {
   EMPTY_COUNTS,
   endLabor,
   findOpenLabor,
+  compactElapsed,
   formatElapsed,
+  hoursSeries,
   laborForCoach,
   laborIsPaused,
   laborIsRunning,
@@ -353,5 +355,63 @@ describe("weekLaborView", () => {
     const view = weekLaborView(days, "2026-09-18");
     assert.equal(view.hoursLabel, "0m");
     assert.equal(view.doorsPerHour, null);
+  });
+});
+
+describe("hoursSeries", () => {
+  it("empty week is gaps, not zero-hour bars", () => {
+    const s = hoursSeries({}, "week", "2026-09-19");
+    assert.equal(s.points.length, 7);
+    assert.equal(s.points.every((p) => p.minutes === null), true);
+    assert.equal(s.hoursLabel, "");
+    assert.equal(s.clocked, false);
+    assert.equal(s.counts.knocks, 0);
+    assert.equal(compactElapsed(240), "4h");
+    assert.equal(compactElapsed(20), "20m");
+  });
+
+  it("one clocked day keeps neighbors as gaps and stores pack keys, not labels", () => {
+    const days = {
+      "2026-09-18": {
+        ...blankDay("2026-09-18"),
+        knocks: 20,
+        talks: 6,
+        labor: restoreShift("2026-09-18", {
+          startedAt: "2026-09-18T16:00:00.000Z",
+          endedAt: "2026-09-18T20:00:00.000Z",
+        }),
+      },
+    };
+    const s = hoursSeries(days, "week", "2026-09-18");
+    const hit = s.points.find((p) => p.date === "2026-09-18");
+    assert.equal(hit?.minutes, 240);
+    assert.equal(hit?.counts.knocks, 20);
+    assert.equal(Object.hasOwn(hit?.counts ?? {}, "Doors"), false);
+    assert.ok(s.points.filter((p) => p.date !== "2026-09-18").every((p) => p.minutes === null));
+    assert.equal(s.hoursLabel, "4h 00m");
+  });
+
+  it("counts without a clock still land; last 30 drops older days", () => {
+    const days = {
+      "2026-08-01": {
+        ...blankDay("2026-08-01"),
+        knocks: 99,
+        labor: restoreShift("2026-08-01", {
+          startedAt: "2026-08-01T12:00:00.000Z",
+          endedAt: "2026-08-01T20:00:00.000Z",
+        }),
+      },
+      "2026-09-18": {
+        ...blankDay("2026-09-18"),
+        knocks: 12,
+      },
+    };
+    const week = hoursSeries(days, "week", "2026-09-18");
+    assert.equal(week.counts.knocks, 12);
+    assert.equal(week.hoursLabel, "");
+    assert.equal(week.points.find((p) => p.date === "2026-09-18")?.minutes, null);
+    const month = hoursSeries(days, "30", "2026-09-18");
+    assert.equal(month.points.length, 30);
+    assert.equal(month.counts.knocks, 12);
   });
 });

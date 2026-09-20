@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { HoursClockChart, HoursCountRows, HoursStampStrip } from "@/components/hours-charts";
 import { AppHeader } from "@/components/app-header";
+import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { localDateKey, useDayBook, weekLaborView, weekTallyLine } from "@/lib/day-book";
+import { hoursSeries, isCountKey, localDateKey, useDayBook, type CountKey, type HoursRange } from "@/lib/day-book";
+import { pack } from "@/lib/tenant";
 
 export const Route = createFileRoute("/settings/hours")({
   codeSplitGroupings: [],
@@ -13,13 +17,21 @@ function HoursPage() {
   const profile = useDayBook((st) => st.profile);
   const patchProfile = useDayBook((st) => st.patchProfile);
   const days = useDayBook((st) => st.days);
-  const week = weekLaborView(days, localDateKey());
-  const countLine = week.counts.knocks || week.counts.talks || week.counts.looks || week.counts.sets
-    ? weekTallyLine(week.counts)
-    : "";
-  const rates = [week.talkOfDoors && `Talked ${week.talkOfDoors} of doors`, week.lookOfTalks && `look ${week.lookOfTalks} of talks`, week.setOfLooks && `set ${week.setOfLooks} of looks`]
-    .filter(Boolean)
-    .join(" · ");
+  const [range, setRange] = useState<HoursRange>("week");
+  const series = hoursSeries(days, range, localDateKey());
+  const units = pack.labor.units;
+  const countUnits = units.filter((u): u is (typeof units)[number] & { key: CountKey } => isCountKey(u.key));
+  const primary = countUnits[0] ?? units[0];
+  const countLine = countUnits.map((u) => `${series.counts[u.key]} ${u.label}`).join(" · ");
+  const hasCounts = countUnits.some((u) => series.counts[u.key] > 0);
+  const rateParts = [
+    series.talkOfDoors && units[1] && units[0] ? `${units[1].label} ${series.talkOfDoors} of ${units[0].label.toLowerCase()}` : "",
+    series.lookOfTalks && units[2] && units[1] ? `${units[2].label} ${series.lookOfTalks} of ${units[1].label.toLowerCase()}` : "",
+    series.setOfLooks && units[3] && units[2] ? `${units[3].label} ${series.setOfLooks} of ${units[2].label.toLowerCase()}` : "",
+  ].filter(Boolean);
+  const rates = rateParts.join(" · ");
+  const stamps = series.points.flatMap((p) => days[p.date]?.stamps ?? []);
+  const empty = !series.clocked && !hasCounts;
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">
@@ -62,27 +74,45 @@ function HoursPage() {
         </div>
       </div>
 
-      <section className="mt-8 rounded-2xl border border-border bg-surface px-4 py-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-faint">This week</p>
-        {week.hoursLabel ? (
+      <div className="mt-8 flex flex-wrap gap-2">
+        <Chip selected={range === "week"} onClick={() => setRange("week")}>
+          This week
+        </Chip>
+        <Chip selected={range === "30"} onClick={() => setRange("30")}>
+          Last 30
+        </Chip>
+      </div>
+
+      <section className="mt-3 rounded-2xl border border-border bg-surface px-4 py-4">
+        <p className="text-xs font-medium uppercase tracking-wide text-faint">{range === "week" ? "This week" : "Last 30"}</p>
+        {series.hoursLabel ? (
           <>
-            <p className="mt-2 font-display text-4xl tabular-nums leading-none">{week.hoursLabel}</p>
+            <p className="mt-2 font-display text-4xl tabular-nums leading-none">{series.hoursLabel}</p>
             <p className="mt-1 text-sm text-muted">on the clock</p>
           </>
         ) : (
           <p className="mt-2 text-sm leading-relaxed">
-            No clock this week.{" "}
+            No clock {range === "week" ? "this week" : "in the last 30 days"}.{" "}
             <Link to="/truck" className="text-fg underline underline-offset-4">
               Start on Today
             </Link>
             .
           </p>
         )}
-        {countLine ? <p className="mt-3 text-sm leading-relaxed">{countLine}</p> : null}
+        {hasCounts ? <p className="mt-3 text-sm leading-relaxed">{countLine}</p> : null}
         {rates ? <p className="mt-1 text-sm leading-relaxed">{rates}</p> : null}
-        {week.doorsPerHour ? (
-          <p className="mt-1 text-sm leading-relaxed">{week.doorsPerHour} doors / hour</p>
+        {series.doorsPerHour && primary ? (
+          <p className="mt-1 text-sm leading-relaxed">
+            {series.doorsPerHour} {primary.label.toLowerCase()} / hour
+          </p>
         ) : null}
+        {empty ? null : (
+          <>
+            <HoursClockChart series={series} />
+            <HoursCountRows series={series} units={units} />
+            {primary ? <HoursStampStrip stamps={stamps} unit={primary.key} label={primary.label} /> : null}
+          </>
+        )}
       </section>
     </main>
   );

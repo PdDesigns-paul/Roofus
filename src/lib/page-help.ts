@@ -47,7 +47,7 @@ export const PAGE_HELP = {
       "Settings is a list of pages. You, Territory, Hours, Mindset, Reminders, Backup. Each row is a Go — title, hint, chevron. Plan is its own tab, not a row here. Back on every sub page.",
       "You: whose book (This phone), first name, company, website, warranty, packets. Paste a URL — we crawl it in the background. Pages land in Reference. Photo or File under the website: flyer, form, warranty, other. Type the porch line in notes. He quotes saved text only. No text, no “I read your flyer.” Account is a key on this page, not a login screen. No model picker.",
 
-      "Territory: counties and a state. Counties are for storms. Pins make the walks. Hours: usual windows stay as policy. This week is your clock, counts, and conversion — not a hidden office report.",
+      "Territory: counties and a state. Counties are for storms. Pins make the walks. Hours: usual windows stay as policy. This week is your clock, counts, and conversion — not a hidden office report. A picture of the week sits under the numbers. Last 30 is a chip.",
       "Reminders: morning storm if empty, evening After Action Report only after a door, a pin, or finished setup, Sundays pace, the 1st talent stack. Did it is a chip. Finish-setup is Settings, not a nag. Blank first hour after 5pm is Setup, not AAR.",
       "Mindset worksheets (Why, demon, Pace, stack) have their own page. The orange fan opens the chat. After Action Report lives on Plan.",
       "Backup: Copy this phone. Last copy is a line on You. Save a file works offline. Notion is an optional office connector behind Use Notion. Restore onto a full day or pins asks you to type your first name or This phone.",

@@ -424,6 +424,15 @@ export function formatElapsed(min: number): string {
   return `${h}h ${String(m).padStart(2, "0")}m`;
 }
 
+/** Bar label. Same minutes, less width. */
+export function compactElapsed(min: number): string {
+  if (min < 60) return `${min}m`;
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
+}
+
 export function formatClockTime(iso: string | null): string {
   if (!iso) return "";
   const d = new Date(iso);
@@ -495,22 +504,66 @@ export type WeekLaborView = {
   doorsPerHour: string | null;
 };
 
-/** First-party week: hours + conversion. Same payload a trainer would read. */
-export function weekLaborView(days: Record<string, DayEntry>, today = localDateKey(), now = Date.now()): WeekLaborView {
-  const counts = weekTally(days, today);
-  const minutes = weekLaborMinutes(days, today, now);
-  let clocked = false;
+export type HoursRange = "week" | "30";
+
+export type HoursPoint = {
+  date: string;
+  /** Null when they never started — a gap, not a 0h bar. */
+  minutes: number | null;
+  counts: DayCounts;
+};
+
+export type HoursSeries = WeekLaborView & {
+  range: HoursRange;
+  points: HoursPoint[];
+  clocked: boolean;
+};
+
+export function rangeDateKeys(today: string, length: number): string[] {
   const start = new Date(`${today}T12:00:00`);
-  for (let i = 0; i < 7; i++) {
+  const keys: string[] = [];
+  for (let i = length - 1; i >= 0; i--) {
     const d = new Date(start);
     d.setDate(start.getDate() - i);
-    const row = days[localDateKey(d)];
-    if (row?.labor.startedAt) {
+    keys.push(localDateKey(d));
+  }
+  return keys;
+}
+
+export function hoursSeries(
+  days: Record<string, DayEntry>,
+  range: HoursRange,
+  today = localDateKey(),
+  now = Date.now(),
+): HoursSeries {
+  const keys = rangeDateKeys(today, range === "week" ? 7 : 30);
+  const points: HoursPoint[] = keys.map((date) => {
+    const row = days[date];
+    return {
+      date,
+      minutes: row ? shiftMinutes(row.labor, now) : null,
+      counts: row
+        ? { knocks: row.knocks, talks: row.talks, looks: row.looks, sets: row.sets }
+        : { ...EMPTY_COUNTS },
+    };
+  });
+  const counts: DayCounts = { ...EMPTY_COUNTS };
+  let minutes = 0;
+  let clocked = false;
+  for (const point of points) {
+    if (point.minutes != null) {
       clocked = true;
-      break;
+      minutes += point.minutes;
     }
+    counts.knocks += point.counts.knocks;
+    counts.talks += point.counts.talks;
+    counts.looks += point.counts.looks;
+    counts.sets += point.counts.sets;
   }
   return {
+    range,
+    points,
+    clocked,
     minutes,
     hoursLabel: clocked ? formatElapsed(minutes) : "",
     counts,
@@ -518,6 +571,20 @@ export function weekLaborView(days: Record<string, DayEntry>, today = localDateK
     lookOfTalks: rateLabel(counts.looks, counts.talks),
     setOfLooks: rateLabel(counts.sets, counts.looks),
     doorsPerHour: minutes >= 30 && counts.knocks > 0 ? (counts.knocks / (minutes / 60)).toFixed(1) : null,
+  };
+}
+
+/** First-party week: hours + conversion. Same payload a trainer would read. */
+export function weekLaborView(days: Record<string, DayEntry>, today = localDateKey(), now = Date.now()): WeekLaborView {
+  const series = hoursSeries(days, "week", today, now);
+  return {
+    minutes: series.minutes,
+    hoursLabel: series.hoursLabel,
+    counts: series.counts,
+    talkOfDoors: series.talkOfDoors,
+    lookOfTalks: series.lookOfTalks,
+    setOfLooks: series.setOfLooks,
+    doorsPerHour: series.doorsPerHour,
   };
 }
 

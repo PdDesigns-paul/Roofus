@@ -73,7 +73,8 @@ describe("helpPageFor", () => {
     assert.match(PAGE_HELP.settings.body.join(" "), /Copy this phone/);
     assert.match(PAGE_HELP.settings.body.join(" "), /Use Notion/);
     assert.match(PAGE_HELP.settings.body.join(" "), /This phone/);
-    assert.match(PAGE_HELP.settings.body.join(" "), /title, hint, chevron/);
+    assert.match(PAGE_HELP.settings.body.join(" "), /A picture of the week sits under the numbers/);
+    assert.match(PAGE_HELP.settings.body.join(" "), /Last 30 is a chip/);
     assert.match(PAGE_HELP.settings.body.join(" "), /outlined pills under the list/);
     assert.doesNotMatch(PAGE_HELP.settings.body.join(" "), /Tour and sample day stay on this list/);
     assert.doesNotMatch(PAGE_HELP.settings.body.join(" "), /question-mark tour/);
