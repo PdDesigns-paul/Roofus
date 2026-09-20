@@ -1,18 +1,21 @@
 /** Porch-dog face. Default is 56px — never ship a 40px chip as the brand face. */
 
+import { useEffect } from "react";
+import { useChromePack } from "@/lib/office-mark";
 import { pack } from "@/lib/tenant";
 
 export function RoofusFace({
   className = "size-14",
-  alt = pack.productName,
+  alt,
 }: {
   className?: string;
   alt?: string;
 }) {
+  const chrome = useChromePack(pack);
   return (
     <img
-      src={pack.markSrc}
-      alt={alt}
+      src={chrome.markSrc}
+      alt={alt ?? chrome.productName}
       data-brand-mark=""
       className={`object-contain ${className}`}
     />
@@ -20,9 +23,10 @@ export function RoofusFace({
 }
 
 export function RoofusMark({ className = "" }: { className?: string }) {
+  const chrome = useChromePack(pack);
   return (
     <img
-      src={pack.markSrc}
+      src={chrome.markSrc}
       alt=""
       aria-hidden
       className={
@@ -31,4 +35,15 @@ export function RoofusMark({ className = "" }: { className?: string }) {
       }
     />
   );
+}
+
+/** Title / apple-mobile-web-app-title follow the office name after hydrate. */
+export function OfficeChrome() {
+  const chrome = useChromePack(pack);
+  useEffect(() => {
+    document.title = chrome.productName;
+    const meta = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+    if (meta) meta.setAttribute("content", chrome.productName);
+  }, [chrome.productName]);
+  return null;
 }

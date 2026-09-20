@@ -37,6 +37,7 @@ import { Route as SettingsIndexRouteImport } from './routes/settings.index'
 import { Route as SettingsBackupRouteImport } from './routes/settings.backup'
 import { Route as SettingsHoursRouteImport } from './routes/settings.hours'
 import { Route as SettingsMindsetRouteImport } from './routes/settings.mindset'
+import { Route as SettingsOfficeRouteImport } from './routes/settings.office'
 import { Route as SettingsRemindersRouteImport } from './routes/settings.reminders'
 import { Route as SettingsTerritoryRouteImport } from './routes/settings.territory'
 import { Route as SettingsYouRouteImport } from './routes/settings.you'
@@ -181,6 +182,11 @@ const SettingsMindsetRoute = SettingsMindsetRouteImport.update({
   path: '/mindset',
   getParentRoute: () => SettingsRoute,
 } as any)
+const SettingsOfficeRoute = SettingsOfficeRouteImport.update({
+  id: '/office',
+  path: '/office',
+  getParentRoute: () => SettingsRoute,
+} as any)
 const SettingsRemindersRoute = SettingsRemindersRouteImport.update({
   id: '/reminders',
   path: '/reminders',
@@ -224,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/settings/backup': typeof SettingsBackupRoute
   '/settings/hours': typeof SettingsHoursRoute
   '/settings/mindset': typeof SettingsMindsetRoute
+  '/settings/office': typeof SettingsOfficeRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/settings/territory': typeof SettingsTerritoryRoute
   '/settings/you': typeof SettingsYouRoute
@@ -255,6 +262,7 @@ export interface FileRoutesByTo {
   '/settings/backup': typeof SettingsBackupRoute
   '/settings/hours': typeof SettingsHoursRoute
   '/settings/mindset': typeof SettingsMindsetRoute
+  '/settings/office': typeof SettingsOfficeRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/settings/territory': typeof SettingsTerritoryRoute
   '/settings/you': typeof SettingsYouRoute
@@ -289,6 +297,7 @@ export interface FileRoutesById {
   '/settings/backup': typeof SettingsBackupRoute
   '/settings/hours': typeof SettingsHoursRoute
   '/settings/mindset': typeof SettingsMindsetRoute
+  '/settings/office': typeof SettingsOfficeRoute
   '/settings/reminders': typeof SettingsRemindersRoute
   '/settings/territory': typeof SettingsTerritoryRoute
   '/settings/you': typeof SettingsYouRoute
@@ -324,6 +333,7 @@ export interface FileRouteTypes {
     | '/settings/backup'
     | '/settings/hours'
     | '/settings/mindset'
+    | '/settings/office'
     | '/settings/reminders'
     | '/settings/territory'
     | '/settings/you'
@@ -355,6 +365,7 @@ export interface FileRouteTypes {
     | '/settings/backup'
     | '/settings/hours'
     | '/settings/mindset'
+    | '/settings/office'
     | '/settings/reminders'
     | '/settings/territory'
     | '/settings/you'
@@ -388,6 +399,7 @@ export interface FileRouteTypes {
     | '/settings/backup'
     | '/settings/hours'
     | '/settings/mindset'
+    | '/settings/office'
     | '/settings/reminders'
     | '/settings/territory'
     | '/settings/you'
@@ -615,6 +627,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsMindsetRouteImport
       parentRoute: typeof SettingsRoute
     }
+    '/settings/office': {
+      id: '/settings/office'
+      path: '/office'
+      fullPath: '/settings/office'
+      preLoaderRoute: typeof SettingsOfficeRouteImport
+      parentRoute: typeof SettingsRoute
+    }
     '/settings/reminders': {
       id: '/settings/reminders'
       path: '/reminders'
@@ -661,6 +680,7 @@ interface SettingsRouteChildren {
   SettingsBackupRoute: typeof SettingsBackupRoute
   SettingsHoursRoute: typeof SettingsHoursRoute
   SettingsMindsetRoute: typeof SettingsMindsetRoute
+  SettingsOfficeRoute: typeof SettingsOfficeRoute
   SettingsRemindersRoute: typeof SettingsRemindersRoute
   SettingsTerritoryRoute: typeof SettingsTerritoryRoute
   SettingsYouRoute: typeof SettingsYouRoute
@@ -671,6 +691,7 @@ const SettingsRouteChildren: SettingsRouteChildren = {
   SettingsBackupRoute: SettingsBackupRoute,
   SettingsHoursRoute: SettingsHoursRoute,
   SettingsMindsetRoute: SettingsMindsetRoute,
+  SettingsOfficeRoute: SettingsOfficeRoute,
   SettingsRemindersRoute: SettingsRemindersRoute,
   SettingsTerritoryRoute: SettingsTerritoryRoute,
   SettingsYouRoute: SettingsYouRoute,

@@ -25,7 +25,7 @@ White-label is a doctrine split, not a Settings row.
 
 **Tenant pack** — the shop. Roofus (this dog, this gold, this porch) is pack `roofus`.
 
-- Brand tokens, mark, PWA, product name
+- Brand tokens, mark, PWA, product name. Office may set mark + PWA name for a non-roofus tenant (local, not Postgres). Pack `roofus` metal is frozen. Not a theme picker.
 - Porch words, Script B, Keep / Toss, i35, claim path
 - Inspect walk rows, activity units / labor clock
 - Optional modules: storms, InterNACHI, claim path
