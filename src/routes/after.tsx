@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AarFields } from "@/components/aar-fields";
+import { DayClock } from "@/components/day-clock";
 import { Last48Hours } from "@/components/last-48-hours";
 import { PinBoard, RevisitPinList, MorningPinList } from "@/components/pin-board";
 import { PinsMap } from "@/components/pins-map";
@@ -204,6 +205,7 @@ function AfterPage() {
         >
           Open Settings
         </Link>
+        <DayClock where="finish" />
         <Link
           to="/settings"
           className="mt-6 mb-2 flex min-h-14 items-center justify-between gap-3 border-t border-border py-3"
@@ -488,6 +490,7 @@ function AfterPage() {
         >
           <p className="text-sm leading-relaxed text-muted">Pick tomorrow. Finish the journal. Desk drops are tagged.</p>
           {weekLine ? <p className="mt-2 text-sm leading-relaxed">{weekLine}</p> : null}
+          <DayClock where="finish" />
           <AarFields value={day.afterAction} onChange={(v) => patchToday({ afterAction: v })} />
           <label className="mt-4 block min-w-0">
             <span className="text-xs font-medium uppercase tracking-wide text-faint">Tomorrow I start at</span>

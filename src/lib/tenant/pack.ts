@@ -55,6 +55,8 @@ export type PackStarters = {
   mindset: readonly string[];
 };
 
+export type ActivityUnit = { key: string; label: string; hint: string };
+
 export type BrandPack = {
   id: string;
   productName: string;
@@ -89,6 +91,8 @@ export type BrandPack = {
   /** Script B, age-first, i35, claim, warranty — not kernel honesty. */
   promptModules: string;
   help: PackHelp;
+  /** Today tiles. Roofus: knocks / talks / looks / sets. Storage still DayCounts. */
+  labor: { units: readonly ActivityUnit[] };
 };
 
 /** CSS variables set on <html>. Fallbacks in styles.css must match pack `roofus`. */

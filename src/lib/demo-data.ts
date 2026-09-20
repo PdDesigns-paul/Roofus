@@ -38,6 +38,12 @@ export function loadDemo(): void {
           plan: "One open question. Then wait.",
         }),
         tomorrowStreet: "Creekview Dr · 17050",
+        labor: {
+          date,
+          startedAt: new Date(new Date().setHours(16, 0, 0, 0)).toISOString(),
+          endedAt: new Date(new Date().setHours(19, 0, 0, 0)).toISOString(),
+          breaksMin: 0,
+        },
       },
     },
   });

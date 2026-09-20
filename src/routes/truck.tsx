@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/app-header";
+import { DayClock } from "@/components/day-clock";
 import { HomeSetupCard } from "@/components/home-setup-card";
 import { InstallHint } from "@/components/install-hint";
 import { NotionHint } from "@/components/notion-hint";
@@ -9,7 +10,7 @@ import { PinCard } from "@/components/pin-board";
 import { Button } from "@/components/ui/button";
 import { whenCoachReady, useCoach } from "@/lib/coach-store";
 import { abortTalk, sendRoofus } from "@/lib/roofus-talk";
-import { blankDay, localDateKey, useDayBook, type DayCounts } from "@/lib/day-book";
+import { blankDay, isCountKey, localDateKey, useDayBook } from "@/lib/day-book";
 import { freshKeptSentence } from "@/lib/kept-storm";
 import { lastPinOnLoop, nextBlankOnLoop, pinLabel, pinsForLoop } from "@/lib/pins";
 import { preKnock } from "@/lib/pocket-cards";
@@ -33,13 +34,6 @@ export const Route = createFileRoute("/truck")({
 function Truck() {
   return <DaySheet />;
 }
-
-const COUNTERS: { key: keyof DayCounts; label: string; hint: string }[] = [
-  { key: "knocks", label: "Doors", hint: "I knocked" },
-  { key: "talks", label: "Talked", hint: "Someone answered" },
-  { key: "looks", label: "On the roof", hint: "I went up" },
-  { key: "sets", label: "Appointments", hint: "On the calendar" },
-];
 
 function DaySheet() {
   const date = localDateKey();
@@ -170,7 +164,8 @@ function DaySheet() {
         pinToday={allPins.some((p) => pinOnDay(p.createdAt, date))}
       />
       <p className="mt-4 text-xs font-medium uppercase tracking-wide text-faint">{day.date}</p>
-      <h1 className="mt-1 font-display text-2xl leading-tight tracking-tight">
+      <DayClock where="today" />
+      <h1 className="mt-3 font-display text-2xl leading-tight tracking-tight">
         {profile.goBy.trim() ? `${profile.goBy.trim()}'s day` : pack.places.today}
       </h1>
       <p className="mt-2 text-sm leading-relaxed text-muted">
@@ -263,28 +258,36 @@ function DaySheet() {
       </section>
 
       <ul className="mt-3 grid grid-cols-2 gap-2">
-        {COUNTERS.map((c) => (
-          <li key={c.key} className="relative min-w-0 rounded-2xl border border-border bg-surface">
-            <button
-              type="button"
-              aria-label={`Plus ${c.label}`}
-              className="flex min-h-24 w-full flex-col items-start px-3 py-3 pr-12 pb-12 text-left"
-              onClick={() => bump(c.key, 1)}
-            >
-              <p className="text-[11px] uppercase tracking-wide text-faint">{c.label}</p>
-              <p className="mt-1 font-display text-4xl tabular-nums leading-none">{day[c.key]}</p>
-              <p className="mt-1 text-xs text-muted">{c.hint}</p>
-            </button>
-            <button
-              type="button"
-              aria-label={`Minus ${c.label}`}
-              className="absolute bottom-1 right-1 inline-flex size-11 items-center justify-center rounded-full border border-border text-sm"
-              onClick={() => bump(c.key, -1)}
-            >
-              −
-            </button>
-          </li>
-        ))}
+        {pack.labor.units.map((c) => {
+          const key = isCountKey(c.key) ? c.key : null;
+          const value = key ? day[key] : 0;
+          return (
+            <li key={c.key} className="relative min-w-0 rounded-2xl border border-border bg-surface">
+              <button
+                type="button"
+                aria-label={`Plus ${c.label}`}
+                className="flex min-h-24 w-full flex-col items-start px-3 py-3 pr-12 pb-12 text-left"
+                onClick={() => {
+                  if (key) bump(key, 1);
+                }}
+              >
+                <p className="text-[11px] uppercase tracking-wide text-faint">{c.label}</p>
+                <p className="mt-1 font-display text-4xl tabular-nums leading-none">{value}</p>
+                <p className="mt-1 text-xs text-muted">{c.hint}</p>
+              </button>
+              <button
+                type="button"
+                aria-label={`Minus ${c.label}`}
+                className="absolute bottom-1 right-1 inline-flex size-11 items-center justify-center rounded-full border border-border text-sm"
+                onClick={() => {
+                  if (key) bump(key, -1);
+                }}
+              >
+                −
+              </button>
+            </li>
+          );
+        })}
       </ul>
 
       <p className="mt-4 text-sm leading-relaxed">{weatherLine}</p>

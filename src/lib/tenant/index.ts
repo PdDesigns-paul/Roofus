@@ -1,6 +1,7 @@
 import { ROOFUS_PACK } from "./roofus/index.ts";
 
 export type {
+  ActivityUnit,
   BrandPack,
   PackBriefs,
   PackHelp,
