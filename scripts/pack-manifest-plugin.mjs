@@ -5,11 +5,19 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const PWA = {
+/** Same ids as src/lib/tenant/resolve.ts. `demo` aliases solar. */
+export const PACK_PWA = {
   roofus: { name: "Roofus", short_name: "Roofus", theme_color: "#0c0c0d" },
+  pest: { name: "Stoop", short_name: "Stoop", theme_color: "#2a1610" },
   solar: { name: "Stride", short_name: "Stride", theme_color: "#123c2e" },
-  demo: { name: "Stride", short_name: "Stride", theme_color: "#123c2e" },
 };
+
+/** VITE_TENANT_ID → PWA fields. Unknown ids fall through to roofus. */
+export function pwaForTenant(envId) {
+  const k = String(envId ?? "").trim().toLowerCase();
+  const id = k === "demo" ? "solar" : k;
+  return PACK_PWA[id] ?? PACK_PWA.roofus;
+}
 
 export function packManifestPlugin() {
   return {
@@ -17,8 +25,7 @@ export function packManifestPlugin() {
     apply: "build",
     writeBundle(options) {
       if (!options.dir) return;
-      const id = String(process.env.VITE_TENANT_ID ?? "roofus").trim().toLowerCase();
-      const pwa = PWA[id] ?? PWA.roofus;
+      const pwa = pwaForTenant(process.env.VITE_TENANT_ID);
       const file = join(process.cwd(), "public/manifest.webmanifest");
       const raw = JSON.parse(readFileSync(file, "utf8"));
       raw.name = pwa.name;

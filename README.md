@@ -106,8 +106,9 @@ One Vercel project. Pack at build, not a second site.
 
 ```bash
 npm run build                         # pack roofus (roofus.coach)
+VITE_TENANT_ID=pest npm run build     # pack pest (Stoop) — proof of white-label
 VITE_TENANT_ID=solar npm run build    # pack solar (Stride) — proof of white-label
-VITE_TENANT_ID=demo npm run build     # same pack (demo is an alias)
+VITE_TENANT_ID=demo npm run build     # same pack as solar (demo is an alias)
 ```
 
 Resolution: `VITE_TENANT_ID` → host allowlist (`roofus.coach` → `roofus`) → `roofus`. grok.me is not a pack host. CI runs `test:app` against pack `roofus` only.

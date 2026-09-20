@@ -1,7 +1,10 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { emptyWalk } from "../inspect-walk.ts";
+import { packManifestPlugin, pwaForTenant } from "../../../scripts/pack-manifest-plugin.mjs";
 import {
   DEFAULT_PACK_ID,
   DEMO_PACK,
@@ -155,6 +158,8 @@ describe("pack solar", () => {
     const plugin = src("../../../scripts/pack-manifest-plugin.mjs");
     assert.match(plugin, /Stride/);
     assert.match(plugin, new RegExp(SOLAR_PACK.pwa.themeColor));
+    assert.match(plugin, /Stoop/);
+    assert.match(plugin, new RegExp(PEST_PACK.pwa.themeColor));
     assert.match(src("../../../.github/workflows/ci.yml"), /VITE_TENANT_ID: roofus/);
     assert.match(src("../../../.github/workflows/ci.yml"), /VITE_AUTH_ENABLED: "false"/);
     assert.doesNotMatch(src("../inspect-walk.ts"), /tenant\/index/);
@@ -259,5 +264,100 @@ describe("pack pest", () => {
       else process.env.VITE_TENANT_ID = prev;
     }
     assert.equal(emptyWalk().done.street, false);
+  });
+});
+
+describe("VP-4 proof builds", () => {
+  it("built PWA follows VITE_TENANT_ID; demo aliases solar", () => {
+    assert.equal(pwaForTenant("pest").name, PEST_PACK.pwa.name);
+    assert.equal(pwaForTenant("pest").short_name, PEST_PACK.productName);
+    assert.equal(pwaForTenant("pest").theme_color, PEST_PACK.pwa.themeColor);
+    assert.equal(pwaForTenant("solar").name, SOLAR_PACK.pwa.name);
+    assert.equal(pwaForTenant("solar").theme_color, SOLAR_PACK.pwa.themeColor);
+    assert.deepEqual(pwaForTenant("demo"), pwaForTenant("solar"));
+    assert.deepEqual(pwaForTenant("DEMO"), pwaForTenant("solar"));
+    assert.equal(pwaForTenant("roofus").name, ROOFUS_PACK.pwa.name);
+    assert.equal(pwaForTenant("roofus").theme_color, ROOFUS_PACK.pwa.themeColor);
+    assert.deepEqual(pwaForTenant(""), pwaForTenant("roofus"));
+    assert.deepEqual(pwaForTenant("nope"), pwaForTenant("roofus"));
+    assert.notEqual(pwaForTenant("pest").theme_color, pwaForTenant("roofus").theme_color);
+    assert.notEqual(pwaForTenant("solar").theme_color, pwaForTenant("roofus").theme_color);
+  });
+
+  it("writeBundle stamps the proof pack into dist, not public/", () => {
+    const dir = mkdtempSync(join(tmpdir(), "pack-pwa-"));
+    const writeBundle = packManifestPlugin().writeBundle;
+    const prev = process.env.VITE_TENANT_ID;
+    try {
+      process.env.VITE_TENANT_ID = "pest";
+      writeBundle({ dir });
+      const pestOut = JSON.parse(readFileSync(join(dir, "manifest.webmanifest"), "utf8"));
+      assert.equal(pestOut.name, "Stoop");
+      assert.equal(pestOut.short_name, "Stoop");
+      assert.equal(pestOut.theme_color, PEST_PACK.pwa.themeColor);
+
+      process.env.VITE_TENANT_ID = "solar";
+      writeBundle({ dir });
+      const solarOut = JSON.parse(readFileSync(join(dir, "manifest.webmanifest"), "utf8"));
+      assert.equal(solarOut.name, "Stride");
+      assert.equal(solarOut.theme_color, SOLAR_PACK.pwa.themeColor);
+
+      process.env.VITE_TENANT_ID = "demo";
+      writeBundle({ dir });
+      assert.equal(JSON.parse(readFileSync(join(dir, "manifest.webmanifest"), "utf8")).name, "Stride");
+    } finally {
+      if (prev === undefined) delete process.env.VITE_TENANT_ID;
+      else process.env.VITE_TENANT_ID = prev;
+      rmSync(dir, { recursive: true, force: true });
+    }
+    assert.equal(manifest.name, "Roofus");
+  });
+
+  it("README names pest and solar; CI and the committed manifest stay roofus", () => {
+    const readme = src("../../../README.md");
+    assert.match(readme, /VITE_TENANT_ID=pest npm run build/);
+    assert.match(readme, /VITE_TENANT_ID=solar npm run build/);
+    assert.match(readme, /Never a secret/);
+    const ci = src("../../../.github/workflows/ci.yml");
+    assert.match(ci, /VITE_TENANT_ID: roofus/);
+    assert.match(ci, /VITE_AUTH_ENABLED: "false"/);
+    assert.match(ci, /npm run test:app/);
+    assert.doesNotMatch(ci, /VITE_TENANT_ID:\s*pest/);
+    assert.doesNotMatch(ci, /VITE_TENANT_ID:\s*solar/);
+    assert.deepEqual(Object.keys(HOST_PACK).sort(), ["roofus.coach", "www.roofus.coach"]);
+    assert.equal(manifest.name, "Roofus");
+    assert.equal(pack.id, "roofus");
+  });
+
+  it("VITE_TENANT_ID=pest and solar resolve to those shops, not Roofus gold", () => {
+    const pest = resolvePack("pest");
+    assert.equal(pest.id, "pest");
+    assert.equal(pest.productName, "Stoop");
+    assert.deepEqual(
+      pest.labor.units.map((u) => u.label),
+      ["Stops", "Talks", "Inspects", "Starts"],
+    );
+    assert.deepEqual(
+      pest.inspect.steps.map((s) => s.id),
+      ["curb", "foundation", "eaves", "harbor", "access"],
+    );
+    assert.doesNotMatch(JSON.stringify(pest), /On the roof/);
+    assert.doesNotMatch(JSON.stringify(pest), /Keep a storm first/);
+
+    const solar = resolvePack("solar");
+    assert.equal(solar.id, "solar");
+    assert.equal(solar.productName, "Stride");
+    assert.equal(resolvePack("demo").id, "solar");
+    assert.deepEqual(
+      solar.labor.units.map((u) => u.label),
+      ["Stops", "Talks", "Surveys", "Sets"],
+    );
+    assert.deepEqual(
+      solar.inspect.steps.map((s) => s.id),
+      ["curb", "roof", "shade", "meter", "access"],
+    );
+    assert.doesNotMatch(JSON.stringify(solar), /On the roof/);
+    assert.doesNotMatch(JSON.stringify(solar), /Keep a storm first/);
+    assert.doesNotMatch(JSON.stringify(solar), /30% tax credit/i);
   });
 });
