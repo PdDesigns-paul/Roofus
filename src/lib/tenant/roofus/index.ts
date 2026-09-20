@@ -59,8 +59,10 @@ export const ROOFUS_PACK = {
     askTalk: "Ask Roofus",
     talkAria: "Talk to Roofus",
     tour: ROOFUS_TOUR,
+    todayFallback: "Age first.",
   },
-  modules: { claim: true },
+  modules: { storms: true, claim: true, internachi: true, packets: true },
+
   cards: ROOFUS_CARDS,
   claimCard: ROOFUS_CLAIM_CARD,
   scenes: ROOFUS_SCENES,

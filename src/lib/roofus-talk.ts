@@ -19,6 +19,8 @@ import { surviveForCoach, useSurvive, whyFilled } from "@/lib/survive-store";
 import { weatherForCoach, useWeather } from "@/lib/weather-store";
 import { readFreshKept } from "@/lib/kept-storm";
 import { claimUnlocked } from "@/lib/coach-modes";
+import { pack } from "@/lib/tenant";
+
 
 let liveAbort: AbortController | null = null;
 let raf = 0;
@@ -181,7 +183,9 @@ function workingLoopSnap() {
 }
 
 function keptStormsSnap() {
+  if (!pack.modules.storms) return [];
   const loops = useStreets.getState().loops;
+
   return readFreshKept(useWeather.getState().keptStorms).map((row) => {
     const loop = loops.find((l) => l.id === row.loopId);
     return {

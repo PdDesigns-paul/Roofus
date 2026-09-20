@@ -5,10 +5,12 @@ import {
   runToolRound,
   toolsOnFor,
   TOOLS_FALLBACK,
-  COACH_TOOL_DEFS,
+  coachToolDefs,
   TOOLS_BRIEF,
   type ToolCall,
 } from "@/lib/coach-tools";
+import { pack } from "@/lib/tenant";
+
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -150,7 +152,8 @@ async function handlePost({ request }: { request: Request }) {
       useTools && system && "content" in system && typeof system.content === "string"
         ? [{ ...system, content: `${system.content}\n\n${TOOLS_BRIEF}` }, ...built.messages.slice(1)]
         : built.messages,
-    ...(useTools ? { tools: COACH_TOOL_DEFS, tool_choice: "auto" as const } : {}),
+    ...(useTools ? { tools: coachToolDefs(pack), tool_choice: "auto" as const } : {}),
+
   };
 
   if (!useTools) {

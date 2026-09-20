@@ -22,7 +22,8 @@ import { clusterLines, firstRemainingInPlan, loopHeadline, loopLabel } from "@/l
 import { useStreets } from "@/lib/streets-store";
 import { usePins } from "@/lib/pins-store";
 import { useWeather } from "@/lib/weather-store";
-import { pack } from "@/lib/tenant";
+import { pack, todayWeatherLine } from "@/lib/tenant";
+
 
 
 /** Today is the field log. Plan owns hunt, Keep / Toss, and AAR. Route stays /truck. */
@@ -150,7 +151,8 @@ function DaySheet() {
     workingZip: working ? loopLabel(working) : "",
   });
   const aarDone = Boolean(day.afterAction.trim());
-  const weatherLine = (day.storm.trim() || keptLine || "Age first.").split("\n")[0] ?? "Age first.";
+  const weatherLine = todayWeatherLine(day.storm, keptLine, pack);
+
 
   return (
     <main className="relative z-10 mx-auto flex min-h-dvh w-full min-w-0 max-w-lg flex-col px-4 pb-tab pt-3">

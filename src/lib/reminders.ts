@@ -1,6 +1,8 @@
 /** Nags when they open the app. Morning storm, evening journal, Sunday pace, the 1st stack. */
 import { localDateKey } from "./day-book.ts";
 import { setupScore, truckSetupOpen, type SetupSnap } from "./setup-progress.ts";
+import { pack } from "./tenant/index.ts";
+
 
 export const REMINDERS = [
   {
@@ -113,9 +115,11 @@ export function reminderDue(
   if ((prefs.lastDone[id] ?? "") === today) return false;
   if (id === "setup") return false;
   if (id === "storm") {
+    if (!pack.modules.storms) return false;
     if (clock.hour >= 12) return false;
     return extra.stormFetchedOn !== today;
   }
+
   if (id === "journal") {
     if (clock.hour < 17) return false;
     if (extra.afterAction.trim()) return false;

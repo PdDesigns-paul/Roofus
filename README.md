@@ -34,7 +34,7 @@ Full book: [`DOCTRINE.md`](./DOCTRINE.md). Tap-clues: [`SIGNIFIERS.md`](./SIGNIF
 - One appointment from a day of knocking is a winning day.
 - Homeowner lines: 5th-grade, plain meaning first. Coach talk can sound like a closer.
 - Five control types on the phone: Place, Do, Chip, Go, Talk. Buttons do. Links go. Ghost captions are not actions. Brand tokens may change; types may not.
-- Kernel vs tenant: Places, types, offline book, Talk stay. Porch words, Script B, Keep, i35 load from a pack. Roofus is pack `roofus`.
+- Kernel vs tenant: Places, types, offline book, Talk stay. Porch words, Script B, Keep, i35, inspect rows, and optional modules (storms, claim, InterNACHI, packets) load from a pack. Roofus is pack `roofus` — all four flags on.
 
 
 ## Data

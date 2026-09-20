@@ -7,14 +7,17 @@ export type {
   InspectStep,
   PackBriefs,
   PackHelp,
+  PackModules,
   PocketCard,
+
   PocketLine,
   RoleplayScene,
   RoleplayWho,
   TourStep,
 } from "./pack.ts";
 
-export { packStyle } from "./pack.ts";
+export { packStyle, todayWeatherLine } from "./pack.ts";
+
 export { ROOFUS_PACK } from "./roofus/index.ts";
 
 /** Only pack `roofus` until a later child resolves by build env / host. */

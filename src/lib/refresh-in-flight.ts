@@ -12,9 +12,12 @@ import { applyPulseFootprints } from "./scout-store.ts";
 import { useStreets } from "./streets-store.ts";
 import { useWeather } from "./weather-store.ts";
 import type { PulseReport } from "./weather-types.ts";
+import { pack } from "./tenant/index.ts";
 
 export async function refreshWeatherPulse(): Promise<void> {
+  if (!pack.modules.storms) return;
   const { counties, states } = useDayBook.getState().profile;
+
   if (!counties.trim() || !states.trim()) return;
   const loops = useStreets.getState().loops;
   const res = await fetch("/api/weather-pulse", {

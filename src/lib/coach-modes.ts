@@ -1,7 +1,8 @@
 /** Three chat modes. Beats, who-chips, and starters load from the tenant pack. */
 
 import { pack } from "./tenant/index.ts";
-import type { RoleplayScene, RoleplayWho } from "./tenant/pack.ts";
+import type { BrandPack, RoleplayScene, RoleplayWho } from "./tenant/pack.ts";
+
 
 export type CoachMode = "live" | "roleplay" | "mindset";
 
@@ -92,11 +93,13 @@ export function personForScene(scene: string | null | undefined, who: string | n
   return isClaimStage(who) ? (pack.who[0]?.id ?? "busy") : normalizeWho(who);
 }
 
-export function claimUnlocked(keptStorms: unknown): boolean {
+export function claimUnlocked(keptStorms: unknown, p: BrandPack = pack): boolean {
+  if (!p.modules.claim) return false;
   if (Array.isArray(keptStorms)) return keptStorms.length > 0;
   if (typeof keptStorms === "number") return keptStorms > 0;
   return Boolean(keptStorms);
 }
+
 
 export function modeById(id: string | null | undefined): CoachModeMeta {
   const want = normalizeMode(id);

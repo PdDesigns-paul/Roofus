@@ -75,6 +75,13 @@ export type InspectPack = {
   reportName: string;
 };
 
+export type PackModules = {
+  storms: boolean;
+  claim: boolean;
+  internachi: boolean;
+  packets: boolean;
+};
+
 export type BrandPack = {
   id: string;
   productName: string;
@@ -96,9 +103,12 @@ export type BrandPack = {
     askTalk: string;
     talkAria: string;
     tour: readonly TourStep[];
+    /** Today weather line when storms are off, or when Keep is empty. Roofus: Age first. */
+    todayFallback: string;
   };
-  /** Claim path / Keep-gating. Off for a tenant that does not sell insurance. */
-  modules: { claim: boolean };
+  /** Optional domain. Roofus: all true. A proof tenant: packets only. */
+  modules: PackModules;
+
   cards: readonly PocketCard[];
   claimCard?: PocketCard;
   scenes: readonly RoleplayScene[];
@@ -126,3 +136,11 @@ export function packStyle(pack: BrandPack): Record<string, string> {
     "--pack-gold-lo": pack.tokens.goldLo,
   };
 }
+
+/** Today’s weather sentence. Storms off → pack fallback. Never invent hail. */
+export function todayWeatherLine(storm: string, keptLine: string, p: BrandPack): string {
+  const fallback = p.copy.todayFallback.trim() || "Age first.";
+  if (!p.modules.storms) return fallback;
+  return (storm.trim() || keptLine.trim() || fallback).split("\n")[0] ?? fallback;
+}
+
