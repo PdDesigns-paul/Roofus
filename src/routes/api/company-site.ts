@@ -15,6 +15,8 @@ import {
   uniqueCompanyPages,
   type CompanyPage,
 } from "@/lib/company-site";
+import { llmComplete, llmEndpoint } from "@/lib/coach-llm";
+import { modelFor } from "@/lib/coach-model";
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -50,35 +52,16 @@ async function fetchPage(url: string, timeoutMs: number): Promise<{ url: string;
 
 /** Grok is a polish. The page text already saved is the brief if he is slow. */
 async function summarize(url: string, text: string): Promise<string | null> {
-  const apiKey = process.env.XAI_API_KEY;
-  if (!apiKey) return null;
-  try {
-    const res = await fetch("https://api.x.ai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "grok-4.5",
-        max_tokens: 220,
-        messages: [
-          {
-            role: "system",
-            content:
-              "Summarize this company website for a door-to-door roofing canvasser. Facts only: name, towns, product, warranty they advertise, phone, hours. Do not invent. Under 120 words.",
-          },
-          { role: "user", content: `URL: ${url}\n\n${text.slice(0, 3500)}` },
-        ],
-      }),
-      signal: AbortSignal.timeout(8_000),
-    });
-    if (!res.ok) return null;
-    const body = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-    return (body.choices?.[0]?.message?.content ?? "").trim() || null;
-  } catch {
-    return null;
-  }
+  const ep = llmEndpoint();
+  if (!ep) return null;
+  return llmComplete({
+    model: modelFor("live", null, ep.provider),
+    system:
+      "Summarize this company website for a door-to-door roofing canvasser. Facts only: name, towns, product, warranty they advertise, phone, hours. Do not invent. Under 120 words.",
+    user: `URL: ${url}\n\n${text.slice(0, 3500)}`,
+    maxTokens: 220,
+    timeoutMs: 8_000,
+  });
 }
 
 function cardFromFetched(got: { url: string; html: string; pdf: boolean }): CompanyPage {

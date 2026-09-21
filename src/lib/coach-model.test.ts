@@ -25,6 +25,13 @@ describe("modelFor", () => {
     assert.equal(modelFor("roleplay", "porch"), COACH_MODEL_DEAR);
   });
 
+  it("OpenRouter uses the x-ai/ prefix; xAI stays bare", () => {
+    assert.equal(modelFor("live", null, "openrouter"), "x-ai/grok-4-fast");
+    assert.equal(modelFor("roleplay", null, "openrouter"), "x-ai/grok-4.5");
+    assert.equal(modelFor("live", null, "xai"), COACH_MODEL_CHEAP);
+    assert.equal(modelFor("roleplay", null, "xai"), COACH_MODEL_DEAR);
+  });
+
   it("coach payload and handler pick from modelFor, not a Settings picker", () => {
     assert.match(src("./coach-prompt.ts"), /modelFor\(/);
     assert.doesNotMatch(src("./coach-prompt.ts"), /model:\s*"grok-4\.5"/);

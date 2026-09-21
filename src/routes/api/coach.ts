@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { buildXaiPayload, type CoachRequest } from "@/lib/coach-prompt";
 import { bookFromRequest } from "@/lib/coach-book";
+import { llmEndpoint, llmPost } from "@/lib/coach-llm";
 import { modelFor } from "@/lib/coach-model";
 import {
   runToolRound,
@@ -68,18 +69,8 @@ type XaiMessage = {
   tool_call_id?: string;
 };
 
-async function xaiPost(apiKey: string, body: unknown, signal: AbortSignal) {
-  const stream = Boolean(body && typeof body === "object" && (body as { stream?: boolean }).stream);
-  return fetch("https://api.x.ai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-      Accept: stream ? "text/event-stream" : "application/json",
-    },
-    body: JSON.stringify(body),
-    signal,
-  });
+async function chatPost(ep: NonNullable<ReturnType<typeof llmEndpoint>>, body: unknown, signal: AbortSignal) {
+  return llmPost(ep, body, signal);
 }
 
 function toolCallsFrom(message: XaiMessage | undefined): ToolCall[] {
@@ -122,8 +113,8 @@ function pipeXaiSse(upstream: Response) {
 
 async function handlePost({ request }: { request: Request }) {
   const pack = resolvePack(tenantEnvId(), hostFromHeaders(request.headers));
-  const apiKey = process.env.XAI_API_KEY;
-  if (!apiKey) return json({ error: "Roofus is asleep. AI is not available here." }, 503);
+  const ep = llmEndpoint();
+  if (!ep) return json({ error: "Roofus is asleep. AI is not available here." }, 503);
 
   let req: CoachRequest;
   try {
@@ -149,7 +140,7 @@ async function handlePost({ request }: { request: Request }) {
   const system = built.messages[0];
   const payload = {
     ...built,
-    model: modelFor(req.mode ?? req.hat, req.origin),
+    model: modelFor(req.mode ?? req.hat, req.origin, ep.provider),
     stream: !useTools,
     messages:
       useTools && system && "content" in system && typeof system.content === "string"
@@ -160,7 +151,7 @@ async function handlePost({ request }: { request: Request }) {
   };
 
   if (!useTools) {
-    const upstream = await xaiPost(apiKey, payload, request.signal);
+    const upstream = await chatPost(ep, payload, request.signal);
     if (!upstream.ok || !upstream.body) {
       return json({ error: `Roofus hit a snag (${upstream.status}).` }, 502);
     }
@@ -171,7 +162,7 @@ async function handlePost({ request }: { request: Request }) {
   let rounds = 0;
 
   while (rounds < 2) {
-    const upstream = await xaiPost(apiKey, { ...payload, messages, stream: false }, request.signal);
+    const upstream = await chatPost(ep, { ...payload, messages, stream: false }, request.signal);
     if (!upstream.ok) {
       return json({ error: `Roofus hit a snag (${upstream.status}).` }, 502);
     }
@@ -184,7 +175,7 @@ async function handlePost({ request }: { request: Request }) {
         send({ t: text });
       });
     }
-    const ran = runToolRound(calls, book, rounds);
+    const ran = await runToolRound(calls, book, rounds);
     if (ran.skipped) break;
     rounds += 1;
     messages.push({
@@ -201,8 +192,8 @@ async function handlePost({ request }: { request: Request }) {
     }
   }
 
-  const answer = await xaiPost(
-    apiKey,
+  const answer = await chatPost(
+    ep,
     { ...payload, messages, stream: true, tools: undefined, tool_choice: undefined },
     request.signal,
   );

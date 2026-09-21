@@ -1,22 +1,14 @@
-/** Read-only tools against the book the phone posted. No web. No SMS. No RAG. */
+/** Read-only tools against the book the phone posted. Named MRI + company pages may be fetched. No open web. No SMS. No RAG. */
 
-import { COACH_MRI, MRI_CHAPTERS } from "./mri-index.ts";
 import { pack } from "./tenant/index.ts";
 import type { BrandPack } from "./tenant/pack.ts";
+import { namedMriCard, readCompanyPage, readReferencePage, type CompanyPageSnap } from "./page-browse.ts";
 
 
-export function lookupCoachMri(titleOrId: string): { id: string; title: string; look: string } | null {
-  const q = titleOrId.trim().toLowerCase();
-  if (!q) return null;
-  const allow = COACH_MRI.find(
-    (row) => row.id.toLowerCase() === q || row.title.toLowerCase() === q || row.title.toLowerCase().includes(q),
-  );
-  if (!allow) return null;
-  for (const ch of MRI_CHAPTERS) {
-    const hit = ch.cards.find((c) => c.id === allow.id || c.title === allow.title);
-    if (hit) return { id: hit.id, title: hit.title, look: hit.look };
-  }
-  return null;
+export function lookupCoachMri(titleOrId: string): { id: string; title: string; look: string; url: string } | null {
+  const card = namedMriCard(titleOrId);
+  if (!card) return null;
+  return { id: card.id, title: card.title, look: card.look, url: card.url };
 }
 
 export const NOT_ON_PHONE = "not on the phone";
@@ -57,6 +49,8 @@ export type CoachBook = {
   pinCounts?: Record<string, number> | null;
   scene?: string | null;
   mode?: string | null;
+  companyWebsite?: string | null;
+  companySitePages?: CompanyPageSnap[] | null;
 };
 
 export type ToolCall = { id?: string; name: string; arguments?: unknown };
@@ -158,7 +152,7 @@ export function getMriCard(title?: string, id?: string, p: BrandPack = pack) {
   if (!want) return MISS;
   const card = lookupCoachMri(want);
   if (!card) return { error: "not-found", title: want };
-  return { title: card.title, look: card.look, open: "Reference" as const };
+  return { title: card.title, look: card.look, url: card.url, open: "Reference" as const };
 }
 
 export function getSurvive(book: CoachBook) {
@@ -198,7 +192,7 @@ export function scoreKnock(book: CoachBook) {
   };
 }
 
-export function runCoachTool(name: string, rawArgs: unknown, book: CoachBook): unknown {
+export async function runCoachTool(name: string, rawArgs: unknown, book: CoachBook): Promise<unknown> {
   const args = asRecord(rawArgs);
   switch (name) {
     case "get_working_loop":
@@ -209,7 +203,11 @@ export function runCoachTool(name: string, rawArgs: unknown, book: CoachBook): u
       return getFaq(book, str(args.q));
     case "get_mri_card":
       return getMriCard(str(args.title), str(args.id));
-
+    case "read_reference_page":
+      if (!pack.modules.internachi) return MISS;
+      return readReferencePage(str(args.title) || str(args.id));
+    case "read_company_page":
+      return readCompanyPage(book.companySitePages ?? [], str(book.companyWebsite), str(args.title) || str(args.url));
     case "get_survive":
       return getSurvive(book);
     case "score_knock":
@@ -219,22 +217,22 @@ export function runCoachTool(name: string, rawArgs: unknown, book: CoachBook): u
   }
 }
 
-export function runToolRound(
+export async function runToolRound(
   calls: ToolCall[],
   book: CoachBook,
   roundsAlreadyRun: number,
-): { executed: unknown[]; skipped: boolean } {
+): Promise<{ executed: unknown[]; skipped: boolean }> {
   if (roundsAlreadyRun >= TOOL_ROUND_CAP) {
     return { executed: [], skipped: true };
   }
-  return {
-    executed: calls.map((call) => ({
+  const executed = await Promise.all(
+    calls.map(async (call) => ({
       id: call.id ?? "",
       name: call.name,
-      result: runCoachTool(call.name, call.arguments, book),
+      result: await runCoachTool(call.name, call.arguments, book),
     })),
-    skipped: false,
-  };
+  );
+  return { executed, skipped: false };
 }
 
 export function toolsOnFor(input: {
@@ -291,7 +289,8 @@ export const COACH_TOOL_DEFS = [
     type: "function" as const,
     function: {
       name: "get_mri_card",
-      description: "One named Reference card: title, look, open Reference. Allowlist only. Do not paste InterNACHI HTML.",
+      description:
+        "One named Reference card: title, look, URL, open Reference. Allowlist only. Do not paste InterNACHI HTML. Call read_reference_page when they need the live page.",
       parameters: {
         type: "object",
         properties: {
@@ -318,16 +317,48 @@ export const COACH_TOOL_DEFS = [
       parameters: { type: "object", properties: {}, additionalProperties: false },
     },
   },
+  {
+    type: "function" as const,
+    function: {
+      name: "read_reference_page",
+      description:
+        "Open one named InterNACHI card URL. Returns original field notes, not the article. Name the card. Do not paste the body. Send them to Reference.",
+      parameters: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          id: { type: "string" },
+        },
+        additionalProperties: false,
+      },
+    },
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "read_company_page",
+      description:
+        "Open one company page they saved. Title or URL must match the posted crawl. Facts they advertise. Empty book = not on the phone.",
+      parameters: {
+        type: "object",
+        properties: {
+          title: { type: "string" },
+          url: { type: "string" },
+        },
+        additionalProperties: false,
+      },
+    },
+  },
 ];
 
 /** Storm and InterNACHI tools drop when those modules are off. */
 export function coachToolDefs(p: BrandPack = pack) {
   return COACH_TOOL_DEFS.filter((d) => {
     if (d.function.name === "get_kept_storm") return p.modules.storms;
-    if (d.function.name === "get_mri_card") return p.modules.internachi;
+    if (d.function.name === "get_mri_card" || d.function.name === "read_reference_page") return p.modules.internachi;
     return true;
   });
 }
 
-export const TOOLS_BRIEF = `You have tools that read the book they posted. Use a tool instead of guessing a kept storm, a Memory FAQ, a Working-loop zip, or an MRI title. After a tool miss say “Not on the phone.” Then coach. In-character Roleplay: do not call tools. Score me / Live / Mindset / Setup may. Tools do not replace Script B. You cannot browse the web or send SMS.`;
+export const TOOLS_BRIEF = `You have tools that read the book they posted. Use a tool instead of guessing a kept storm, a Memory FAQ, a Working-loop zip, or an MRI title. Roof science: get_mri_card then read_reference_page on that named card so you can coach from the live page. Company claims: read_company_page on a page they saved. read_reference_page returns original field notes — not the InterNACHI article. Name the card. Do not paste the article. Send them to Reference to open it. After a tool miss say “Not on the phone.” Then coach. In-character Roleplay: do not call tools. Score me / Live / Mindset / Setup may. Tools do not replace Script B. You cannot open the open web or send SMS.`;
 

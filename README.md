@@ -81,7 +81,8 @@ npm run dev
 
 | Variable | Where | What |
 | --- | --- | --- |
-| `XAI_API_KEY` | server only | Roofus chat, transcribe, speak, Last 48 hours pulse. Never `VITE_`. |
+| `OPENROUTER_API_KEY` | server only | Coach chat + company-site brief. Prefer this. Never `VITE_`. |
+| `XAI_API_KEY` | server only | Fallback chat if OpenRouter is unset. Transcribe, speak, Last 48 hours pulse. Never `VITE_`. |
 | `GOOGLE_MAPS_API_KEY` | server | Maps JS + Geocoder + Places. Phone reads `/api/maps-key`. Never `VITE_` — that prefix errors on the host. Restrict HTTP referrers to `https://roofus.coach/*` and `https://*.vercel.app/*`. Never commit the key. |
 | `VITE_TENANT_ID` | build | Pack id. Proof builds: `pest` / `solar` / `demo` win over the host. Shared prod (empty or `roofus`): host allowlist, then Roofus. Never a secret. |
 | `VITE_AUTH_ENABLED` | build | Stays `false` on Roofus. Not a login Place. |

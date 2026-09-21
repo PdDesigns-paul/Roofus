@@ -61,6 +61,7 @@ describe("get_mri_card", () => {
     assert.match(look, /crease|seal|wind/i);
     assert.equal(out.open, "Reference");
     assert.equal(out.title, "Blow-off vs a crease");
+    assert.match(out.url ?? "", /nachi\.org/);
   });
 
   it("does not return Hail Damage, Part 8", () => {
@@ -79,18 +80,29 @@ describe("get_survive", () => {
 });
 
 describe("tool runner", () => {
-  it("returns an error object for an unknown tool and does not throw", () => {
-    assert.doesNotThrow(() => runCoachTool("browse_web", {}, {}));
-    assert.deepEqual(runCoachTool("browse_web", {}, {}), { error: "not on the phone" });
+  it("returns an error object for an unknown tool and does not throw", async () => {
+    await assert.doesNotReject(() => runCoachTool("browse_web", {}, {}));
+    assert.deepEqual(await runCoachTool("browse_web", {}, {}), { error: "not on the phone" });
   });
 
-  it("does not execute a third tool request", () => {
-    const third = runToolRound([{ name: "get_survive", arguments: {} }], {}, TOOL_ROUND_CAP);
+  it("does not execute a third tool request", async () => {
+    const third = await runToolRound([{ name: "get_survive", arguments: {} }], {}, TOOL_ROUND_CAP);
     assert.equal(third.skipped, true);
     assert.deepEqual(third.executed, []);
-    const first = runToolRound([{ name: "get_survive", arguments: {} }], {}, 0);
+    const first = await runToolRound([{ name: "get_survive", arguments: {} }], {}, 0);
     assert.equal(first.skipped, false);
     assert.equal(first.executed.length, 1);
+  });
+
+  it("read_company_page misses when the page is not on the phone", async () => {
+    const out = await runCoachTool("read_company_page", { title: "Warranty" }, {});
+    assert.deepEqual(out, {
+      title: "Warranty",
+      notes: [],
+      open: "Reference",
+      quote: false,
+      error: "not on the phone",
+    });
   });
 });
 
@@ -139,6 +151,12 @@ describe("pack without storms", () => {
       coachToolDefs(off).some((d) => d.function.name === "get_mri_card"),
       false,
     );
+    assert.equal(
+      coachToolDefs(off).some((d) => d.function.name === "read_reference_page"),
+      false,
+    );
     assert.equal(coachToolDefs(pack).some((d) => d.function.name === "get_kept_storm"), true);
+    assert.equal(coachToolDefs(pack).some((d) => d.function.name === "read_reference_page"), true);
+    assert.equal(coachToolDefs(pack).some((d) => d.function.name === "read_company_page"), true);
   });
 });

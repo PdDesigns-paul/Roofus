@@ -9,5 +9,7 @@ export function bookFromRequest(req: CoachBook & { hat?: string | null }): Coach
     pinCounts: req.pinCounts,
     scene: req.scene,
     mode: req.mode ?? req.hat,
+    companyWebsite: req.companyWebsite,
+    companySitePages: req.companySitePages,
   };
 }

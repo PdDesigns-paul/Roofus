@@ -110,9 +110,11 @@ Tests live in `src/lib/*.test.ts` (`node:test`). Pure functions: labels, hail gr
 
 `npm run test:app` is the product suite. `npm test` also runs Grok platform script tests — CI must not use that.
 
-Do not add `/login` as a Place, Stripe sheets, Postgres as the live book, Codecov, Husky, or commitlint. A tenant pack and an owner key are in scope when a child issue says so. Do not add new API keys except the Maps key already provided (`GOOGLE_MAPS_API_KEY`, never in git, never `VITE_`). Conventional-commit prefixes are optional; a sentence that says what the phone does is better.
+Do not add `/login` as a Place, Stripe sheets, Postgres as the live book, Codecov, Husky, or commitlint. A tenant pack and an owner key are in scope when a child issue says so. Chat key is `OPENROUTER_API_KEY` (server only). `XAI_API_KEY` remains for speech, transcribe, and fallback chat. Maps is `GOOGLE_MAPS_API_KEY`. Never git, never `VITE_`. Conventional-commit prefixes are optional; a sentence that says what the phone does is better.
 
-Coach context is today’s log + streets + weather + mindset + Memory FAQs + MRI titles + company site notes + packet files they saved (title, notes, extracted text only). Tools read the posted book only (loop, kept storms, FAQs, one named MRI card, survive snap). No web. No RAG / RAPTOR until a real backend (Prep to Launch). If a field is on the phone, Roofus may write it when they clearly set it.
+Coach context is today’s log + streets + weather + mindset + Memory FAQs + MRI titles + company site notes + packet files they saved (title, notes, extracted text only). Tools read the posted book (loop, kept storms, FAQs, one named MRI card, survive snap) and may fetch one allowlisted page: a named InterNACHI card URL or a company page they saved. Distill licensed pages into original field notes. Never paste the article. Still no open web. No RAG / RAPTOR until a real backend (Prep to Launch). If a field is on the phone, Roofus may write it when they clearly set it.
+
+Chat completions go through OpenRouter when `OPENROUTER_API_KEY` is set; otherwise xAI. Speech and transcribe stay on xAI. Do not add a Settings model picker.
 
 ## After a slice
 

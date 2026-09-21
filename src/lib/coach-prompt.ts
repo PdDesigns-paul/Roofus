@@ -9,6 +9,7 @@ import { packetsKnowledge, type PacketSnap } from "@/lib/company-packets";
 import type { ChatTurn } from "@/lib/stream-coach";
 import { pack } from "@/lib/tenant";
 import type { BrandPack } from "@/lib/tenant";
+import type { CoachBook } from "@/lib/coach-tools";
 
 /** Kernel honesty + chrome. Porch scripts live on the tenant pack. Edit pack modules, not coach-system.ts. */
 export function kernelRules(p: BrandPack = pack): string {
@@ -51,7 +52,7 @@ Five types: Place / Do / Chip / Go / Talk. No sixth.
 
 **Door** — pocket cards on the Door tab (not Menu). Each has a one-line formula (hook → honest reason → one open question). Cards fill name and company from You; [year] is the age-band window, never a guessed build year. The strip under the title is You, the street or Working loop, and Keep / Use-today weather. Hear this line speaks the filled SAY. Ask ${talkName} on a porch card opens Roleplay on that beat with the filled opener. ${talkName} does not send SMS. Compass is off the porch when the pack includes it. Not Reference.
 
-**Reference** — Reference page lists the index. Company knowledge is the website crawl and packet files they photographed or uploaded. Coach uses saved text only. No text, no “I read your flyer.” Crawled pages land in Reference. Packets live on Settings → You. Search. Open a chapter. Tap a card to open the page in the browser. Coach appendix is the named cards only — not every Part N. You name the card title. You do not paste the article body. You do not invent a card. Open from More.
+**Reference** — Reference page lists the index. Company knowledge is the website crawl and packet files they photographed or uploaded. Coach uses saved text plus a live read of one named card or a company page they saved. No text, no “I read your flyer.” Crawled pages land in Reference. Packets live on Settings → You. Search. Open a chapter. Tap a card to open the page in the browser. Coach appendix is the named cards only — not every Part N. You name the card title. You do not paste the article body. You do not invent a card. Open from More.
 
 **Settings** — an index of pages: You (whose book — This phone; Switch book is a chip when another book is already on this phone — name, company, website, packets, warranty, last copy + Go to Backup), Territory (counties, state), Hours (policy windows plus this week’s clock, conversion, and a picture under the numbers — they see their own numbers; Last 30 is a chip; those numbers stay after old days prune), Mindset worksheets, Reminders, Backup (Copy this phone; Save a file; optional Notion behind Use Notion). Each row is a Go with a chevron. Plan is a tab, not a Settings row. Show the tour and Load a sample day are outlined pills under the list — not the page’s primary. You may write any of those when they clearly set it (“my website is…”, “call me…”, “I knock in…”). Do not invent. Website: they paste a URL. We crawl it in the background. Notes and page links land in Reference. You use that brief and those page notes — you do not scrape on your own. Packets: Photo or File under the website (flyer / form / warranty / other). Title plus notes. Quote notes and any extracted text. Empty notes = title only. Do not invent warranty years from a photo. RAG / RAPTOR waits for a real backend. Reminders nag when they open the app: morning storm if empty, Sundays pace, the 1st talent stack. Evening journal nag only after they logged a door, a pin, or a finished setup. Blank first hour after 5pm is Setup, not AAR. No lock-screen. Backup: Copy this phone copies to Notion when connected. Save a file is the offline copy. Use Notion hides the secret + page ritual. Restore onto a day that already has counts or pins needs them to type their first name or This phone. We build Days, Streets, Storms, Mindset, Memory, Pins in THEIR workspace — not ours. Labor segments and the Hours rollup ride in the copy. Trail points do not go to Notion. Phone is still the live log. Notion is optional. Memory FAQs ship with starter porch answers already filled. They can edit or drop. Those answers are appended below when present. Use them. Do not invent office policy that is not in Memory. Counties and hours are NOT on Today — send them to Settings → Territory or Settings → Hours to change the market.
 
@@ -69,7 +70,7 @@ Bottom bar: ${today} · ${door} · ${inspect} · ${plan}. Help and Menu live in 
 
 # Knowledge bases (you have these, not just a pointer)
 Reference cards, porch cards, and the Survival playbook are appended to this prompt. Treat them as your dedicated field manuals.
-- Reference: named cards only (not every Part N). Name the card title. Send them to the Reference page to open it. Photo questions belong on the ${inspect} page (camera). Do not paste article bodies. Do not invent a finding that is not on a named card.
+- Reference: named cards only (not every Part N). Name the card title. Send them to the Reference page to open it. Photo questions belong on the ${inspect} page (camera). You may open a named card URL and coach from original field notes. Do not paste article bodies. Do not invent a finding that is not on a named card.
 - Packets: flyer / form / warranty files they photographed or uploaded in Settings → You. Title + notes (+ extracted text). Empty notes = title only. Do not invent years from a photo. Website crawl is separate.
 - Pocket cards: same words as Door. Porch only. Once. Not Mindset.
 - Mindset: Survival worksheets + compass. Off the porch. Never a porch line. You have what they wrote. Dead day or “this isn’t for me” → re-read their why. Truck-stay → the demon they named. Do not therapy-dump.
@@ -109,7 +110,7 @@ ${pocketKnowledge()}
 ${mindsetKnowledge()}
 `;
 
-export type CoachRequest = {
+export type CoachRequest = CoachBook & {
   messages: ChatTurn[];
   mode?: string;
   scene?: string;
